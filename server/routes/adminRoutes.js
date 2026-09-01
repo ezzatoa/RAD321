@@ -60,7 +60,30 @@ router.post('/approve-student/:id', async (req, res) => {
   try {
     const userId = Number(req.params.id);
     const db = getDatabase();
-    const appUrl = db.prepare("SELECT value FROM system_settings WHERE key = 'app_url'").get()?.value || process.env.APP_URL || 'https://rad321.amsc.education';
+
+    // Dynamically resolve public appUrl based on live request or settings
+    let dbUrl = db.prepare("SELECT value FROM system_settings WHERE key = 'app_url'").get()?.value;
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    const requestUrl = host ? `${proto}://${host}` : null;
+
+    let appUrl = process.env.APP_URL;
+    if (!appUrl || appUrl.includes('localhost')) {
+      if (requestUrl && !requestUrl.includes('localhost')) {
+        appUrl = requestUrl;
+      } else if (dbUrl && !dbUrl.includes('localhost')) {
+        appUrl = dbUrl;
+      } else {
+        appUrl = requestUrl || dbUrl || 'https://rad321.amsc.education';
+      }
+    }
+
+    // Automatically update system_settings if live public domain is detected
+    if (appUrl && !appUrl.includes('localhost') && dbUrl !== appUrl) {
+      try {
+        db.prepare("UPDATE system_settings SET value = ? WHERE key = 'app_url'").run(appUrl);
+      } catch (e) {}
+    }
 
     const result = await authService.approveStudent(userId, req.user.id, appUrl);
     const emailResult = await emailService.sendActivationEmail(result.user, result.activationToken, appUrl);
