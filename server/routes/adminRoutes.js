@@ -60,7 +60,7 @@ router.post('/approve-student/:id', async (req, res) => {
   try {
     const userId = Number(req.params.id);
     const db = getDatabase();
-    const appUrl = db.prepare("SELECT value FROM system_settings WHERE key = 'app_url'").get()?.value || 'http://localhost:8080';
+    const appUrl = db.prepare("SELECT value FROM system_settings WHERE key = 'app_url'").get()?.value || process.env.APP_URL || 'https://rad321.amsc.education';
 
     const result = await authService.approveStudent(userId, req.user.id, appUrl);
     const emailResult = await emailService.sendActivationEmail(result.user, result.activationToken, appUrl);

@@ -5,10 +5,10 @@ const emailService = {
   // Get active SMTP transport configuration
   getTransporter() {
     const db = getDatabase();
-    const host = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_host'").get()?.value;
-    const port = parseInt(db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_port'").get()?.value || '587', 10);
-    const user = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_user'").get()?.value;
-    const pass = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_pass'").get()?.value;
+    const host = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_host'").get()?.value || process.env.SMTP_HOST || 'smtp.gmail.com';
+    const port = parseInt(db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_port'").get()?.value || process.env.SMTP_PORT || '465', 10);
+    const user = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_user'").get()?.value || process.env.SMTP_USER || 'ezzatoa@gmail.com';
+    const pass = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_pass'").get()?.value || process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
 
     if (!host || !user || !pass) {
       return null; // SMTP not configured; fallback to internal outbox logging
