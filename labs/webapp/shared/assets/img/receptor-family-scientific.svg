@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">Radiographic image receptor families</title>
+  <desc id="desc">Scientific comparison of a screen-film cassette, computed radiography cassette and photostimulable phosphor plate, digital radiography flat panel, and fluoroscopic image intensifier.</desc>
+  <metadata>Educational schematic, not to scale. Technology descriptions follow IAEA diagnostic radiology physics and quality assurance guidance.</metadata>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fbfd"/><stop offset="1" stop-color="#eaf2f6"/></linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#354e63"/><stop offset="1" stop-color="#102a40"/></linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#31536b"/></marker>
+    <style>
+      .title{font:700 30px Arial,sans-serif;fill:#0b2c4b}.subtitle{font:16px Arial,sans-serif;fill:#486579}
+      .head{font:700 19px Arial,sans-serif;fill:#0b2c4b}.label{font:700 14px Arial,sans-serif;fill:#183f55}
+      .small{font:13px Arial,sans-serif;fill:#31536b}.micro{font:12px Arial,sans-serif;fill:#486579}
+      .card{fill:#fff;stroke:#b8cdd9;stroke-width:2}.outline{stroke:#15354d;stroke-width:3}.leader{stroke:#31536b;stroke-width:1.8;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1600" height="920" fill="url(#bg)"/>
+  <text x="45" y="52" class="title">Radiographic image receptor families</text>
+  <text x="45" y="80" class="subtitle">External form, active recording layer, and readout pathway — schematic, not to scale</text>
+
+  <!-- Card backgrounds -->
+  <rect x="30" y="110" width="370" height="750" rx="20" class="card"/>
+  <rect x="420" y="110" width="370" height="750" rx="20" class="card"/>
+  <rect x="810" y="110" width="370" height="750" rx="20" class="card"/>
+  <rect x="1200" y="110" width="370" height="750" rx="20" class="card"/>
+
+  <!-- Screen-film cassette -->
+  <g>
+    <text x="55" y="147" class="head">1. Screen-film cassette</text>
+    <text x="55" y="171" class="small">Analog latent image; wet chemical processing</text>
+    <rect x="93" y="206" width="245" height="235" rx="13" fill="url(#panel)" class="outline"/>
+    <rect x="113" y="228" width="205" height="191" rx="6" fill="#d5e0e6" stroke="#647a8b" stroke-width="3"/>
+    <path d="M298 206 L338 246 L338 206Z" fill="#7890a1"/>
+    <rect x="84" y="285" width="18" height="78" rx="5" fill="#d9a13f" class="outline"/>
+    <text x="130" y="332" text-anchor="middle" class="label" transform="rotate(-90 130 332)">closed light-tight cassette</text>
+
+    <text x="55" y="477" class="label">Cross-section through the cassette</text>
+    <g transform="translate(58 500)">
+      <rect width="250" height="24" fill="#8097a7" class="outline"/>
+      <rect y="27" width="250" height="28" fill="#aee7c7" class="outline"/>
+      <rect y="58" width="250" height="15" fill="#8ab8dd" class="outline"/>
+      <rect y="76" width="250" height="28" fill="#aee7c7" class="outline"/>
+      <rect y="107" width="250" height="24" fill="#5d6f7c" class="outline"/>
+      <rect y="134" width="250" height="12" fill="#9e927a" class="outline"/>
+    </g>
+    <g class="small">
+      <text x="319" y="517">Front cover</text><text x="319" y="547">Front screen</text>
+      <text x="319" y="571">Film</text><text x="319" y="599">Back screen</text>
+      <text x="319" y="629">Back cover</text><text x="319" y="655">Lead backing</text>
+    </g>
+    <path d="M312 512H305M312 542H305M312 566H305M312 594H305M312 624H305M312 650H305" stroke="#31536b" stroke-width="2"/>
+    <rect x="55" y="700" width="320" height="116" rx="12" fill="#eef5f8"/>
+    <text x="72" y="729" class="label">Signal path</text>
+    <text x="72" y="754" class="small">X-rays → screen light → film emulsion</text>
+    <text x="72" y="778" class="small">Two screens commonly expose double-emulsion film.</text>
+    <text x="72" y="802" class="micro">Film is permanently processed; cassette is reused.</text>
+  </g>
+
+  <!-- CR cassette -->
+  <g>
+    <text x="445" y="147" class="head">2. Computed radiography (CR)</text>
+    <text x="445" y="171" class="small">Cassette-based PSP plate; separate laser reader</text>
+    <rect x="475" y="208" width="235" height="230" rx="12" fill="url(#panel)" class="outline"/>
+    <rect x="495" y="229" width="195" height="188" rx="5" fill="#6dc7b5" stroke="#244c5c" stroke-width="3"/>
+    <path d="M660 208 L710 258 L710 208Z" fill="#7890a1"/>
+    <rect x="700" y="252" width="36" height="154" rx="4" fill="#8ed7ca" stroke="#183f55" stroke-width="3" transform="rotate(-8 718 329)"/>
+    <text x="558" y="328" text-anchor="middle" class="label">PSP imaging plate</text>
+    <path d="M638 462 C620 505 595 519 557 536" class="leader"/>
+    <rect x="470" y="535" width="265" height="127" rx="14" fill="#dce8ee" class="outline"/>
+    <rect x="496" y="558" width="213" height="51" rx="6" fill="#223f54"/>
+    <line x1="520" y1="584" x2="670" y2="584" stroke="#e45b55" stroke-width="4"/>
+    <circle cx="680" cy="584" r="12" fill="#6ed5cf"/>
+    <text x="602" y="642" text-anchor="middle" class="label">CR laser reader</text>
+    <rect x="445" y="700" width="320" height="116" rx="12" fill="#eef5f8"/>
+    <text x="462" y="729" class="label">Signal path</text>
+    <text x="462" y="754" class="small">X-rays → trapped energy in PSP → laser scan</text>
+    <text x="462" y="778" class="small">Emitted light → photodetector → digital data</text>
+    <text x="462" y="802" class="micro">Plate is erased and reused after readout.</text>
+  </g>
+
+  <!-- DR flat panel -->
+  <g>
+    <text x="835" y="147" class="head">3. Digital radiography (DR)</text>
+    <text x="835" y="171" class="small">Electronic flat panel; no removable imaging plate</text>
+    <rect x="875" y="202" width="238" height="252" rx="14" fill="url(#panel)" class="outline"/>
+    <rect x="898" y="226" width="192" height="202" rx="7" fill="#41697b" stroke="#76c9c1" stroke-width="3"/>
+    <g stroke="#78a6b2" stroke-width="1" opacity=".65">
+      <path d="M898 260H1090M898 294H1090M898 328H1090M898 362H1090M898 396H1090"/>
+      <path d="M930 226V428M962 226V428M994 226V428M1026 226V428M1058 226V428"/>
+    </g>
+    <circle cx="1095" cy="219" r="7" fill="#6ed5cf"/><circle cx="1095" cy="244" r="7" fill="#f0b34c"/>
+    <text x="835" y="491" class="label">Indirect-conversion panel stack</text>
+    <g transform="translate(838 514)">
+      <rect width="248" height="27" fill="#c9d9e1" class="outline"/>
+      <rect y="30" width="248" height="39" fill="#e4c66d" class="outline"/>
+      <rect y="72" width="248" height="35" fill="#77c7b9" class="outline"/>
+      <rect y="110" width="248" height="27" fill="#405c70" class="outline"/>
+    </g>
+    <g class="small">
+      <text x="1096" y="533">Protective cover</text><text x="1096" y="571">CsI/GOS scintillator</text>
+      <text x="1096" y="609">a-Si photodiodes</text><text x="1096" y="645">TFT readout array</text>
+    </g>
+    <rect x="835" y="700" width="320" height="116" rx="12" fill="#eef5f8"/>
+    <text x="852" y="729" class="label">Signal path</text>
+    <text x="852" y="754" class="small">Indirect DR: X-rays → light → electrical charge</text>
+    <text x="852" y="778" class="small">Direct DR: X-rays → charge in a-Se photoconductor</text>
+    <text x="852" y="802" class="micro">TFT electronics read the pixel array immediately.</text>
+  </g>
+
+  <!-- Image intensifier -->
+  <g>
+    <text x="1225" y="147" class="head">4. Image intensifier</text>
+    <text x="1225" y="171" class="small">Fluoroscopic receptor; real-time image chain</text>
+    <path d="M1282 220 Q1282 195 1307 195 H1463 Q1488 195 1488 220 L1460 489 Q1457 520 1428 532 L1413 538 V611 H1357 V538 L1342 532 Q1313 520 1310 489Z" fill="#dbe8ed" class="outline"/>
+    <ellipse cx="1385" cy="220" rx="103" ry="31" fill="#80bfc0" class="outline"/>
+    <ellipse cx="1385" cy="235" rx="84" ry="23" fill="#d7e9a3" stroke="#31536b" stroke-width="3"/>
+    <path d="M1315 252 Q1385 338 1455 252" fill="none" stroke="#7e9baa" stroke-width="5"/>
+    <path d="M1327 280 Q1385 355 1443 280" fill="none" stroke="#7e9baa" stroke-width="5"/>
+    <path d="M1338 310 Q1385 370 1432 310" fill="none" stroke="#7e9baa" stroke-width="5"/>
+    <path d="M1348 342 L1373 475M1422 342 L1397 475" stroke="#df9d36" stroke-width="4" marker-end="url(#arrow)"/>
+    <ellipse cx="1385" cy="496" rx="40" ry="15" fill="#b7e6cb" class="outline"/>
+    <rect x="1365" y="535" width="40" height="74" fill="#5b7080"/>
+    <rect x="1300" y="625" width="170" height="40" rx="8" fill="#203e54"/>
+    <text x="1385" y="650" text-anchor="middle" fill="#fff" class="label">output camera / display</text>
+    <g class="small">
+      <text x="1225" y="286">Input phosphor</text><text x="1225" y="309">+ photocathode</text>
+      <text x="1450" y="350">Electron</text><text x="1450" y="371">optics</text>
+      <text x="1225" y="502">Output phosphor</text>
+    </g>
+    <path d="M1310 286H1290M1438 356H1447M1344 496H1304" stroke="#31536b" stroke-width="2"/>
+    <rect x="1225" y="700" width="320" height="116" rx="12" fill="#eef5f8"/>
+    <text x="1242" y="729" class="label">Signal path</text>
+    <text x="1242" y="754" class="small">X-rays → input light → electrons</text>
+    <text x="1242" y="778" class="small">Focused electrons → bright output image</text>
+    <text x="1242" y="802" class="micro">Modern systems may instead use flat-panel detectors.</text>
+  </g>
+
+  <text x="800" y="892" text-anchor="middle" class="micro">PSP = photostimulable phosphor · CsI = cesium iodide · GOS = gadolinium oxysulfide · a-Si = amorphous silicon · a-Se = amorphous selenium · TFT = thin-film transistor</text>
+</svg>

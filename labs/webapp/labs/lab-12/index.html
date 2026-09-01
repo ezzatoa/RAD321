@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 12: Digital Contrast, Windowing &amp; Latitude Lab — RAD 321</title>
+  <link rel="stylesheet" href="../../shared/lab-styles.css">
+  <style>
+  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
+  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}
+  .experiment-layout{display:flex;flex-direction:column;gap:16px}
+  .sim-canvas-wrap{position:relative;width:100%}
+  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/380;background:#071a2b;border-radius:14px;border:1px solid #28546a;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+  .preset-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
+  .preset-toolbar .preset-title{font-size:12px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:2px}
+  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
+  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
+  .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:12px}
+  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
+  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:12.5px}
+  .control-card input{width:100%;margin-top:8px}
+  .field-hint{display:block;font-size:11px;color:var(--rad-text-faint);margin-top:4px;line-height:1.3}
+  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:2px}
+  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px}
+  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
+  .metric strong{display:block;color:var(--rad-teal);font-size:18px;line-height:1.2;margin:3px 0}
+  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:11.5px}
+  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
+  @media(max-width:980px){.control-grid,.metric-grid{grid-template-columns:repeat(2,1fr)}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to lab content</a>
+<header class="lab-topbar">
+  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 12 — Digital Contrast, Windowing &amp; Latitude Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
+  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 12 of 15</span></div></div>
+</header>
+<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+<main class="lab-container" id="main-content">
+  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 12 · Assessed laboratory assignment</div><h1>Digital Contrast, Windowing &amp; Latitude Lab</h1><p>Master Look-Up Table (LUT) transfer mapping, window width/level adjustments, dynamic range preservation, and exposure creep monitoring. Directly aligned with: Elements of Digital Image Quality.</p></div></div>
+  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
+  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
+
+  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Define Window Width (WW) and Window Level (WL) in digital imaging and CT post-processing.</li><li><span class="num">2</span>Relate window width to displayed contrast (Look-Up Table slope) and window level to image brightness.</li><li><span class="num">3</span>Interpret a multi-peak anatomical histogram, identify active passband regions, and recognize black clipping and white saturation.</li><li><span class="num">4</span>Explain digital exposure latitude, automatic rescaling, and how post-processing can hide exposure creep.</li><li><span class="num">5</span>Calculate active display intervals and recommend clinical window presets for bone, mediastinum, and lung tasks.</li></ul></div></section>
+  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span>
+    <p>Digital radiographic detectors and CT scanners feature a <b>wide, linear dynamic range</b> capturing thousands of discrete attenuation levels (e.g., &minus;1000 HU to +1000 HU). Because human visual perception can distinguish only about 30–100 shades of gray simultaneously on a monitor (typically 256 display levels in 8-bit output), <b>windowing</b> (grayscale mapping / LUT transformation) is necessary:</p>
+    <ul>
+      <li><b>Window Width (WW):</b> Controls the range of pixel values mapped across 0 (pure black) to 255 (pure white). It determines <i>displayed image contrast</i>. A <b>narrow window</b> expands subtle tissue differences into steep contrast gradients (high contrast), but clips outlying anatomy. A <b>wide window</b> accommodates a wide dynamic range (broad latitude), displaying bone and soft tissue simultaneously at lower contrast.</li>
+      <li><b>Window Level (WL):</b> Sets the central midpoint pixel value of the display window. It controls <i>overall image brightness</i> and directs visual attention to specific tissue types (e.g., +40 HU for mediastinum/soft tissue, +400 HU for bone, &minus;500 HU for aerated lung).</li>
+      <li><b>Clipping &amp; Saturation:</b> Values below <i>T</i><sub>low</sub> = <i>WL</i> − <i>WW</i>/2 clip to black; values above <i>T</i><sub>high</sub> = <i>WL</i> + <i>WW</i>/2 saturate to white.</li>
+      <li><b>Exposure Latitude &amp; Exposure Creep:</b> Digital systems automatically rescale raw detector signals to provide acceptable monitor brightness. However, an underexposed image exhibits elevated <b>quantum mottle</b> due to photon starvation, while an overexposed image looks pristine but imparts unnecessary radiation dose. Monitoring the <b>Exposure Index (EI)</b> and <b>Deviation Index (DI)</b> is vital to prevent dose creep.</li>
+    </ul>
+    <div class="formula-box">
+      <b>Active Display Passband:</b> <i>T</i><sub>low</sub> = <i>WL</i> − <i>WW</i>/2 &nbsp;to&nbsp; <i>T</i><sub>high</sub> = <i>WL</i> + <i>WW</i>/2 (HU).<br>
+      <b>Look-Up Table (LUT) Contrast Gain:</b> <i>G</i> = 255 / <i>WW</i> (gray levels per HU). Slope of the grayscale mapping ramp.<br>
+      <b>IEC Deviation Index (DI):</b> <i>DI</i> = 10 · log₁₀(<i>EI</i> / <i>EI</i><sub>T</sub>). Target range is &minus;1.0 to +1.0 DI; <i>DI</i> &gt; +1.0 indicates dose creep; <i>DI</i> &lt; &minus;1.0 indicates quantum noise risk.<br>
+      <b>Subtle Lesion CNR:</b> <i>CNR</i> = ΔGray / σ<sub>effective</sub>, where σ<sub>effective</sub> = √(σ<sub>display</sub>² + σ<sub>quantum</sub>² · 100/<i>EI</i>).
+    </div>
+    <p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically accurate for teaching digital contrast, LUT mapping, and ALARA principles. They are not calibrated diagnostic workstations or equipment dosimetry logs.</p></div></section>
+
+  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
+    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict the visual effect of narrowing window width.</div><div class="procedure-step">Record a broad-window baseline.</div><div class="procedure-step">Narrow only the window width and record a second run.</div><div class="procedure-step">Shift level or increase noise/exposure index for a third run.</div><div class="procedure-step">Compare display range, contrast gain, CNR, and dose warning.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
+    <div class="card">
+      <div class="experiment-layout">
+        <div class="preset-toolbar">
+          <span class="preset-title">Clinical Presets:</span>
+          <button type="button" class="preset-btn" data-width="400" data-level="40" data-exposure="100" data-noise="8">Standard Soft Tissue / Mediastinum (WW: 400, WL: 40)</button>
+          <button type="button" class="preset-btn" data-width="1500" data-level="400" data-exposure="100" data-noise="5">Bone Detail / High Dynamic Range (WW: 1500, WL: 400)</button>
+          <button type="button" class="preset-btn" data-width="120" data-level="45" data-exposure="100" data-noise="8">Narrow High-Contrast / Subtle Lesion (WW: 120, WL: 45)</button>
+          <button type="button" class="preset-btn" data-width="1200" data-level="-500" data-exposure="100" data-noise="6">Lung Parenchyma Window (WW: 1200, WL: -500)</button>
+          <button type="button" class="preset-btn" data-width="400" data-level="40" data-exposure="55" data-noise="22">Underexposure &amp; Quantum Mottle (EI: 55, DI: -2.6)</button>
+          <button type="button" class="preset-btn" data-width="400" data-level="40" data-exposure="200" data-noise="4">Dose Creep Masked by Processing (EI: 200, DI: +3.0)</button>
+        </div>
+        <div class="sim-canvas-wrap">
+          <canvas id="sim-canvas" class="sim-canvas" width="1000" height="380" role="img" aria-label="Interactive visual model for Digital Contrast, Windowing &amp; Latitude Lab" aria-describedby="sim-caption"></canvas>
+          <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Workstation phantom, dynamic histogram passband, and LUT transfer curve update in real time.</p>
+        </div>
+        <div class="control-grid">
+          <div class="control-card">
+            <label for="ctrl-width"><span>Window width (WW)</span><output id="out-width" for="ctrl-width">400 HU</output></label>
+            <input type="range" id="ctrl-width" min="20" max="1600" step="10" value="400" aria-describedby="sim-caption">
+            <span class="field-hint">Range of HU values mapped across 256 grays (controls contrast)</span>
+          </div>
+          <div class="control-card">
+            <label for="ctrl-level"><span>Window level (WL)</span><output id="out-level" for="ctrl-level">40 HU</output></label>
+            <input type="range" id="ctrl-level" min="-600" max="800" step="10" value="40" aria-describedby="sim-caption">
+            <span class="field-hint">Center midpoint of display window (controls tissue brightness)</span>
+          </div>
+          <div class="control-card">
+            <label for="ctrl-exposure"><span>Exposure index (EI)</span><output id="out-exposure" for="ctrl-exposure">100 index (0.0 DI)</output></label>
+            <input type="range" id="ctrl-exposure" min="40" max="250" step="5" value="100" aria-describedby="sim-caption">
+            <span class="field-hint">Detector exposure level (target: 100, determines DI &amp; quantum noise)</span>
+          </div>
+          <div class="control-card">
+            <label for="ctrl-noise"><span>Display noise</span><output id="out-noise" for="ctrl-noise">8 SD</output></label>
+            <input type="range" id="ctrl-noise" min="0" max="30" step="1" value="8" aria-describedby="sim-caption">
+            <span class="field-hint">Baseline electronic &amp; display noise standard deviation</span>
+          </div>
+        </div>
+        <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+      </div>
+      <div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div>
+      <div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Histogram &amp; Windowing Relationships</h3><p>Match window width, window level, and latitude actions to their correct physical display outcomes.</p><div id="concept-activity"></div></article></section>
+  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Exposure latitude &amp; dose creep management</h3><p>During a routine audit of portable chest radiographs, all images appear visually crisp with normal brightness, but 40% of cases exhibit Exposure Index (EI) values corresponding to a Deviation Index (DI) above +2.5. What is the correct professional action?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Investigate exposure technique charts and calibrate AEC/manual factors to prevent dose creep, recognizing that digital processing masks overexposure</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Ignore the exposure indicator because the images have acceptable contrast and brightness on the PACS monitor</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Instruct technologists to simply widen the window width on the workstation to compensate</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Increase mAs further to ensure zero quantum mottle across all patients</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
+  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
+  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record two window/level settings and describe which anatomy is emphasized. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Calculate the display range for width 500 and level 300. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain why a visually acceptable digital image can still represent excessive exposure. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: recommend window settings for a high-contrast bone task versus a subtle soft-tissue task. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
+  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
+  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+</main>
+<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
+<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 12 of 15 · assessed virtual laboratory</footer>
+<script src="../../shared/lab-common.js"></script>
+<script src="../../shared/lab-models.js"></script>
+<script>
+const LAB = {
+  "week": 12,
+  "title": "Digital Contrast, Windowing & Latitude Lab",
+  "lecture": "Elements of Digital Image Quality",
+  "type": "window",
+  "subtitle": "Master Look-Up Table mapping, window width/level adjustments, dynamic range preservation, and exposure creep monitoring.",
+  "objectives": [
+    "Define Window Width (WW) and Window Level (WL) in digital imaging and CT post-processing.",
+    "Relate window width to displayed contrast (Look-Up Table slope) and window level to image brightness.",
+    "Interpret a multi-peak anatomical histogram, identify active passband regions, and recognize black clipping and white saturation.",
+    "Explain digital exposure latitude, automatic rescaling, and how post-processing can hide exposure creep.",
+    "Calculate active display intervals and recommend clinical window presets for bone, mediastinum, and lung tasks."
+  ],
+  "theory": "<p>Digital detectors capture a wide range of signal values. Windowing maps a selected range of pixel values to display gray levels. Window width controls the range included and therefore displayed contrast; window level sets the center of that range and therefore displayed brightness.</p><div class=\"formula-box\"><b>Display range:</b> level − width/2 to level + width/2. Values below the range appear black and values above it appear white in this simplified display.</div><p>Digital latitude can hide overexposure because processing preserves a visually acceptable image. Exposure indicators and technique review remain essential to prevent dose creep.</p>",
+  "controls": [
+    { "id": "width", "label": "Window width (WW)", "min": 20, "max": 1600, "step": 10, "value": 400, "unit": "HU" },
+    { "id": "level", "label": "Window level (WL)", "min": -600, "max": 800, "step": 10, "value": 40, "unit": "HU" },
+    { "id": "exposure", "label": "Exposure index (EI)", "min": 40, "max": 250, "step": 5, "value": 100, "unit": "index" },
+    { "id": "noise", "label": "Display noise", "min": 0, "max": 30, "step": 1, "value": 8, "unit": "SD" }
+  ],
+  "stations": [
+    {
+      "id": "window",
+      "title": "Station 1 — Window/level simulator",
+      "text": "Move width and level across the virtual phantom. Identify which structures become visible, clipped, or low contrast.",
+      "kind": "main"
+    },
+    {
+      "id": "histogram",
+      "title": "Station 2 — Histogram & Windowing Relationships",
+      "text": "Match window width, window level, and latitude actions to their correct physical display outcomes.",
+      "kind": "match",
+      "left": [
+        ["narrow", "Narrow window width (small WW)"],
+        ["wide", "Wide window width (large WW)"],
+        ["shift_high", "Window level shifted to +400 HU"],
+        ["shift_low", "Window level shifted to -500 HU"]
+      ],
+      "right": [
+        ["contrast", "Steep LUT slope / high displayed contrast over narrow range"],
+        ["latitude", "Shallow LUT slope / wide latitude displaying multiple tissues"],
+        ["bone", "Optimizes dense bone structures, soft tissue appears dark"],
+        ["lung", "Optimizes aerated lung parenchyma, soft tissue appears white"]
+      ],
+      "pairs": {
+        "narrow": "contrast",
+        "wide": "latitude",
+        "shift_high": "bone",
+        "shift_low": "lung"
+      }
+    },
+    {
+      "id": "case",
+      "title": "Station 3 — Exposure latitude caution",
+      "text": "A digital image looks acceptable but the exposure indicator is repeatedly high. Choose the appropriate response.",
+      "kind": "case"
+    }
+  ],
+  "quiz": [
+    {
+      "prompt": "Decreasing window width (narrow window) produces:",
+      "options": [
+        "Lower displayed contrast over a wider range",
+        "Higher displayed contrast over a smaller range of pixel values",
+        "No change in brightness or contrast",
+        "A change in detector pixel pitch"
+      ],
+      "correct": 1,
+      "explain": "A narrower window width maps fewer pixel values across the entire 0-255 display grayscale, resulting in a steeper LUT slope and higher displayed contrast within that range."
+    },
+    {
+      "prompt": "Window Level (WL) controls the:",
+      "options": [
+        "Center (midpoint) of the displayed gray-value range, controlling image brightness",
+        "Total detector matrix dimension",
+        "Source-to-Image Distance (SID)",
+        "Grid lead strip height"
+      ],
+      "correct": 0,
+      "explain": "Window Level is the midpoint value of the display window. Shifting WL shifts the center of the grayscale curve, determining which anatomical tissue density is rendered as mid-gray."
+    },
+    {
+      "prompt": "Increasing window level while keeping window width constant causes the displayed image to appear:",
+      "options": [
+        "Overall darker, because higher pixel values are required to achieve mid-gray",
+        "Overall brighter, because lower pixel values become white",
+        "Identical, because level has no effect on display brightness",
+        "Pixelated due to Nyquist sampling cutoff"
+      ],
+      "correct": 0,
+      "explain": "Increasing Window Level shifts the display window toward higher HU values. Consequently, previous mid-level tissues fall below the window center and appear darker."
+    },
+    {
+      "prompt": "Wide digital exposure latitude combined with automatic rescaling can lead to:",
+      "options": [
+        "Exposure creep, because overexposed images appear visually acceptable while delivering excess patient dose",
+        "Automatic correction of patient anatomical positioning",
+        "Elimination of the need for ALARA radiation protection",
+        "Zero quantum mottle regardless of mAs"
+      ],
+      "correct": 0,
+      "explain": "Because digital processing automatically normalizes image brightness, overexposed radiographs do not appear excessively black as film did. This masks overexposure unless Exposure Index (EI/DI) is monitored."
+    }
+  ],
+  "worksheet": [
+    { "id": "q1", "label": "1. Record two window/level settings and describe which anatomy is emphasized." },
+    { "id": "q2", "label": "2. Calculate the display range for width 500 and level 300." },
+    { "id": "q3", "label": "3. Explain why a visually acceptable digital image can still represent excessive exposure." },
+    { "id": "q4", "label": "4. Critical thinking: recommend window settings for a high-contrast bone task versus a subtle soft-tissue task." }
+  ],
+  "rubric": [
+    { "id": "c1", "name": "Digital contrast concepts", "points": 4, "levels": [{ "desc": "Accurately explains window width, level, LUT curve, and latitude." }, { "desc": "Mostly accurate with minor gaps." }, { "desc": "Major misconception." }] },
+    { "id": "c2", "name": "Windowing simulation", "points": 5, "levels": [{ "desc": "Explores multiple presets, interprets LUT slope, and identifies clipped/visible tissues." }, { "desc": "Uses the tool with limited interpretation." }, { "desc": "Little meaningful investigation." }] },
+    { "id": "c3", "name": "Calculations and worksheet", "points": 5, "levels": [{ "desc": "Display-range calculations and clinical explanations are fully correct." }, { "desc": "Mostly correct with limited depth." }, { "desc": "Missing or incorrect." }] },
+    { "id": "c4", "name": "Dose-awareness reasoning", "points": 3, "levels": [{ "desc": "Connects exposure indicators (EI/DI) to responsible technique and ALARA." }, { "desc": "Plausible but brief." }, { "desc": "No defensible reasoning." }] },
+    { "id": "c5", "name": "Completeness and professionalism", "points": 3, "levels": [{ "desc": "Complete, organized, and ready for submission." }, { "desc": "Minor omissions." }, { "desc": "Substantially incomplete." }] }
+  ],
+  "procedure": [
+    "Predict the visual effect of narrowing window width.",
+    "Record a broad-window baseline.",
+    "Narrow only the window width and record a second run.",
+    "Shift level or increase noise/exposure index for a third run.",
+    "Compare display range, contrast gain, CNR, and dose warning."
+  ],
+  "scenario": {
+    "prompt": "During a routine audit of portable chest radiographs, all images appear visually crisp with normal brightness, but 40% of cases exhibit Exposure Index (EI) values corresponding to a Deviation Index (DI) above +2.5. What is the correct professional action?",
+    "options": [
+      "Investigate exposure technique charts and calibrate AEC/manual factors to prevent dose creep, recognizing that digital processing masks overexposure",
+      "Ignore the exposure indicator because the images have acceptable contrast and brightness on the PACS monitor",
+      "Instruct technologists to simply widen the window width on the workstation to compensate",
+      "Increase mAs further to ensure zero quantum mottle across all patients"
+    ],
+    "correct": 0,
+    "explain": "Digital processing automatically rescales image brightness to look acceptable, masking overexposure. An elevated Deviation Index (+2.5 DI represents an exposure ~78% above target) indicates dose creep requiring immediate technique review."
+  },
+  "minimumRuns": 3
+};
+
+const QUIZ_IDS = ["q12-1", "q12-2", "q12-3", "q12-4"];
+const CONCEPT = LAB.stations[1];
+let currentResult = null;
+
+function controlValues() {
+  const values = {};
+  LAB.controls.forEach(function (control) {
+    values[control.id] = Number(document.getElementById('ctrl-' + control.id).value);
+  });
+  return values;
+}
+
+function formatOutput(id, value) {
+  if (id === 'width') return value + ' HU';
+  if (id === 'level') return (value >= 0 ? '+' : '') + value + ' HU';
+  if (id === 'exposure') {
+    const di = 10 * Math.log10(value / 100);
+    return value + ' index (' + (di >= 0 ? '+' : '') + di.toFixed(2) + ' DI)';
+  }
+  if (id === 'noise') return value + ' SD';
+  return value;
+}
+
+function settingSummary(values) {
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + formatOutput(control.id, values[control.id]);
+  }).join('; ');
+}
+
+function renderMetrics(result) {
+  const container = document.getElementById('sim-metrics');
+  RadLab.renderMetrics(container, result);
+}
+
+function renderSimulation() {
+  const values = controlValues();
+  LAB.controls.forEach(function (control) {
+    document.getElementById('out-' + control.id).textContent = formatOutput(control.id, values[control.id]);
+  });
+  currentResult = RadModels.compute(LAB.type, values);
+  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  renderMetrics(currentResult);
+  document.getElementById('sim-caption').textContent = currentResult.observation;
+}
+
+function experimentActivity() {
+  return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
+}
+
+function renderRunLog() {
+  const activity = experimentActivity();
+  const body = document.getElementById('run-log-body');
+  body.innerHTML = '';
+  if (!activity.runs.length) {
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet.';
+  } else {
+    activity.runs.forEach(function (run, index) {
+      const row = body.insertRow();
+      row.insertCell().textContent = String(index + 1);
+      row.insertCell().textContent = run.settings;
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
+      row.insertCell().textContent = run.observation;
+    });
+  }
+  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+}
+
+function recordRun() {
+  const prediction = document.getElementById('w-prediction').value.trim();
+  if (prediction.length < 20) {
+    RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error');
+    document.getElementById('w-prediction').focus();
+    return;
+  }
+  const values = controlValues();
+  const signature = JSON.stringify(values);
+  const activity = experimentActivity();
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
+  activity.runs.push(run);
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.maxScore = LAB.minimumRuns;
+  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.sound.playExposure();
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+}
+
+function removeLastRun() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) {
+    RadLab.toast('There is no recorded run to remove.');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+}
+
+function setupConcept() {
+  const container = document.getElementById('concept-activity');
+  if (CONCEPT.kind === 'match') {
+    RadLab.matchPairs(container, {
+      id: CONCEPT.id,
+      left: CONCEPT.left.map(function (x) { return { id: x[0], label: x[1] }; }),
+      right: CONCEPT.right.map(function (x) { return { id: x[0], label: x[1] }; }),
+      pairs: CONCEPT.pairs,
+      leftTitle: 'Windowing Adjustment',
+      rightTitle: 'Physical / Display Outcome'
+    });
+  }
+}
+
+function checkScenario() {
+  const selected = document.querySelector('input[name="scenario-choice"]:checked');
+  const feedback = document.getElementById('scenario-feedback');
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Select a response before checking.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
+  const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
+  feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
+  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
+  RadLab.save();
+  RadLab.progress.update();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  RadLab.init({
+    labId: 'lab-12',
+    labTitle: "Lab 12 — Digital Contrast, Windowing & Latitude Lab",
+    weekNumber: 12,
+    rubric: {
+      title: "Lab 12 Grading Rubric (20 points)",
+      criteria: [
+        { "id": "c1", "name": "Digital contrast concepts", "points": 4 },
+        { "id": "c2", "name": "Windowing simulation", "points": 5 },
+        { "id": "c3", "name": "Calculations and worksheet", "points": 5 },
+        { "id": "c4", "name": "Dose-awareness reasoning", "points": 3 },
+        { "id": "c5", "name": "Completeness and professionalism", "points": 3 }
+      ]
+    },
+    sections: [
+      { id: 'sec-experiment', label: '1 · Experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-concept', label: '2 · Concept', checkComplete: function (s) { return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done); } },
+      { id: 'sec-scenario', label: '3 · Clinical decision', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '4 · Knowledge check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-worksheet', label: '5 · Worksheet' }
+    ]
+  });
+
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment prediction' });
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
+    });
+  });
+
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab12-rubric',
+    title: "Lab 12 Grading Rubric (20 points)",
+    criteria: [
+      { "id": "c1", "name": "Digital contrast concepts", "points": 4, "levels": [{ "desc": "Accurately explains window width, level, LUT curve, and latitude." }, { "desc": "Mostly accurate with minor gaps." }, { "desc": "Major misconception." }] },
+      { "id": "c2", "name": "Windowing simulation", "points": 5, "levels": [{ "desc": "Explores multiple presets, interprets LUT slope, and identifies clipped/visible tissues." }, { "desc": "Uses the tool with limited interpretation." }, { "desc": "Little meaningful investigation." }] },
+      { "id": "c3", "name": "Calculations and worksheet", "points": 5, "levels": [{ "desc": "Display-range calculations and clinical explanations are fully correct." }, { "desc": "Mostly correct with limited depth." }, { "desc": "Missing or incorrect." }] },
+      { "id": "c4", "name": "Dose-awareness reasoning", "points": 3, "levels": [{ "desc": "Connects exposure indicators (EI/DI) to responsible technique and ALARA." }, { "desc": "Plausible but brief." }, { "desc": "No defensible reasoning." }] },
+      { "id": "c5", "name": "Completeness and professionalism", "points": 3, "levels": [{ "desc": "Complete, organized, and ready for submission." }, { "desc": "Minor omissions." }, { "desc": "Substantially incomplete." }] }
+    ]
+  });
+
+  setupConcept();
+
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+  }
+
+  LAB.controls.forEach(function (control) {
+    document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation);
+  });
+
+  document.getElementById('record-run').addEventListener('click', recordRun);
+  document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const wVal = btn.dataset.width;
+      const lVal = btn.dataset.level;
+      const expVal = btn.dataset.exposure;
+      const noiseVal = btn.dataset.noise;
+
+      if (document.getElementById('ctrl-width') && wVal !== undefined) document.getElementById('ctrl-width').value = wVal;
+      if (document.getElementById('ctrl-level') && lVal !== undefined) document.getElementById('ctrl-level').value = lVal;
+      if (document.getElementById('ctrl-exposure') && expVal !== undefined) document.getElementById('ctrl-exposure').value = expVal;
+      if (document.getElementById('ctrl-noise') && noiseVal !== undefined) document.getElementById('ctrl-noise').value = noiseVal;
+
+      renderSimulation();
+      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+    });
+  });
+
+  const savedScenario = RadLab.state.activities['clinical-scenario'];
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
+});
+</script>
+</body>
+</html>

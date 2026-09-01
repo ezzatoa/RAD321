@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+archive
+lectures
+reports
+references
+assessment
+specs
+tmp
+RAD321-genspark
+*.log

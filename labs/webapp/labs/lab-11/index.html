@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 11: Digital Receptors &amp; Digital Resolution Lab — RAD 321</title>
+  <link rel="stylesheet" href="../../shared/lab-styles.css">
+  <style>
+  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
+  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}
+  .experiment-layout{display:flex;flex-direction:column;gap:16px}
+  .sim-canvas-wrap{position:relative;width:100%}
+  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/380;background:#071a2b;border-radius:14px;border:1px solid #28546a;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+  .preset-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
+  .preset-toolbar .preset-title{font-size:12px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:2px}
+  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
+  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
+  .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:12px}
+  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
+  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:12.5px}
+  .control-card input{width:100%;margin-top:8px}
+  .field-hint{display:block;font-size:11px;color:var(--rad-text-faint);margin-top:4px;line-height:1.3}
+  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:2px}
+  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px}
+  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
+  .metric strong{display:block;color:var(--rad-teal);font-size:18px;line-height:1.2;margin:3px 0}
+  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:11.5px}
+  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
+  @media(max-width:980px){.control-grid,.metric-grid{grid-template-columns:repeat(2,1fr)}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to lab content</a>
+<header class="lab-topbar">
+  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 11 — Digital Receptors &amp; Digital Resolution Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
+  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 11 of 15</span></div></div>
+</header>
+<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+<main class="lab-container" id="main-content">
+  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 11 · Assessed laboratory assignment</div><h1>Digital Receptors &amp; Digital Resolution Lab</h1><p>Compare CR and DR signal paths, active matrix sampling, and connect pixel pitch to spatial resolution limits. Directly aligned with: Digital Image Recording.</p></div></div>
+  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
+  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
+
+  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Describe the physical differences between CR, Indirect DR, and Direct DR image recording and readout.</li><li><span class="num">2</span>Distinguish direct and indirect digital conversion pathways in flat-panel active matrix arrays (AMA).</li><li><span class="num">3</span>Relate DEL pitch, matrix size, and field of view to sampling frequency and Nyquist resolution limits.</li><li><span class="num">4</span>Use a virtual line-pair test phantom to identify resolution limits and observe Moiré aliasing artifacts.</li><li><span class="num">5</span>Select an optimal digital receptor strategy and matrix configuration for specific clinical tasks.</li></ul></div></section>
+  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span>
+    <p>Digital radiography uses three distinct physical capture technologies:</p>
+    <ul>
+      <li><b>Computed Radiography (CR):</b> Uses a reusable photostimulable phosphor (PSP, BaFBr:Eu²⁺) cassette plate. X-ray absorption traps electrons in metastable energy states. A red helium-neon laser scans the plate, stimulating blue-violet photostimulated luminescence (PSL) collected by a photomultiplier tube (PMT). Turbid crystal light scatter reduces high-frequency MTF.</li>
+      <li><b>Indirect Conversion DR:</b> Uses a needle-structured Cesium Iodide (CsI:Tl) scintillator that converts X-rays into visible light, which is subsequently converted into charge by an amorphous silicon (a-Si) photodiode array and stored in TFT capacitor elements. Structured needles channel light, mitigating but not eliminating lateral light spread.</li>
+      <li><b>Direct Conversion DR:</b> Uses an amorphous Selenium (a-Se) photoconductor under high-voltage electrostatic bias (+5 kV). Incident X-rays generate electron-hole pairs collected vertically with <i>zero lateral light scatter</i>, providing the highest inherent MTF and spatial sharpness.</li>
+    </ul>
+    <div class="formula-box">
+      <b>Matrix Pixel Size:</b> <i>Pixel Size (mm)</i> = <sup>FOV (mm)</sup>&frasl;<sub>Matrix Size</sub> = <sup>(FOV (cm) &times; 10)</sup>&frasl;<sub>Matrix Size</sub>.<br>
+      <b>Effective Sampling Pitch:</b> <i>p<sub>eff</sub></i> = max(<i>p<sub>DEL</sub></i>, <i>p<sub>matrix</sub></i>). The limiting aperture defines the sampling interval.<br>
+      <b>Sampling Frequency:</b> <i>f<sub>s</sub></i> = <sup>1</sup>&frasl;<sub><i>p<sub>eff</sub></i></sub> (samples/mm).<br>
+      <b>Nyquist Frequency Limit (<i>f<sub>N</sub></i>):</b> <i>f<sub>N</sub></i> = <sup><i>f<sub>s</sub></i></sup>&frasl;<sub>2</sub> = <sup>1</sup>&frasl;<sub>(2 &times; <i>p<sub>eff</sub></i>)</sub> in line pairs per mm (lp/mm).<br>
+      <b>Shannon-Nyquist Theorem &amp; Aliasing:</b> To faithfully record an anatomical structure with spatial frequency <i>f</i>, the receptor must sample at &ge; 2 points per cycle (<i>f<sub>s</sub> &ge; 2f</i> &rArr; <i>f &le; f<sub>N</sub></i>). Spatial frequencies exceeding <i>f<sub>N</sub></i> fold back as false, lower-frequency <b>Moiré / Aliasing patterns</b> (<i>f<sub>alias</sub> = |f<sub>s</sub> &minus; f|</i>).<br>
+      <b>DEL Fill Factor:</b> <sup>Active Sensing Area</sup>&frasl;<sub>DEL Area</sub> &times; 100%. Smaller DELs have lower fill factors due to fixed TFT electronics.<br>
+      <b>Limiting Spatial Resolution (10% MTF):</b> <i>R<sub>10%</sub></i> &approx; <i>f<sub>N</sub> &times; MTF<sub>material</sub></i>. Minimum resolvable object width &Delta;x = <sup>1</sup>&frasl;<sub>(2 &times; <i>R<sub>10%</sub></i>)</sub>.
+    </div>
+    <p><b>Matrix-Limited vs. Detector-Limited:</b> When <i>Pixel Size &gt; DEL Pitch</i>, image resolution is bottlenecked by the matrix (increasing matrix improves detail). When <i>DEL Pitch &gt; Pixel Size</i>, image detail is constrained by physical detector elements, and larger matrices provide empty magnification without new diagnostic signal.</p>
+    <p class="model-note"><b>Model boundary:</b> Results are mathematically and physical-conceptually accurate for teaching digital sampling, Nyquist limits, and detector architectures. They do not substitute for manufacturer calibration charts.</p></div></section>
+
+  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
+    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict how reducing pixel pitch changes sampling resolution.</div><div class="procedure-step">Record a baseline receptor setup.</div><div class="procedure-step">Change only pixel pitch or matrix and record a second run.</div><div class="procedure-step">Switch CR/DR pathway and record a third run.</div><div class="procedure-step">Compare matrix-derived pitch, effective pitch, and effective resolution.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
+    <div class="card">
+      <div class="experiment-layout">
+        <div class="preset-toolbar">
+          <span class="preset-title">Clinical Presets:</span>
+          <button type="button" class="preset-btn" data-receptor="1" data-pitch="0.15" data-matrix="2048" data-fov="35">General Diagnostic DR (Indirect CsI, 150 µm DEL, 2048 Mat, 35 cm)</button>
+          <button type="button" class="preset-btn" data-receptor="2" data-pitch="0.08" data-matrix="4096" data-fov="24">High-Resolution Direct DR (a-Se, 80 µm DEL, 4096 Mat, 24 cm)</button>
+          <button type="button" class="preset-btn" data-receptor="0" data-pitch="0.20" data-matrix="1750" data-fov="35">Standard CR Cassette (PSP, 200 µm DEL, 1750 Mat, 35 cm)</button>
+          <button type="button" class="preset-btn" data-receptor="2" data-pitch="0.10" data-matrix="512" data-fov="43">Matrix Undersampled (512 Mat, 43 cm — Heavy Pixelation)</button>
+          <button type="button" class="preset-btn" data-receptor="1" data-pitch="0.35" data-matrix="4096" data-fov="15">Detector DEL-Limited (350 µm DEL, 4096 Mat, 15 cm FOV)</button>
+          <button type="button" class="preset-btn" data-receptor="0" data-pitch="0.30" data-matrix="1024" data-fov="40">Moiré / Aliasing Critical (CR Plate, 300 µm DEL, 1024 Mat, 40 cm)</button>
+        </div>
+        <div class="sim-canvas-wrap">
+          <canvas id="sim-canvas" class="sim-canvas" width="1000" height="380" role="img" aria-label="Interactive visual model for Digital Receptors &amp; Digital Resolution Lab" aria-describedby="sim-caption"></canvas>
+          <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results and MTF curves update in real time.</p>
+        </div>
+        <div class="control-grid">
+          <div class="control-card">
+            <label for="ctrl-receptor"><span>Receptor type</span><output id="out-receptor" for="ctrl-receptor">Indirect DR (CsI:Tl)</output></label>
+            <input type="range" id="ctrl-receptor" min="0" max="2" step="1" value="1" aria-describedby="sim-caption">
+            <span class="field-hint">0=CR (PSP Plate), 1=Indirect DR (CsI), 2=Direct DR (a-Se)</span>
+          </div>
+          <div class="control-card">
+            <label for="ctrl-pitch"><span>Pixel pitch</span><output id="out-pitch" for="ctrl-pitch">0.15 mm (150 µm)</output></label>
+            <input type="range" id="ctrl-pitch" min="0.05" max="0.40" step="0.01" value="0.15" aria-describedby="sim-caption">
+            <span class="field-hint">Detector element (DEL) center-to-center spacing</span>
+          </div>
+          <div class="control-card">
+            <label for="ctrl-matrix"><span>Matrix width</span><output id="out-matrix" for="ctrl-matrix">2048 × 2048 px</output></label>
+            <input type="range" id="ctrl-matrix" min="512" max="4096" step="128" value="2048" aria-describedby="sim-caption">
+            <span class="field-hint">Number of acquisition/display matrix columns</span>
+          </div>
+          <div class="control-card">
+            <label for="ctrl-fov"><span>Field of view</span><output id="out-fov" for="ctrl-fov">35 cm (350 mm)</output></label>
+            <input type="range" id="ctrl-fov" min="10" max="45" step="1" value="35" aria-describedby="sim-caption">
+            <span class="field-hint">Active anatomical imaging field width</span>
+          </div>
+        </div>
+        <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+      </div>
+      <div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div>
+      <div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Digital receptor pathways</h3><p>Match the receptor pathway to CR, indirect DR, or direct DR.</p><div id="concept-activity"></div></article></section>
+  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Receptor selection</h3><p>A department needs immediate bedside images without cassette scanning. Which receptor best fits the workflow?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Wireless DR flat panel</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Screen-film cassette</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>CR plate requiring laser readout</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Image intensifier only</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
+  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
+  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Compare CR and DR in terms of recording, readout, and workflow. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Calculate the pixel size for a 35 cm field and 2048-pixel matrix. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain why sampling resolution is not identical to total image sharpness. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: describe one reason to choose CR and one reason to choose DR. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
+  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
+  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+</main>
+<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
+<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 11 of 15 · assessed virtual laboratory</footer>
+<script src="../../shared/lab-common.js"></script>
+<script src="../../shared/lab-models.js"></script>
+<script>
+const LAB = {"week":11,"title":"Digital Receptors & Digital Resolution Lab","lecture":"Digital Image Recording","type":"digital","subtitle":"Compare CR and DR signal paths and connect pixel pitch to spatial resolution.","objectives":["Describe the difference between CR and DR image recording.","Distinguish direct and indirect digital conversion pathways.","Relate pixel pitch, matrix size, and field of view to sampling resolution.","Use a virtual test pattern to identify resolution limits.","Select a digital receptor strategy for a clinical task."],"theory":"<p>CR uses a photostimulable phosphor plate that is read by a laser; DR uses a flat-panel detector that converts the exposure into electronic data. Indirect DR uses a scintillator to convert X-rays to light before charge collection; direct DR converts X-rays to charge.</p><div class=\"formula-box\"><b>Sampling frequency:</b> approximately 1 / (2 × pixel pitch) in cycles per unit distance (Nyquist limit). Smaller pixels can support higher sampling resolution, but detector construction, focal spot blur, motion, and dose also matter.</div><p>Matrix size and field of view work together: for a fixed field, a larger matrix means smaller pixels. Resolution is not guaranteed by a high matrix alone if the rest of the imaging chain is limiting.</p>","controls":[{"id":"receptor","label":"Receptor type","min":0,"max":2,"step":1,"value":1,"unit":"0=CR, 1=Indirect DR, 2=Direct DR"},{"id":"pitch","label":"Pixel pitch","min":0.05,"max":0.4,"step":0.01,"value":0.15,"unit":"mm"},{"id":"matrix","label":"Matrix width","min":512,"max":4096,"step":128,"value":2048,"unit":"pixels"},{"id":"fov","label":"Field of view","min":10,"max":45,"step":1,"value":35,"unit":"cm"}],"stations":[{"id":"resolution","title":"Station 1 — Digital resolution test pattern","text":"Compare CR/DR and alter pixel pitch, matrix, and field of view. Find the smallest line pair that remains separated.","kind":"main"},{"id":"pathways","title":"Station 2 — Digital receptor pathways","text":"Match the receptor pathway to CR, indirect DR, or direct DR.","kind":"match","left":[["cr","Reusable plate read by laser"],["indirect","Scintillator converts X-rays to light"],["direct","Photoconductor converts X-rays to charge"]],"right":[["plate","CR"],["light","Indirect DR"],["charge","Direct DR"]],"pairs":{"cr":"plate","indirect":"light","direct":"charge"}},{"id":"case","title":"Station 3 — Receptor selection","text":"A department needs rapid bedside images without cassette scanning. Choose the most direct receptor choice.","kind":"case"}],"quiz":[{"prompt":"For a fixed field of view, increasing matrix size generally:","options":["Makes pixels larger","Makes pixels smaller and increases sampling frequency","Removes the need for adequate exposure","Always eliminates focal-spot blur"],"correct":1,"explain":"A larger matrix over the same field produces smaller pixels and a higher sampling frequency, although other limits remain."},{"prompt":"CR uses:","options":["A photostimulable phosphor plate and laser reader","Wet chemistry only","An image intensifier","A direct selenium panel only"],"correct":0,"explain":"CR stores the image on a PSP plate that is scanned by a laser."},{"prompt":"For fixed FOV, increasing matrix size makes pixels:","options":["Smaller","Larger","Unchanged always","Non-digital"],"correct":0,"explain":"More samples across the same field produce smaller matrix-derived pixels."},{"prompt":"The Nyquist frequency is approximately:","options":["1/(2 × pixel pitch)","2 × pixel pitch","SID/SOD","mAs²"],"correct":0,"explain":"Nyquist sampling limit equals one over twice the sampling interval."}],"worksheet":[{"id":"q1","label":"1. Compare CR and DR in terms of recording, readout, and workflow."},{"id":"q2","label":"2. Calculate the pixel size for a 35 cm field and 2048-pixel matrix."},{"id":"q3","label":"3. Explain why sampling resolution is not identical to total image sharpness."},{"id":"q4","label":"4. Critical thinking: describe one reason to choose CR and one reason to choose DR."}],"rubric":[{"id":"c1","name":"Digital receptor concepts","points":4,"levels":["Correctly explains CR/DR pathways, sampling, pitch, and matrix.","Mostly accurate with minor gaps.","Major misconception."]},{"id":"c2","name":"Resolution simulation","points":5,"levels":["Tests multiple receptor/pixel/FOV conditions and interprets the pattern.","Uses the tool with limited interpretation.","Little meaningful investigation."]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":["Pixel/resolution calculations are correct and explained.","Mostly correct with limited explanation.","Missing or incorrect."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Receptor choice is linked to workflow and image quality.","Plausible but brief.","No defensible choice."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict how reducing pixel pitch changes sampling resolution.","Record a baseline receptor setup.","Change only pixel pitch or matrix and record a second run.","Switch CR/DR pathway and record a third run.","Compare matrix-derived pitch, effective pitch, and effective resolution."],"scenario":{"prompt":"A department needs immediate bedside images without cassette scanning. Which receptor best fits the workflow?","options":["Wireless DR flat panel","Screen-film cassette","CR plate requiring laser readout","Image intensifier only"],"correct":0,"explain":"A wireless DR panel provides direct electronic readout without a separate cassette scanner."},"minimumRuns":3};
+const QUIZ_IDS = ["q11-1","q11-2","q11-3","q11-4"];
+const CONCEPT = LAB.stations[1];
+let currentResult = null;
+
+function controlValues() {
+  const values = {};
+  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  return values;
+}
+
+function formatOutput(id, value) {
+  if (id === 'receptor') {
+    const v = Math.round(value);
+    if (v === 0) return 'CR (PSP BaFBr:Eu²⁺)';
+    if (v >= 2) return 'Direct DR (a-Se)';
+    return 'Indirect DR (CsI:Tl)';
+  }
+  if (id === 'pitch') {
+    return value.toFixed(2) + ' mm (' + Math.round(value * 1000) + ' µm)';
+  }
+  if (id === 'matrix') {
+    return value + ' × ' + value + ' px';
+  }
+  if (id === 'fov') {
+    return value + ' cm (' + (value * 10) + ' mm)';
+  }
+  return value;
+}
+
+function settingSummary(values) {
+  return LAB.controls.map(function (control) { return control.label + ': ' + formatOutput(control.id, values[control.id]); }).join('; ');
+}
+
+function renderMetrics(result) {
+  const container = document.getElementById('sim-metrics');
+  RadLab.renderMetrics(container, result);
+}
+
+function renderSimulation() {
+  const values = controlValues();
+  LAB.controls.forEach(function (control) {
+    document.getElementById('out-' + control.id).textContent = formatOutput(control.id, values[control.id]);
+  });
+  currentResult = RadModels.compute(LAB.type, values);
+  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  renderMetrics(currentResult);
+  document.getElementById('sim-caption').textContent = currentResult.observation;
+}
+
+function experimentActivity() {
+  return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
+}
+
+function renderRunLog() {
+  const activity = experimentActivity();
+  const body = document.getElementById('run-log-body');
+  body.innerHTML = '';
+  if (!activity.runs.length) {
+    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+  } else {
+    activity.runs.forEach(function (run, index) {
+      const row = body.insertRow();
+      row.insertCell().textContent = String(index + 1);
+      row.insertCell().textContent = run.settings;
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.observation;
+    });
+  }
+  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+}
+
+function recordRun() {
+  const prediction = document.getElementById('w-prediction').value.trim();
+  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const values = controlValues();
+  const signature = JSON.stringify(values);
+  const activity = experimentActivity();
+  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
+  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  activity.runs.push(run);
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.maxScore = LAB.minimumRuns;
+  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.sound.playExposure();
+  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+}
+
+function removeLastRun() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
+  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+}
+
+function setupConcept() {
+  const container = document.getElementById('concept-activity');
+  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
+  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+}
+
+function checkScenario() {
+  const selected = document.querySelector('input[name="scenario-choice"]:checked');
+  const feedback = document.getElementById('scenario-feedback');
+  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
+  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
+  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
+  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
+  RadLab.save(); RadLab.progress.update();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  RadLab.init({ labId: 'lab-11', labTitle: "Lab 11 — Digital Receptors & Digital Resolution Lab", weekNumber: 11, rubric: { title: "Lab 11 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Digital receptor concepts","points":4},{"id":"c2","name":"Resolution simulation","points":5},{"id":"c3","name":"Calculations and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
+    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
+    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
+    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
+    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
+    {id:'sec-worksheet',label:'5 · Worksheet'}
+  ]});
+  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
+  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
+  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
+  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab11-rubric',title:"Lab 11 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Digital receptor concepts","points":4,"levels":[{"desc":"Correctly explains CR/DR pathways, sampling, pitch, and matrix."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Resolution simulation","points":5,"levels":[{"desc":"Tests multiple receptor/pixel/FOV conditions and interprets the pattern."},{"desc":"Uses the tool with limited interpretation."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":[{"desc":"Pixel/resolution calculations are correct and explained."},{"desc":"Mostly correct with limited explanation."},{"desc":"Missing or incorrect."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Receptor choice is linked to workflow and image quality."},{"desc":"Plausible but brief."},{"desc":"No defensible choice."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
+  setupConcept();
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+  }
+  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+  document.getElementById('record-run').addEventListener('click', recordRun);
+  document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const receptor = btn.dataset.receptor, pitch = btn.dataset.pitch, matrix = btn.dataset.matrix, fov = btn.dataset.fov;
+      if (document.getElementById('ctrl-receptor') && receptor !== undefined) document.getElementById('ctrl-receptor').value = receptor;
+      if (document.getElementById('ctrl-pitch') && pitch !== undefined) document.getElementById('ctrl-pitch').value = pitch;
+      if (document.getElementById('ctrl-matrix') && matrix !== undefined) document.getElementById('ctrl-matrix').value = matrix;
+      if (document.getElementById('ctrl-fov') && fov !== undefined) document.getElementById('ctrl-fov').value = fov;
+      renderSimulation();
+      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+    });
+  });
+
+  const savedScenario = RadLab.state.activities['clinical-scenario'];
+  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
+  renderSimulation(); renderRunLog(); RadLab.progress.update();
+});
+</script>
+</body>
+</html>

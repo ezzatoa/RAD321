@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 7: Geometric Distortion Lab — RAD 321</title>
+  <link rel="stylesheet" href="../../shared/lab-styles.css">
+  <style>
+  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
+  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
+  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to lab content</a>
+<header class="lab-topbar">
+  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 7 — Geometric Distortion Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
+  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 7 of 15</span></div></div>
+</header>
+<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+<main class="lab-container" id="main-content">
+  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 7 · Assessed laboratory assignment</div><h1>Geometric Distortion Lab</h1><p>Diagnose elongation, foreshortening, and shape distortion from alignment errors and off-centering. Directly aligned with: Sharpness &amp; Detail II — Distortion.</p></div></div>
+  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
+  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
+
+  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Define size, shape, and positional distortion.</li><li><span class="num">2</span>Relate part lateral offset, part tilt, OID, and SID to elongation and foreshortening.</li><li><span class="num">3</span>Predict the effect of off-center lateral displacement and part tilt under a perpendicular beam.</li><li><span class="num">4</span>Use a virtual alignment check to reduce distortion.</li><li><span class="num">5</span>Explain why anatomy-specific positioning criteria matter.</li></ul></div></section>
+  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Distortion is a misrepresentation of object size or shape. It occurs when the anatomical part is angled or displaced away from the perpendicular central ray. Foreshortening occurs when the anatomical part is tilted relative to the perpendicular beam. Elongation occurs when the part is displaced laterally into the divergent peripheral beam.</p><div class="formula-box"><b>Alignment goal:</b> anatomy centered over perpendicular CR and anatomy plane ∥ IR. Moving an object laterally away from the central ray exposes it to divergent oblique rays that physically elongate its recorded shadow.</div><p>Distortion is not simply “blur.” A sharp but distorted image may still fail the diagnostic criterion because anatomy is represented incorrectly.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
+
+  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
+    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict the image shape when the anatomy is tilted relative to the IR.</div><div class="procedure-step">Record an aligned baseline.</div><div class="procedure-step">Change only the part angle and record a second run.</div><div class="procedure-step">Change CR angle to test a projection-specific correction and record a third run.</div><div class="procedure-step">Compare shape factor and distortion index.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
+    <div class="card"><div class="experiment-layout"><div>
+    <div class="flex items-center justify-between" style="margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div class="flex gap-6">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-view-3d">3D Shadow Projector</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-view-classic">Classic Alignment Mode</button>
+      </div>
+      <div class="flex gap-6" style="flex-wrap:wrap;">
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="0" data-part="0">Baseline (0 cm, 0°)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="0" data-part="30">Symmetrical Shortening (0 cm, 30°)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="15" data-part="0">Elongation: Off-Center Right (+15 cm)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="-15" data-part="0">Elongation: Off-Center Left (-15 cm)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="15" data-part="30">Case 1: CW + Right (+15 cm, +30° -> Shorten)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="-15" data-part="30">Case 2: CW + Left (-15 cm, +30° -> Elongate)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="-15" data-part="-30">Case 3: CCW + Left (-15 cm, -30° -> Shorten)</button>
+        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="15" data-part="-30">Case 4: CCW + Right (+15 cm, -30° -> Elongate)</button>
+      </div>
+    </div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Geometric Distortion Lab" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
+    <div class="control-card">
+      <label for="ctrl-offset"><span>Part lateral offset</span><output id="out-offset" for="ctrl-offset">0 cm</output></label>
+      <input type="range" id="ctrl-offset" min="-20" max="20" step="1" value="0" aria-describedby="sim-caption">
+    </div>
+    <div class="control-card">
+      <label for="ctrl-part"><span>Part angle</span><output id="out-part" for="ctrl-part">0 °</output></label>
+      <input type="range" id="ctrl-part" min="-45" max="45" step="1" value="0" aria-describedby="sim-caption">
+    </div>
+    <div class="control-card">
+      <label for="ctrl-oid"><span>OID</span><output id="out-oid" for="ctrl-oid">15 cm</output></label>
+      <input type="range" id="ctrl-oid" min="5" max="35" step="1" value="15" aria-describedby="sim-caption">
+    </div>
+    <div class="control-card">
+      <label for="ctrl-sid"><span>SID</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
+      <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
+    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
+  </section>
+
+  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Distortion patterns</h3><p>Match each pattern to the alignment error that most likely produced it.</p><div id="concept-activity"></div></article></section>
+  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Positioning correction</h3><p>A long bone appears foreshortened because it was not aligned with the receptor. What is the first correction?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Restore the required anatomy-IR-CR alignment</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Increase mAs</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Use a larger focal spot</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Apply stronger digital contrast</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
+  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
+  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record one elongation and one foreshortening configuration from the simulator. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Explain the alignment relationship among the anatomy, IR, and CR for a routine projection. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Distinguish distortion from unsharpness. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: give one reason a projection may intentionally use an angled CR. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
+  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
+  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+</main>
+<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
+<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 7 of 15 · assessed virtual laboratory</footer>
+<script src="../../shared/lab-common.js"></script>
+<script src="../../shared/lab-models.js"></script>
+<script>
+const LAB = {"week":7,"title":"Geometric Distortion Lab","lecture":"Sharpness & Detail II — Distortion","type":"distortion","subtitle":"Diagnose elongation, foreshortening, and shape distortion from alignment errors and off-centering.","objectives":["Define size, shape, and positional distortion.","Relate part lateral offset, part tilt, OID, and SID to elongation and foreshortening.","Predict the effect of off-center lateral displacement and part tilt under a perpendicular beam.","Use a virtual alignment check to reduce distortion.","Explain why anatomy-specific positioning criteria matter."],"theory":"<p>Distortion is a misrepresentation of object size or shape. It occurs when the anatomical part is angled or displaced away from the perpendicular central ray. Foreshortening occurs when the anatomical part is tilted relative to the perpendicular beam. Elongation occurs when the part is displaced laterally into the divergent peripheral beam.</p><div class=\"formula-box\"><b>Alignment goal:</b> anatomy centered over perpendicular CR and anatomy plane ∥ IR. Moving an object laterally away from the central ray exposes it to divergent oblique rays that physically elongate its recorded shadow.</div><p>Distortion is not simply “blur.” A sharp but distorted image may still fail the diagnostic criterion because anatomy is represented incorrectly.</p>","controls":[{"id":"offset","label":"Part lateral offset","min":-20,"max":20,"step":1,"value":0,"unit":"cm"},{"id":"part","label":"Part angle","min":-45,"max":45,"step":1,"value":0,"unit":"°"},{"id":"oid","label":"OID","min":5,"max":35,"step":1,"value":15,"unit":"cm"},{"id":"sid","label":"SID","min":80,"max":180,"step":1,"value":100,"unit":"cm"}],"stations":[{"id":"alignment","title":"Station 1 — Alignment and shape","text":"Change one angle at a time, observe the virtual anatomy, and identify whether the image is elongated, foreshortened, or acceptably aligned.","kind":"main"},{"id":"patterns","title":"Station 2 — Distortion patterns","text":"Match each pattern to the alignment error that most likely produced it.","kind":"match","left":[["elong","Object appears longer than expected"],["short","Object appears shorter than expected"],["shape","Unequal magnification across anatomy"]],"right":[["cr","Part/IR relationship with CR mismatch"],["part","Part angle produces foreshortening"],["oid","Object plane not parallel to IR"]],"pairs":{"elong":"cr","short":"part","shape":"oid"}},{"id":"case","title":"Station 3 — Positioning correction","text":"A projection shows foreshortening and the anatomy is not parallel to the receptor. Choose the best correction.","kind":"case"}],"quiz":[{"prompt":"The best general method for minimizing unintended shape distortion is to:","options":["Increase mAs","Align the anatomy and IR correctly and use the required CR relationship","Increase OID","Use a larger focal spot"],"correct":1,"explain":"Distortion is primarily a geometry/alignment problem; exposure quantity does not correct shape."},{"prompt":"Unintended shape distortion is minimized by:","options":["Correct anatomy, IR, and CR alignment","Increasing mAs","Using a higher grid ratio","Increasing processing time"],"correct":0,"explain":"Shape representation depends on alignment geometry."},{"prompt":"Foreshortening means the object appears:","options":["Longer","Shorter","Noisier","Darker only"],"correct":1,"explain":"Foreshortening represents the object as shorter than its actual projected length."},{"prompt":"A sharp image can still be unacceptable if it is:","options":["Correctly identified","Distorted","Well collimated","Properly exposed"],"correct":1,"explain":"Sharpness does not guarantee correct shape or diagnostic positioning."}],"worksheet":[{"id":"q1","label":"1. Record one elongation and one foreshortening configuration from the simulator."},{"id":"q2","label":"2. Explain the alignment relationship among the anatomy, IR, and CR for a routine projection."},{"id":"q3","label":"3. Distinguish distortion from unsharpness."},{"id":"q4","label":"4. Critical thinking: give one reason a projection may intentionally use an angled CR."}],"rubric":[{"id":"c1","name":"Distortion concepts","points":4,"levels":["Accurately explains elongation, foreshortening, and shape distortion.","Mostly accurate with minor gaps.","Major misconception."]},{"id":"c2","name":"Alignment simulation","points":5,"levels":["Systematically changes one variable and interprets the result.","Uses the simulator with limited control.","Little meaningful investigation."]},{"id":"c3","name":"Pattern diagnosis and worksheet","points":5,"levels":["Correctly links patterns to alignment causes.","Some correct links with weak explanation.","Patterns or explanations are mostly incorrect."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Chooses a correction with positioning evidence.","Plausible but shallow.","No defensible correction."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict the image shape when the anatomy is tilted relative to the IR.","Record an aligned baseline.","Change only the part angle and record a second run.","Change CR angle to test a projection-specific correction and record a third run.","Compare shape factor and distortion index."],"scenario":{"prompt":"A long bone appears foreshortened because it was not aligned with the receptor. What is the first correction?","options":["Restore the required anatomy-IR-CR alignment","Increase mAs","Use a larger focal spot","Apply stronger digital contrast"],"correct":0,"explain":"Foreshortening is an alignment problem; exposure quantity and display processing do not correct shape."},"minimumRuns":3};
+const QUIZ_IDS = ["q7-1","q7-2","q7-3","q7-4"];
+const CONCEPT = LAB.stations[1];
+let currentResult = null;
+let currentViewMode = '3d-shadow';
+
+function controlValues() {
+  const values = {};
+  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  return values;
+}
+
+function settingSummary(values) {
+  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
+}
+
+function renderMetrics(result) {
+  const container = document.getElementById('sim-metrics');
+  RadLab.renderMetrics(container, result);
+}
+
+function renderSimulation() {
+  const values = controlValues();
+  values.viewMode = currentViewMode;
+  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+  currentResult = RadModels.compute(LAB.type, values);
+  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  renderMetrics(currentResult);
+  document.getElementById('sim-caption').textContent = currentResult.observation;
+}
+
+function experimentActivity() {
+  return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
+}
+
+function renderRunLog() {
+  const activity = experimentActivity();
+  const body = document.getElementById('run-log-body');
+  body.innerHTML = '';
+  if (!activity.runs.length) {
+    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+  } else {
+    activity.runs.forEach(function (run, index) {
+      const row = body.insertRow();
+      row.insertCell().textContent = String(index + 1);
+      row.insertCell().textContent = run.settings;
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.observation;
+    });
+  }
+  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+}
+
+function recordRun() {
+  const prediction = document.getElementById('w-prediction').value.trim();
+  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const values = controlValues();
+  const signature = JSON.stringify(values);
+  const activity = experimentActivity();
+  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
+  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  activity.runs.push(run);
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.maxScore = LAB.minimumRuns;
+  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.sound.playExposure();
+  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+}
+
+function removeLastRun() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
+  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+}
+
+function setupConcept() {
+  const container = document.getElementById('concept-activity');
+  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
+  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+}
+
+function checkScenario() {
+  const selected = document.querySelector('input[name="scenario-choice"]:checked');
+  const feedback = document.getElementById('scenario-feedback');
+  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
+  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
+  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
+  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
+  RadLab.save(); RadLab.progress.update();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  RadLab.init({ labId: 'lab-07', labTitle: "Lab 7 — Geometric Distortion Lab", weekNumber: 7, rubric: { title: "Lab 7 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Distortion concepts","points":4},{"id":"c2","name":"Alignment simulation","points":5},{"id":"c3","name":"Pattern diagnosis and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
+    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
+    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
+    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
+    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
+    {id:'sec-worksheet',label:'5 · Worksheet'}
+  ]});
+  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
+  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
+  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
+  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab7-rubric',title:"Lab 7 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Distortion concepts","points":4,"levels":[{"desc":"Accurately explains elongation, foreshortening, and shape distortion."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Alignment simulation","points":5,"levels":[{"desc":"Systematically changes one variable and interprets the result."},{"desc":"Uses the simulator with limited control."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Pattern diagnosis and worksheet","points":5,"levels":[{"desc":"Correctly links patterns to alignment causes."},{"desc":"Some correct links with weak explanation."},{"desc":"Patterns or explanations are mostly incorrect."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Chooses a correction with positioning evidence."},{"desc":"Plausible but shallow."},{"desc":"No defensible correction."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
+  setupConcept();
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+  }
+  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+  document.getElementById('record-run').addEventListener('click', recordRun);
+  document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+
+  const btn3d = document.getElementById('btn-view-3d');
+  const btnClassic = document.getElementById('btn-view-classic');
+  if (btn3d && btnClassic) {
+    btn3d.addEventListener('click', function () {
+      currentViewMode = '3d-shadow';
+      btn3d.className = 'btn btn-secondary btn-sm';
+      btnClassic.className = 'btn btn-ghost btn-sm';
+      renderSimulation();
+    });
+    btnClassic.addEventListener('click', function () {
+      currentViewMode = 'classic';
+      btnClassic.className = 'btn btn-secondary btn-sm';
+      btn3d.className = 'btn btn-ghost btn-sm';
+      renderSimulation();
+    });
+  }
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
+      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
+      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
+      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
+      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
+      renderSimulation();
+      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+    });
+  });
+
+  const savedScenario = RadLab.state.activities['clinical-scenario'];
+  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
+  renderSimulation(); renderRunLog(); RadLab.progress.update();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAD 321 — Department VPS Laboratory Management & AI Platform</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="shared/lab-styles.css">
+<style>
+  /* Base & Layout Enhancements */
+  .portal-nav-tabs {
+    display: flex; gap: 8px; margin: 18px 0; border-bottom: 2px solid var(--rad-border); padding-bottom: 8px; flex-wrap: wrap;
+  }
+  .portal-tab-btn {
+    background: transparent; border: none; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    color: var(--rad-text-soft); cursor: pointer; transition: all .15s ease; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .portal-tab-btn:hover { background: var(--rad-bg-soft); color: var(--rad-blue); }
+  .portal-tab-btn.active { background: var(--rad-navy); color: #ffffff; box-shadow: var(--rad-shadow); }
+
+  .user-badge-chip {
+    display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12); padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff;
+  }
+  .role-pill {
+    padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .role-pill.admin { background: #fee2e2; color: #991b1b; }
+  .role-pill.teacher { background: #e0f2fe; color: #0369a1; }
+  .role-pill.student { background: #dcfce7; color: #15803d; }
+
+  .hero-banner { position: relative; border-radius: var(--rad-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--rad-shadow-lg); }
+  .hero-banner img { width: 100%; height: 260px; object-fit: cover; }
+  .hero-banner .hero-overlay {
+    position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,37,69,0.95) 0%, rgba(11,37,69,0.7) 60%, rgba(11,37,69,0.15) 100%);
+    display: flex; flex-direction: column; justify-content: center; padding: 0 40px; color: #fff; max-width: 720px;
+  }
+  .hero-overlay .eyebrow { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #7fe0d6; font-weight: 800; }
+  .hero-overlay h1 { font-size: 28px; margin: 6px 0 10px; line-height: 1.25; }
+  .hero-overlay p { font-size: 14.5px; opacity: 0.92; margin: 0; }
+
+  .lab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 1024px) { .lab-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .lab-grid { grid-template-columns: 1fr; } }
+
+  .lab-tile {
+    background: #fff; border: 1px solid var(--rad-border); border-radius: var(--rad-radius);
+    padding: 18px; box-shadow: var(--rad-shadow); display: flex; flex-direction: column; gap: 8px;
+    position: relative; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .lab-tile:hover { transform: translateY(-3px); box-shadow: var(--rad-shadow-lg); }
+  .lab-tile.status-graded { border-top: 4px solid var(--rad-green); }
+  .lab-tile.status-submitted { border-top: 4px solid var(--rad-teal); }
+  .lab-tile.status-in_progress { border-top: 4px solid var(--rad-amber); }
+  .lab-tile.status-not_started { border-top: 4px solid var(--rad-border); }
+
+  .lab-week { font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--rad-text-faint); }
+  .lab-tile h3 { margin: 2px 0 4px; font-size: 16px; color: var(--rad-navy); line-height: 1.3; }
+  .lab-tile p.desc { font-size: 13px; color: var(--rad-text-soft); margin: 0; flex-grow: 1; }
+  .lab-tile .tile-actions { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  @media (max-width: 860px) { .stat-strip { grid-template-columns: 1fr 1fr; } }
+  .stat-card { background: #fff; border: 1px solid var(--rad-border); border-radius: var(--rad-radius-sm); padding: 16px; text-align: center; }
+  .stat-card .num { font-size: 24px; font-weight: 800; color: var(--rad-teal); font-family: var(--font-mono); }
+  .stat-card .lbl { font-size: 12px; color: var(--rad-text-faint); margin-top: 2px; }
+
+  .table-responsive { width: 100%; overflow-x: auto; margin-top: 12px; border: 1px solid var(--rad-border); border-radius: 8px; }
+  .table-portal { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .table-portal th { background: var(--rad-navy); color: #fff; text-align: left; padding: 10px 14px; font-weight: 700; white-space: nowrap; }
+  .table-portal td { padding: 10px 14px; border-bottom: 1px solid var(--rad-border); vertical-align: middle; }
+  .table-portal tr:nth-child(even) td { background: var(--rad-bg-soft); }
+  .table-portal tr:hover td { background: rgba(14, 124, 134, 0.08); }
+
+  /* Modal System */
+  .portal-modal-backdrop {
+    position: fixed; inset: 0; background: rgba(11,37,69,0.7); backdrop-filter: blur(4px);
+    z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .portal-modal {
+    background: #ffffff; border-radius: var(--rad-radius); width: 100%; max-width: 780px; max-height: 90vh;
+    overflow-y: auto; box-shadow: var(--rad-shadow-lg); padding: 28px; position: relative; border: 1px solid var(--rad-border);
+  }
+  [data-theme="dark"] .portal-modal { background: #0e1726; color: #f1f5f9; }
+
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .form-grid-2 { grid-template-columns: 1fr; } }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 800; color: var(--rad-blue); margin-bottom: 4px; text-transform: uppercase; }
+  [data-theme="dark"] .form-group label { color: #93c5fd; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--rad-border); border-radius: 8px; font-size: 13.5px;
+    background: #fff; color: var(--rad-text); font-family: inherit;
+  }
+  [data-theme="dark"] .form-group input, [data-theme="dark"] .form-group select, [data-theme="dark"] .form-group textarea {
+    background: #1e293b; color: #fff; border-color: #334155;
+  }
+
+  .quick-pill { cursor: pointer; padding: 4px 10px; border-radius: 6px; background: #e2e8f0; font-size: 11px; font-weight: 700; margin-right: 6px; }
+  .quick-pill:hover { background: #cbd5e1; }
+
+  .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+  @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } }
+  .cohort-card { border-radius: 12px; padding: 20px; border: 1px solid var(--rad-border); background: #fff; }
+  [data-theme="dark"] .cohort-card { background: #131d2e; }
+  .cohort-card.male { border-top: 4px solid #0284c7; }
+  .cohort-card.female { border-top: 4px solid #ec4899; }
+
+  .btn-delete-chip {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .btn-delete-chip:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #dc2626;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-edit-chip {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .btn-edit-chip:hover {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0369a1;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+  }
+
+  .btn-clear-bar {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all .15s ease;
+  }
+  .btn-clear-bar:hover {
+    background: #dc2626;
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<header class="lab-topbar">
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">Diagnostic Radiology Technology · Taibah University</div>
+        <div class="lab-title">RAD 321 — Department VPS Laboratory Platform</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions" id="topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <div id="auth-actions-wrap" class="flex gap-8 items-center">
+        <button class="topbar-pill-btn" id="btn-show-login" type="button"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+        <button class="btn btn-teal btn-sm" id="btn-show-register" type="button"><i class="fa-solid fa-user-plus"></i> Self-Register</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="lab-container">
+
+  <!-- Dynamic Welcome / Mode Navigation Bar -->
+  <div class="portal-nav-tabs" id="portal-nav-bar" style="display:none;">
+    <button class="portal-tab-btn active" data-tab="student-view" id="tab-btn-student"><i class="fa-solid fa-graduation-cap"></i> Student Dashboard</button>
+    <button class="portal-tab-btn" data-tab="teacher-view" id="tab-btn-teacher" style="display:none;"><i class="fa-solid fa-chalkboard-user"></i> Teacher Mode</button>
+    <button class="portal-tab-btn" data-tab="admin-view" id="tab-btn-admin" style="display:none;"><i class="fa-solid fa-shield-halved"></i> Admin Console</button>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- TAB 1: STUDENT VIEW                                                 -->
+  <!-- =================================================================== -->
+  <div id="tab-student-view" class="portal-tab-content">
+    <div class="hero-banner">
+      <img src="shared/assets/img/hero-banner.jpg" alt="Radiography imaging suite illustration">
+      <div class="hero-overlay">
+        <div class="eyebrow">15 Weekly Labs · Department Virtual PACS Suite</div>
+        <h1 id="student-hero-title">RAD 321: Image Recording &amp; Analysis</h1>
+        <p id="student-hero-desc">Interactive physics simulations, PACS workstation critique tools, automated 20-point rubrics, and Gemini Flash 3.7 AI assessment.</p>
+      </div>
+    </div>
+
+    <!-- Student Stats -->
+    <div class="stat-strip">
+      <div class="stat-card"><div class="num" id="stat-completed-labs">0 / 15</div><div class="lbl">Completed Labs</div></div>
+      <div class="stat-card"><div class="num" id="stat-contact-hours">0 / 30 hrs</div><div class="lbl">Contact Hours</div></div>
+      <div class="stat-card"><div class="num" id="stat-avg-score">-- / 20</div><div class="lbl">Average Lab Score</div></div>
+      <div class="stat-card"><div class="num" id="stat-gpa">-- %</div><div class="lbl">Course Progress</div></div>
+    </div>
+
+    <!-- Announcements Inbox for Student -->
+    <div id="student-announcements-wrap" class="card" style="display:none; border-left:4px solid var(--rad-teal); margin-bottom:24px;">
+      <h3 style="margin-top:0;color:var(--rad-navy);"><i class="fa-solid fa-bullhorn"></i> Section Announcements</h3>
+      <div id="student-announcements-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+    </div>
+
+    <div class="flex justify-between items-center" style="margin-bottom:16px;">
+      <div>
+        <h2 style="color:var(--rad-navy); margin:0;">Weekly Laboratory Modules</h2>
+        <p class="muted small" style="margin:2px 0 0;">Each lab aligns 1:1 with the 15-week lecture curriculum. Conduct virtual exposures, download datasets, and submit assignments.</p>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-export-personal-report" style="display:none;"><i class="fa-solid fa-file-pdf"></i> Download My Progress Report</button>
+    </div>
+
+    <div class="lab-grid" id="student-lab-grid">
+      <!-- Generated dynamically -->
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- TAB 2: TEACHER MODE VIEW                                            -->
+  <!-- =================================================================== -->
+  <div id="tab-teacher-view" class="portal-tab-content" style="display:none;">
+    <div class="card" style="background:linear-gradient(135deg,#0b2545,#13315c);color:#fff;margin-bottom:24px;border-radius:var(--rad-radius);">
+      <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7fe0d6;font-weight:700;">Teacher &amp; Faculty Command Center</div>
+          <h2 style="margin:4px 0;color:#fff;font-size:24px;">RAD 321 Laboratory Course Management</h2>
+          <p style="margin:0;font-size:13.5px;opacity:0.9;">Manage student sections, conduct live classroom simulations, review submissions, and run Gemini Flash 3.7 AI evaluations.</p>
+        </div>
+        <div class="flex gap-8">
+          <button class="btn btn-teal btn-sm" id="btn-batch-ai-grade"><i class="fa-solid fa-wand-magic-sparkles"></i> Batch Grade with Gemini Flash 3.7</button>
+          <a class="btn btn-secondary btn-sm" href="/api/teacher/reports/export-csv" target="_blank"><i class="fa-solid fa-file-excel"></i> Export Gradebook CSV</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher KPI Bar -->
+    <div class="stat-strip">
+      <div class="stat-card"><div class="num" id="teacher-stat-sections">0</div><div class="lbl">Active Sections</div></div>
+      <div class="stat-card"><div class="num" id="teacher-stat-students">0</div><div class="lbl">Enrolled Students</div></div>
+      <div class="stat-card"><div class="num" id="teacher-stat-pending" style="color:var(--rad-amber);">0</div><div class="lbl">Pending Submissions</div></div>
+      <div class="stat-card"><div class="num" id="teacher-stat-graded" style="color:var(--rad-green);">0</div><div class="lbl">Graded Submissions</div></div>
+    </div>
+
+    <!-- Teacher Inner Tabs -->
+    <div class="portal-nav-tabs">
+      <button class="portal-tab-btn active" data-subtab="t-sections">📁 Sections &amp; Groups</button>
+      <button class="portal-tab-btn" data-subtab="t-teaching">🔬 Live Teaching Mode</button>
+      <button class="portal-tab-btn" data-subtab="t-grading">📝 Submissions &amp; AI Grading</button>
+      <button class="portal-tab-btn" data-subtab="t-analytics">📊 Analytics &amp; Reports (Class / Gender)</button>
+    </div>
+
+    <!-- Subtab: Sections & Groups -->
+    <div id="subtab-t-sections" class="teacher-subtab-content">
+      <div class="flex justify-between items-center" style="margin-bottom:14px;">
+        <h3 style="margin:0;color:var(--rad-navy);">Department Section Groupings</h3>
+        <button class="btn btn-primary btn-sm" id="btn-create-section-modal"><i class="fa-solid fa-plus"></i> Create New Section</button>
+      </div>
+      <div class="lab-grid" id="teacher-sections-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;"></div>
+
+      <div class="card" id="section-roster-wrap" style="display:none;">
+        <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0;color:var(--rad-navy);" id="section-roster-title">Section Roster</h3>
+            <p class="muted small" style="margin:2px 0 0;" id="section-roster-sub">Students assigned to this section</p>
+          </div>
+          <div class="flex gap-8">
+            <button class="btn btn-teal btn-sm" id="btn-broadcast-section"><i class="fa-solid fa-envelope"></i> Message / Email Section</button>
+            <button class="btn btn-secondary btn-sm" id="btn-add-students-to-sec"><i class="fa-solid fa-user-plus"></i> Assign Students</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table-portal">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Class Year</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="section-roster-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtab: Live Teaching Mode -->
+    <div id="subtab-t-teaching" class="teacher-subtab-content" style="display:none;">
+      <div class="card" style="border-left:4px solid var(--rad-teal); margin-bottom:20px;">
+        <h3 style="margin-top:0;color:var(--rad-navy);"><i class="fa-solid fa-chalkboard-user"></i> Live Classroom Demonstration Mode</h3>
+        <p class="muted small" style="margin:0;">Launch any laboratory in Teaching Mode to access instructor guide sidebars, parameter presets, physics solution keys, and live demonstration tools.</p>
+      </div>
+      <div class="lab-grid" id="teacher-live-labs-grid"></div>
+    </div>
+
+    <!-- Subtab: Submissions & AI Grading -->
+    <div id="subtab-t-grading" class="teacher-subtab-content" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="flex gap-12 items-center" style="flex-wrap:wrap;">
+          <div style="flex-grow:1;min-width:200px;">
+            <label class="field-label" style="font-size:11px;font-weight:700;">Filter by Lab Module</label>
+            <select id="filter-grade-lab" style="width:100%;padding:7px;border-radius:6px;border:1px solid var(--rad-border);">
+              <option value="">All 15 Labs</option>
+            </select>
+          </div>
+          <div style="min-width:160px;">
+            <label class="field-label" style="font-size:11px;font-weight:700;">Filter by Section</label>
+            <select id="filter-grade-sec" style="width:100%;padding:7px;border-radius:6px;border:1px solid var(--rad-border);">
+              <option value="">All Sections</option>
+            </select>
+          </div>
+          <div style="min-width:140px;">
+            <label class="field-label" style="font-size:11px;font-weight:700;">Filter by Gender</label>
+            <select id="filter-grade-gender" style="width:100%;padding:7px;border-radius:6px;border:1px solid var(--rad-border);">
+              <option value="">All Genders</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div style="min-width:140px;">
+            <label class="field-label" style="font-size:11px;font-weight:700;">Status</label>
+            <select id="filter-grade-status" style="width:100%;padding:7px;border-radius:6px;border:1px solid var(--rad-border);">
+              <option value="">All Statuses</option>
+              <option value="submitted">Submitted (Needs Grade)</option>
+              <option value="graded">Graded</option>
+              <option value="in_progress">In Progress</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-submissions" style="margin-top:18px;"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table-portal">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Lab</th>
+              <th>Section</th>
+              <th>Gender</th>
+              <th>Status</th>
+              <th>Score (/20)</th>
+              <th>Attachments</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="submissions-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtab: Analytics & Reports -->
+    <div id="subtab-t-analytics" class="teacher-subtab-content" style="display:none;">
+      <div class="flex justify-between items-center" style="margin-bottom:16px;">
+        <div>
+          <h3 style="margin:0;color:var(--rad-navy);">Multi-Dimensional Course Performance Analytics</h3>
+          <p class="muted small" style="margin:2px 0 0;">Comparative analysis across Sections, Cohorts, and Gender distributions.</p>
+        </div>
+      </div>
+
+      <!-- Gender Comparative Cards -->
+      <div class="comparison-grid">
+        <div class="cohort-card male" id="cohort-male-card">
+          <div class="flex justify-between items-center">
+            <h4 style="margin:0;color:#0284c7;font-size:16px;"><i class="fa-solid fa-mars"></i> Male Cohort Performance</h4>
+            <span class="badge" style="background:#e0f2fe;color:#0369a1;" id="male-headcount">0 Students</span>
+          </div>
+          <div class="stat-strip" style="grid-template-columns:repeat(3,1fr);margin:14px 0 10px;">
+            <div class="stat-card" style="padding:10px;"><div class="num" id="male-avg-score" style="font-size:20px;">--</div><div class="lbl">Avg Score (/20)</div></div>
+            <div class="stat-card" style="padding:10px;"><div class="num" id="male-pass-rate" style="font-size:20px;">--%</div><div class="lbl">Pass Rate (≥60%)</div></div>
+            <div class="stat-card" style="padding:10px;"><div class="num" id="male-dist-rate" style="font-size:20px;">--%</div><div class="lbl">Distinction (≥90%)</div></div>
+          </div>
+          <div style="font-size:12.5px;color:var(--rad-text-soft);" id="male-rubric-summary"></div>
+        </div>
+
+        <div class="cohort-card female" id="cohort-female-card">
+          <div class="flex justify-between items-center">
+            <h4 style="margin:0;color:#ec4899;font-size:16px;"><i class="fa-solid fa-venus"></i> Female Cohort Performance</h4>
+            <span class="badge" style="background:#fce7f3;color:#be185d;" id="female-headcount">0 Students</span>
+          </div>
+          <div class="stat-strip" style="grid-template-columns:repeat(3,1fr);margin:14px 0 10px;">
+            <div class="stat-card" style="padding:10px;"><div class="num" id="female-avg-score" style="font-size:20px;color:#ec4899;">--</div><div class="lbl">Avg Score (/20)</div></div>
+            <div class="stat-card" style="padding:10px;"><div class="num" id="female-pass-rate" style="font-size:20px;color:#ec4899;">--%</div><div class="lbl">Pass Rate (≥60%)</div></div>
+            <div class="stat-card" style="padding:10px;"><div class="num" id="female-dist-rate" style="font-size:20px;color:#ec4899;">--%</div><div class="lbl">Distinction (≥90%)</div></div>
+          </div>
+          <div style="font-size:12.5px;color:var(--rad-text-soft);" id="female-rubric-summary"></div>
+        </div>
+      </div>
+
+      <!-- Section Comparison Table -->
+      <h4 style="color:var(--rad-navy);margin:24px 0 8px;">Section-by-Section Distribution</h4>
+      <div class="table-responsive">
+        <table class="table-portal">
+          <thead>
+            <tr>
+              <th>Section Name</th>
+              <th>Code</th>
+              <th>Target Cohort</th>
+              <th>Enrolled</th>
+              <th>Average Score (/20)</th>
+              <th>Completion Rate</th>
+              <th>Pass Rate</th>
+              <th>Report Actions</th>
+            </tr>
+          </thead>
+          <tbody id="section-analytics-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- TAB 3: ADMIN CONSOLE VIEW                                           -->
+  <!-- =================================================================== -->
+  <div id="tab-admin-view" class="portal-tab-content" style="display:none;">
+    <div class="card" style="background:linear-gradient(135deg,#1e1b4b,#312e81);color:#fff;margin-bottom:24px;border-radius:var(--rad-radius);">
+      <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#a5b4fc;font-weight:700;">Department Super-Administrator</div>
+          <h2 style="margin:4px 0;color:#fff;font-size:24px;">Platform Governance &amp; Registration Control</h2>
+          <p style="margin:0;font-size:13.5px;opacity:0.9;">Approve student self-registrations, dispatch activation tokens, configure Gemini Flash 3.7 API keys, and monitor system health.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin KPI Bar -->
+    <div class="stat-strip">
+      <div class="stat-card"><div class="num" id="admin-stat-pending" style="color:var(--rad-red);">0</div><div class="lbl">Pending Approvals</div></div>
+      <div class="stat-card"><div class="num" id="admin-stat-users">0</div><div class="lbl">Total Users</div></div>
+      <div class="stat-card"><div class="num" id="admin-stat-sections">0</div><div class="lbl">Active Sections</div></div>
+      <div class="stat-card"><div class="num" id="admin-stat-graded" style="color:var(--rad-green);">0</div><div class="lbl">Graded Submissions</div></div>
+    </div>
+
+    <!-- Admin Inner Tabs -->
+    <div class="portal-nav-tabs">
+      <button class="portal-tab-btn active" data-subtab="a-approvals">📬 Registration Approvals (<span id="admin-approvals-badge">0</span>)</button>
+      <button class="portal-tab-btn" data-subtab="a-users">👥 User Directory</button>
+      <button class="portal-tab-btn" data-subtab="a-settings">⚙ System &amp; AI Settings</button>
+      <button class="portal-tab-btn" data-subtab="a-outbox">📨 Email Outbox Queue</button>
+      <button class="portal-tab-btn" data-subtab="a-logs">📜 Audit Logs</button>
+    </div>
+
+    <!-- Subtab: Approvals Queue -->
+    <div id="subtab-a-approvals" class="admin-subtab-content">
+      <div class="flex justify-between items-center" style="margin-bottom:12px;">
+        <div>
+          <h3 style="margin:0;color:var(--rad-navy);">Student Self-Registration Approval Queue</h3>
+          <p class="muted small" style="margin:2px 0 0;">Review applicant details. Approving a student automatically generates a secure one-time activation token and dispatches an email link.</p>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table-portal">
+          <thead>
+            <tr>
+              <th>Applied Date</th>
+              <th>Student ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Gender</th>
+              <th>Target Section</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="approvals-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtab: User Directory -->
+    <div id="subtab-a-users" class="admin-subtab-content" style="display:none;">
+      <div class="flex justify-between items-center" style="margin-bottom:14px;">
+        <h3 style="margin:0;color:var(--rad-navy);">User Accounts</h3>
+        <button class="btn btn-primary btn-sm" id="btn-create-user-modal"><i class="fa-solid fa-user-plus"></i> Create User</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table-portal">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Student ID</th>
+              <th>Role</th>
+              <th>Gender</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Last Login</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtab: System & AI Settings -->
+    <div id="subtab-a-settings" class="admin-subtab-content" style="display:none;">
+      <div class="card">
+        <h3 style="margin-top:0;color:var(--rad-navy);"><i class="fa-solid fa-microchip"></i> Google Gemini AI Grading Configuration</h3>
+        <p class="muted small">Configures automated rubric evaluation for student submissions.</p>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="setting-gemini-key">Gemini API Key</label>
+            <input type="password" id="setting-gemini-key" placeholder="AIzaSy...">
+            <small class="muted">Leave blank to use server environment variable or deterministic grading engine.</small>
+          </div>
+          <div class="form-group">
+            <label for="setting-gemini-model">Gemini Model</label>
+            <select id="setting-gemini-model">
+              <option value="gemini-3.7-flash">gemini-3.7-flash (Recommended / Fast Multimodal)</option>
+              <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (High throughput)</option>
+              <option value="gemini-2.5-pro">gemini-2.5-pro (Deep reasoning)</option>
+              <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:24px;"><i class="fa-solid fa-server"></i> SMTP Mail Server Configuration</h3>
+        <p class="muted small">Configures email dispatch for activation tokens and section announcements.</p>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="setting-smtp-host">SMTP Host</label>
+            <input type="text" id="setting-smtp-host" placeholder="smtp.office365.com or smtp.gmail.com">
+          </div>
+          <div class="form-group">
+            <label for="setting-smtp-port">SMTP Port</label>
+            <input type="number" id="setting-smtp-port" value="587">
+          </div>
+          <div class="form-group">
+            <label for="setting-smtp-user">SMTP Username / Email</label>
+            <input type="text" id="setting-smtp-user" placeholder="noreply@taibahu.edu.sa">
+          </div>
+          <div class="form-group">
+            <label for="setting-smtp-pass">SMTP Password</label>
+            <input type="password" id="setting-smtp-pass" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label for="setting-smtp-from">Sender Address (From)</label>
+            <input type="text" id="setting-smtp-from" value="RAD 321 Lab Portal &lt;noreply@taibahu.edu.sa&gt;">
+          </div>
+          <div class="form-group">
+            <label for="setting-app-url">Department VPS Base URL</label>
+            <input type="text" id="setting-app-url" value="http://localhost:3000">
+          </div>
+        </div>
+
+        <div class="flex gap-12" style="margin-top:16px;">
+          <button class="btn btn-primary" id="btn-save-settings">Save System Settings</button>
+          <button class="btn btn-secondary" id="btn-test-smtp">Send Test Email</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtab: Outbox Email Queue -->
+    <div id="subtab-a-outbox" class="admin-subtab-content" style="display:none;">
+      <div class="flex justify-between items-center" style="margin-bottom:12px;">
+        <div>
+          <h3 style="margin:0;color:var(--rad-navy);">Outbox Email &amp; Token Dispatch Queue</h3>
+          <p class="muted small" style="margin:2px 0 0;">All emails dispatched by the VPS are logged here. You can directly inspect one-time token activation links during offline testing.</p>
+        </div>
+        <button class="btn-clear-bar" id="btn-clear-outbox">🗑 Clear All Outbox</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table-portal">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Recipient</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>One-Time Activation Link</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="outbox-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subtab: Audit Logs -->
+    <div id="subtab-a-logs" class="admin-subtab-content" style="display:none;">
+      <div class="flex justify-between items-center" style="margin-bottom:12px;">
+        <div>
+          <h3 style="margin:0;color:var(--rad-navy);">Platform Security &amp; Activity Audit Logs</h3>
+          <p class="muted small" style="margin:2px 0 0;">Timestamped records of administrative actions, user approvals, deletions, and submissions.</p>
+        </div>
+        <button class="btn-clear-bar" id="btn-clear-audit-logs">🗑 Clear All Logs</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table-portal">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Details</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="audit-logs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =================================================================== -->
+<!-- MODALS                                                              -->
+<!-- =================================================================== -->
+
+<!-- 1. LOGIN MODAL -->
+<div class="portal-modal-backdrop" id="modal-login" style="display:none;">
+  <div class="portal-modal" style="max-width:440px;">
+    <div class="flex justify-between items-center" style="margin-bottom:18px;">
+      <h3 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-right-to-bracket"></i> Portal Login</h3>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <span class="muted small">Quick-fill Demo Accounts:</span><br>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+        <span class="quick-pill" onclick="quickFillLogin('ezzatoa@gmail.com', 'Admin@123456')">Admin (Ezzat)</span>
+        <span class="quick-pill" onclick="quickFillLogin('instructor@taibahu.edu.sa', 'Teacher@123456')">Teacher</span>
+        <span class="quick-pill" onclick="quickFillLogin('ahmed.harbi@student.taibahu.edu.sa', 'Student@123456')">Student (Ahmed)</span>
+        <span class="quick-pill" onclick="quickFillLogin('sara.alghamdi@student.taibahu.edu.sa', 'Student@123456')">Student (Sara)</span>
+      </div>
+    </div>
+
+    <form id="form-login">
+      <div class="form-group">
+        <label for="login-email">Email Address</label>
+        <input type="email" id="login-email" required placeholder="ezzatoa@gmail.com">
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">Sign In to Laboratory Suite</button>
+    </form>
+  </div>
+</div>
+
+<!-- 2. REGISTRATION MODAL -->
+<div class="portal-modal-backdrop" id="modal-register" style="display:none;">
+  <div class="portal-modal" style="max-width:540px;">
+    <div class="flex justify-between items-center" style="margin-bottom:18px;">
+      <div>
+        <h3 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-user-plus"></i> Student Self-Registration</h3>
+        <p class="muted small" style="margin:2px 0 0;">Diagnostic Radiology Technology · RAD 321</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <form id="form-register">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="reg-name">Full Name *</label>
+          <input type="text" id="reg-name" required placeholder="e.g. Mohammed Al-Harbi">
+        </div>
+        <div class="form-group">
+          <label for="reg-student-id">Student ID *</label>
+          <input type="text" id="reg-student-id" required placeholder="441012345">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reg-email">University Email *</label>
+        <input type="email" id="reg-email" required placeholder="student@student.taibahu.edu.sa">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="reg-gender">Gender *</label>
+          <select id="reg-gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-class">Class Year</label>
+          <input type="text" id="reg-class" value="Year 3 - Cohort 2026">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reg-section">Target Section Preference</label>
+        <select id="reg-section">
+          <option value="">-- Select Section --</option>
+        </select>
+      </div>
+
+      <div style="background:#eef8f7;border-left:4px solid var(--rad-teal);padding:10px 14px;border-radius:6px;font-size:12.5px;margin:12px 0;">
+        <b>Registration Approval Notice:</b> Once submitted, the department administrator will verify your enrollment. Upon approval, a one-time activation token will be emailed to your account.
+      </div>
+
+      <button type="submit" class="btn btn-teal" style="width:100%;">Submit Registration Application</button>
+    </form>
+  </div>
+</div>
+
+<!-- 3. ACTIVATION & PASSWORD SETUP MODAL -->
+<div class="portal-modal-backdrop" id="modal-activate" style="display:none;">
+  <div class="portal-modal" style="max-width:460px;">
+    <div class="flex justify-between items-center" style="margin-bottom:18px;">
+      <div>
+        <h3 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-key"></i> Account Activation</h3>
+        <p class="muted small" style="margin:2px 0 0;">Establish your secure password</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <form id="form-activate">
+      <div class="form-group">
+        <label for="act-token">One-Time Activation Token</label>
+        <input type="text" id="act-token" required readonly style="background:#f1f5f9;">
+      </div>
+      <div class="form-group">
+        <label for="act-password">Create New Password *</label>
+        <input type="password" id="act-password" required minlength="6" placeholder="At least 6 characters">
+      </div>
+      <div class="form-group">
+        <label for="act-password-confirm">Confirm Password *</label>
+        <input type="password" id="act-password-confirm" required minlength="6" placeholder="Repeat password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Activate Account &amp; Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- 4. SUBMISSION INSPECTOR & GRADING MODAL -->
+<div class="portal-modal-backdrop" id="modal-inspect-submission" style="display:none;">
+  <div class="portal-modal" style="max-width:880px;">
+    <div class="flex justify-between items-center" style="margin-bottom:16px;">
+      <div>
+        <h3 style="margin:0;color:var(--rad-navy);" id="inspect-title">Submission Inspection &amp; Grading</h3>
+        <p class="muted small" style="margin:2px 0 0;" id="inspect-student-meta">Student Details</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <div id="inspect-content-body"></div>
+  </div>
+</div>
+
+<!-- 5. SECTION BROADCAST MODAL -->
+<div class="portal-modal-backdrop" id="modal-broadcast" style="display:none;">
+  <div class="portal-modal" style="max-width:540px;">
+    <div class="flex justify-between items-center" style="margin-bottom:18px;">
+      <div>
+        <h3 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-bullhorn"></i> Broadcast Section Message</h3>
+        <p class="muted small" id="broadcast-sec-name">Post announcement and email students</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <form id="form-broadcast">
+      <input type="hidden" id="broadcast-section-id">
+      <div class="form-group">
+        <label for="broadcast-subject">Announcement Subject *</label>
+        <input type="text" id="broadcast-subject" required placeholder="e.g. Lab 03 Preparation & Safety Guidelines">
+      </div>
+      <div class="form-group">
+        <label for="broadcast-body">Message Body *</label>
+        <textarea id="broadcast-body" rows="5" required placeholder="Type your message to the section..."></textarea>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-weight:600;">
+          <input type="checkbox" id="broadcast-send-email" checked style="width:auto;">
+          Also dispatch email to all enrolled active students in this section
+        </label>
+      </div>
+      <button type="submit" class="btn btn-teal" style="width:100%;">Post Announcement</button>
+    </form>
+  </div>
+</div>
+
+<!-- 6. EDIT USER MODAL -->
+<div class="portal-modal-backdrop" id="modal-edit-user" style="display:none;">
+  <div class="portal-modal" style="max-width:580px;">
+    <div class="flex justify-between items-center" style="margin-bottom:18px;">
+      <div>
+        <h3 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-user-pen"></i> Edit User Information</h3>
+        <p class="muted small" style="margin:2px 0 0;" id="edit-user-subhead">Update profile and account details</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <form id="form-edit-user">
+      <input type="hidden" id="edit-user-id">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="edit-user-name">Full Name *</label>
+          <input type="text" id="edit-user-name" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-user-student-id">Student ID</label>
+          <input type="text" id="edit-user-student-id" placeholder="Optional for staff">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="edit-user-email">Email Address *</label>
+        <input type="email" id="edit-user-email" required>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="edit-user-role">Account Role *</label>
+          <select id="edit-user-role" required>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher / Instructor</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-user-gender">Gender *</label>
+          <select id="edit-user-gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="edit-user-class-year">Class Year / Designation</label>
+          <input type="text" id="edit-user-class-year" placeholder="e.g. Year 3, Faculty">
+        </div>
+        <div class="form-group">
+          <label for="edit-user-status">Account Status *</label>
+          <select id="edit-user-status" required>
+            <option value="active">Active</option>
+            <option value="pending">Pending Approval</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="edit-user-section">Assigned Section</label>
+        <select id="edit-user-section">
+          <option value="">-- Unassigned / None --</option>
+        </select>
+      </div>
+      <div class="form-group" style="background:var(--rad-bg-soft);padding:12px;border-radius:8px;border:1px solid var(--rad-border);">
+        <label for="edit-user-password" style="color:var(--rad-navy);">Reset Password (Optional)</label>
+        <input type="password" id="edit-user-password" placeholder="Leave blank to keep existing password" minlength="6">
+        <small class="muted">Only fill this if you wish to override the user's current password.</small>
+      </div>
+      <div class="flex gap-8 justify-end" style="margin-top:16px;">
+        <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 7. CREATE USER MODAL -->
+<div class="portal-modal-backdrop" id="modal-create-user" style="display:none;">
+  <div class="portal-modal" style="max-width:580px;">
+    <div class="flex justify-between items-center" style="margin-bottom:18px;">
+      <div>
+        <h3 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-user-plus"></i> Create New User Account</h3>
+        <p class="muted small" style="margin:2px 0 0;">Provision account directly</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm modal-close-btn" style="font-size:18px;">✕</button>
+    </div>
+
+    <form id="form-create-user">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="create-user-name">Full Name *</label>
+          <input type="text" id="create-user-name" required placeholder="e.g. Dr. Rayan Al-Harbi">
+        </div>
+        <div class="form-group">
+          <label for="create-user-student-id">Student / Staff ID</label>
+          <input type="text" id="create-user-student-id" placeholder="e.g. 441009988">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="create-user-email">Email Address *</label>
+        <input type="email" id="create-user-email" required placeholder="user@taibahu.edu.sa">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="create-user-role">Account Role *</label>
+          <select id="create-user-role" required>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher / Instructor</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="create-user-gender">Gender *</label>
+          <select id="create-user-gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="create-user-class-year">Class Year / Cohort</label>
+          <input type="text" id="create-user-class-year" value="Year 3 - Cohort 2026">
+        </div>
+        <div class="form-group">
+          <label for="create-user-status">Initial Status *</label>
+          <select id="create-user-status" required>
+            <option value="active">Active (Immediate Access)</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="create-user-section">Assigned Section</label>
+        <select id="create-user-section">
+          <option value="">-- Unassigned / None --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="create-user-password">Initial Password *</label>
+        <input type="password" id="create-user-password" required minlength="6" placeholder="At least 6 characters">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">Create User Account</button>
+    </form>
+  </div>
+</div>
+
+<script src="shared/lab-common.js"></script>
+<script src="app-portal.js"></script>
+</body>
+</html>

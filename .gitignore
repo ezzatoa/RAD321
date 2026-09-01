@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# SQLite Database runtime data
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-wal
+*.db-shm
+server/db/*.sqlite
+server/db/*.db
+
+# Uploaded Files & Attachments (preserve folder)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Large External Course Assets (PDFs, Office Docs, Archive)
+lectures/
+reports/
+references/
+assessment/
+archive/
+RAD321-Future-Syllabus/
+RAD321-genspark/
+*.pdf
+*.pptx
+*.docx
+*.xlsx
+*.url
+
+# Logs & Temporary Files
+*.log
+logs/
+tmp/
+.temp/
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+desktop.ini

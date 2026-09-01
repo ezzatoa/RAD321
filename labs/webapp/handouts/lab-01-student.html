@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 1 Student Handout — RAD 321</title>
+<link rel="stylesheet" href="../shared/lab-styles.css">
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  body { background: #fff; }
+  .handout-page { padding-top: 20px; }
+  .toc { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 16px 20px; }
+  .toc a { color: var(--rad-blue); text-decoration: none; font-weight: 600; font-size: 13.5px; }
+  .toc li { margin-bottom: 6px; }
+  .station-card { border-left: 4px solid var(--rad-teal); padding-left: 16px; margin: 18px 0; }
+  .obj-box { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 14px 18px; margin: 14px 0; }
+  figure { text-align: center; margin: 16px 0; }
+  figure img { max-width: 420px; border-radius: 10px; border: 1px solid var(--rad-border); }
+  figcaption { font-size: 12px; color: var(--rad-text-faint); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="print-btn-bar no-print">
+  <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+  <a class="btn btn-secondary" href="../labs/lab-01/index.html"><i class="fa-solid fa-flask"></i> Go to Interactive Lab</a>
+</div>
+
+<div class="handout-page">
+  <div class="handout-header">
+    <div class="h-course">RAD 321 · Image Recording &amp; Analysis · Diagnostic Radiology Technology Program</div>
+    <h1>Lab 1 Student Handout</h1>
+    <div style="font-size:16px; color:var(--rad-blue); font-weight:600;">The Imaging Chain &amp; the Radiographer's Role</div>
+    <div class="handout-meta">
+      <span><i class="fa-solid fa-calendar-week"></i> Week 1 of 15</span>
+      <span><i class="fa-solid fa-clock"></i> Duration: 2 hours</span>
+      <span><i class="fa-solid fa-diagram-project"></i> Format: Interactive Digital Simulation</span>
+    </div>
+  </div>
+
+  <div class="highlight-note">
+    <span class="icon">💡</span>
+    <div><b>How This Lab Works:</b> This lab is a fully interactive digital simulation that lets you explore the imaging chain concepts hands-on, at your own pace, and as many times as you need. Complete the lab at <a href="../labs/lab-01/index.html">the Interactive Lab web app</a> — this handout explains the content and activities in detail so you understand exactly what to do and why.</div>
+  </div>
+
+  <div class="toc">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#s-obj">Learning Objectives</a></li>
+      <li><a href="#s-prep">Before You Start</a></li>
+      <li><a href="#s-theory">Background Concepts You Need</a></li>
+      <li><a href="#s-stations">Lab Stations — Step-by-Step Guide</a></li>
+      <li><a href="#s-worksheet">Worksheet Guidance</a></li>
+      <li><a href="#s-rubric">Grading Rubric</a></li>
+      <li><a href="#s-submit">How to Submit</a></li>
+    </ol>
+  </div>
+
+  <div class="handout-section" id="s-obj">
+    <h2>1. Learning Objectives</h2>
+    <p>By the end of this lab session, you should be able to:</p>
+    <ol>
+      <li>Describe how X-rays are produced inside an X-ray tube and identify its main components.</li>
+      <li>Explain the four stages of radiographic image intensity formation.</li>
+      <li>Identify and compare the major image receptor types: film, CR, DR, and image intensifiers.</li>
+      <li>Distinguish between the radiographer's image recording role and image analysis role.</li>
+      <li>Recognize the geometric concepts SID, SOD, and OID.</li>
+      <li>Relate each stage of image formation to image quality factors studied in later labs.</li>
+      <li>Apply this model to a simulated scenario and submit a complete lab report.</li>
+    </ol>
+    <div class="obj-box"><b>CLO Coverage:</b> K1 (Understand the role of the radiographer in recording medical imaging), K3 (Understand the effects of the imaging system components on image quality).</div>
+  </div>
+
+  <div class="handout-section" id="s-prep">
+    <h2>2. Before You Start</h2>
+    <ul>
+      <li>No prior knowledge of X-ray equipment is assumed — everything you need is explained in the lab's Background section.</li>
+      <li>Bring a laptop or tablet with a modern web browser (Chrome, Edge, Firefox, or Safari). No installation or internet connection is required after the page loads once.</li>
+      <li>Your answers automatically save in your browser as you work. If you plan to switch computers partway through, use the "Export JSON Backup" button first and "Import JSON" on the new computer.</li>
+      <li>Read Lecture 1 &amp; 2 (Course Overview and the Radiographer's Role) before this session — this lab builds directly on that material.</li>
+    </ul>
+  </div>
+
+  <div class="handout-section" id="s-theory">
+    <h2>3. Background Concepts You Need</h2>
+
+    <h3>3.1 The X-ray Tube</h3>
+    <p>Every exposure begins inside an evacuated tube. A heated <b>cathode</b> filament releases electrons, which are focused and accelerated toward the rotating <b>anode</b>. At the focal spot, roughly 1% of their kinetic energy becomes X-rays and nearly all the remainder becomes heat. The useful beam exits through the <b>tube window</b>, passes through inherent and specified added <b>filtration</b>, and is shaped by the lead shutters of the <b>collimator</b>.</p>
+    <figure>
+      <img src="../shared/assets/img/xray-tube-scientific.svg" alt="Scientific cutaway of a diagnostic rotating-anode X-ray tube and beam-limiting assembly">
+      <figcaption>Diagnostic rotating-anode tube assembly, including the tube insert, protective housing, filtration, and collimator. Schematic, not to scale.</figcaption>
+    </figure>
+
+    <h3>3.2 Beam Geometry — SID, SOD, OID</h3>
+    <table class="data-table">
+      <tr><th>Term</th><th>Meaning</th></tr>
+      <tr><td><b>SID</b></td><td>Source-to-Image Distance — tube target to the image receptor</td></tr>
+      <tr><td><b>SOD</b></td><td>Source-to-Object Distance — tube target to the patient/part being imaged</td></tr>
+      <tr><td><b>OID</b></td><td>Object-to-Image Distance — patient/part to the image receptor</td></tr>
+    </table>
+    <p class="small muted">You will manipulate these distances quantitatively with live sliders in Lab 2. This week, focus on recognizing what each term means.</p>
+
+    <h3>3.3 The Four Stages of Image Intensity Formation</h3>
+    <table class="data-table">
+      <tr><th>#</th><th>Stage</th><th>What Happens</th><th>Key Influencing Factors</th></tr>
+      <tr><td>1</td><td>Primary Beam Propagation</td><td>X-rays travel from the tube target toward the patient</td><td>kVp, mAs, filtration, focal spot size, distance (inverse square law)</td></tr>
+      <tr><td>2</td><td>Patient Interaction</td><td>Beam is attenuated passing through tissue, forming the remnant beam</td><td>Patient thickness, tissue density, atomic number</td></tr>
+      <tr><td>3</td><td>Image Capture</td><td>Remnant beam is captured by the receptor</td><td>Receptor sensitivity, dynamic range, intrinsic noise/resolution</td></tr>
+      <tr><td>4</td><td>Image Processing</td><td>Captured signal becomes the viewable radiograph</td><td>Chemical development (film) or computer processing (digital)</td></tr>
+    </table>
+
+    <h3>3.4 Image Receptor Families</h3>
+    <figure>
+      <img src="../shared/assets/img/receptor-family-scientific.svg" alt="Scientific comparison of screen-film, CR, DR, and image-intensifier receptor systems">
+      <figcaption>Four receptor families showing their active recording layers and readout pathways. Schematic, not to scale.</figcaption>
+    </figure>
+    <ul>
+      <li><b>Screen-Film Cassette:</b> Forms a hidden "latent image" requiring wet chemical processing in a darkroom (explored fully in Lab 3).</li>
+      <li><b>CR Cassette:</b> Uses a reusable photostimulable phosphor plate, read by a laser scanner into a digital image.</li>
+      <li><b>DR Flat Panel:</b> Converts incident X-rays into electrical charge using an indirect scintillator-photodiode pathway or a direct photoconductor pathway — no cassette scanning.</li>
+      <li><b>Image Intensifier:</b> Converts the beam into amplified visible light for real-time viewing (fluoroscopy, explored in Lab 10).</li>
+    </ul>
+
+    <h3>3.5 The Radiographer's Two Roles</h3>
+    <div class="two-col">
+      <div class="card card-soft" style="margin-bottom:0;"><h4>Image Recording</h4>Setting up the receptor, positioning the patient, selecting exposure factors, processing the image.</div>
+      <div class="card card-soft" style="margin-bottom:0;"><h4>Image Analysis</h4>Confirming correct anatomy, judging image quality, evaluating display, deciding if repeat images are needed.</div>
+    </div>
+  </div>
+
+  <div class="handout-section" id="s-stations">
+    <h2>4. Lab Stations — Step-by-Step Guide</h2>
+
+    <div class="station-card">
+      <h3>Station 1 — X-ray Tube &amp; Beam Production <span class="badge badge-sim">Simulation</span></h3>
+      <p><b>Purpose:</b> Builds a clear mental model of the anode/cathode and beam path before you work with real equipment.</p>
+      <p><b>What to do:</b> Click each of the 4 numbered markers on the tube diagram. Each click reveals the component's name and function. Identify all 4 to complete the station, then answer the follow-up question.</p>
+    </div>
+
+    <div class="station-card">
+      <h3>Station 2 — Order the Image Formation Stages <span class="badge badge-sim">Simulation</span></h3>
+      <p><b>Purpose:</b> Reinforces the sequence of the imaging chain, from beam production to the final image.</p>
+      <p><b>What to do:</b> Drag the four shuffled stage cards into the correct chronological order (beam production → final image), then click "Check Order." Cards turn green if correct, red if not — you may re-order and re-check as many times as needed.</p>
+    </div>
+
+    <div class="station-card">
+      <h3>Station 3 — Image Receptor Family Explorer <span class="badge badge-sim">Simulation</span></h3>
+      <p><b>Purpose:</b> Helps you recognize and compare the film cassette, CR cassette, DR panel, and image intensifier before handling them in person.</p>
+      <p><b>What to do:</b> Click a description on the left, then click the matching receptor name on the right. Correct matches turn green and lock; incorrect ones turn red so you can retry.</p>
+    </div>
+
+    <div class="station-card">
+      <h3>Station 4 — Sort the Radiographer's Tasks <span class="badge badge-sim">Simulation</span></h3>
+      <p><b>Purpose:</b> Sharpens your ability to distinguish image recording tasks from image analysis tasks throughout a clinical procedure.</p>
+      <p><b>What to do:</b> Click each of the 8 tasks, then click whether it belongs to "Optimal Image Recording" or "Optimal Image Analysis." All 8 must be sorted correctly to complete the station.</p>
+    </div>
+  </div>
+
+  <div class="handout-section" id="s-worksheet">
+    <h2>5. Worksheet Guidance</h2>
+    <p>The worksheet section of the lab app asks you to:</p>
+    <ul>
+      <li>Restate the function of each X-ray tube component in your own words (not copy-pasted from the lab text).</li>
+      <li>Answer 6 reflection/analysis questions, including one critical-thinking question connecting image formation stages to a real image quality problem (an underexposed radiograph).</li>
+    </ul>
+    <div class="tip-note"><i class="fa-solid fa-lightbulb"></i> <b>Tip for Question 6 (critical thinking):</b> An underexposed image could result from too little beam intensity at Stage 1 (e.g., low mAs/kVp), excessive attenuation at Stage 2 (e.g., a very thick patient), or a receptor issue at Stage 3 (e.g., low sensitivity). Think about which of these are radiographer-controllable versus patient-dependent.</div>
+  </div>
+
+  <div class="handout-section" id="s-rubric">
+    <h2>6. Grading Rubric (20 points)</h2>
+    <table class="data-table">
+      <tr><th>Criterion</th><th>Points</th></tr>
+      <tr><td>Pre-Lab Conceptual Understanding</td><td>4</td></tr>
+      <tr><td>Simulation Execution &amp; Interactive Activities</td><td>4</td></tr>
+      <tr><td>Worksheet Responses &amp; Results Interpretation</td><td>5</td></tr>
+      <tr><td>Critical-Thinking / Analysis Question</td><td>4</td></tr>
+      <tr><td>Completeness, Organization &amp; Professionalism</td><td>3</td></tr>
+      <tr style="font-weight:800;"><td>Total</td><td>20</td></tr>
+    </table>
+    <p class="small muted">The full rubric with performance-level descriptions is visible inside the interactive lab app and is included automatically in your exported submission report.</p>
+  </div>
+
+  <div class="handout-section" id="s-submit">
+    <h2>7. How to Submit</h2>
+    <ol>
+      <li>Complete all 4 stations, the knowledge check questions, and the worksheet inside the <a href="../labs/lab-01/index.html">Interactive Lab</a>.</li>
+      <li>Fill in your Student Information (name, ID, section) at the top of the lab page — this appears on your report.</li>
+      <li>Scroll to the bottom and click <b>"Generate Submission Report."</b> A new tab opens with your complete report (responses + simulation results + rubric).</li>
+      <li>Click "Print / Save as PDF" in that report tab, save the PDF, and upload it to the LMS assignment submission link as instructed by your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="print-btn-bar no-print">
+    <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+  </div>
+</div>
+</body>
+</html>

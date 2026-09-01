@@ -1,0 +1,16 @@
+{
+  "name": "RAD 321 \u2014 Image Recording & Analysis Virtual Labs",
+  "short_name": "RAD321 Labs",
+  "description": "Offline-ready interactive simulation laboratory platform for Diagnostic Radiology Technology students at Taibah University.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b2545",
+  "theme_color": "#0e7c86",
+  "icons": [
+    {
+      "src": "./shared/assets/img/hero-banner.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

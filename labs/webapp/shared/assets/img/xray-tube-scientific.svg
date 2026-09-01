@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Diagnostic rotating-anode X-ray tube assembly</title>
+  <desc id="desc">Scientific cutaway showing the cathode filament and focusing cup, electron stream, rotating anode and focal spot, rotor and stator, evacuated tube envelope, insulating oil, lead-lined protective housing, tube window, added filtration, and collimator.</desc>
+  <metadata>Educational schematic, not to scale. Component arrangement follows IAEA Diagnostic Radiology Physics: A Handbook for Teachers and Students, section 5.3.</metadata>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbfd"/>
+      <stop offset="1" stop-color="#e8f1f6"/>
+    </linearGradient>
+    <linearGradient id="oil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d8edf2"/>
+      <stop offset="1" stop-color="#b8dce5"/>
+    </linearGradient>
+    <linearGradient id="anode" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5e7183"/>
+      <stop offset="0.55" stop-color="#263b51"/>
+      <stop offset="1" stop-color="#13283d"/>
+    </linearGradient>
+    <marker id="arrowElectron" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#e49a2e"/>
+    </marker>
+    <marker id="arrowLeader" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#31536b"/>
+    </marker>
+    <style>
+      .title{font:700 30px Arial,sans-serif;fill:#0b2c4b}.subtitle{font:16px Arial,sans-serif;fill:#486579}
+      .label{font:700 16px Arial,sans-serif;fill:#0b2c4b}.small{font:14px Arial,sans-serif;fill:#31536b}
+      .micro{font:12px Arial,sans-serif;fill:#486579}.leader{stroke:#31536b;stroke-width:2;fill:none;marker-end:url(#arrowLeader)}
+      .outline{stroke:#0b2c4b;stroke-width:3}.thin{stroke:#31536b;stroke-width:2;fill:none}
+    </style>
+  </defs>
+
+  <rect width="1400" height="900" fill="url(#bg)"/>
+  <text x="60" y="54" class="title">Diagnostic rotating-anode X-ray tube</text>
+  <text x="60" y="82" class="subtitle">Cutaway of the tube insert, protective housing, and beam-limiting assembly — schematic, not to scale</text>
+
+  <!-- Lead-lined protective housing and insulating oil -->
+  <rect x="70" y="125" width="1260" height="570" rx="100" fill="#102d49" class="outline"/>
+  <rect x="94" y="149" width="1212" height="522" rx="82" fill="#637483"/>
+  <rect x="116" y="171" width="1168" height="478" rx="70" fill="url(#oil)"/>
+  <text x="100" y="118" class="small">Lead-lined protective housing</text>
+  <text x="1145" y="195" class="small">Insulating oil</text>
+
+  <!-- Evacuated glass/metal envelope -->
+  <path d="M220 235 Q175 235 175 280 L175 528 Q175 573 220 573 L1040 573 Q1110 573 1144 522 L1194 446 Q1215 412 1194 378 L1144 287 Q1116 235 1040 235Z" fill="#fbfdfe" fill-opacity=".88" stroke="#4e8494" stroke-width="6"/>
+  <path d="M225 253 Q194 253 194 284 L194 520 Q194 551 225 551" class="thin" stroke-dasharray="8 7"/>
+  <text x="210" y="600" class="small">Evacuated tube envelope (high vacuum)</text>
+
+  <!-- Cathode assembly -->
+  <g>
+    <path d="M267 326 Q315 286 385 312 L414 338 L414 438 L385 464 Q315 490 267 450 Q300 424 300 388 Q300 352 267 326Z" fill="#8799a7" stroke="#203b50" stroke-width="4"/>
+    <path d="M286 340 Q326 315 382 331 L397 347 L397 429 L382 445 Q326 461 286 436 Q316 416 316 388 Q316 360 286 340Z" fill="#273e51"/>
+    <path d="M321 367 C333 348 345 386 357 367 C369 348 381 386 393 367" fill="none" stroke="#f3b14b" stroke-width="7" stroke-linecap="round"/>
+    <path d="M322 409 C334 390 346 428 358 409 C370 390 382 428 394 409" fill="none" stroke="#f3b14b" stroke-width="5" stroke-linecap="round"/>
+    <line x1="241" y1="367" x2="321" y2="367" stroke="#31536b" stroke-width="5"/>
+    <line x1="241" y1="409" x2="322" y2="409" stroke="#31536b" stroke-width="5"/>
+    <text x="258" y="305" class="label">Cathode (−)</text>
+    <text x="250" y="491" class="small">Tungsten filaments in focusing cup</text>
+  </g>
+
+  <!-- Electron stream -->
+  <g stroke="#e49a2e" fill="none" marker-end="url(#arrowElectron)">
+    <path d="M420 356 Q570 350 742 372" stroke-width="4"/>
+    <path d="M420 388 Q575 388 750 389" stroke-width="4"/>
+    <path d="M420 420 Q570 426 742 405" stroke-width="4"/>
+  </g>
+  <g fill="#e49a2e">
+    <circle cx="486" cy="358" r="5"/><circle cx="546" cy="374" r="5"/><circle cx="610" cy="388" r="5"/><circle cx="676" cy="400" r="5"/>
+  </g>
+  <text x="486" y="333" class="label">Accelerated electron stream</text>
+  <text x="493" y="448" class="small">Tube potential drives electrons from cathode to anode</text>
+
+  <!-- Rotating anode, focal track, and focal spot -->
+  <g transform="rotate(-17 824 387)">
+    <ellipse cx="824" cy="387" rx="104" ry="151" fill="url(#anode)" stroke="#102d49" stroke-width="6"/>
+    <ellipse cx="824" cy="387" rx="73" ry="121" fill="none" stroke="#bd8b52" stroke-width="16"/>
+    <ellipse cx="824" cy="387" rx="28" ry="46" fill="#70879a" stroke="#102d49" stroke-width="4"/>
+  </g>
+  <circle cx="757" cy="388" r="10" fill="#f5c15d" stroke="#8b481a" stroke-width="3"/>
+  <text x="747" y="213" class="label">Rotating anode (+)</text>
+  <text x="742" y="235" class="small">Tungsten-rhenium focal track</text>
+  <path d="M741 243 L782 286" class="leader"/>
+  <text x="653" y="488" class="label">Focal spot</text>
+  <path d="M721 473 L752 399" class="leader"/>
+
+  <!-- Rotor inside envelope and stator outside envelope -->
+  <line x1="860" y1="398" x2="1046" y2="398" stroke="#506678" stroke-width="20"/>
+  <rect x="954" y="342" width="122" height="112" rx="26" fill="#75563e" stroke="#203b50" stroke-width="5"/>
+  <g fill="none" stroke="#456f7e" stroke-width="16">
+    <path d="M946 320 Q1015 283 1085 320"/>
+    <path d="M946 476 Q1015 513 1085 476"/>
+  </g>
+  <text x="971" y="389" class="label" fill="#fff">Rotor</text>
+  <text x="1004" y="535" class="label">Stator coils</text>
+  <path d="M1045 518 L1045 480" class="leader"/>
+
+  <!-- Useful beam, window, filtration, and collimator -->
+  <g>
+    <path d="M757 388 L680 640 L846 640Z" fill="#f3c45d" fill-opacity=".28" stroke="#d3972c" stroke-width="2"/>
+    <path d="M690 620 Q763 635 835 620 L846 660 Q763 678 680 660Z" fill="#dfeff3" stroke="#31536b" stroke-width="4"/>
+    <text x="871" y="648" class="label">Tube window</text>
+    <path d="M861 644 L837 644" class="leader"/>
+    <rect x="704" y="688" width="118" height="15" rx="3" fill="#a5b7bf" stroke="#31536b" stroke-width="2"/>
+    <rect x="714" y="706" width="98" height="10" rx="3" fill="#c3a269" stroke="#7c6132" stroke-width="2"/>
+    <text x="855" y="707" class="label">Added filtration</text>
+    <text x="855" y="727" class="small">Aluminum / copper where specified</text>
+    <path d="M842 709 L815 709" class="leader"/>
+    <rect x="635" y="744" width="256" height="84" rx="12" fill="#243d52" stroke="#0b2c4b" stroke-width="5"/>
+    <path d="M657 759 L746 783 L657 807Z" fill="#8b7658"/>
+    <path d="M869 759 L780 783 L869 807Z" fill="#8b7658"/>
+    <path d="M757 716 L710 744 L805 744Z" fill="#f3c45d" fill-opacity=".32"/>
+    <path d="M746 783 L690 884 L836 884 L780 783Z" fill="#f3c45d" fill-opacity=".35" stroke="#d3972c" stroke-width="2"/>
+    <text x="936" y="782" class="label">Light-beam collimator</text>
+    <text x="936" y="804" class="small">Two pairs of adjustable lead shutters</text>
+    <path d="M918 789 L884 789" class="leader"/>
+    <text x="628" y="867" class="small">Useful X-ray beam</text>
+  </g>
+
+  <!-- Orientation and energy note -->
+  <g transform="translate(76 720)">
+    <rect width="470" height="122" rx="14" fill="#ffffff" stroke="#aac1cf" stroke-width="2"/>
+    <text x="20" y="29" class="label">Energy conversion at the focal track</text>
+    <rect x="20" y="47" width="390" height="20" rx="10" fill="#d9e4ea"/>
+    <rect x="20" y="47" width="384" height="20" rx="10" fill="#d16a4b"/>
+    <rect x="404" y="47" width="6" height="20" rx="3" fill="#e9bd43"/>
+    <text x="20" y="88" class="small">≈99% heat</text>
+    <text x="320" y="88" class="small">≈1% X-rays</text>
+    <text x="20" y="108" class="micro">Approximate diagnostic-tube values; efficiency varies with tube voltage and target.</text>
+  </g>
+</svg>
