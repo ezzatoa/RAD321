@@ -10,6 +10,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../shared/lab-styles.css">
   <style>
     /* Two-Tab Navigation Styling */
@@ -531,20 +532,29 @@
 </head>
 <body>
 
-<header class="lab-header">
-  <div class="lab-header-inner">
-    <div class="brand-group">
-      <div class="logo-mark" aria-hidden="true">
-        <i class="fa-solid fa-microscope"></i>
-      </div>
-      <div>
-        <div class="program-title">Diagnostic Radiology Technology Program · Taibah University</div>
-        <div class="course-title">RAD 321 — Image Recording &amp; Analysis</div>
+<header class="lab-topbar">
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 14 — The IMAGE Process, Part 2 — Evaluate (Critique)</div>
       </div>
     </div>
-    <div class="header-badges">
-      <span class="badge badge-week">Week 14</span>
-      <span class="badge badge-tech">DR PACS Workstation</span>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track">
+      <div class="lab-progress-fill" id="lab-progress-fill"></div>
+    </div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 14 of 15</span>
     </div>
   </div>
 </header>
@@ -553,7 +563,7 @@
 
   <!-- Hero Banner -->
   <div class="hero-banner">
-    <img src="../../assets/images/heroes/lab-14.webp" alt="Radiologist reviewing digital radiograph on dual-monitor diagnostic workstation" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'><rect width=\'1200\' height=\'400\' fill=\'%23071a2b\'/><path d=\'M0 320 Q300 240 600 320 T1200 320 L1200 400 L0 400 Z\' fill=\'%230b2842\' opacity=\'0.7\'/><text x=\'60\' y=\'160\' font-family=\'system-ui,sans-serif\' font-size=\'36\' font-weight=\'bold\' fill=\'%237fe0d6\'>IMAGE Process Stage E: Evaluate</text><text x=\'60\' y=\'210\' font-family=\'system-ui,sans-serif\' font-size=\'18\' fill=\'%23ffffff\' opacity=\'0.85\'>Systematic 5-Domain Image Critique &amp; ALARA Repeat Decision Gating</text></svg>';">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Radiologist reviewing digital radiograph on dual-monitor diagnostic workstation" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'><rect width=\'1200\' height=\'400\' fill=\'%23071a2b\'/><path d=\'M0 320 Q300 240 600 320 T1200 320 L1200 400 L0 400 Z\' fill=\'%230b2842\' opacity=\'0.7\'/><text x=\'60\' y=\'160\' font-family=\'system-ui,sans-serif\' font-size=\'36\' font-weight=\'bold\' fill=\'%237fe0d6\'>IMAGE Process Stage E: Evaluate</text><text x=\'60\' y=\'210\' font-family=\'system-ui,sans-serif\' font-size=\'18\' fill=\'%23ffffff\' opacity=\'0.85\'>Systematic 5-Domain Image Critique &amp; ALARA Repeat Decision Gating</text></svg>';">
     <div class="hero-overlay">
       <span class="eyebrow">Assessed Virtual Laboratory Suite</span>
       <h1>Lab 14: The IMAGE Process, Part 2 — Evaluate (Critique)</h1>
@@ -658,11 +668,11 @@
           The final stage of the clinical imaging chain is <b>Stage E (Evaluate / Critique)</b>. Prior to PACS transmission or radiologist sign-off, the professional radiographer must execute a disciplined, multi-dimensional critique. Simply declaring an image "good" or "bad" is unprofessional and clinically unacceptable. Stage E organizes critique into <b>five core domains</b>:
         </p>
         <ul>
-          <li><b>1. Anatomical Coverage &amp; Collimation ($S_{\text{Anat}}$):</b> Confirmation that the required Volume of Interest (VOI) is entirely included without clipping critical anatomical margins, accompanied by distinct 4-sided collimation borders.</li>
-          <li><b>2. Positioning &amp; Part Alignment ($S_{\text{Pos}}$):</b> Evaluation of anatomical landmarks to verify true anatomical projection geometry and absence of rotation or tilt.</li>
-          <li><b>3. Receptor Exposure &amp; Quantum Noise ($S_{\text{Exp}}$):</b> Verification of detector photon fluence via calibrated Exposure Index ($EI$), Deviation Index ($DI$), and absence of photon starvation mottle.</li>
-          <li><b>4. Identification &amp; Lead Markers ($S_{\text{Mark}}$):</b> Verification of two legal patient demographic identifiers and a physical radiopaque lead side marker ('R' or 'L') placed within the collimated primary beam outside the VOI.</li>
-          <li><b>5. Artifacts &amp; Motion Integrity ($S_{\text{Art}}$):</b> Inspection for preventable external radiopaque items (clothing zippers, snaps, jewelry), patient motion blur (kinetic unsharpness), and detector hardware line defects.</li>
+          <li><b>1. Anatomical Coverage &amp; Collimation (<span class="math-tex">$S_{\text{Anat}}$</span>):</b> Confirmation that the required Volume of Interest (VOI) is entirely included without clipping critical anatomical margins, accompanied by distinct 4-sided collimation borders.</li>
+          <li><b>2. Positioning &amp; Part Alignment (<span class="math-tex">$S_{\text{Pos}}$</span>):</b> Evaluation of anatomical landmarks to verify true anatomical projection geometry and absence of rotation or tilt.</li>
+          <li><b>3. Receptor Exposure &amp; Quantum Noise (<span class="math-tex">$S_{\text{Exp}}$</span>):</b> Verification of detector photon fluence via calibrated Exposure Index (<span class="math-tex">$EI$</span>), Deviation Index (<span class="math-tex">$DI$</span>), and absence of photon starvation mottle.</li>
+          <li><b>4. Identification &amp; Lead Markers (<span class="math-tex">$S_{\text{Mark}}$</span>):</b> Verification of two legal patient demographic identifiers and a physical radiopaque lead side marker ('R' or 'L') placed within the collimated primary beam outside the VOI.</li>
+          <li><b>5. Artifacts &amp; Motion Integrity (<span class="math-tex">$S_{\text{Art}}$</span>):</b> Inspection for preventable external radiopaque items (clothing zippers, snaps, jewelry), patient motion blur (kinetic unsharpness), and detector hardware line defects.</li>
         </ul>
 
         <h3>1.2 Anatomical Coverage &amp; Collimation Standards (AP Knee)</h3>
@@ -670,42 +680,42 @@
           For a diagnostic AP Knee projection, the Volume of Interest encompasses:
         </p>
         <ul>
-          <li>Distal $\frac{1}{3}$ of the femur, femorotibial joint space, patella, and proximal $\frac{1}{3}$ of the tibia and fibula.</li>
-          <li>Surrounding soft tissue margins with evidence of 4-sided beam collimation ($18 \times 24\text{ cm}$ nominal field size).</li>
-          <li><b>Failure threshold:</b> Anatomical coverage below $70\%$ clips essential diagnostic landmarks (e.g., adductor tubercle or fibular neck), resulting in an automatic non-diagnostic failure.</li>
+          <li>Distal <span class="math-tex">$\frac{1}{3}$</span> of the femur, femorotibial joint space, patella, and proximal <span class="math-tex">$\frac{1}{3}$</span> of the tibia and fibula.</li>
+          <li>Surrounding soft tissue margins with evidence of 4-sided beam collimation (<span class="math-tex">$18 \times 24\text{ cm}$</span> nominal field size).</li>
+          <li><b>Failure threshold:</b> Anatomical coverage below <span class="math-tex">$70\%$</span> clips essential diagnostic landmarks (e.g., adductor tubercle or fibular neck), resulting in an automatic non-diagnostic failure.</li>
         </ul>
 
         <h3>1.3 Positioning &amp; Alignment Criteria for True AP Knee</h3>
         <p>
-          True AP alignment requires that the femoral epicondyles be positioned exactly parallel to the image receptor (requiring approximately $3^\circ–5^\circ$ internal limb rotation on a supine patient to overcome natural retroversion):
+          True AP alignment requires that the femoral epicondyles be positioned exactly parallel to the image receptor (requiring approximately <span class="math-tex">$3^\circ–5^\circ$</span> internal limb rotation on a supine patient to overcome natural retroversion):
         </p>
         <ul>
           <li><b>Symmetric Femoral &amp; Tibial Condyles:</b> Condylar outlines must appear symmetric with both medial and lateral femorotibial joint spaces fully open and unobstructed.</li>
           <li><b>Patellar Centering:</b> The patella should sit slightly medial to the midline of the distal femoral shaft.</li>
-          <li><b>Fibular Head Overlap:</b> Exactly $\frac{1}{3}$ of the proximal fibular head must be superimposed behind the lateral tibial condyle.
+          <li><b>Fibular Head Overlap:</b> Exactly <span class="math-tex">$\frac{1}{3}$</span> of the proximal fibular head must be superimposed behind the lateral tibial condyle.
             <ul>
-              <li><i>External (Lateral) Rotation:</i> Causes excessive superimposition of the fibular head behind the tibia (greater than $\frac{1}{3}$ overlap) and closes the lateral joint space.</li>
+              <li><i>External (Lateral) Rotation:</i> Causes excessive superimposition of the fibular head behind the tibia (greater than <span class="math-tex">$\frac{1}{3}$</span> overlap) and closes the lateral joint space.</li>
               <li><i>Internal (Medial) Rotation:</i> Separates the fibular head from the lateral tibia (total separation / space visible between fibula and tibia).</li>
             </ul>
           </li>
-          <li><b>Penalties:</b> Severe rotation ($|\theta| \ge 15^\circ$) renders the joint space uninterpretable and constitutes an unrecoverable positioning failure.</li>
+          <li><b>Penalties:</b> Severe rotation (<span class="math-tex">$|\theta| \ge 15^\circ$</span>) renders the joint space uninterpretable and constitutes an unrecoverable positioning failure.</li>
         </ul>
 
         <h3>1.4 Exposure Physics: EI, DI &amp; Quantum Noise</h3>
         <p>
-          Digital image receptors have a wide linear dynamic range. Therefore, receptor exposure is verified quantitatively via the course SIM Deviation Index ($DI$) — a simplified teaching model, not the IEC standard:
+          Digital image receptors have a wide linear dynamic range. Therefore, receptor exposure is verified quantitatively via the course SIM Deviation Index (<span class="math-tex">$DI$</span>) — a simplified teaching model, not the IEC standard:
         </p>
         <div class="formula-box">
-          $$EI = 25 \cdot mAs \quad (\text{for standard tabletop } 70\text{ kVp})$$
-          $$DI = 10 \cdot \log_{10}\left(\frac{EI}{EI_{\text{target}}}\right) = 10 \cdot \log_{10}\left(\frac{mAs}{8.0}\right)$$
-          $$\sigma_{\text{noise}} = \frac{28}{\sqrt{mAs}}$$
-          <div style="font-size:12px;color:var(--rad-text-soft);margin-top:6px;">Course SIM model (not IEC): 28 is an arbitrary simulator scaling constant — the form $\sigma \propto 1/\sqrt{mAs}$ is correct. Math kept as defined for this lab.</div>
+          <span class="math-display">$$EI = 25 \cdot mAs \quad (\text{for standard tabletop } 70\text{ kVp})$$</span>
+          <span class="math-display">$$DI = 10 \cdot \log_{10}\left(\frac{EI}{EI_{\text{target}}}\right) = 10 \cdot \log_{10}\left(\frac{mAs}{8.0}\right)$$</span>
+          <span class="math-display">$$\sigma_{\text{noise}} = \frac{28}{\sqrt{mAs}}$$</span>
+          <div style="font-size:12px;color:var(--rad-text-soft);margin-top:6px;">Course SIM model (not IEC): 28 is an arbitrary simulator scaling constant — the form <span class="math-tex">$\sigma \propto 1/\sqrt{mAs}$</span> is correct. Math kept as defined for this lab.</div>
         </div>
         <ul>
-          <li><b>Target Exposure:</b> $8.0\text{ mAs}$ yields $EI = 200$ and $DI = 0.00$ (Optimal diagnostic window).</li>
-          <li><b>Acceptable Window:</b> $-1.0 \le DI \le +1.0$ (Receptor exposure within $25\%$ of target).</li>
-          <li><b>Severe Quantum Mottle (Photon Starvation):</b> At $mAs \le 2.5$ ($DI \le -5.0$), photon fluence is insufficient. High Poisson statistical noise ($\sigma > 17\%$) obliterates fine bone trabeculae and low-contrast cortical margins. This is a fatal diagnostic defect.</li>
-          <li><b>Dose Creep:</b> At $mAs > 16.0$ ($DI > +3.0$), excessive radiation dose occurs without clinical image quality benefit.</li>
+          <li><b>Target Exposure:</b> <span class="math-tex">$8.0\text{ mAs}$</span> yields <span class="math-tex">$EI = 200$</span> and <span class="math-tex">$DI = 0.00$</span> (Optimal diagnostic window).</li>
+          <li><b>Acceptable Window:</b> <span class="math-tex">$-1.0 \le DI \le +1.0$</span> (Receptor exposure within <span class="math-tex">$25\%$</span> of target).</li>
+          <li><b>Severe Quantum Mottle (Photon Starvation):</b> At <span class="math-tex">$mAs \le 2.5$</span> (<span class="math-tex">$DI \le -5.0$</span>), photon fluence is insufficient. High Poisson statistical noise (<span class="math-tex">$\sigma > 17\%$</span>) obliterates fine bone trabeculae and low-contrast cortical margins. This is a fatal diagnostic defect.</li>
+          <li><b>Dose Creep:</b> At <span class="math-tex">$mAs > 16.0$</span> (<span class="math-tex">$DI > +3.0$</span>), excessive radiation dose occurs without clinical image quality benefit.</li>
         </ul>
 
         <h3>1.5 Legal Lead Markers vs. Administrative Electronic Annotation</h3>
@@ -724,9 +734,9 @@
         <div class="formula-box" style="background:#071a2b;color:#e2e8f0;border-left:4px solid var(--rad-teal);">
           <strong style="color:#7fe0d6;">ALARA Repeat Gating Decision Tree:</strong><br><br>
           <strong>1. FATAL DIAGNOSTIC DEFECTS &rarr; MANDATORY REPEAT JUSTIFIED:</strong><br>
-          &bull; Essential VOI anatomy clipped ($S_{\text{Anat}} < 70\%$).<br>
-          &bull; Severe limb rotation ($|\theta| \ge 15^\circ$) closing femorotibial joint spaces.<br>
-          &bull; Severe quantum mottle ($mAs \le 2.5$, $EI \le 63$, $DI \le -5.0$) obscuring trabeculae.<br>
+          &bull; Essential VOI anatomy clipped (<span class="math-tex">$S_{\text{Anat}} < 70\%$</span>).<br>
+          &bull; Severe limb rotation (<span class="math-tex">$|\theta| \ge 15^\circ$</span>) closing femorotibial joint spaces.<br>
+          &bull; Severe quantum mottle (<span class="math-tex">$mAs \le 2.5$</span>, <span class="math-tex">$EI \le 63$</span>, <span class="math-tex">$DI \le -5.0$</span>) obscuring trabeculae.<br>
           &bull; Radiopaque foreign body (metal zipper, brace) overlying diagnostic VOI.<br>
           &bull; Severe patient kinetic motion blur smearing cortical boundaries.<br><br>
           <strong>2. NON-FATAL ADMINISTRATIVE / DISPLAY VARIANCES &rarr; DO NOT REPEAT (ALARA GATE):</strong><br>
@@ -738,13 +748,13 @@
 
         <h3>1.7 Weighted Composite Critique Score Formulation</h3>
         <p>
-          Departmental clinical evaluation synthesizes the five domains into a weighted composite score ($0–100$):
+          Departmental clinical evaluation synthesizes the five domains into a weighted composite score (<span class="math-tex">$0–100$</span>):
         </p>
         <div class="formula-box">
-          $$\text{Composite Score} = 0.30 \cdot S_{\text{Anat}} + 0.25 \cdot S_{\text{Pos}} + 0.25 \cdot S_{\text{Exp}} + 0.10 \cdot S_{\text{Mark}} + 0.10 \cdot S_{\text{Art}}$$
+          <span class="math-display">$$\text{Composite Score} = 0.30 \cdot S_{\text{Anat}} + 0.25 \cdot S_{\text{Pos}} + 0.25 \cdot S_{\text{Exp}} + 0.10 \cdot S_{\text{Mark}} + 0.10 \cdot S_{\text{Art}}$$</span>
         </div>
         <p>
-          Images scoring $\ge 85$ with zero fatal flags are classified as <i>Accept &amp; Transmit to PACS</i>. Images scoring between $65–84$ without fatal flags are classified as <i>Accept with Documented Minor Variance</i>. Any fatal flag triggers an automatic repeat recommendation under ALARA. Weights and cutoffs above are a departmental rubric used in this simulator.
+          Images scoring <span class="math-tex">$\ge 85$</span> with zero fatal flags are classified as <i>Accept &amp; Transmit to PACS</i>. Images scoring between <span class="math-tex">$65–84$</span> without fatal flags are classified as <i>Accept with Documented Minor Variance</i>. Any fatal flag triggers an automatic repeat recommendation under ALARA. Weights and cutoffs above are a departmental rubric used in this simulator.
         </p>
       </div>
     </section>
@@ -765,7 +775,7 @@
           <div>
             <span class="tag-badge">Domain 1 (30%)</span>
             <h4><i class="fa-solid fa-expand" style="color:var(--rad-teal);"></i> Anatomy &amp; Collimation</h4>
-            <p>Requires distal $\frac{1}{3}$ femur to proximal $\frac{1}{3}$ tib/fib with 4-sided beam collimation. Coverage below $70\%$ is clipped and clinically fatal.</p>
+            <p>Requires distal <span class="math-tex">$\frac{1}{3}$</span> femur to proximal <span class="math-tex">$\frac{1}{3}$</span> tib/fib with 4-sided beam collimation. Coverage below <span class="math-tex">$70\%$</span> is clipped and clinically fatal.</p>
           </div>
           <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 30% · Fatal &lt;70%</span>
         </article>
@@ -774,7 +784,7 @@
           <div>
             <span class="tag-badge">Domain 2 (25%)</span>
             <h4><i class="fa-solid fa-arrows-rotate" style="color:var(--rad-teal);"></i> Positioning &amp; Geometry</h4>
-            <p>True AP knee demands parallel epicondyles, open joint spaces, and exactly $\frac{1}{3}$ proximal fibular head superimposition behind the lateral tibial condyle.</p>
+            <p>True AP knee demands parallel epicondyles, open joint spaces, and exactly <span class="math-tex">$\frac{1}{3}$</span> proximal fibular head superimposition behind the lateral tibial condyle.</p>
           </div>
           <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 25% · Fatal &ge;15°</span>
         </article>
@@ -783,7 +793,7 @@
           <div>
             <span class="tag-badge">Domain 3 (25%)</span>
             <h4><i class="fa-solid fa-bolt" style="color:var(--rad-teal);"></i> Exposure &amp; Noise Physics</h4>
-            <p>Target $8\text{ mAs}$ ($EI = 200, DI = 0.0$). Photon starvation at $\le 2.5\text{ mAs}$ creates severe quantum mottle ($\sigma > 17\%$), destroying trabecular detail.</p>
+            <p>Target <span class="math-tex">$8\text{ mAs}$</span> (<span class="math-tex">$EI = 200, DI = 0.0$</span>). Photon starvation at <span class="math-tex">$\le 2.5\text{ mAs}$</span> creates severe quantum mottle (<span class="math-tex">$\sigma > 17\%$</span>), destroying trabecular detail.</p>
           </div>
           <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 25% · Target EI 200</span>
         </article>
@@ -815,7 +825,7 @@
             <tbody>
               <tr>
                 <td><strong>1. Structured IMAGE Critique Domains:</strong> Total number of distinct evaluation domains in Stage E</td>
-                <td>Domain Count ($N$)</td>
+                <td>Domain Count (<span class="math-tex">$N$</span>)</td>
                 <td><input type="text" id="w-eval-domains" placeholder="e.g. 5" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
@@ -824,8 +834,8 @@
                 <td><input type="text" id="w-ap-landmarks" placeholder="e.g. 1/3 or 33%" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
-                <td><strong>3. Target Deviation Index ($DI$):</strong> Standard IEC deviation index for optimal detector exposure</td>
-                <td>Target $DI$ Value</td>
+                <td><strong>3. Target Deviation Index (<span class="math-tex">$DI$</span>):</strong> Standard IEC deviation index for optimal detector exposure</td>
+                <td>Target <span class="math-tex">$DI$</span> Value</td>
                 <td><input type="text" id="w-ei-di-target" placeholder="e.g. 0.0 or 0" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
@@ -839,17 +849,17 @@
                 <td><input type="text" id="w-repeat-justification" placeholder="e.g. Unrecoverable diagnostic value" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
-                <td><strong>6. Consequence of External Rotation:</strong> Anatomical effect of $+18^\circ$ external rotation on fibular head</td>
+                <td><strong>6. Consequence of External Rotation:</strong> Anatomical effect of <span class="math-tex">$+18^\circ$</span> external rotation on fibular head</td>
                 <td>Fibular Overlap Sign</td>
                 <td><input type="text" id="w-rotation-signs" placeholder="e.g. Excessive overlap" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
-                <td><strong>7. Critique Composite Weighting:</strong> Domain assigned highest weight ($30\%$) in composite score formula</td>
+                <td><strong>7. Critique Composite Weighting:</strong> Domain assigned highest weight (<span class="math-tex">$30\%$</span>) in composite score formula</td>
                 <td>Dominant Domain</td>
                 <td><input type="text" id="w-critique-weighting" placeholder="e.g. Anatomy coverage" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
-                <td><strong>8. Quantum Mottle Technique Correction:</strong> Proper technique adjustment for severe quantum mottle at $2\text{ mAs}$</td>
+                <td><strong>8. Quantum Mottle Technique Correction:</strong> Proper technique adjustment for severe quantum mottle at <span class="math-tex">$2\text{ mAs}$</span></td>
                 <td>Corrective Action</td>
                 <td><input type="text" id="w-corrective-action" placeholder="e.g. Increase mAs to 8" style="width:100%;max-width:200px;"></td>
               </tr>
@@ -943,27 +953,27 @@
             <h4 style="margin:0 0 10px;color:var(--rad-navy);border-bottom:1.5px solid var(--rad-border);padding-bottom:6px;">Calculated Critique Metrics</h4>
             
             <div class="calc-stat-row">
-              <span>Anatomy Score ($S_{\text{Anat}}$):</span>
+              <span>Anatomy Score (<span class="math-tex">$S_{\text{Anat}}$</span>):</span>
               <span class="calc-stat-val" id="calc-out-anat">95 / 100</span>
             </div>
             <div class="calc-stat-row">
-              <span>Positioning Score ($S_{\text{Pos}}$):</span>
+              <span>Positioning Score (<span class="math-tex">$S_{\text{Pos}}$</span>):</span>
               <span class="calc-stat-val" id="calc-out-pos">100 / 100</span>
             </div>
             <div class="calc-stat-row">
-              <span>Exposure Score ($S_{\text{Exp}}$):</span>
+              <span>Exposure Score (<span class="math-tex">$S_{\text{Exp}}$</span>):</span>
               <span class="calc-stat-val" id="calc-out-exp">100 / 100</span>
             </div>
             <div class="calc-stat-row">
-              <span>Exposure Index ($EI$) / $DI$:</span>
+              <span>Exposure Index (<span class="math-tex">$EI$</span>) / <span class="math-tex">$DI$</span>:</span>
               <span class="calc-stat-val" id="calc-out-ei">200 (+0.0 DI)</span>
             </div>
             <div class="calc-stat-row">
-              <span>Marker Score ($S_{\text{Mark}}$):</span>
+              <span>Marker Score (<span class="math-tex">$S_{\text{Mark}}$</span>):</span>
               <span class="calc-stat-val" id="calc-out-mark">100 / 100</span>
             </div>
             <div class="calc-stat-row">
-              <span>Artifact Score ($S_{\text{Art}}$):</span>
+              <span>Artifact Score (<span class="math-tex">$S_{\text{Art}}$</span>):</span>
               <span class="calc-stat-val" id="calc-out-art">100 / 100</span>
             </div>
             <div class="calc-stat-row" style="background:#f8fafc;padding:10px 6px;border-radius:6px;margin:4px 0;">
@@ -994,7 +1004,7 @@
       <article class="challenge-card">
         <span class="badge badge-check">Clinical Decision</span>
         <h3>The Missing Side Marker Dilemma</h3>
-        <p>An AP Knee radiograph demonstrates pristine anatomy, true AP alignment, open joint spaces, and optimal exposure ($EI = 200$), but the radiographer forgot to place the physical lead side marker. What is the correct clinical action under ALARA?</p>
+        <p>An AP Knee radiograph demonstrates pristine anatomy, true AP alignment, open joint spaces, and optimal exposure (<span class="math-tex">$EI = 200$</span>), but the radiographer forgot to place the physical lead side marker. What is the correct clinical action under ALARA?</p>
         <fieldset>
           <legend class="sr-only">Choose the best clinical response</legend>
           <div class="scenario-options">
@@ -1087,10 +1097,10 @@
       </div>
       <div class="card">
         <div class="procedure-grid">
-          <div class="procedure-step">Formulate a scientific prediction ($\ge 20$ chars) on whether a missing side marker alone justifies patient re-exposure under ALARA.</div>
-          <div class="procedure-step">Select Preset 1 (Optimal AP Knee Baseline) and record the pristine baseline critique score ($99/100$) and target $EI$ ($200$).</div>
-          <div class="procedure-step">Select Preset 2 (Ext Rotation $+18^\circ$) and Preset 3 (Clipped Anatomy) to evaluate severe positioning and collimation failures.</div>
-          <div class="procedure-step">Select Preset 4 (Quantum Mottle $2\text{ mAs}$) and record the severe photon starvation noise level ($\sigma > 19\%$) and $DI$ ($-6.0$).</div>
+          <div class="procedure-step">Formulate a scientific prediction (<span class="math-tex">$\ge 20$</span> chars) on whether a missing side marker alone justifies patient re-exposure under ALARA.</div>
+          <div class="procedure-step">Select Preset 1 (Optimal AP Knee Baseline) and record the pristine baseline critique score (<span class="math-tex">$99/100$</span>) and target <span class="math-tex">$EI$</span> (<span class="math-tex">$200$</span>).</div>
+          <div class="procedure-step">Select Preset 2 (Ext Rotation <span class="math-tex">$+18^\circ$</span>) and Preset 3 (Clipped Anatomy) to evaluate severe positioning and collimation failures.</div>
+          <div class="procedure-step">Select Preset 4 (Quantum Mottle <span class="math-tex">$2\text{ mAs}$</span>) and record the severe photon starvation noise level (<span class="math-tex">$\sigma > 19\%$</span>) and <span class="math-tex">$DI$</span> (<span class="math-tex">$-6.0$</span>).</div>
           <div class="procedure-step">Select Preset 5 (Metal Zipper) and Preset 6 (Missing Lead Marker) to contrast fatal VOI defects against protected administrative omissions.</div>
           <div class="procedure-step">Download trial data CSV, import into Excel, construct diagnostic plots, and complete Table B calculations.</div>
         </div>
@@ -1268,18 +1278,18 @@
             <div style="background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
               <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 1: Rotation Angle vs. Positioning Score &amp; Overlap</strong>
               <ul style="font-size:11.5px;color:var(--rad-text-soft);margin:6px 0 0 16px;line-height:1.4;">
-                <li><strong>X-axis:</strong> Limb Rotation Angle ($-20^\circ$ to $+20^\circ$).</li>
-                <li><strong>Y-axis:</strong> Positioning Score ($S_{\text{Pos}}$, $0–100$).</li>
-                <li><strong>Clinical Trend:</strong> Parabolic peak at $0^\circ$ (True AP); score degrades linearly by $3.5\text{ pts/degree}$. Fibular overlap exceeds $\frac{1}{3}$ above $+10^\circ$.</li>
+                <li><strong>X-axis:</strong> Limb Rotation Angle (<span class="math-tex">$-20^\circ$</span> to <span class="math-tex">$+20^\circ$</span>).</li>
+                <li><strong>Y-axis:</strong> Positioning Score (<span class="math-tex">$S_{\text{Pos}}$</span>, <span class="math-tex">$0–100$</span>).</li>
+                <li><strong>Clinical Trend:</strong> Parabolic peak at <span class="math-tex">$0^\circ$</span> (True AP); score degrades linearly by <span class="math-tex">$3.5\text{ pts/degree}$</span>. Fibular overlap exceeds <span class="math-tex">$\frac{1}{3}$</span> above <span class="math-tex">$+10^\circ$</span>.</li>
               </ul>
             </div>
             <div style="background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
-              <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 2: Technique (mAs) vs. Exposure Index ($EI$) &amp; Noise</strong>
+              <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 2: Technique (mAs) vs. Exposure Index (<span class="math-tex">$EI$</span>) &amp; Noise</strong>
               <ul style="font-size:11.5px;color:var(--rad-text-soft);margin:6px 0 0 16px;line-height:1.4;">
-                <li><strong>X-axis:</strong> Exposure Technique ($1.0$ to $32.0\text{ mAs}$).</li>
-                <li><strong>Y-axis 1 (Left):</strong> Exposure Index ($EI = 25 \cdot mAs$).</li>
-                <li><strong>Y-axis 2 (Right):</strong> Quantum Noise ($\sigma = 28 / \sqrt{mAs}$).</li>
-                <li><strong>Clinical Trend:</strong> Linear $EI$ scaling; noise plummets rapidly until target $8\text{ mAs}$, illustrating the diminishing returns of dose creep.</li>
+                <li><strong>X-axis:</strong> Exposure Technique (<span class="math-tex">$1.0$</span> to <span class="math-tex">$32.0\text{ mAs}$</span>).</li>
+                <li><strong>Y-axis 1 (Left):</strong> Exposure Index (<span class="math-tex">$EI = 25 \cdot mAs$</span>).</li>
+                <li><strong>Y-axis 2 (Right):</strong> Quantum Noise (<span class="math-tex">$\sigma = 28 / \sqrt{mAs}$</span>).</li>
+                <li><strong>Clinical Trend:</strong> Linear <span class="math-tex">$EI$</span> scaling; noise plummets rapidly until target <span class="math-tex">$8\text{ mAs}$</span>, illustrating the diminishing returns of dose creep.</li>
               </ul>
             </div>
           </div>
@@ -1294,11 +1304,11 @@
             <thead>
               <tr>
                 <th style="width:16%;">Configuration</th>
-                <th style="width:8%;">Anat ($S_{\text{Anat}}$)</th>
-                <th style="width:8%;">Pos ($S_{\text{Pos}}$)</th>
+                <th style="width:8%;">Anat (<span class="math-tex">$S_{\text{Anat}}$</span>)</th>
+                <th style="width:8%;">Pos (<span class="math-tex">$S_{\text{Pos}}$</span>)</th>
                 <th style="width:8%;">EI / DI</th>
-                <th style="width:8%;">Mark ($S_{\text{Mark}}$)</th>
-                <th style="width:8%;">Art ($S_{\text{Art}}$)</th>
+                <th style="width:8%;">Mark (<span class="math-tex">$S_{\text{Mark}}$</span>)</th>
+                <th style="width:8%;">Art (<span class="math-tex">$S_{\text{Art}}$</span>)</th>
                 <th style="width:9%;">Comp Score</th>
                 <th style="width:17%;">ALARA Verdict</th>
                 <th style="width:18%;">Actionable Directive</th>
@@ -1612,11 +1622,47 @@ function renderAllMath() {
   }
   var targets = document.querySelectorAll('.math-tex, .math-display');
   targets.forEach(function (el) {
-    if (!el.innerHTML || el.innerHTML.indexOf('$') === -1) return;
-    el.innerHTML = el.innerHTML
-      .replace(/\$\$([^$]+)\$\$/g, '<span style="display:block;text-align:center;">$1</span>')
-      .replace(/\$([^$]+)\$/g, '<span>$1</span>');
+    if (!el.textContent || el.textContent.indexOf('$') === -1) return;
+    var tex = el.textContent.trim();
+    var isDisplay = el.classList.contains('math-display') || (tex.indexOf('$$') === 0);
+    tex = tex.replace(/^\$\$([\s\S]*)\$\$$/, '$1').replace(/^\$([\s\S]*)\$$/, '$1');
+    el.innerHTML = formatMathTex(tex, isDisplay);
   });
+}
+
+function formatMathTex(tex, isDisplay) {
+  var s = tex;
+  s = s.replace(/\\begin\{cases\}([\s\S]*?)\\end\{cases\}/g, function (m, body) {
+    return body.split('\\\\').map(function (r) { return r.replace(/&/g, ' ').trim(); }).join('; ');
+  });
+  s = s.replace(/\\text\{([^}]*)\}/g, '$1');
+  for (var k = 0; k < 3; k++) {
+    s = s.replace(/\\sqrt\{([^{}]*)\}/g, '√($1)');
+    s = s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)');
+    s = s.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>');
+    s = s.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>');
+  }
+  s = s.replace(/\\log_\{10\}/g, 'log₁₀');
+  s = s.replace(/\\longrightarrow/g, '→');
+  s = s.replace(/\\propto/g, '∝');
+  s = s.replace(/\\times/g, '×');
+  s = s.replace(/\\cdot/g, '·');
+  s = s.replace(/\\ge/g, '≥');
+  s = s.replace(/\\le/g, '≤');
+  s = s.replace(/\\sigma/g, 'σ');
+  s = s.replace(/\\theta/g, 'θ');
+  s = s.replace(/\\pi/g, 'π');
+  s = s.replace(/\\nu/g, 'ν');
+  s = s.replace(/\^\{\\circ\}/g, '°');
+  s = s.replace(/\^\\circ/g, '°');
+  s = s.replace(/\\%/g, '%');
+  s = s.replace(/\\quad/g, ' ');
+  s = s.replace(/\\left|\\right/g, '');
+  s = s.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>');
+  s = s.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>');
+  s = s.replace(/_([A-Za-z0-9])/g, '<sub>$1</sub>');
+  if (isDisplay) return '<span style="display:block;text-align:center;">' + s + '</span>';
+  return '<span>' + s + '</span>';
 }
 
 // Control Values Extractor

@@ -10,6 +10,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../shared/lab-styles.css">
   <style>
     /* Two-Tab Navigation Styling */
@@ -531,20 +532,29 @@
 </head>
 <body>
 
-<header class="lab-header">
-  <div class="lab-header-inner">
-    <div class="brand-group">
-      <div class="logo-mark" aria-hidden="true">
-        <i class="fa-solid fa-microscope"></i>
-      </div>
-      <div>
-        <div class="program-title">Diagnostic Radiology Technology Program · Taibah University</div>
-        <div class="course-title">RAD 321 — Image Recording &amp; Analysis</div>
+<header class="lab-topbar">
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 15 — Radiographic Artifact Identification Lab</div>
       </div>
     </div>
-    <div class="header-badges">
-      <span class="badge badge-week">Week 15</span>
-      <span class="badge badge-tech">Quality Assurance &amp; Artifacts</span>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track">
+      <div class="lab-progress-fill" id="lab-progress-fill"></div>
+    </div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 15 of 15</span>
     </div>
   </div>
 </header>
@@ -553,11 +563,11 @@
 
   <!-- Hero Banner -->
   <div class="hero-banner">
-    <img src="../../assets/images/heroes/lab-15.webp" alt="Radiographer and QC technologist diagnosing digital image artifacts on diagnostic monitor" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'><rect width=\'1200\' height=\'400\' fill=\'%23071a2b\'/><path d=\'M0 320 Q300 240 600 320 T1200 320 L1200 400 L0 400 Z\' fill=\'%230b2842\' opacity=\'0.7\'/><text x=\'60\' y=\'160\' font-family=\'system-ui,sans-serif\' font-size=\'36\' font-weight=\'bold\' fill=\'%237fe0d6\'>Radiographic Artifact Identification Lab</text><text x=\'60\' y=\'210\' font-family=\'system-ui,sans-serif\' font-size=\'18\' fill=\'%23ffffff\' opacity=\'0.85\'>9 Artifacts + Baseline · 5-Stage IMAGE Root Cause Tracing · ALARA Gating</text></svg>';">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Radiographer and QC technologist diagnosing digital image artifacts on diagnostic monitor" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'><rect width=\'1200\' height=\'400\' fill=\'%23071a2b\'/><path d=\'M0 320 Q300 240 600 320 T1200 320 L1200 400 L0 400 Z\' fill=\'%230b2842\' opacity=\'0.7\'/><text x=\'60\' y=\'160\' font-family=\'system-ui,sans-serif\' font-size=\'36\' font-weight=\'bold\' fill=\'%237fe0d6\'>Radiographic Artifact Identification Lab</text><text x=\'60\' y=\'210\' font-family=\'system-ui,sans-serif\' font-size=\'18\' fill=\'%23ffffff\' opacity=\'0.85\'>9 Artifacts + Baseline · 5-Stage IMAGE Root Cause Tracing · ALARA Gating</text></svg>';">
     <div class="hero-overlay">
       <span class="eyebrow">Assessed Virtual Laboratory Suite · Capstone</span>
       <h1>Lab 15: Radiographic Artifact Identification Lab</h1>
-      <p>Diagnose 9 authentic artifacts plus a clean baseline (10 cases total) across modern DR, CR, and Screen-Film modalities. Trace root causes to the 5-stage IMAGE process ($I, M, A, G, E$), calculate Volume of Interest (VOI) diagnostic impact, and enforce evidence-based ALARA repeat gating.</p>
+      <p>Diagnose 9 authentic artifacts plus a clean baseline (10 cases total) across modern DR, CR, and Screen-Film modalities. Trace root causes to the 5-stage IMAGE process (<span class="math-tex">$I, M, A, G, E$</span>), calculate Volume of Interest (VOI) diagnostic impact, and enforce evidence-based ALARA repeat gating.</p>
     </div>
   </div>
 
@@ -663,16 +673,16 @@
           Modern radiology departments operate hybrid environments featuring Direct Digital Radiography (DR flat-panel), Computed Radiography (CR photostimulable phosphor), and legacy Screen-Film systems:
         </p>
         <ul>
-          <li><b>Case 0: Optimal Clean Diagnostic Baseline:</b> Pristine exposure without extraneous density; target $EI = 200$, crisp cortical bone margins, and fully open joint space.</li>
+          <li><b>Case 0: Optimal Clean Diagnostic Baseline:</b> Pristine exposure without extraneous density; target <span class="math-tex">$EI = 200$</span>, crisp cortical bone margins, and fully open joint space.</li>
           <li><b>Case 1: DR Column / Dead Pixel Line Defect (DR Flat-Panel):</b> Caused by a non-responsive TFT readout column line or electronic data line failure. Appears as a razor-sharp, perfectly vertical radiopaque or radiolucent line traversing the entire image matrix.</li>
           <li><b>Case 2: Stationary Grid Moiré Pattern Aliasing (CR / PSP and DR flat-panel — modality-general):</b> Caused by geometric-sampling frequency mismatch. When stationary grid lead strip frequency heterodynes with the CR reader laser scan pitch near the Nyquist frequency, zebra-like wavy interference fringes emerge across the entire field. DR flat-panels alias too when grid frequency ≈ detector sampling frequency.</li>
-          <li><b>Case 3: CR PSP Plate Ghosting / Incomplete Erasure (CR / PSP):</b> Caused by unreleased trapped electrons in $\text{BaFBr:Eu}^{2+}$ F-centers due to burned-out or degraded high-intensity discharge erasure lamps. Displays a faint phantom anatomical silhouette from the prior patient.</li>
-          <li><b>Case 4: Radiopaque Foreign Body / Metal Zipper (DR / CR / Film):</b> Inadequate patient gowning. High atomic number ($Z$) metal zipper teeth cast total photoelectric shadows directly over diagnostic bone.</li>
-          <li><b>Case 5: Patient Involuntary Motion Blur (DR / CR / Film):</b> Kinetic displacement during exposure causing wide penumbra unsharpness ($U_m = v \cdot t$) and smearing trabecular bone micro-architecture.</li>
+          <li><b>Case 3: CR PSP Plate Ghosting / Incomplete Erasure (CR / PSP):</b> Caused by unreleased trapped electrons in <span class="math-tex">$\text{BaFBr:Eu}^{2+}$</span> F-centers due to burned-out or degraded high-intensity discharge erasure lamps. Displays a faint phantom anatomical silhouette from the prior patient.</li>
+          <li><b>Case 4: Radiopaque Foreign Body / Metal Zipper (DR / CR / Film):</b> Inadequate patient gowning. High atomic number (<span class="math-tex">$Z$</span>) metal zipper teeth cast total photoelectric shadows directly over diagnostic bone.</li>
+          <li><b>Case 5: Patient Involuntary Motion Blur (DR / CR / Film):</b> Kinetic displacement during exposure causing wide penumbra unsharpness (<span class="math-tex">$U_m = v \cdot t$</span>) and smearing trabecular bone micro-architecture.</li>
           <li><b>Case 6: Focused Grid Cutoff (DR / CR / Film):</b> Off-level or off-center beam alignment across lead strips absorbing primary X-rays. Produces progressive unilateral or bilateral optical density loss with elevated quantum noise towards margins.</li>
-          <li><b>Case 7: Screen-Film Static Discharge Spark (Screen-Film):</b> Frictional static buildup during cassette unloading in dry darkrooms ($<40\%$ relative humidity). Sparks visible light, creating dendritic branching black tree-like or crown arborization marks.</li>
-          <li><b>Case 8: Automatic Processor Pi Lines &amp; Guide-Shoe Scratches (Screen-Film):</b> Pi-lines: chemical dirt or pressure marks deposited at regular intervals equal to roller circumference ($\pi \cdot d$), running perpendicular to film transport direction. Guide-shoe scratches are separate marks running parallel to film transport direction.</li>
-          <li><b>Case 9: Quantum Mottle / Photon Starvation (DR / CR):</b> Severe underexposure ($mAs \le 2.5$) where Poisson statistical fluctuation ($\sigma = 28 / \sqrt{mAs}$) dominates remnant signal, creating uniform grainy noise and loss of low-contrast detail.</li>
+          <li><b>Case 7: Screen-Film Static Discharge Spark (Screen-Film):</b> Frictional static buildup during cassette unloading in dry darkrooms (<span class="math-tex">$<40\%$</span> relative humidity). Sparks visible light, creating dendritic branching black tree-like or crown arborization marks.</li>
+          <li><b>Case 8: Automatic Processor Pi Lines &amp; Guide-Shoe Scratches (Screen-Film):</b> Pi-lines: chemical dirt or pressure marks deposited at regular intervals equal to roller circumference (<span class="math-tex">$\pi \cdot d$</span>), running perpendicular to film transport direction. Guide-shoe scratches are separate marks running parallel to film transport direction.</li>
+          <li><b>Case 9: Quantum Mottle / Photon Starvation (DR / CR):</b> Severe underexposure (<span class="math-tex">$mAs \le 2.5$</span>) where Poisson statistical fluctuation (<span class="math-tex">$\sigma = 28 / \sqrt{mAs}$</span>) dominates remnant signal, creating uniform grainy noise and loss of low-contrast detail.</li>
         </ul>
 
         <h3>1.3 The 5-Stage IMAGE Process Root-Cause Tracing Method</h3>
@@ -680,11 +690,11 @@
           Every artifact originates at a specific vulnerable stage in the clinical workflow:
         </p>
         <div class="formula-box">
-          $$\text{Stage I (Initial Setup)} \longrightarrow \text{Plate erasure, cassette inspection, darkroom humidity}$$
-          $$\text{Stage M (Manual Factors)} \longrightarrow \text{Exposure technique, mAs photon fluence (Quantum Mottle)}$$
-          $$\text{Stage A (Anatomy & Prep)} \longrightarrow \text{Patient gowning (Zippers), immobilization (Motion)}$$
-          $$\text{Stage G (Guidance)} \longrightarrow \text{Central ray centering, grid focal alignment (Grid Cutoff)}$$
-          $$\text{Stage E (Evaluation / Hardware)} \longrightarrow \text{TFT array line dropouts, processor rollers, QC quarantine}$$
+          <span class="math-display">$$\text{Stage I (Initial Setup)} \longrightarrow \text{Plate erasure, cassette inspection, darkroom humidity}$$</span>
+          <span class="math-display">$$\text{Stage M (Manual Factors)} \longrightarrow \text{Exposure technique, mAs photon fluence (Quantum Mottle)}$$</span>
+          <span class="math-display">$$\text{Stage A (Anatomy & Prep)} \longrightarrow \text{Patient gowning (Zippers), immobilization (Motion)}$$</span>
+          <span class="math-display">$$\text{Stage G (Guidance)} \longrightarrow \text{Central ray centering, grid focal alignment (Grid Cutoff)}$$</span>
+          <span class="math-display">$$\text{Stage E (Evaluation / Hardware)} \longrightarrow \text{TFT array line dropouts, processor rollers, QC quarantine}$$</span>
         </div>
 
         <h3>1.4 Volume of Interest (VOI) Impact &amp; ALARA Repeat Gating</h3>
@@ -692,12 +702,12 @@
           Under the ALARA principle, a repeat exposure is justified <b>only when the artifact genuinely obscures critical diagnostic anatomy within the Volume of Interest (VOI)</b>:
         </p>
         <div class="formula-box">
-          $$\text{VOI Diagnostic Impact} = \text{Severity} \times \text{Location Multiplier}$$
-          $$\text{Location Multiplier} = \begin{cases} 1.0 & \text{if Over Critical Diagnostic VOI (Joint/Cortices)} \\ 0.35 & \text{if Peripheral Margins / Soft Tissue Edge} \end{cases}$$
+          <span class="math-display">$$\text{VOI Diagnostic Impact} = \text{Severity} \times \text{Location Multiplier}$$</span>
+          <span class="math-display">$$\text{Location Multiplier} = \begin{cases} 1.0 & \text{if Over Critical Diagnostic VOI (Joint/Cortices)} \\ 0.35 & \text{if Peripheral Margins / Soft Tissue Edge} \end{cases}$$</span>
           <div style="font-size:12px;color:var(--rad-text-soft);margin-top:6px;">Multipliers (1.0× / 0.35×) and the 50% repeat threshold below are simulator gates.</div>
         </div>
         <ul>
-          <li><b>Mandatory Repeat Justified:</b> $VOI_{\text{impact}} \ge 50\%$ with unrecoverable diagnostic loss (e.g. Metal zipper obscuring knee joint, severe motion unsharpness, severe quantum mottle) — simulator gate; follow local policy.</li>
+          <li><b>Mandatory Repeat Justified:</b> <span class="math-tex">$VOI_{\text{impact}} \ge 50\%$</span> with unrecoverable diagnostic loss (e.g. Metal zipper obscuring knee joint, severe motion unsharpness, severe quantum mottle) — simulator gate; follow local policy.</li>
           <li><b>Do NOT Repeat (ALARA Protection Gate):</b> Peripheral artifacts outside the critical VOI (e.g. static spark near film edge) or mild peripheral Moiré recoverable via digital post-processing/anti-aliasing filters. Moiré obscuring the diagnostic VOI may need repeat with an oscillating grid — follow local policy.</li>
           <li><b>Equipment Hardware Quarantine:</b> Fixed detector column line defect. Repeating exposures on the patient is clinically negligent; the detector must be quarantined immediately for calibration or replacement.</li>
         </ul>
@@ -747,7 +757,7 @@
           <div>
             <span class="tag-badge">Patient &amp; Darkroom</span>
             <h4><i class="fa-solid fa-shirt" style="color:var(--rad-teal);"></i> Prep &amp; Environmental</h4>
-            <p>Unremoved metal zippers over VOI require gowning (Stage A). Darkroom static sparks ($<40\%$ humidity) deposit tree marks on film (Stage I).</p>
+            <p>Unremoved metal zippers over VOI require gowning (Stage A). Darkroom static sparks (<span class="math-tex">$<40\%$</span> humidity) deposit tree marks on film (Stage I).</p>
           </div>
           <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Stages A &amp; I · Gowning &amp; Humidity QC</span>
         </article>
@@ -770,7 +780,7 @@
             <tbody>
               <tr>
                 <td><strong>1. Authentic Clinical Cases:</strong> Total distinct artifact conditions simulated in Lab 15 (9 artifacts + clean baseline)</td>
-                <td>Case Count ($N$)</td>
+                <td>Case Count (<span class="math-tex">$N$</span>)</td>
                 <td><input type="text" id="w-total-cases" placeholder="e.g. 10" style="width:100%;max-width:200px;"></td>
               </tr>
               <tr>
@@ -1032,8 +1042,8 @@
       </div>
       <div class="card">
         <div class="procedure-grid">
-          <div class="procedure-step">Formulate a scientific prediction ($\ge 20$ chars) on whether a persistent detector line defect requires patient re-exposure or equipment quarantine.</div>
-          <div class="procedure-step">Record an optimal Clean Baseline run ($100\%$ score, zero artifact impact).</div>
+          <div class="procedure-step">Formulate a scientific prediction (<span class="math-tex">$\ge 20$</span> chars) on whether a persistent detector line defect requires patient re-exposure or equipment quarantine.</div>
+          <div class="procedure-step">Record an optimal Clean Baseline run (<span class="math-tex">$100\%$</span> score, zero artifact impact).</div>
           <div class="procedure-step">Select Preset 2 (DR Column Line) and Preset 3 (CR Moiré Aliasing) to evaluate digital receptor artifacts.</div>
           <div class="procedure-step">Select Preset 4 (PSP Ghosting) and Preset 5 (Metal Zipper over VOI) to contrast reader erasure failures against patient gowning errors.</div>
           <div class="procedure-step">Select Preset 7 (Static Discharge) and Preset 10 (Quantum Mottle) to evaluate environmental static vs. technique photon starvation.</div>
@@ -1221,17 +1231,17 @@
             <div style="background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
               <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 1: Artifact Severity vs. Diagnostic VOI Impact</strong>
               <ul style="font-size:11.5px;color:var(--rad-text-soft);margin:6px 0 0 16px;line-height:1.4;">
-                <li><strong>X-axis:</strong> Artifact Severity ($10\%$ to $100\%$).</li>
-                <li><strong>Y-axis:</strong> Diagnostic VOI Impact ($0\%$ to $100\%$).</li>
-                <li><strong>Series 1 vs 2:</strong> Plot Critical VOI ($1.0\times$ multiplier) vs. Peripheral Margin ($0.35\times$ multiplier). Highlight the $50\%$ repeat threshold line.</li>
+                <li><strong>X-axis:</strong> Artifact Severity (<span class="math-tex">$10\%$</span> to <span class="math-tex">$100\%$</span>).</li>
+                <li><strong>Y-axis:</strong> Diagnostic VOI Impact (<span class="math-tex">$0\%$</span> to <span class="math-tex">$100\%$</span>).</li>
+                <li><strong>Series 1 vs 2:</strong> Plot Critical VOI (<span class="math-tex">$1.0\times$</span> multiplier) vs. Peripheral Margin (<span class="math-tex">$0.35\times$</span> multiplier). Highlight the <span class="math-tex">$50\%$</span> repeat threshold line.</li>
               </ul>
             </div>
             <div style="background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
               <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 2: Prevention Confidence vs. Residual Risk &amp; Quality</strong>
               <ul style="font-size:11.5px;color:var(--rad-text-soft);margin:6px 0 0 16px;line-height:1.4;">
-                <li><strong>X-axis:</strong> Prevention Protocol Confidence ($0\%$ to $100\%$).</li>
-                <li><strong>Y-axis 1 (Left):</strong> Residual Risk ($\% = \text{Severity} \times [1 - \text{Prev}/100]$).</li>
-                <li><strong>Y-axis 2 (Right):</strong> Composite Diagnostic Quality Score ($0–100$).</li>
+                <li><strong>X-axis:</strong> Prevention Protocol Confidence (<span class="math-tex">$0\%$</span> to <span class="math-tex">$100\%$</span>).</li>
+                <li><strong>Y-axis 1 (Left):</strong> Residual Risk (<span class="math-tex">$\% = \text{Severity} \times [1 - \text{Prev}/100]$</span>).</li>
+                <li><strong>Y-axis 2 (Right):</strong> Composite Diagnostic Quality Score (<span class="math-tex">$0–100$</span>).</li>
                 <li><strong>Clinical Trend:</strong> Strong QC prevention reduces residual risk toward zero and restores quality.</li>
               </ul>
             </div>
@@ -1563,11 +1573,47 @@ function renderAllMath() {
   }
   var targets = document.querySelectorAll('.math-tex, .math-display');
   targets.forEach(function (el) {
-    if (!el.innerHTML || el.innerHTML.indexOf('$') === -1) return;
-    el.innerHTML = el.innerHTML
-      .replace(/\$\$([^$]+)\$\$/g, '<span style="display:block;text-align:center;">$1</span>')
-      .replace(/\$([^$]+)\$/g, '<span>$1</span>');
+    if (!el.textContent || el.textContent.indexOf('$') === -1) return;
+    var tex = el.textContent.trim();
+    var isDisplay = el.classList.contains('math-display') || (tex.indexOf('$$') === 0);
+    tex = tex.replace(/^\$\$([\s\S]*)\$\$$/, '$1').replace(/^\$([\s\S]*)\$$/, '$1');
+    el.innerHTML = formatMathTex(tex, isDisplay);
   });
+}
+
+function formatMathTex(tex, isDisplay) {
+  var s = tex;
+  s = s.replace(/\\begin\{cases\}([\s\S]*?)\\end\{cases\}/g, function (m, body) {
+    return body.split('\\\\').map(function (r) { return r.replace(/&/g, ' ').trim(); }).join('; ');
+  });
+  s = s.replace(/\\text\{([^}]*)\}/g, '$1');
+  for (var k = 0; k < 3; k++) {
+    s = s.replace(/\\sqrt\{([^{}]*)\}/g, '√($1)');
+    s = s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)');
+    s = s.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>');
+    s = s.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>');
+  }
+  s = s.replace(/\\log_\{10\}/g, 'log₁₀');
+  s = s.replace(/\\longrightarrow/g, '→');
+  s = s.replace(/\\propto/g, '∝');
+  s = s.replace(/\\times/g, '×');
+  s = s.replace(/\\cdot/g, '·');
+  s = s.replace(/\\ge/g, '≥');
+  s = s.replace(/\\le/g, '≤');
+  s = s.replace(/\\sigma/g, 'σ');
+  s = s.replace(/\\theta/g, 'θ');
+  s = s.replace(/\\pi/g, 'π');
+  s = s.replace(/\\nu/g, 'ν');
+  s = s.replace(/\^\{\\circ\}/g, '°');
+  s = s.replace(/\^\\circ/g, '°');
+  s = s.replace(/\\%/g, '%');
+  s = s.replace(/\\quad/g, ' ');
+  s = s.replace(/\\left|\\right/g, '');
+  s = s.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>');
+  s = s.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>');
+  s = s.replace(/_([A-Za-z0-9])/g, '<sub>$1</sub>');
+  if (isDisplay) return '<span style="display:block;text-align:center;">' + s + '</span>';
+  return '<span>' + s + '</span>';
 }
 
 // Control Values Extractor
