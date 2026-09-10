@@ -46,6 +46,20 @@
     ctx.closePath();
   }
 
+  // Canvas caption helper: shrink the font until the text fits maxWidth.
+  // Prevents simulator labels, pills, and footers overflowing their boxes.
+  function setFittedFont(ctx, text, maxWidth, basePx, weight, family) {
+    let px = basePx;
+    ctx.font = weight + ' ' + px + 'px ' + family;
+    try {
+      while (px > 7.5 && ctx.measureText(text).width > maxWidth) {
+        px -= 0.5;
+        ctx.font = weight + ' ' + px + 'px ' + family;
+      }
+    } catch (e) {}
+    return px;
+  }
+
   function computeFormation(v) {
     const sod = Math.max(1, v.sid - v.oid);
     const magnification = v.sid / sod;
@@ -5828,7 +5842,8 @@
         ctx.lineWidth = 1.5;
         ctx.strokeRect(radX + 10, radY + 48, radW - 20, 26);
         ctx.fillStyle = isDanger ? '#fca5a5' : '#fef08a';
-        ctx.font = '900 12.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        setFittedFont(ctx, text, radW - 36, 12.5, '900', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
         ctx.fillText(text, radX + 18, radY + 65);
       }
 
@@ -5845,21 +5860,33 @@
 
       } else if (idx === 2) {
         // Case 2: Stationary Grid Moiré Pattern Aliasing
+        // Physics: fine lead-strip frequency (near detector sampling limit) heterodynes
+        // with the reader sampling frequency, producing BROAD low-frequency beat bands
+        // (|f_grid - f_sample|). Draw faint strips + wide diagonal beat bands.
         ctx.save();
-        const moireAlpha = Math.min(0.75, 0.25 + sev * 0.5);
-        ctx.strokeStyle = isInverted ? `rgba(0,0,0,${moireAlpha})` : `rgba(255,255,255,${moireAlpha})`;
-        ctx.lineWidth = 1.8;
-        for (let my = radY; my < radY + radH; my += 6) {
+        ctx.beginPath();
+        ctx.rect(radX, radY, radW, radH);
+        ctx.clip();
+        // (a) Faint lead-strip lines (exaggerated spacing for visibility)
+        ctx.strokeStyle = isInverted ? 'rgba(0,0,0,0.16)' : 'rgba(255,255,255,0.16)';
+        ctx.lineWidth = 1;
+        for (let gx = radX; gx < radX + radW; gx += 5) {
           ctx.beginPath();
-          for (let mx = radX; mx < radX + radW; mx += 8) {
-            const wave = Math.sin((mx - radX) * 0.045) * Math.sin((my - radY) * 0.065) * 16 * sev;
-            if (mx === radX) ctx.moveTo(mx, my + wave);
-            else ctx.lineTo(mx, my + wave);
-          }
+          ctx.moveTo(gx, radY);
+          ctx.lineTo(gx, radY + radH);
           ctx.stroke();
         }
+        // (b) Broad beat bands: low-frequency interference, contrast scales with severity
+        const beatAlpha = Math.min(0.5, 0.10 + sev * 0.32);
+        ctx.translate(radX + radW / 2, radY + radH / 2);
+        ctx.rotate(-0.32);
+        ctx.fillStyle = isInverted ? `rgba(0,0,0,${beatAlpha})` : `rgba(255,255,255,${beatAlpha})`;
+        const bandW = 34 + sev * 30, bandGap = 120;
+        for (let bx = -radW; bx < radW; bx += bandW + bandGap) {
+          ctx.fillRect(bx, -radH, bandW, radH * 2);
+        }
         ctx.restore();
-        renderArtifactCallout('⚠️ MOIRÉ PATTERN ALIASING (GRID FREQ vs LASER SCAN SAMPLING)', false);
+        renderArtifactCallout('⚠️ MOIRÉ BEAT BANDS (GRID FREQ vs READER SAMPLING)', false);
 
       } else if (idx === 3) {
         // Case 3: CR PSP Incomplete Optical Erasure Ghosting
@@ -5906,44 +5933,67 @@
         renderArtifactCallout('⚠️ SEVERE PATIENT MOTION UNSHARPNESS (TRABECULAE OBSCURED)', true);
 
       } else if (idx === 6) {
-        // Case 6: Focused Grid Cutoff
-        const cutGrad = ctx.createLinearGradient(radX, 0, radX + radW, 0);
-        cutGrad.addColorStop(0, 'rgba(0,0,0,0.9)');
-        cutGrad.addColorStop(0.35, 'rgba(0,0,0,0.25)');
-        cutGrad.addColorStop(0.65, 'rgba(0,0,0,0.02)');
-        cutGrad.addColorStop(1, 'rgba(0,0,0,0.94)');
+        // Case 6: Focused Grid Cutoff (off-level / off-center CR)
+        // Physics: primary photons strike lead strips obliquely on ONE side, so signal
+        // falls progressively toward that lateral margin (asymmetric, not bilateral).
+        // Photon starvation there also raises quantum noise (noise ~ 1/sqrt(signal)).
+        const cutPeak = 0.55 + sev * 0.4;
+        const cutGrad = ctx.createLinearGradient(radX, 0, radX + radW * 0.6, 0);
+        const veil = isInverted ? '255,255,255' : '0,0,0';
+        cutGrad.addColorStop(0, `rgba(${veil},${Math.min(0.95, cutPeak).toFixed(2)})`);
+        cutGrad.addColorStop(0.55, `rgba(${veil},${(cutPeak * 0.35).toFixed(2)})`);
+        cutGrad.addColorStop(1, `rgba(${veil},0)`);
         ctx.fillStyle = cutGrad;
-        ctx.fillRect(radX, radY, radW, radH);
+        ctx.fillRect(radX, radY, radW * 0.6, radH);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.35)';
-        for (let i = 0; i < 1100; i++) {
-          const rx = Math.random() < 0.5 ? radX + Math.random() * 90 : radX + radW - Math.random() * 90;
-          const ry = radY + Math.random() * radH;
+        // Seeded noise concentrated where the signal is lost (stable across frames)
+        const cutRng = mulberry32(idx * 7919 + Math.round(sev * 97) + 13);
+        const cutDots = Math.round(1100 * (0.35 + sev * 0.65));
+        const dotTone = isInverted ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)';
+        ctx.fillStyle = dotTone;
+        for (let i = 0; i < cutDots; i++) {
+          const rx = radX + radW * 0.55 * Math.pow(cutRng(), 1.6);
+          const ry = radY + cutRng() * radH;
           ctx.fillRect(rx, ry, 1.5, 1.5);
         }
-        renderArtifactCallout('⚠️ FOCUSED GRID CUTOFF (OFF-LEVEL / OFF-CENTER CENTRAL RAY)', true);
+        renderArtifactCallout('⚠️ FOCUSED GRID CUTOFF (OFF-LEVEL / OFF-CENTER — ONE-SIDED LOSS)', true);
 
       } else if (idx === 7) {
-        // Case 7: Screen-Film Static Discharge
+        // Case 7: Screen-Film Static Discharge (Tree / Crown Spark)
+        // Physics: handling friction sparks expose emulsion as HAIRLINE dark dendrites
+        // starting at film edges (plus occasional circular crown bursts). Static marks
+        // are dark (added density), so draw dark on standard view, light on invert.
         ctx.save();
-        ctx.strokeStyle = '#050b14'; ctx.lineWidth = 2.4;
-        const originX = radX + 30, originY = radY + radH - 40;
+        ctx.strokeStyle = isInverted ? 'rgba(255,255,255,0.85)' : 'rgba(4,7,12,0.85)';
 
         function drawBranch(x, y, len, angle, depth) {
-          if (depth <= 0) return;
+          if (depth <= 0 || len < 2) return;
           const nx = x + Math.cos(angle) * len;
           const ny = y + Math.sin(angle) * len;
+          ctx.lineWidth = Math.max(0.5, depth * 0.5);
           ctx.beginPath();
           ctx.moveTo(x, y);
           ctx.lineTo(nx, ny);
           ctx.stroke();
-          drawBranch(nx, ny, len * 0.72, angle - 0.45, depth - 1);
-          drawBranch(nx, ny, len * 0.65, angle + 0.52, depth - 1);
+          drawBranch(nx, ny, len * 0.72, angle - 0.42, depth - 1);
+          drawBranch(nx, ny, len * 0.66, angle + 0.5, depth - 1);
         }
-        drawBranch(originX, originY, 52 * sev, -Math.PI / 3, 5);
-        drawBranch(originX + 22, originY + 8, 42 * sev, -Math.PI / 2.2, 4);
+        // Tree 1: left film edge over soft tissue (visible against mid-gray)
+        drawBranch(radX + 6, radY + radH * 0.58, 30 + 26 * sev, -0.5, 6);
+        // Tree 2: bottom edge discharge
+        drawBranch(radX + radW * 0.3, radY + radH - 4, 24 + 20 * sev, -Math.PI / 2, 5);
+        // Crown burst: radial hairlines around a central spark point
+        const crownX = radX + radW * 0.7, crownY = radY + radH * 0.3;
+        ctx.lineWidth = 0.7;
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+          const r0 = 3, r1 = 9 + 9 * sev;
+          ctx.beginPath();
+          ctx.moveTo(crownX + Math.cos(a) * r0, crownY + Math.sin(a) * r0);
+          ctx.lineTo(crownX + Math.cos(a) * r1, crownY + Math.sin(a) * r1);
+          ctx.stroke();
+        }
         ctx.restore();
-        renderArtifactCallout('⚠️ STATIC DISCHARGE ARBORIZATION (LOW HUMIDITY DARKROOM)', false);
+        renderArtifactCallout('⚠️ STATIC TREE & CROWN SPARKS (LOW-HUMIDITY HANDLING)', false);
 
       } else if (idx === 8) {
         // Case 8: Automatic Processor Pi Lines
@@ -5991,8 +6041,10 @@
         ctx.fillStyle = 'rgba(239, 68, 68, 0.18)';
         ctx.fillRect(ovX, ovY, ovW, ovH);
         ctx.setLineDash([]);
-        ctx.fillStyle = '#fca5a5'; ctx.font = '900 11.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-        ctx.fillText(`DIAGNOSTIC VOI IMPACT: ${raw.voiImpact}%`, ovX + 6, ovY - 7);
+        const voiLabel = `VOI IMPACT: ${raw.voiImpact}%`;
+        ctx.fillStyle = '#fca5a5';
+        setFittedFont(ctx, voiLabel, ovW - 12, 11.5, '900', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
+        ctx.fillText(voiLabel, ovX + 6, ovY - 7);
       }
 
       // Lead Anatomical Side Marker Rendering
@@ -6012,9 +6064,11 @@
       ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.2;
       ctx.strokeRect(radX + 8, radY + 8, 265, 36);
 
-      ctx.fillStyle = '#f1f5f9'; ctx.font = '800 11.5px monospace';
+      ctx.fillStyle = '#f1f5f9';
+      setFittedFont(ctx, 'PT: AL-ANAZI, S. (M/38) | MRN: 883921', 265 - 16, 11.5, '800', 'monospace');
       ctx.fillText('PT: AL-ANAZI, S. (M/38) | MRN: 883921', radX + 16, radY + 23);
-      ctx.fillStyle = '#7dd3fc'; ctx.font = '700 11px monospace';
+      ctx.fillStyle = '#7dd3fc';
+      setFittedFont(ctx, 'EXAM: AP KNEE (RT) | ' + art.modality, 265 - 16, 11, '700', 'monospace');
       ctx.fillText('EXAM: AP KNEE (RT) | ' + art.modality, radX + 16, radY + 37);
 
       // Radiograph Technical Footer
@@ -6023,10 +6077,17 @@
       ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.2;
       ctx.strokeRect(radX, radY + radH - 26, radW, 26);
 
-      ctx.fillStyle = '#38bdf8'; ctx.font = '800 12px monospace';
-      ctx.fillText(`CASE ${idx}: ${art.name.toUpperCase()}`, radX + 10, radY + radH - 8);
+      const footRight = `WW: ${ww} · WL: ${wl} | ${isInverted ? 'INVERT' : 'STD'}`;
+      ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
       ctx.fillStyle = '#cbd5e1'; ctx.font = '800 11.5px monospace';
-      ctx.fillText(`WW: ${ww} · WL: ${wl} | ${isInverted ? 'INVERT' : 'STD'}`, radX + radW - 168, radY + radH - 8);
+      const rightW = ctx.measureText(footRight).width;
+      ctx.fillText(footRight, radX + radW - 10, radY + radH - 8);
+      const footTitle = `CASE ${idx}: ${art.name.toUpperCase()}`;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#38bdf8';
+      setFittedFont(ctx, footTitle, radW - rightW - 30, 12, '800', 'monospace');
+      ctx.fillText(footTitle, radX + 10, radY + radH - 8);
+      ctx.textAlign = 'left';
 
       ctx.restore();
 
