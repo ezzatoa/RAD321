@@ -5,6 +5,7 @@ const fs = require('fs');
 const multer = require('multer');
 const { authenticate, requireRole } = require('../middleware/authMiddleware');
 const reportingService = require('../services/reportingService');
+const geminiGradingService = require('../services/geminiGradingService');
 const { getDatabase } = require('../db/database');
 
 // Guard all student routes
@@ -179,13 +180,13 @@ router.post('/labs/:labId/save', (req, res) => {
   }
 });
 
-// 4. Formal Submit Lab Assignment
-router.post('/labs/:labId/submit', (req, res) => {
+// 4. Submit Lab Assignment (Two-Phase: In-Lab Activities vs Post-Lab Excel Analysis)
+router.post('/labs/:labId/submit', async (req, res) => {
   try {
     const db = getDatabase();
     const labId = req.params.labId;
     const weekNumber = parseInt(labId.replace('lab-', ''), 10) || 1;
-    const { state, runs, quizScore, quizTotal, prediction, rubricScores } = req.body;
+    const { state, runs, quizScore, quizTotal, prediction, rubricScores, phase, excelAnalysisNotes } = req.body;
 
     const stateJson = JSON.stringify(state || {});
     const runsJson = JSON.stringify(runs || []);
@@ -194,71 +195,118 @@ router.post('/labs/:labId/submit', (req, res) => {
     const existing = db.prepare('SELECT id, status FROM lab_submissions WHERE user_id = ? AND lab_id = ?').get(req.user.id, labId);
 
     let submissionId = existing?.id;
+    const isPhase2 = phase === 'excel_analysis';
+    const newStatus = isPhase2 ? 'submitted' : 'in_lab_submitted';
 
     if (existing) {
-      db.prepare(`
-        UPDATE lab_submissions
-        SET
-          status = 'submitted',
-          progress_percent = 100,
-          prediction = COALESCE(?, prediction),
-          state_data = ?,
-          runs_data = ?,
-          quiz_score = COALESCE(?, quiz_score),
-          quiz_total = COALESCE(?, quiz_total),
-          rubric_scores = ?,
-          submitted_at = CURRENT_TIMESTAMP,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `).run(
-        prediction || null,
-        stateJson,
-        runsJson,
-        quizScore !== undefined ? quizScore : null,
-        quizTotal !== undefined ? quizTotal : 4,
-        rubricJson,
-        existing.id
-      );
+      if (isPhase2) {
+        db.prepare(`
+          UPDATE lab_submissions
+          SET
+            status = 'submitted',
+            excel_submitted_at = CURRENT_TIMESTAMP,
+            excel_analysis_notes = COALESCE(?, excel_analysis_notes),
+            submitted_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(excelAnalysisNotes || null, existing.id);
+      } else {
+        db.prepare(`
+          UPDATE lab_submissions
+          SET
+            status = 'in_lab_submitted',
+            progress_percent = 100,
+            prediction = COALESCE(?, prediction),
+            state_data = ?,
+            runs_data = ?,
+            quiz_score = COALESCE(?, quiz_score),
+            quiz_total = COALESCE(?, quiz_total),
+            rubric_scores = ?,
+            in_lab_submitted_at = CURRENT_TIMESTAMP,
+            submitted_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(
+          prediction || null,
+          stateJson,
+          runsJson,
+          quizScore !== undefined ? quizScore : null,
+          quizTotal !== undefined ? quizTotal : 4,
+          rubricJson,
+          existing.id
+        );
+      }
     } else {
       const result = db.prepare(`
         INSERT INTO lab_submissions (
           user_id, lab_id, week_number, status, progress_percent, prediction,
-          state_data, runs_data, quiz_score, quiz_total, rubric_scores, total_score, submitted_at
+          state_data, runs_data, quiz_score, quiz_total, rubric_scores, total_score,
+          in_lab_submitted_at, excel_submitted_at, excel_analysis_notes, submitted_at
         ) VALUES (
-          ?, ?, ?, 'submitted', 100, ?,
-          ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP
+          ?, ?, ?, ?, 100, ?,
+          ?, ?, ?, ?, ?, 0,
+          ?, ?, ?, CURRENT_TIMESTAMP
         )
       `).run(
         req.user.id,
         labId,
         weekNumber,
+        newStatus,
         prediction || null,
         stateJson,
         runsJson,
         quizScore || 0,
         quizTotal || 4,
-        rubricJson
+        rubricJson,
+        isPhase2 ? null : new Date().toISOString(),
+        isPhase2 ? new Date().toISOString() : null,
+        excelAnalysisNotes || null
       );
       submissionId = result.lastInsertRowid;
     }
 
-    // Attach any uploaded attachments to this submission
+    // Attach any recently uploaded attachments to this submission
     db.prepare(`
       UPDATE submission_attachments
       SET submission_id = ?
       WHERE user_id = ? AND lab_id = ? AND submission_id IS NULL
     `).run(submissionId, req.user.id, labId);
 
+    // If Phase 2, link latest Excel attachment to excel_file_id
+    if (isPhase2) {
+      const latestExcel = db.prepare(`
+        SELECT id FROM submission_attachments
+        WHERE submission_id = ? AND original_filename LIKE '%.xls%' OR original_filename LIKE '%.csv%'
+        ORDER BY id DESC LIMIT 1
+      `).get(submissionId);
+
+      if (latestExcel) {
+        db.prepare('UPDATE lab_submissions SET excel_file_id = ? WHERE id = ?').run(latestExcel.id, submissionId);
+      }
+    }
+
+    // Trigger automated evaluation with Gemini Flash
+    let aiEvaluation = null;
+    try {
+      aiEvaluation = await geminiGradingService.gradeSubmission(submissionId);
+    } catch (evalErr) {
+      console.warn('Gemini Flash automatic grading evaluation notice:', evalErr.message);
+    }
+
     // Audit log
     db.prepare(`
       INSERT INTO audit_logs (user_id, action, details)
       VALUES (?, 'STUDENT_SUBMIT_LAB', ?)
-    `).run(req.user.id, `Submitted ${labId} assignment for evaluation`);
+    `).run(req.user.id, `Submitted ${labId} (${isPhase2 ? 'Phase 2: Excel Analysis' : 'Phase 1: In-Lab'}) for evaluation`);
 
     res.json({
       success: true,
-      message: `Lab ${weekNumber} assignment successfully submitted! It has been queued for teacher evaluation.`,
-      submissionId
+      message: isPhase2
+        ? `Lab ${weekNumber} Post-Lab Excel Data Analysis successfully submitted and graded by Gemini Flash!`
+        : `Lab ${weekNumber} In-Lab activities successfully submitted and evaluated by Gemini Flash!`,
+      phase: isPhase2 ? 'excel_analysis' : 'in_lab',
+      submissionId,
+      evaluation: aiEvaluation
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

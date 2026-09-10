@@ -64,26 +64,31 @@ CREATE TABLE IF NOT EXISTS lab_submissions (
   user_id INTEGER NOT NULL,
   lab_id TEXT NOT NULL,
   week_number INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT 'in_progress' CHECK(status IN ('in_progress', 'submitted', 'graded')),
+  status TEXT NOT NULL DEFAULT 'in_progress' CHECK(status IN ('in_progress', 'in_lab_submitted', 'submitted', 'graded')),
   progress_percent INTEGER DEFAULT 0,
   prediction TEXT,
   state_data TEXT, -- JSON blob of all lab fields, quiz attempts, and activity states
   runs_data TEXT, -- JSON array of recorded experimental runs
   quiz_score REAL DEFAULT 0,
   quiz_total REAL DEFAULT 4,
-  rubric_scores TEXT, -- JSON object: { c1: score, c2: score, c3: score, c4: score, c5: score }
+  rubric_scores TEXT, -- JSON object: { c1, c2, c3, c4, c5, part1Total, part2Total }
   total_score REAL DEFAULT 0, -- Total out of 20 points
   ai_score REAL,
-  ai_feedback TEXT, -- Detailed JSON / text evaluation from Gemini Flash 3.7
+  ai_feedback TEXT, -- Detailed JSON evaluation from Gemini Flash
   ai_graded_at DATETIME,
   teacher_feedback TEXT,
   teacher_graded_by INTEGER,
   teacher_graded_at DATETIME,
+  in_lab_submitted_at DATETIME,
+  excel_submitted_at DATETIME,
+  excel_file_id INTEGER,
+  excel_analysis_notes TEXT,
   submitted_at DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (teacher_graded_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (excel_file_id) REFERENCES submission_attachments(id) ON DELETE SET NULL,
   UNIQUE(user_id, lab_id)
 );
 

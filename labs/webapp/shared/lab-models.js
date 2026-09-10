@@ -958,7 +958,110 @@
     };
   }
 
+  function computeChain(v) {
+    const filament = Number(v.filament != null ? v.filament : 4.2);
+    const kvp = Number(v.kvp != null ? v.kvp : 80);
+    const targetCode = v.target === 'Mo' || v.target === 0 || v.target === '0' ? 0 : 1;
+    const Z = targetCode === 0 ? 42 : 74;
+    const targetName = targetCode === 0 ? 'Molybdenum (Z=42)' : 'Tungsten (Z=74)';
+    const filtration = Number(v.filtration != null ? v.filtration : 2.5);
+    const receptorCode = Number(v.receptor != null ? v.receptor : 2);
+    const roleCode = Number(v.role != null ? v.role : 0);
+
+    // 1. Thermionic emission mA from filament heating current (A)
+    // Small changes in filament current (3.8-4.8 A) produce large tube current shifts (20-500 mA)
+    const tubeMa = Math.round(clamp(18 * Math.pow(10, (filament - 3.8) * 1.45), 15, 600));
+
+    // 2. Bremsstrahlung production efficiency: eta = 10^-9 * Z * V
+    // V in Volts = kvp * 1000. Efficiency expressed in percent:
+    const efficiencyPct = clamp(1e-9 * Z * (kvp * 1000) * 100, 0.05, 3.5);
+    const heatPct = 100 - efficiencyPct;
+
+    // 3. Beam quality (HVL in mm Al eq) and filtration compliance
+    // Legal requirement: >= 2.5 mm Al eq for >70 kVp (NCRP 102 / 21 CFR)
+    const hvl = (0.025 * kvp + 0.38) * (0.68 + 0.32 * (filtration / 2.5));
+    const isFiltrationCompliant = kvp < 70 ? filtration >= 1.5 : filtration >= 2.5;
+
+    // 4. Receptor conversion and signal index
+    // Relative primary photon fluence at collimator exit:
+    const primaryFluence = tubeMa * Math.pow(kvp / 80, 2.1) * Math.exp(-0.15 * (filtration - 2.5));
+    // Attenuation through 20cm soft-tissue phantom:
+    const penetration = 0.024 * (1 / (1 + Math.exp(-(kvp - 72) / 12)));
+    const remnantFluence = primaryFluence * penetration;
+
+    // Modality conversion factors
+    const receptorNames = [
+      'Screen-Film (400 Speed)',
+      'CR (BaFBr:Eu²⁺ PSP)',
+      'DR (CsI / a-Si Flat Panel)',
+      'Fluoroscopy (Image Intensifier)'
+    ];
+    const receptorSensitivities = [1.0, 1.25, 1.85, 2.6];
+    const receptorName = receptorNames[receptorCode] || receptorNames[2];
+    const sensFactor = receptorSensitivities[receptorCode] || 1.85;
+
+    // Receptor signal (normalized diagnostic window: 8 to 24 a.u.)
+    const receptorSignal = clamp(remnantFluence * sensFactor * 5.2, 1.0, 60.0);
+
+    // Diagnostic quality score (10-100)
+    let score = 100;
+    if (!isFiltrationCompliant) score -= 25; // Radiation safety violation: beam underfiltered
+    if (receptorSignal < 8) {
+      score -= Math.min(45, Math.round((8 - receptorSignal) * 6)); // Severe underexposure / mottle
+    } else if (receptorSignal > 24) {
+      score -= Math.min(40, Math.round((receptorSignal - 24) * 2.5)); // Overexposure / dose creep / saturation
+    }
+    if (targetCode === 0 && kvp > 65) {
+      score -= 15; // Molybdenum target inappropriate for high kVp general radiography
+    }
+    score = clamp(Math.round(score), 10, 100);
+
+    const roleName = roleCode === 1 ? 'Image Analysis (Quality & Critique)' : 'Image Recording (Technique & Setup)';
+
+    return {
+      metrics: [
+        {
+          label: 'Thermionic Current',
+          value: String(tubeMa),
+          unit: 'mA',
+          meaning: `Filament @ ${round(filament, 1)} A -> ${tubeMa} mA electron stream`,
+          status: tubeMa >= 80 && tubeMa <= 400 ? 'optimal' : tubeMa >= 40 ? 'acceptable' : 'warning'
+        },
+        {
+          label: 'Target Conversion Yield',
+          value: `${round(efficiencyPct, 2)}% X-ray`,
+          unit: `(${round(heatPct, 1)}% Heat)`,
+          meaning: `${targetName}: ~99% kinetic energy converted to heat, ~1% X-rays`,
+          status: 'optimal'
+        },
+        {
+          label: 'Beam Quality (HVL)',
+          value: round(hvl, 2),
+          unit: 'mm Al',
+          meaning: isFiltrationCompliant
+            ? `Filtration ${round(filtration, 1)} mm Al eq meets legal safety standard`
+            : `WARNING: ${round(filtration, 1)} mm Al fails legal standard (>=2.5 mm required above 70 kVp)`,
+          status: isFiltrationCompliant ? 'optimal' : 'critical'
+        },
+        {
+          label: 'Receptor Signal Index',
+          value: round(receptorSignal, 1),
+          unit: 'a.u.',
+          meaning: receptorSignal >= 8 && receptorSignal <= 24
+            ? `${receptorName}: Diagnostic exposure window`
+            : receptorSignal < 8
+              ? `${receptorName}: Underexposed (excessive quantum mottle)`
+              : `${receptorName}: Overexposed (detector saturation / dose creep)`,
+          status: receptorSignal >= 8 && receptorSignal <= 24 ? 'optimal' : 'warning'
+        }
+      ],
+      score,
+      observation: `Cathode filament heating (${round(filament, 1)} A) generates a ${tubeMa} mA thermionic electron stream accelerated across ${kvp} kVp. At the ${targetName} anode focal spot, exactly ${round(efficiencyPct, 2)}% of electron kinetic energy converts to bremsstrahlung X-rays while ${round(heatPct, 1)}% dissipates as intense thermal heat. Beam filtration (${round(filtration, 1)} mm Al eq) yields a diagnostic beam quality of ${round(hvl, 2)} mm Al HVL (${isFiltrationCompliant ? 'compliant with radiation protection standards' : 'NON-COMPLIANT: insufficient filtration elevates patient entrance skin dose'}). Remnant radiation strikes the ${receptorName}, producing a relative receptor response of ${round(receptorSignal, 1)} a.u. Active RT Focus: ${roleName}.`
+    };
+  }
+
   const calculators = {
+    chain: computeChain,
     formation: computeFormation,
     film: computeFilm,
     density: computeDensity,
@@ -991,6 +1094,428 @@
     }
   }
 
+  function drawChain(ctx, v, result, title) {
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    const filament = Number(v.filament != null ? v.filament : 4.2);
+    const kvp = Number(v.kvp != null ? v.kvp : 80);
+    const targetCode = v.target === 'Mo' || v.target === 0 || v.target === '0' ? 0 : 1;
+    const filtration = Number(v.filtration != null ? v.filtration : 2.5);
+    const receptorCode = Number(v.receptor != null ? v.receptor : 2);
+    const roleCode = Number(v.role != null ? v.role : 0);
+
+    const tubeMa = Number(result.metrics[0].value) || 100;
+    const efficiencyStr = result.metrics[1].value;
+    const hvlVal = result.metrics[2].value;
+    const receptorSignal = Number(result.metrics[3].value) || 14;
+
+    const receptorNames = ['Screen-Film', 'CR (PSP)', 'DR Flat Panel', 'Fluoro (II)'];
+    const currentReceptor = receptorNames[receptorCode] || 'DR Flat Panel';
+
+    // -------------------------------------------------------------
+    // 1. LEFT PANE: CUTAWAY X-RAY TUBE & BEAM PATH
+    // -------------------------------------------------------------
+    const tubeX = 24, tubeY = 46, tubeW = 510, tubeH = 160;
+
+    // Tube outer protective housing
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2;
+    drawRoundRect(ctx, tubeX, tubeY, tubeW, tubeH, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    // Insulating oil field pattern
+    ctx.fillStyle = 'rgba(234, 179, 8, 0.05)';
+    ctx.fillRect(tubeX + 6, tubeY + 6, tubeW - 12, tubeH - 12);
+
+    // Evacuated glass envelope
+    const envX = tubeX + 24, envY = tubeY + 16, envW = tubeW - 48, envH = tubeH - 32;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.5;
+    drawRoundRect(ctx, envX, envY, envW, envH, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    // Housing header
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '700 11px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
+    ctx.fillText('EVACUATED TUBE ENVELOPE (VACUUM)', envX + 12, envY + 18);
+
+    // --- Cathode Assembly (Left) ---
+    const cathX = envX + 36, cathY = envY + envH / 2;
+    // Focusing cup
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cathX, cathY - 28);
+    ctx.lineTo(cathX + 18, cathY - 24);
+    ctx.lineTo(cathX + 18, cathY + 24);
+    ctx.lineTo(cathX, cathY + 28);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Filament coil
+    const filamentGlow = clamp((filament - 3.8) / 1.0, 0.2, 1.0);
+    const coilX = cathX + 10;
+    ctx.strokeStyle = `rgba(251, 191, 36, ${0.4 + 0.6 * filamentGlow})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(coilX, cathY - 14);
+    for (let i = 0; i < 6; i++) {
+      const cy = cathY - 14 + (i + 0.5) * (28 / 6);
+      const cx = coilX + (i % 2 === 0 ? 5 : -1);
+      ctx.lineTo(cx, cy);
+    }
+    ctx.lineTo(coilX, cathY + 14);
+    ctx.stroke();
+
+    // Thermionic halo glow
+    const haloGrad = ctx.createRadialGradient(coilX + 4, cathY, 2, coilX + 4, cathY, 26 * filamentGlow);
+    haloGrad.addColorStop(0, `rgba(254, 240, 138, ${0.8 * filamentGlow})`);
+    haloGrad.addColorStop(0.5, `rgba(245, 158, 11, ${0.35 * filamentGlow})`);
+    haloGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = haloGrad;
+    ctx.beginPath();
+    ctx.arc(coilX + 4, cathY, 26 * filamentGlow, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cathode label
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '800 11px -apple-system, sans-serif';
+    ctx.fillText('CATHODE (–)', cathX - 22, cathY - 34);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '600 10px monospace';
+    ctx.fillText(`${filament.toFixed(1)} A (${tubeMa} mA)`, cathX - 22, cathY + 42);
+
+    // --- Anode Assembly (Right) ---
+    const anodeCenter = envX + envW - 90;
+    const focalX = anodeCenter - 14;
+    const focalY = cathY;
+
+    // Rotor and stator stem
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(anodeCenter + 22, cathY - 10, 48, 20);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(anodeCenter + 22, cathY - 10, 48, 20);
+
+    // Rotating Anode beveled disc
+    ctx.save();
+    ctx.translate(anodeCenter, cathY);
+    ctx.fillStyle = targetCode === 0 ? '#475569' : '#94a3b8';
+    ctx.strokeStyle = targetCode === 0 ? '#94a3b8' : '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    // Beveled target face
+    ctx.moveTo(-16, -45);
+    ctx.lineTo(16, -45);
+    ctx.lineTo(24, 45);
+    ctx.lineTo(-8, 45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Anode Heat dissipation glow (~99% heat!)
+    const heatGlow = ctx.createRadialGradient(4, 0, 4, 4, 0, 50);
+    heatGlow.addColorStop(0, 'rgba(239, 68, 68, 0.85)');
+    heatGlow.addColorStop(0.4, 'rgba(249, 115, 22, 0.45)');
+    heatGlow.addColorStop(1, 'rgba(239, 68, 68, 0)');
+    ctx.fillStyle = heatGlow;
+    ctx.beginPath();
+    ctx.arc(4, 0, 50, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Focal spot burst
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(focalX, focalY, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Anode label & heat notice
+    ctx.fillStyle = '#f87171';
+    ctx.font = '800 11px -apple-system, sans-serif';
+    ctx.fillText('ANODE (+) FOCAL SPOT', anodeCenter - 45, cathY - 50);
+    ctx.fillStyle = '#fca5a5';
+    ctx.font = '700 10px -apple-system, sans-serif';
+    ctx.fillText(`${targetCode === 0 ? 'Molybdenum Z=42' : 'Tungsten Z=74'}`, anodeCenter - 36, cathY + 54);
+    ctx.fillStyle = '#fca5a5';
+    ctx.font = '800 9.5px monospace';
+    ctx.fillText('🔥 ~99% Heat / ⚡ ~1% X-ray', anodeCenter - 54, cathY + 67);
+
+    // --- Accelerated Electron Stream (Cathode to Anode) ---
+    const streamStart = coilX + 16;
+    const streamEnd = focalX - 4;
+    const eLines = 5;
+    for (let i = 0; i < eLines; i++) {
+      const ey = cathY - 8 + i * 4;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(streamStart, ey);
+      ctx.lineTo(streamEnd, focalY - 4 + i * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Stream Label
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '700 10.5px monospace';
+    ctx.fillText(`e– Kinetic Stream: ${kvp} kVp potential`, streamStart + 22, cathY - 14);
+
+    // --- Tube Window & Added Filtration ---
+    const winX = focalX - 18, winY = tubeY + tubeH, winW = 36, winH = 14;
+    // Window opening
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(winX, winY - 4, winW, winH);
+    ctx.strokeStyle = '#64748b';
+    ctx.strokeRect(winX, winY - 4, winW, winH);
+
+    // Filtration plate
+    const isCompliant = kvp < 70 ? filtration >= 1.5 : filtration >= 2.5;
+    const filtY = winY + 12;
+    ctx.fillStyle = isCompliant ? '#0284c7' : '#d97706';
+    ctx.fillRect(winX - 6, filtY, winW + 12, 8);
+    ctx.strokeStyle = isCompliant ? '#38bdf8' : '#fbbf24';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(winX - 6, filtY, winW + 12, 8);
+
+    // Filtration label
+    ctx.fillStyle = isCompliant ? '#7dd3fc' : '#fde047';
+    ctx.font = '700 9.5px -apple-system, sans-serif';
+    ctx.fillText(`Filter: ${filtration.toFixed(1)} mm Al eq ${isCompliant ? '✔' : '⚠️ Non-compliant'}`, winX + winW + 12, filtY + 7);
+
+    // --- Collimator Housing & Lead Shutters ---
+    const colY = filtY + 12;
+    const colW = 60, colH = 22;
+    const colX = focalX - colW / 2;
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(colX, colY, colW, colH);
+    ctx.strokeStyle = '#475569';
+    ctx.strokeRect(colX, colY, colW, colH);
+    // Lead shutter blades
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(colX + 4, colY + 6, 16, 10);
+    ctx.fillRect(colX + colW - 20, colY + 6, 16, 10);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 9.5px -apple-system, sans-serif';
+    ctx.fillText('Collimator Lead Shutters', colX + colW + 8, colY + 14);
+
+    // --- Useful Divergent X-Ray Beam Cone ---
+    const beamTopY = colY + colH;
+    const beamBotY = h - 54;
+    const beamSpread = 85;
+    const bLeft = focalX - beamSpread;
+    const bRight = focalX + beamSpread;
+
+    const beamGrad = ctx.createLinearGradient(focalX, beamTopY, focalX, beamBotY);
+    beamGrad.addColorStop(0, 'rgba(251, 191, 36, 0.45)');
+    beamGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.18)');
+    beamGrad.addColorStop(1, 'rgba(56, 189, 248, 0.08)');
+    ctx.fillStyle = beamGrad;
+    ctx.beginPath();
+    ctx.moveTo(focalX - 10, beamTopY);
+    ctx.lineTo(bRight, beamBotY);
+    ctx.lineTo(bLeft, beamBotY);
+    ctx.lineTo(focalX + 10, beamTopY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Central Ray (CR) dashed axis
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(focalX, focalY + 4);
+    ctx.lineTo(focalX, beamBotY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // --- Patient Tissue Phantom ---
+    const phantY = beamTopY + 36;
+    const phantW = 120, phantH = 34;
+    const phantX = focalX - phantW / 2;
+
+    // Soft tissue layer
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+    ctx.lineWidth = 1;
+    drawRoundRect(ctx, phantX, phantY, phantW, phantH, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    // Bone core
+    ctx.fillStyle = 'rgba(248, 250, 252, 0.82)';
+    ctx.strokeStyle = '#cbd5e1';
+    drawRoundRect(ctx, focalX - 18, phantY + 6, 36, phantH - 12, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '700 9.5px -apple-system, sans-serif';
+    ctx.fillText('Patient Phantom (Tissue + Bone)', phantX + phantW + 8, phantY + 20);
+
+    // --- Remnant Beam Lines ---
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.lineWidth = 1;
+    for (let bx = bLeft + 12; bx < bRight; bx += 22) {
+      if (Math.abs(bx - focalX) < 14) continue; // Attenuated by bone
+      ctx.beginPath();
+      ctx.moveTo(bx, phantY + phantH);
+      ctx.lineTo(bx + (bx - focalX) * 0.15, beamBotY);
+      ctx.stroke();
+    }
+
+    // --- Image Receptor Platform (Bottom) ---
+    const irW = 200, irH = 18;
+    const irX = focalX - irW / 2;
+    const irY = beamBotY;
+
+    // Modality-specific styling
+    const irColors = ['#059669', '#0284c7', '#4f46e5', '#db2777'];
+    const irBorder = ['#34d399', '#38bdf8', '#818cf8', '#f472b6'];
+    ctx.fillStyle = irColors[receptorCode] || irColors[2];
+    ctx.strokeStyle = irBorder[receptorCode] || irBorder[2];
+    ctx.lineWidth = 2;
+    drawRoundRect(ctx, irX, irY, irW, irH, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 10.5px -apple-system, sans-serif';
+    ctx.fillText(`RECEPTOR: ${currentReceptor.toUpperCase()} [${round(receptorSignal, 1)} a.u.]`, irX + 10, irY + 13);
+
+    // -------------------------------------------------------------
+    // 2. RIGHT PANE: REAL-TIME PREVIEW & RADIOGRAPHER HUD
+    // -------------------------------------------------------------
+    const pX = w - 240, pY = 46, pW = 220;
+
+    // Role Indicator Card (Top Right)
+    const isRecording = roleCode === 0;
+    ctx.fillStyle = isRecording ? '#064e3b' : '#1e1b4b';
+    ctx.strokeStyle = isRecording ? '#10b981' : '#6366f1';
+    ctx.lineWidth = 2;
+    drawRoundRect(ctx, pX, pY, pW, 58, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = isRecording ? '#6ee7b7' : '#c7d2fe';
+    ctx.font = '900 11px -apple-system, sans-serif';
+    ctx.fillText(isRecording ? '📸 RADIOGRAPHER ROLE: RECORDING' : '🔍 RADIOGRAPHER ROLE: ANALYSIS', pX + 10, pY + 18);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '600 10px -apple-system, sans-serif';
+    if (isRecording) {
+      ctx.fillText(`Active Factors: ${tubeMa} mA | ${kvp} kVp | ${filtration} mm Al`, pX + 10, pY + 34);
+      ctx.fillText('Action: Adjusting parameters & patient geometry', pX + 10, pY + 48);
+    } else {
+      ctx.fillText(`Critique: Signal ${round(receptorSignal, 1)} | Score ${result.score}/100`, pX + 10, pY + 34);
+      ctx.fillText('Action: Evaluating diagnostic contrast & SNR', pX + 10, pY + 48);
+    }
+
+    // Simulated Radiograph Display Monitor (Middle Right)
+    const monY = pY + 68;
+    const monH = 150;
+    ctx.fillStyle = '#020617';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2;
+    drawRoundRect(ctx, pX, monY, pW, monH, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    // Monitor Power LED
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.arc(pX + pW - 12, monY + 12, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Radiograph viewport inside monitor
+    const scrX = pX + 8, scrY = monY + 22, scrW = pW - 16, scrH = monH - 30;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(scrX, scrY, scrW, scrH);
+    ctx.clip();
+
+    // Base background exposure darkness (higher signal = darker unattenuated field)
+    const baseDarkness = clamp(0.1 + (receptorSignal / 24) * 0.75, 0.1, 0.95);
+    ctx.fillStyle = `rgba(0, 0, 0, ${baseDarkness})`;
+    ctx.fillRect(scrX, scrY, scrW, scrH);
+
+    // Anatomical soft tissue profile
+    const tisAlpha = clamp(0.18 + (receptorSignal / 30) * 0.4, 0.1, 0.65);
+    ctx.fillStyle = `rgba(148, 163, 184, ${tisAlpha})`;
+    ctx.beginPath();
+    ctx.ellipse(scrX + scrW / 2, scrY + scrH / 2, scrW * 0.38, scrH * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cortical bone structure (lighter, higher attenuation)
+    const boneAlpha = clamp(0.85 - (receptorSignal / 32) * 0.35, 0.25, 0.95);
+    ctx.fillStyle = `rgba(241, 245, 249, ${boneAlpha})`;
+    ctx.beginPath();
+    drawRoundRect(ctx, scrX + scrW / 2 - 12, scrY + 14, 24, scrH - 28, 4);
+    ctx.fill();
+
+    // Simulated Quantum Mottle Noise if underexposed
+    if (receptorSignal < 8) {
+      const noiseGen = mulberry32(Math.round(filament * 100 + kvp));
+      const mottleCount = Math.round((8 - receptorSignal) * 120);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      for (let n = 0; n < mottleCount; n++) {
+        const nx = scrX + noiseGen() * scrW;
+        const ny = scrY + noiseGen() * scrH;
+        ctx.fillRect(nx, ny, 1.5, 1.5);
+      }
+    }
+
+    // Image Status Watermark Banner
+    ctx.fillStyle = receptorSignal >= 8 && receptorSignal <= 24
+      ? 'rgba(16, 185, 129, 0.85)'
+      : (receptorSignal < 8 ? 'rgba(239, 68, 68, 0.85)' : 'rgba(245, 158, 11, 0.85)');
+    ctx.fillRect(scrX, scrY + scrH - 18, scrW, 18);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 9.5px -apple-system, sans-serif';
+    const statusTxt = receptorSignal >= 8 && receptorSignal <= 24
+      ? 'DIAGNOSTIC RADIOGRAPH'
+      : (receptorSignal < 8 ? 'UNDEREXPOSED (QUANTUM MOTTLE)' : 'OVEREXPOSED (DOSE CREEP)');
+    ctx.fillText(statusTxt, scrX + 6, scrY + scrH - 5);
+    ctx.restore();
+
+    // Physics Metrics Summary Card (Bottom Right)
+    const cardY = monY + monH + 8;
+    const cardH = h - cardY - 14;
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    drawRoundRect(ctx, pX, cardY, pW, cardH, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '700 10px -apple-system, sans-serif';
+    ctx.fillText('PHYSICAL CONVERSION READOUT', pX + 8, cardY + 14);
+
+    ctx.font = '600 9.5px monospace';
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillText(`• e– Tube Current: ${tubeMa} mA`, pX + 8, cardY + 28);
+    ctx.fillText(`• Target Heat: 🔥 ${round(100 - parseFloat(efficiencyStr), 1)}%`, pX + 8, cardY + 41);
+    ctx.fillText(`• X-ray Yield: ⚡ ${efficiencyStr}`, pX + 8, cardY + 54);
+    ctx.fillText(`• Beam HVL: ${hvlVal} mm Al`, pX + 8, cardY + 67);
+    ctx.fillText(`• Receptor Signal: ${round(receptorSignal, 1)} a.u.`, pX + 8, cardY + 80);
+
+    // Score meter badge
+    ctx.fillStyle = result.score >= 80 ? '#10b981' : result.score >= 60 ? '#f59e0b' : '#ef4444';
+    ctx.fillRect(w - 180, h - 24, 150 * (result.score / 100), 8);
+    ctx.strokeStyle = '#d8e8ee';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(w - 180, h - 24, 150, 8);
+  }
+
   function draw(type, ctx, v, result, title) {
     const w = ctx.canvas.width;
     const h = ctx.canvas.height;
@@ -999,7 +1524,9 @@
     ctx.lineJoin = 'round';
     ctx.font = '600 12.5px Segoe UI, Arial, sans-serif';
 
-    if (type === 'formation') {
+    if (type === 'chain') {
+      drawChain(ctx, v, result, title);
+    } else if (type === 'formation') {
       const sod = Math.max(1, v.sid - v.oid);
       const magnification = v.sid / sod;
       const penetration = 1 / (1 + Math.exp(-(v.kvp - 68) / 8));

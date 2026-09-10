@@ -5,92 +5,1454 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 6: Spatial Resolution &amp; Magnification Lab — RAD 321</title>
   <link rel="stylesheet" href="../../shared/lab-styles.css">
+
+  <!-- KaTeX for Infallible Offline & Online Mathematical Typography -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Two-Tab Structural Styling */
+    .lab-tabs-header {
+      display: flex;
+      gap: 12px;
+      margin: 18px 0 24px 0;
+      border-bottom: 2px solid var(--rad-border);
+      padding-bottom: 0;
+    }
+    .lab-tab-btn {
+      background: #e2e8f0;
+      border: 1px solid var(--rad-border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 13px 26px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      position: relative;
+      bottom: -2px;
+    }
+    .lab-tab-btn:hover {
+      background: #f1f5f9;
+      color: var(--rad-teal);
+    }
+    .lab-tab-btn.active {
+      background: #ffffff;
+      border-color: var(--rad-teal);
+      border-top: 3px solid var(--rad-teal);
+      color: var(--rad-navy);
+      box-shadow: 0 -3px 12px rgba(0,0,0,0.06);
+    }
+    .lab-tab-pane {
+      display: none;
+      animation: tabFadeIn 0.25s ease-in-out;
+    }
+    .lab-tab-pane.active {
+      display: block;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero & Layout Elements */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,0.96), rgba(7,26,43,0.72) 65%, rgba(7,26,43,0.2));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 780px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 30px;
+      margin: 6px 0;
+      line-height: 1.2;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: 0.94;
+      margin: 0;
+    }
+
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    /* Infallible Formula & Theory Containers */
+    .formula-callout {
+      background: #f0fdfa;
+      border-left: 4px solid var(--rad-teal);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 14px 0;
+      color: #134e4a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .formula-callout strong {
+      color: #042f2e;
+    }
+    .math-display {
+      font-family: "KaTeX_Math", "Cambria Math", "Times New Roman", serif;
+      font-size: 1.08em;
+      padding: 4px 0;
+      overflow-x: auto;
+    }
+
+    /* Interactive Station 1 Explorer Grid */
+    .geom-station-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+    .geom-card {
+      background: #ffffff;
+      border: 1px solid var(--rad-border);
+      border-top: 4px solid var(--rad-teal);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .geom-card h4 {
+      margin: 0 0 8px 0;
+      color: var(--rad-navy);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .geom-card p {
+      font-size: 13px;
+      color: var(--rad-text-soft);
+      line-height: 1.5;
+      margin: 0 0 10px 0;
+    }
+    .geom-card .geom-stat {
+      background: var(--rad-bg-soft);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+    }
+
+    /* Station 3: Line-Pair Resolution Grid Analyzer */
+    .line-pair-analyzer {
+      background: #ffffff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 18px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .lp-strip-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 0 6px 0;
+      scrollbar-width: thin;
+    }
+    .lp-cell {
+      flex: 1;
+      min-width: 100px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+    .lp-cell:hover, .lp-cell.active {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      box-shadow: 0 2px 8px rgba(20,184,166,0.2);
+    }
+    .lp-bar-preview {
+      height: 60px;
+      margin: 8px 0;
+      background: #000;
+      border-radius: 4px;
+      display: flex;
+      overflow: hidden;
+      border: 1px solid #475569;
+    }
+    .lp-bar-stripe {
+      flex: 1;
+      height: 100%;
+    }
+    .lp-status-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .lp-status-resolved {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .lp-status-blurred {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Simulation Layout */
+    .experiment-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+      gap: 20px;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3/1.15;
+      background: #071a2b;
+      border-radius: 12px;
+      border: 1px solid #28546a;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .control-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .control-card input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 18px;
+      line-height: 1.2;
+      margin: 3px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .preset-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .preset-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .preset-btn:hover {
+      background: #e2e8f0;
+      border-color: var(--rad-teal);
+      color: var(--rad-teal);
+    }
+
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .run-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .run-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rad-blue);
+      margin-left: auto;
+    }
+    .run-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+    }
+    .run-table {
+      margin: 0;
+      min-width: 760px;
+    }
+
+    /* Clinical Scenarios & Matching */
+    .scenario-options {
+      display: grid;
+      gap: 9px;
+      margin: 14px 0;
+    }
+    .scenario-option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 12px;
+      cursor: pointer;
+      background: #fff;
+      transition: all 0.15s ease;
+    }
+    .scenario-option:hover {
+      background: var(--rad-bg-soft);
+    }
+    .scenario-option:has(input:checked) {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      box-shadow: 0 0 0 1px var(--rad-teal);
+    }
+    .feedback-box {
+      min-height: 44px;
+      border-radius: 9px;
+      padding: 12px 16px;
+      background: var(--rad-bg-soft);
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .feedback-box.correct {
+      background: #eaf8f0;
+      color: #12633f;
+      border: 1px solid #bbf7d0;
+    }
+    .feedback-box.incorrect {
+      background: #fff0ee;
+      color: #9d342d;
+      border: 1px solid #fecaca;
+    }
+
+    /* Transition CTA Card */
+    .cta-card {
+      background: linear-gradient(135deg, #071a2b 0%, #0d3654 100%);
+      color: #ffffff;
+      border-radius: var(--rad-radius);
+      padding: 28px 32px;
+      margin: 32px 0 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      box-shadow: var(--rad-shadow-lg);
+      border: 1px solid #28546a;
+    }
+    .cta-card h3 {
+      margin: 0 0 8px 0;
+      color: #7fe0d6;
+      font-size: 20px;
+    }
+    .cta-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #dceaf2;
+    }
+    .cta-card .btn {
+      white-space: nowrap;
+      padding: 12px 24px;
+      font-size: 14px;
+    }
+
+    /* Post-Lab Excel Guide Box */
+    .excel-guide-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 5px solid #16a34a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+    .excel-guide-box h4 {
+      margin: 0 0 8px 0;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+    }
+
+    /* Table Fill-in Forms */
+    .checklist-fill-table input[type="text"] {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 12.5px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .checklist-fill-table input[type="text"]:focus {
+      background: #ffffff;
+      border-color: var(--rad-teal);
+      outline: none;
+    }
+
+    @media (max-width: 980px) {
+      .experiment-layout { grid-template-columns: 1fr; }
+      .procedure-grid { grid-template-columns: repeat(2, 1fr); }
+      .lab-meta-grid { grid-template-columns: 1fr 1fr; }
+      .cta-card { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .hero-overlay { padding: 0 20px; }
+      .hero-overlay h1 { font-size: 24px; }
+      .control-grid, .metric-grid, .procedure-grid, .lab-meta-grid { grid-template-columns: 1fr; }
+      .lab-tabs-header { flex-direction: column; gap: 6px; }
+      .lab-tab-btn { border-radius: 8px; border-bottom: 1px solid var(--rad-border); }
+    }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 6 — Spatial Resolution &amp; Magnification Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 6 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 6 — Spatial Resolution &amp; Magnification Lab</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual Experiment · Offline Ready</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 6 of 15</span></div>
+  </div>
 </header>
+
 <nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
 <main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 6 · Assessed laboratory assignment</div><h1>Spatial Resolution &amp; Magnification Lab</h1><p>Make focal-spot blur and geometric magnification visible. Directly aligned with: Sharpness &amp; Detail I — Resolution/Magnification.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
-
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Define spatial resolution and spatial frequency.</li><li><span class="num">2</span>Calculate magnification from SID and SOD.</li><li><span class="num">3</span>Calculate focal-spot geometric unsharpness.</li><li><span class="num">4</span>Predict how focal spot size, OID, and SID affect recorded detail.</li><li><span class="num">5</span>Use a resolution pattern to compare two imaging geometries.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Spatial resolution is the ability to distinguish small, closely spaced structures. Spatial frequency is often expressed in line pairs per millimeter. Geometric unsharpness is blur caused by the finite focal spot and object-to-receptor separation.</p><div class="formula-box"><b>M = SID/SOD</b> · <b>Ug = F × OID / SOD</b>, where F is focal-spot size. Smaller focal spots, smaller OID, and larger SOD reduce geometric blur.</div><p>Magnification can reveal small structures in some applications, but it also increases blur unless geometry is controlled. The goal is not the largest image; it is adequate diagnostic detail with acceptable dose and positioning.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
-
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict which control most strongly changes geometric unsharpness.</div><div class="procedure-step">Record a baseline run.</div><div class="procedure-step">Increase only focal-spot size and record a second run.</div><div class="procedure-step">Restore focal spot, increase OID, and record a third run.</div><div class="procedure-step">Compare Ug, magnification, resolution limit, and pattern visibility.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card"><div class="experiment-layout"><div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Spatial Resolution &amp; Magnification Lab" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
-    <div class="control-card">
-      <label for="ctrl-focal"><span>Focal spot</span><output id="out-focal" for="ctrl-focal">1 mm</output></label>
-      <input type="range" id="ctrl-focal" min="0.3" max="2" step="0.1" value="1" aria-describedby="sim-caption">
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Diagnostic Radiography Imaging Suite with Focal Spot Beam Alignment">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 6 · Assessed Laboratory Assignment</div>
+      <h1>Spatial Resolution &amp; Magnification Lab</h1>
+      <p>Investigate focal spot penumbra blur ($U_g$), object-to-image distance ($OID$), magnification ($M$), and limiting spatial frequency ($lp/mm$) using an interactive line-pair resolution phantom and ray tracing geometry.</p>
     </div>
-    <div class="control-card">
-      <label for="ctrl-sid"><span>SID</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
-      <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
-    </div>
-    <div class="control-card">
-      <label for="ctrl-oid"><span>OID</span><output id="out-oid" for="ctrl-oid">5 cm</output></label>
-      <input type="range" id="ctrl-oid" min="0" max="20" step="1" value="5" aria-describedby="sim-caption">
-    </div>
-    <div class="control-card">
-      <label for="ctrl-freq"><span>Pattern frequency</span><output id="out-freq" for="ctrl-freq">2.5 lp/mm</output></label>
-      <input type="range" id="ctrl-freq" min="0.5" max="5" step="0.1" value="2.5" aria-describedby="sim-caption">
-    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
-  </section>
+  </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Resolution vocabulary</h3><p>Match each variable to the geometric effect it controls.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Detail optimization</h3><p>A fine-detail extremity image is blurred by geometry. Which combination best improves recorded detail?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Small focal spot, small OID, and adequate SID</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Large focal spot and large OID</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Short SID and large OID</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Increase mAs only</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record two focal-spot/OID combinations and calculate Ug for each. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Explain how magnification differs from blur. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. What does a line-pair pattern test, and why does spatial frequency matter? <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: explain a situation where deliberate magnification may be useful despite its trade-offs. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+  <!-- Two-Phase Assignment Workflow Explanatory Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
+    </div>
+    <p>This lab is a fully <b>interactive digital simulation and assessed laboratory assignment</b> evaluated across two required phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the background theory, 4 interactive stations (Geometric Factor Explorer, Sharpness Matcher, Line-Pair Analyzer, Clinical Extremity Scenario), 4 knowledge check MCQs, and submit via the Phase 1 Submission Hub before leaving class.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Execute the 2D physics simulation, record trial runs, export run data via <em>"Download Run Data (CSV)"</em>, perform quantitative calculations and plotting in Excel, and submit your analysis workbook (.xlsx / .csv) for final evaluation.
+      </div>
+    </div>
+    <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+      <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+      <span style="display:block;margin-top:4px;">In <b>Tab 1</b>, complete the in-lab stations and submit <b>Phase 1 (In-Lab Activities)</b> to lock in your initial 10 points. Then navigate to <b>Tab 2</b> to conduct the physics experiments, record telemetry, construct your post-lab Excel curves, and submit <b>Phase 2 (Excel Data Analysis)</b> before the post-lab deadline.</span>
+    </div>
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b>Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–6 min Ug/M demo (Ug = F × OID/SOD) · 6–14 min Stations 1–2 (geometry explorer + matcher) · 14–22 min Station 3 line-pair analyzer · 22–30 min Station 4 scaphoid case + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is 3 runs (baseline → large spot → OID air-gap) + 2 plots (F vs Ug, OID vs M/R_limit) + Table B. If short on time, cut Run 4 extended-SID to homework, not the scenario.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b>3 takeaways to land:</b>
+      1) Ug = F × OID/SOD — small focus + contact + long SID = sharp. 2) M = SID/SOD — magnification without microfocus costs detail. 3) 15.8 lp/mm is a geometric upper bound only; system MTF/DQE lowers it.
+    </div>
+  </div>
+
+  <!-- Student Metadata Card -->
+  <div class="card card-soft">
+    <h3>Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row"><label class="field-label" for="meta-studentName">Full Name</label><input type="text" id="meta-studentName" required placeholder="Ahmed Al-Harbi"></div>
+      <div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required placeholder="441012345"></div>
+      <div class="form-row"><label class="field-label" for="meta-section">Section / Group</label><input type="text" id="meta-section" required placeholder="Section A1"></div>
+      <div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div>
+    </div>
+    <p class="form-hint">Work is automatically saved in your browser localStorage. Use the bottom action bar to export a JSON backup before changing devices.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION HEADER ===================== -->
+  <div class="lab-tabs-header" role="tablist">
+    <button class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities [10 Pts]
+    </button>
+    <button class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment">
+      <i class="fa-solid fa-microscope"></i> Tab 2: Virtual Physics Experiment &amp; Analysis [10 Pts]
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 POINTS)                   -->
+  <!-- ========================================================================= -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Knowledge, geometric modeling, and clinical sharpness optimization</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list">
+          <li><span class="num">1</span><b>Define Spatial Resolution and Spatial Frequency:</b> Quantify the ability of an imaging system to resolve high-frequency anatomical microstructures using line pairs per millimeter (lp/mm).</li>
+          <li><span class="num">2</span><b>Calculate Geometric Magnification Factor (M):</b> Quantify size enlargement from Source-to-Image Distance (SID) and Source-to-Object Distance (SOD) using the ratio M = SID / SOD.</li>
+          <li><span class="num">3</span><b>Calculate Focal Spot Geometric Unsharpness (Ug):</b> Compute penumbra edge blur using focal spot dimension (F), Object-to-Image Distance (OID), and SOD via Ug = F × OID / SOD.</li>
+          <li><span class="num">4</span><b>Evaluate Limiting Spatial Resolution:</b> Relate geometric unsharpness to the maximum detectable spatial frequency (R_limit ≈ 1/(2·Ug)) using a calibrated line-pair resolution pattern.</li>
+          <li><span class="num">5</span><b>Apply ALARA Principles to Sharpness:</b> Evaluate clinical trade-offs between focal spot thermal loading, exposure time, patient kinetic motion blur, and deliberate macroradiography.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory &amp; Mathematical Principles</h2>
+          <div class="lab-section-sub">Geometric optics of radiographic image formation &amp; resolution limits</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics Primer</span>
+
+        <h3>1. Spatial Resolution &amp; Spatial Frequency</h3>
+        <p>
+          <b>Spatial resolution</b> (recorded detail or sharpness) refers to the structural sharpness of recorded anatomical boundaries and the distinct separation of adjacent microstructures. In medical imaging, spatial resolution is objectively quantified in terms of <b>spatial frequency</b>, expressed in <b>line pairs per millimeter ($lp/mm$)</b>. One line pair comprises one radiopaque lead bar and one adjacent radiolucent space of identical width ($w$):
+        </p>
+        <div class="formula-callout">
+          <strong>Spatial Frequency vs. Object Dimension:</strong>
+          <div class="math-display">
+            $$f = \frac{1}{2 \times w} \quad [lp/mm]$$
+          </div>
+          <span class="small">Where $w$ is the physical width of a single bar in millimeters. For example, resolving trabecular bone microarchitecture at $5.0\text{ lp/mm}$ requires resolving objects as tiny as $w = 1 / (2 \times 5) = 0.10\text{ mm}$ ($100\ \mu\text{m}$).</span>
+        </div>
+
+        <h3>2. Geometric Magnification Factor ($M$)</h3>
+        <p>
+          Because x-rays diverge isotropically from the target focal spot in a conical beam, any anatomical structure positioned at a distance from the image receptor is projected with dimensional enlargement (size distortion):
+        </p>
+        <div class="formula-callout">
+          <strong>Magnification Formula:</strong>
+          <div class="math-display">
+            $$M = \frac{\text{Image Size}}{\text{Object Size}} = \frac{SID}{SOD} = \frac{SID}{SID - OID}$$
+          </div>
+          <span class="small">Where $SID$ is Source-to-Image Distance, $OID$ is Object-to-Image Distance, and $SOD = SID - OID$ is Source-to-Object Distance. Percentage enlargement is given by $\Delta L\% = (M - 1) \times 100\%$.</span>
+        </div>
+
+        <h3>3. Focal Spot Geometric Blur ($U_g$) &amp; Penumbra Formation</h3>
+        <p>
+          The x-ray tube focal spot is not an infinitesimal point source; it possesses finite physical dimensions (effective focal spot size $F$, typically $0.3\text{ mm}$ for fine/micro detail, $0.6\text{ mm}$ for extremity bone, or $1.2\text{ mm}$ for standard broad-beam exposures). Because photons originate across the entire surface of this rectangular area, edge rays cross along object boundaries, projecting two distinct geometric zones onto the detector:
+        </p>
+        <ul style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;">
+          <li><b>Umbra:</b> The completely shielded, uniform shadow core representing the true geometric outline of the object.</li>
+          <li><b>Penumbra ($U_g$, Geometric Unsharpness):</b> The partial shadow or blurred transition zone encircling the umbra where detector pixels receive photons from only part of the focal spot.</li>
+        </ul>
+        <div class="formula-callout">
+          <strong>Geometric Unsharpness Equation:</strong>
+          <div class="math-display">
+            $$U_g = F \times \frac{OID}{SOD} = F \times \frac{OID}{SID - OID} = F \times (M - 1)$$
+          </div>
+          <span class="small">Focal spot blur ($U_g$) is directly proportional to focal spot dimension ($F$) and $OID$, and inversely proportional to $SOD$. Minimizing $OID$ and maximizing $SID$ (e.g., $180\text{ cm}$ tele-radiography) suppresses penumbra width.</span>
+        </div>
+
+        <h3>4. Limiting Spatial Resolution &amp; Total System Unsharpness</h3>
+        <p>
+          When the width of the penumbra ($U_g$) equals or exceeds the width of a single bar in a line-pair pattern, the alternating radiopaque and radiolucent lines blend together into an indistinguishable gray blur. The theoretical <b>limiting spatial resolution</b> ($R_{\text{limit}}$) permitted by focal spot geometry is approximately:
+        </p>
+        <div class="formula-callout">
+          <strong>Geometric Limiting Resolution:</strong>
+          <div class="math-display">
+            $$R_{\text{limit}} \approx \frac{1}{2 \times U_g} \quad [lp/mm]$$
+          </div>
+          <span class="small">In diagnostic imaging, the overall clinical image blur ($U_t$) represents the quadrature summation of geometric blur ($U_g$), patient kinetic motion blur ($U_m = v \times t$), and image receptor unsharpness ($U_r$, detector pixel pitch / scintillator light spread):
+          $$U_t = \sqrt{U_g^2 + U_m^2 + U_r^2}$$
+          Patient motion ($U_m$) is the most frequent clinical cause of non-diagnostic resolution failure, mitigated by rigid immobilization and shortest feasible exposure time ($t$).</span>
+        </div>
+
+        <p class="model-note"><b>Physical Model Boundary:</b> Simulation telemetry demonstrates relative geometric optical ray tracing and penumbra propagation. Equipment tolerances, focal spot blooming under high mA, and detective quantum efficiency (DQE) are pedagogical approximations.</p>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Station 1 — Geometric Factor Explorer -->
+    <section class="lab-section" id="sec-geom-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1: Geometric Factor Explorer</h2>
+          <div class="lab-section-sub">Inspect how focal spot, OID, SID, and test phantoms govern edge sharpness</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-shapes"></i> Station 1: Geometric Optics</span>
+        <p>Click and examine the 4 core determinants of radiographic detail. Use the quantitative data below to complete Table A.</p>
+
+        <div class="geom-station-grid">
+          <div class="geom-card">
+            <div>
+              <h4><i class="fa-solid fa-bullseye" style="color:var(--rad-teal)"></i> 1. Focal Spot Size ($F$)</h4>
+              <p>Physical dimension of the electron bombardment area on the tungsten target. Dual-focus x-ray tubes provide a small focus ($0.6\text{ mm}$) for fine bony extremity imaging and a large focus ($1.2\text{ mm}$) for thick body parts requiring high tube current ($mA$) loading.</p>
+            </div>
+            <div class="geom-stat">Small: $0.6\text{ mm}$ (Sharp) | Large: $1.2\text{ mm}$ (Double Blur)</div>
+          </div>
+
+          <div class="geom-card">
+            <div>
+              <h4><i class="fa-solid fa-arrows-left-right" style="color:var(--rad-blue)"></i> 2. Object-to-Image Distance ($OID$)</h4>
+              <p>Separation between anatomical structure and detector plane. Increasing $OID$ creates an air gap, rapidly elevating both magnification ($M$) and penumbra blur ($U_g$). Minimizing $OID$ by placing the part in direct contact with the receptor is the first rule of sharpness.</p>
+            </div>
+            <div class="geom-stat">Contact: $OID \approx 0–2\text{ cm}$ | Air-Gap: $OID \ge 15\text{ cm}$</div>
+          </div>
+
+          <div class="geom-card">
+            <div>
+              <h4><i class="fa-solid fa-ruler-vertical" style="color:var(--rad-amber)"></i> 3. Source-to-Image Distance ($SID$)</h4>
+              <p>Total distance between focal spot and image receptor. Increasing $SID$ from $100\text{ cm}$ to $180\text{ cm}$ (e.g., standard PA chest) enlarges $SOD$, straightens diverging beam rays, significantly decreases penumbra width, and reduces cardiac magnification.</p>
+            </div>
+            <div class="geom-stat">Standard: $100\text{ cm}$ | Extended: $180\text{ cm}$ ($U_g$ reduced ~45%)</div>
+          </div>
+
+          <div class="geom-card">
+            <div>
+              <h4><i class="fa-solid fa-barcode" style="color:var(--rad-purple)"></i> 4. Line-Pair Resolution Phantom</h4>
+              <p>A precision lead foil phantom etched with calibrated groups of alternating lead strips and radiolucent spacers calibrated in $lp/mm$. Radiographers image the phantom to verify system limiting spatial resolution during routine Quality Control (QC) evaluations.</p>
+            </div>
+            <div class="geom-stat">Test Range: $0.5–5.0\text{ lp/mm}$ ($w = 1.0\text{ mm}$ down to $0.1\text{ mm}$)</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top:24px;color:var(--rad-navy);"><i class="fa-solid fa-table-list"></i> Table A: Geometric Factor Verification Check</h4>
+        <p class="small muted">Synthesize the physical relationships between geometric parameters and recorded detail:</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:14px;">
+          <thead>
+            <tr><th style="width:28%">Geometric Factor</th><th>Direct Impact on Penumbra Blur ($U_g$)</th><th>Impact on Magnification Factor ($M$)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Focal Spot Size ($F$) Doubled:</b> ($0.6\text{ mm} \to 1.2\text{ mm}$)</td>
+              <td><input type="text" id="w-focal-spot-effect" placeholder="e.g., Exactly doubles penumbra blur (Ug = 2x)"></td>
+              <td><input type="text" id="w-focal-mag-effect" placeholder="e.g., No effect on magnification (M unchanged)"></td>
+            </tr>
+            <tr>
+              <td><b>OID Increased:</b> (Patient positioned off receptor)</td>
+              <td><input type="text" id="w-oid-effect" placeholder="e.g., Rapidly increases penumbra width (Ug rises)"></td>
+              <td><input type="text" id="w-oid-mag-effect" placeholder="e.g., Increases magnification (M = SID/SOD rises)"></td>
+            </tr>
+            <tr>
+              <td><b>SID Increased:</b> ($100\text{ cm} \to 180\text{ cm}$)</td>
+              <td><input type="text" id="w-sid-effect" placeholder="e.g., Decreases penumbra blur (larger SOD reduces Ug)"></td>
+              <td><input type="text" id="w-sid-mag-effect" placeholder="e.g., Decreases magnification (M approaches 1.0)"></td>
+            </tr>
+            <tr>
+              <td><b>Deliberate Macroradiography:</b> ($OID=20\text{ cm}$)</td>
+              <td><input type="text" id="w-mag-penumbra-relation" placeholder="e.g., Requires fractional microfocus (0.1-0.3mm) to prevent blur"></td>
+              <td><input type="text" id="w-macro-mag-val" placeholder="e.g., M = 100/80 = 1.25x or higher enlargement"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Station 2 — Sharpness & Resolution Matcher -->
+    <section class="lab-section" id="sec-sharpness-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2: Sharpness &amp; Resolution Concept Matcher</h2>
+          <div class="lab-section-sub">Pair physical variables with their exact geometric and clinical consequences</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-link"></i> Station 2: Conceptual Pairing</span>
+        <p>Drag or click to match each imaging parameter on the left with its correct physical mechanism or clinical role on the right:</p>
+        <div id="sharpness-match-container" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- Section 4: Interactive Station 3 — Calibrated Line-Pair Resolution Grid Analyzer -->
+    <section class="lab-section" id="sec-line-pair-analyzer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3: Calibrated Line-Pair Resolution Grid Analyzer</h2>
+          <div class="lab-section-sub">Explore spatial frequency groups ($0.5$ to $5.0\text{ lp/mm}$) and resolve cutoff limits</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-ruler-combined"></i> Station 3: Line-Pair Phantom</span>
+        <p>
+          Select a spatial frequency group below to examine the physical width of the line pairs, the simulated appearance on the receptor, and whether the line pairs remain resolved at baseline focal spot geometry ($F=0.6\text{ mm}$, $SID=100\text{ cm}$, $OID=5\text{ cm} \implies U_g \approx 0.032\text{ mm}$):
+        </p>
+
+        <div class="line-pair-analyzer">
+          <div class="lp-strip-container" id="lp-strip-container">
+            <!-- Dynamically generated via initLinePairAnalyzer() -->
+          </div>
+
+          <div id="lp-detail-card" style="margin-top:16px;background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <h4 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-magnifying-glass"></i> Selected Frequency Group: <span id="lp-sel-freq">2.5 lp/mm</span></h4>
+              <span id="lp-sel-status" class="lp-status-badge lp-status-resolved">Resolved Under Baseline Geometry</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:13px;">
+              <div><b>Line &amp; Space Width ($w$):</b> <span id="lp-sel-width" style="color:var(--rad-teal);font-weight:700;">0.20 mm</span> ($200\ \mu\text{m}$)</div>
+              <div><b>Geometric Sampling Limit ($1/2U_g$):</b> <span id="lp-sel-limit" style="color:var(--rad-blue);font-weight:700;">15.8 lp/mm (geometric upper bound only; system MTF/DQE lowers it)</span></div>
+              <div><b>Clinical Visual Appearance:</b> <span id="lp-sel-desc" style="color:var(--rad-navy);">Distinct alternating black and white bars with crisp cortical definition.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Station 4 — Clinical Extremity Fine-Detail Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4: Clinical Decision Scenario</h2>
+          <div class="lab-section-sub">Pediatric scaphoid fracture — fine detail optimization vs motion risk</div>
+        </div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Station 4: Clinical Scenario</span>
+        <h3>Clinical Case: Pediatric Scaphoid Fine Detail Optimization</h3>
+        <p>
+          A 12-year-old active pediatric patient is referred after a fall onto an outstretched hand (FOOSH) with severe anatomical snuffbox tenderness. The requisition requests specialized scaphoid views to rule out a subtle, non-displaced scaphoid waist fracture. The initial radiograph reveals mild trabecular blur due to patient involuntary tremor and excessive geometric unsharpness.
+        </p>
+        <p><b>Clinical Directive:</b> Which exposure and geometric setup achieves maximum spatial resolution to evaluate scaphoid cortical continuity while minimizing kinetic motion risk and adhering to ALARA?</p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Select the optimal clinical imaging setup</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <div>
+                <strong>A. Small focal spot ($0.6\text{ mm}$), wrist in direct contact with image receptor ($OID \le 1\text{ cm}$), standard $100\text{ cm}$ $SID$, and firm sponge immobilization with short exposure time.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Minimizes geometric unsharpness ($U_g \approx 0.006\text{ mm}$), eliminates magnification distortion, and prevents patient kinetic tremor unsharpness.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <div>
+                <strong>B. Large focal spot ($1.2\text{ mm}$), $20\text{ cm}$ air gap ($OID=20\text{ cm}$) to magnify the scaphoid by $1.25\times$, and double mAs.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Magnification is achieved, but the large focal spot produces massive penumbra blur ($U_g = 0.30\text{ mm}$), obliterating delicate trabecular margins.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <div>
+                <strong>C. Short $SID$ ($60\text{ cm}$), large focal spot, and hand suspended $10\text{ cm}$ above detector.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Extreme beam divergence, short SOD, and large focal spot maximize both size distortion and geometric unsharpness.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <div>
+                <strong>D. Keep existing geometry but double the kVp to $110\text{ kVp}$ and apply edge-enhancement post-processing filters.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">High kVp severely degrades subject contrast via Compton scatter, and edge enhancement cannot recover unrecorded spatial frequency details lost to focal spot blur.</span>
+              </div>
+            </label>
+          </div>
+        </fieldset>
+
+        <button class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Evaluate Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:14px;">
+          Select a response and click "Evaluate Clinical Decision" to receive immediate specialist feedback.
+        </div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Formative Knowledge Check</h2>
+          <div class="lab-section-sub">4 core concept questions · First attempt and final scores recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1: In-Lab Submission Hub (10 Points)</h2>
+          <div class="lab-section-sub">Lock in your in-lab grade before leaving the laboratory session</div>
+        </div>
+      </div>
+      <!-- Injected by RadLab._wireSplitSubmitHub('phase1') -->
+    </section>
+
+    <!-- Transition CTA Card to Tab 2 -->
+    <div class="cta-card">
+      <div>
+        <h3><i class="fa-solid fa-circle-arrow-right"></i> Ready for Virtual Physics Experimentation?</h3>
+        <p>
+          You have completed the background theory, interactive stations, and knowledge check quizzes. Proceed to <b>Tab 2</b> to test focal spot blur, OID air gaps, and SID geometric variations on the 2D resolution canvas!
+        </p>
+      </div>
+      <button class="btn btn-primary" id="btn-proceed-to-sim">
+        Proceed to Virtual Experimentation <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+      </button>
+    </div>
+
+  </div><!-- /tab-pane-intro -->
+
+
+  <!-- ========================================================================= -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & ANALYSIS (10 POINTS)                  -->
+  <!-- ========================================================================= -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;background:var(--rad-bg-soft);padding:10px 16px;border-radius:8px;border:1px solid var(--rad-border);">
+      <div style="font-size:13.5px;color:var(--rad-navy);font-weight:600;">
+        <i class="fa-solid fa-flask" style="color:var(--rad-teal);margin-right:6px;"></i> Part II: Virtual Physics Simulation, Telemetry Logging &amp; Excel Analysis
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro">
+        <i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i> Return to Tab 1 (Theory &amp; Stations)
+      </button>
+    </div>
+
+    <!-- Section 8: Protocol & Step-by-Step Procedure Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol &amp; Scientific Method</h2>
+          <div class="lab-section-sub">Controlled-variable investigation of focal spot blur and geometric magnification</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-clipboard-list"></i> Controlled Protocol</span>
+        <h3>Standardized Experimental Aims:</h3>
+        <ol style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;margin-bottom:16px;">
+          <li><b>Aim 1 (Focal Spot Effect):</b> Keep $SID = 100\text{ cm}$ and $OID = 5\text{ cm}$ constant. Vary focal spot from $0.3\text{ mm} \to 1.0\text{ mm} \to 2.0\text{ mm}$. Observe how $U_g$ increases in direct linear proportion while magnification ($M$) remains strictly fixed.</li>
+          <li><b>Aim 2 (OID Air-Gap Effect):</b> Keep focal spot $F = 1.0\text{ mm}$ and $SID = 100\text{ cm}$ constant. Increase $OID$ from $0\text{ cm} \to 5\text{ cm} \to 20\text{ cm}$. Observe the rapid rise in magnification factor ($M$) and focal spot blur ($U_g$), causing loss of high-frequency line-pair visibility.</li>
+          <li><b>Aim 3 (SID Restoration Effect):</b> At an elevated $OID = 15\text{ cm}$, increase $SID$ from $100\text{ cm}$ to $180\text{ cm}$. Verify that enlarging $SOD$ significantly restores edge definition by reducing $U_g$ and bringing $M$ closer to unity.</li>
+          <li><b>Aim 4 (Spatial Frequency Cutoff):</b> Set test pattern frequency to $4.0\text{ lp/mm}$ and determine the exact focal spot and OID combinations where pattern visibility drops below diagnostic threshold ($<75\%$).</li>
+        </ol>
+
+        <h4>Procedure Workflow:</h4>
+        <div class="procedure-grid">
+          <div class="procedure-step">Formulate and write your scientific hypothesis in the Prediction field before recording trials.</div>
+          <div class="procedure-step">Load Preset 1 (Standard Extremity Baseline) and click "Record This Run".</div>
+          <div class="procedure-step">Switch to Preset 2 (Large Focal Spot) and record Run 2; compare penumbra width ($U_g$).</div>
+          <div class="procedure-step">Switch to Preset 3 (Elevated OID Air-Gap) and record Run 3; observe magnification and pattern blur.</div>
+          <div class="procedure-step">Switch to Preset 4 (Extended SID Chest) and record Run 4; verify sharpness recovery.</div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b>Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline (F 0.6 / OID 3) + Record &nbsp; ☐ 3. Run 2 Large spot (F 1.2) + Record &nbsp; ☐ 4. Run 3 OID air-gap (OID 15) + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B.<br>
+          Run 4 Extended-SID (SID 180) is bonus/optional — only after the required 3.<br>
+          <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider per run.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Interactive Physics Simulation Suite</h2>
+          <div class="lab-section-sub">2D Canvas ray tracing &amp; multi-frequency line-pair resolution pattern</div>
+        </div>
+      </div>
+      <div class="card">
+        <!-- 5 Clinical Operating Presets -->
+        <div style="margin-bottom:12px;">
+          <span style="font-size:12px;font-weight:800;color:var(--rad-navy);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">
+            <i class="fa-solid fa-sliders" style="color:var(--rad-teal)"></i> Clinical Operating Presets:
+          </span>
+          <div class="preset-toolbar">
+            <button type="button" class="preset-btn" data-focal="0.6" data-sid="100" data-oid="3" data-freq="3.0">
+              <i class="fa-solid fa-bone"></i> 1. Standard Extremity Baseline ($F=0.6, OID=3$)
+            </button>
+            <button type="button" class="preset-btn" data-focal="1.2" data-sid="100" data-oid="3" data-freq="3.0">
+              <i class="fa-solid fa-fire"></i> 2. Large Focal Spot / High Loading ($F=1.2, OID=3$)
+            </button>
+            <button type="button" class="preset-btn" data-focal="0.6" data-sid="100" data-oid="15" data-freq="3.0">
+              <i class="fa-solid fa-up-right-and-down-left-from-center"></i> 3. Elevated OID Air-Gap ($F=0.6, OID=15$)
+            </button>
+            <button type="button" class="preset-btn" data-focal="1.0" data-sid="180" data-oid="5" data-freq="2.5">
+              <i class="fa-solid fa-arrows-up-down"></i> 4. Extended SID Chest Protocol ($SID=180, OID=5$)
+            </button>
+            <button type="button" class="preset-btn" data-focal="0.3" data-sid="100" data-oid="20" data-freq="4.0">
+              <i class="fa-solid fa-magnifying-glass-plus"></i> 5. Deliberate Macroradiography ($F=0.3, OID=20$)
+            </button>
+          </div>
+        </div>
+
+        <!-- Scientific Prediction Box -->
+        <div class="form-row" style="margin-bottom:18px;">
+          <label class="field-label" for="w-prediction">
+            Scientific Hypothesis &amp; Pre-Trial Prediction <span aria-hidden="true" style="color:var(--rad-red)">*</span>
+          </label>
+          <textarea id="w-prediction" rows="2" required placeholder="State your hypothesis: predict which parameter (Focal Spot, OID, or SID) will produce the largest change in geometric unsharpness (Ug), and whether magnification can occur without focal spot blur..."></textarea>
+          <p class="form-hint">Mandatory: Minimum 20 characters. Validated before recording runs; included in your submission.</p>
+        </div>
+
+        <!-- Canvas and Controls Grid -->
+        <div class="experiment-layout">
+          <div>
+            <canvas id="sim-canvas" class="sim-canvas" width="900" height="345" role="img" aria-label="Interactive visual model for Spatial Resolution & Magnification Lab" aria-describedby="sim-caption"></canvas>
+            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">
+              Move one control at a time. Left: multi-frequency line-pair pattern. Right: focal spot penumbra ray geometry.
+            </p>
+          </div>
+
+          <div>
+            <div class="control-grid">
+              <div class="control-card">
+                <label for="ctrl-focal"><span>Focal Spot Size ($F$)</span><output id="out-focal" for="ctrl-focal">1.0 mm</output></label>
+                <input type="range" id="ctrl-focal" min="0.3" max="2.0" step="0.1" value="1.0" aria-describedby="sim-caption">
+                <span class="small muted">Range: 0.3 mm (micro) to 2.0 mm (broad)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-sid"><span>Source-to-Image ($SID$)</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
+                <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
+                <span class="small muted">Range: 80 cm to 180 cm (tele-radiography)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-oid"><span>Object-to-Image ($OID$)</span><output id="out-oid" for="ctrl-oid">5 cm</output></label>
+                <input type="range" id="ctrl-oid" min="0" max="20" step="1" value="5" aria-describedby="sim-caption">
+                <span class="small muted">Range: 0 cm (contact) to 20 cm (air-gap)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-freq"><span>Pattern Frequency ($f$)</span><output id="out-freq" for="ctrl-freq">2.5 lp/mm</output></label>
+                <input type="range" id="ctrl-freq" min="0.5" max="5.0" step="0.1" value="2.5" aria-describedby="sim-caption">
+                <span class="small muted">Range: 0.5 to 5.0 line pairs/mm</span>
+              </div>
+            </div>
+
+            <!-- Live Telemetry Metrics Grid -->
+            <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run"><i class="fa-solid fa-camera"></i> Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash-can"></i> Remove Last Run</button>
+          <button class="btn btn-secondary btn-sm" id="btn-download-runs-csv"><i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)</button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr><th>Run #</th><th>Settings ($F$, $SID$, $OID$, $f$)</th><th>Key Results ($M$, $U_g$, Limit, Visibility)</th><th>Radiological Interpretation</th></tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr><td colspan="4" class="muted">No runs recorded yet. Load a preset or adjust sliders and click "Record This Run".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 10: Post-Lab Data Analysis & Worksheet -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Required Data Analysis &amp; Post-Lab Reflection</h2>
+          <div class="lab-section-sub">Quantitative geometric unsharpness calculations, Excel plotting guide, and clinical reflection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and execute the following analysis in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Focal Spot Size vs. Geometric Unsharpness ($F$ vs $U_g$):</b> Plot Focal Spot Size $F$ (mm) on the X-axis against Focal Spot Blur $U_g$ (mm) on the Y-axis for constant geometry ($SID = 100\text{ cm}, OID = 10\text{ cm}$). Fit a linear trendline ($y = mx$) demonstrating that $U_g$ is directly proportional to focal spot dimension.</li>
+            <li><b>Plot 2 — OID vs. Magnification &amp; Resolution Limit ($OID$ vs $M$ &amp; $R_{\text{limit}}$):</b> Plot Object-to-Image Distance $OID$ (cm) on the X-axis against Magnification Factor $M$ on the primary Y-axis, and Geometric Resolution Limit ($lp/mm$) on the secondary Y-axis. Explain why increasing OID degrades high-frequency detail.</li>
+            <li><b>Calculated Spreadsheet Columns:</b> Add a calculated column computing the theoretical limiting spatial frequency ($R_{\text{limit}} = 1 / (2 \times U_g)$) and verify that it matches your exported telemetry.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and attach it in <b>Section 12 (Phase 2 Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact geometric parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <thead>
+            <tr><th style="width:32%">Imaging Geometry Configuration</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Resolution Limit</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Trial 1 (Standard Extremity):</b> $F = 0.6\text{ mm}, SID = 100\text{ cm}, OID = 5\text{ cm}$</td>
+              <td><input type="text" id="w-calc-t1-sub" placeholder="e.g., SOD = 95 cm; Ug = 0.6 * 5 / 95"></td>
+              <td><input type="text" id="w-calc-t1-out" placeholder="e.g., M = 1.053x; Ug = 0.032 mm; R_limit = 15.8 lp/mm (geometric upper bound only; system MTF/DQE lowers it)">
+            </tr>
+            <tr>
+              <td><b>Trial 2 (Large Focal Spot / High OID):</b> $F = 1.2\text{ mm}, SID = 100\text{ cm}, OID = 15\text{ cm}$</td>
+              <td><input type="text" id="w-calc-t2-sub" placeholder="e.g., SOD = 85 cm; Ug = 1.2 * 15 / 85"></td>
+              <td><input type="text" id="w-calc-t2-out" placeholder="e.g., M = 1.176x; Ug = 0.212 mm; R_limit = 2.36 lp/mm"></td>
+            </tr>
+            <tr>
+              <td><b>Trial 3 (Macroradiography):</b> $F = 0.3\text{ mm}, SID = 100\text{ cm}, OID = 20\text{ cm}$</td>
+              <td><input type="text" id="w-calc-t3-sub" placeholder="e.g., SOD = 80 cm; Ug = 0.3 * 20 / 80"></td>
+              <td><input type="text" id="w-calc-t3-out" placeholder="e.g., M = 1.25x; Ug = 0.075 mm; R_limit = 6.67 lp/mm"></td>
+            </tr>
+            <tr>
+              <td><b>Restoration via Extended SID:</b> $F = 1.2\text{ mm}, SID = 180\text{ cm}, OID = 15\text{ cm}$</td>
+              <td><input type="text" id="w-calc-t4-sub" placeholder="e.g., SOD = 165 cm; Ug = 1.2 * 15 / 165"></td>
+              <td><input type="text" id="w-calc-t4-out" placeholder="e.g., M = 1.091x; Ug = 0.109 mm (penumbra halved vs 100cm)"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-pen-fancy"></i> C. Written Analysis &amp; Clinical Synthesis</h4>
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q1">1. Record two focal-spot/OID combinations from your experimental trials and calculate $U_g$ and $M$ for each. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="State your exact run numbers, parameters (F, SID, OID), substitution into Ug = F * OID / SOD, and compare the resulting penumbra width in mm..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q2">2. Explain how magnification ($M$) differs physically from blur ($U_g$), and explain how an image can be magnified without excessive focal spot blur. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="Differentiate size distortion (divergence of rays scaling image dimensions) from penumbra edge unsharpness (finite focal spot area casting overlapping penumbra). Discuss microfocus tubes (0.1-0.3 mm)..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q3">3. What does a line-pair resolution pattern test, and why does spatial frequency ($lp/mm$) matter in clinical imaging? <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Explain how line pairs per mm quantify limiting resolution, why high spatial frequencies correspond to fine structures like bone trabeculae and microcalcifications, and how blur causes line-pair blending..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q4">4. Critical thinking: Explain a clinical situation where deliberate magnification (macroradiography) is useful despite its trade-offs. Detail how geometric unsharpness and patient dose are controlled. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Describe magnification mammography (evaluating microcalcifications cluster morphology) or extremity macroradiography. Explain the necessity of fractional microfocus (0.1 mm), air-gap scatter reduction, and radiation exposure considerations..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Grading Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized Grading Rubric (20 Points)</h2>
+          <div class="lab-section-sub">Departmental Gemini Flash model automated rubric evaluation</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto"></div>
+        <p class="form-hint" style="margin-top:12px;">Self-scores provide formative feedback. The departmental Gemini Flash grading engine evaluates your final submission against this exact rubric.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2: Post-Lab Excel Submission Hub (10 Points)</h2>
+          <div class="lab-section-sub">Upload your Excel workbook (.xlsx / .csv) and submit your final post-lab analysis</div>
+        </div>
+      </div>
+      <!-- Injected by RadLab._wireSplitSubmitHub('phase2') -->
+    </section>
+
+  </div><!-- /tab-pane-experiment -->
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 6 of 15 · assessed virtual laboratory</footer>
+
+<!-- Bottom Action Bar for JSON Backup & Reset -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span><span id="autosave-dot-label">Autosave Ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        <i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 6 of 15 · Assessed Virtual Laboratory Suite · Aligned with Saudi SCHS Radiologic Technologist Licensing Competencies
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
-<script>
-const LAB = {"week":6,"title":"Spatial Resolution & Magnification Lab","lecture":"Sharpness & Detail I — Resolution/Magnification","type":"sharpness","subtitle":"Make focal-spot blur and geometric magnification visible.","objectives":["Define spatial resolution and spatial frequency.","Calculate magnification from SID and SOD.","Calculate focal-spot geometric unsharpness.","Predict how focal spot size, OID, and SID affect recorded detail.","Use a resolution pattern to compare two imaging geometries."],"theory":"<p>Spatial resolution is the ability to distinguish small, closely spaced structures. Spatial frequency is often expressed in line pairs per millimeter. Geometric unsharpness is blur caused by the finite focal spot and object-to-receptor separation.</p><div class=\"formula-box\"><b>M = SID/SOD</b> · <b>Ug = F × OID / SOD</b>, where F is focal-spot size. Smaller focal spots, smaller OID, and larger SOD reduce geometric blur.</div><p>Magnification can reveal small structures in some applications, but it also increases blur unless geometry is controlled. The goal is not the largest image; it is adequate diagnostic detail with acceptable dose and positioning.</p>","controls":[{"id":"focal","label":"Focal spot","min":0.3,"max":2,"step":0.1,"value":1,"unit":"mm"},{"id":"sid","label":"SID","min":80,"max":180,"step":1,"value":100,"unit":"cm"},{"id":"oid","label":"OID","min":0,"max":20,"step":1,"value":5,"unit":"cm"},{"id":"freq","label":"Pattern frequency","min":0.5,"max":5,"step":0.1,"value":2.5,"unit":"lp/mm"}],"stations":[{"id":"blur","title":"Station 1 — Focal spot and penumbra","text":"Adjust focal spot and OID. Read the calculated unsharpness and inspect the line-pair pattern for loss of separation.","kind":"main"},{"id":"terms","title":"Station 2 — Resolution vocabulary","text":"Match each variable to the geometric effect it controls.","kind":"match","left":[["focal","Focal-spot size"],["oid","Object-to-image distance"],["sid","Source-to-image distance"]],"right":[["blur","Changes penumbra blur"],["mag","Changes magnification strongly"],["sod","Changes SOD when object is fixed"]],"pairs":{"focal":"blur","oid":"mag","sid":"sod"}},{"id":"case","title":"Station 3 — Detail optimization","text":"A fine-detail extremity exam is limited by blur. Choose the most direct geometry adjustment.","kind":"case"}],"quiz":[{"prompt":"Which setup produces the least geometric unsharpness?","options":["Large focal spot and large OID","Small focal spot and small OID","Large OID and short SOD","Small SID with unchanged OID"],"correct":1,"explain":"Ug = F×OID/SOD, so reducing focal spot and OID reduces geometric blur."},{"prompt":"Geometric unsharpness is calculated by:","options":["F × OID / SOD","SID/SOD","kVp/mAs","Field size × thickness"],"correct":0,"explain":"Focal spot size and OID increase blur; SOD reduces it."},{"prompt":"Spatial frequency is commonly expressed in:","options":["mGy","line pairs per millimeter","degrees","seconds"],"correct":1,"explain":"Line pairs per millimeter describe how closely spaced detail is."},{"prompt":"Magnification and blur are:","options":["Always identical","Different effects that can occur together","Controlled only by mAs","Unrelated to geometry"],"correct":1,"explain":"Magnification changes image size; unsharpness changes edge definition."}],"worksheet":[{"id":"q1","label":"1. Record two focal-spot/OID combinations and calculate Ug for each."},{"id":"q2","label":"2. Explain how magnification differs from blur."},{"id":"q3","label":"3. What does a line-pair pattern test, and why does spatial frequency matter?"},{"id":"q4","label":"4. Critical thinking: explain a situation where deliberate magnification may be useful despite its trade-offs."}],"rubric":[{"id":"c1","name":"Sharpness and resolution concepts","points":4,"levels":["Correctly explains resolution, frequency, magnification, and blur.","Mostly correct with minor omissions.","Major conceptual errors."]},{"id":"c2","name":"Geometry simulation","points":5,"levels":["Uses several settings and interprets blur/resolution trends.","Uses the tool with limited comparison.","Little meaningful investigation."]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":["Calculations are shown and correctly interpreted.","Mostly correct with limited interpretation.","Calculations missing or incorrect."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Balances detail, geometry, and clinical purpose.","Plausible but brief.","No defensible reasoning."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict which control most strongly changes geometric unsharpness.","Record a baseline run.","Increase only focal-spot size and record a second run.","Restore focal spot, increase OID, and record a third run.","Compare Ug, magnification, resolution limit, and pattern visibility."],"scenario":{"prompt":"A fine-detail extremity image is blurred by geometry. Which combination best improves recorded detail?","options":["Small focal spot, small OID, and adequate SID","Large focal spot and large OID","Short SID and large OID","Increase mAs only"],"correct":0,"explain":"Ug = F × OID / SOD; smaller F and OID with adequate SOD reduce penumbra."},"minimumRuns":3};
-const QUIZ_IDS = ["q6-1","q6-2","q6-3","q6-4"];
-const CONCEPT = LAB.stations[1];
-let currentResult = null;
-let currentViewMode = '3d-shadow';
 
+<script>
+/* =========================================================================
+   LAB CONFIGURATION & RUBRIC DATA
+   ========================================================================= */
+const LAB = {
+  week: 6,
+  title: "Lab 6: Spatial Resolution & Magnification Lab",
+  lecture: "Sharpness & Detail I — Resolution/Magnification",
+  type: "sharpness",
+  subtitle: "Investigate focal spot penumbra blur, OID air gaps, magnification, and line-pair resolution.",
+  minimumRuns: 3,
+  controls: [
+    { id: "focal", label: "Focal spot", min: 0.3, max: 2.0, step: 0.1, value: 1.0, unit: "mm" },
+    { id: "sid", label: "SID", min: 80, max: 180, step: 1, value: 100, unit: "cm" },
+    { id: "oid", label: "OID", min: 0, max: 20, step: 1, value: 5, unit: "cm" },
+    { id: "freq", label: "Pattern frequency", min: 0.5, max: 5.0, step: 0.1, value: 2.5, unit: "lp/mm" }
+  ],
+  quiz: [
+    {
+      prompt: "Which setup produces the least geometric unsharpness (penumbra blur)?",
+      options: [
+        "Large focal spot and large OID",
+        "Small focal spot and small OID",
+        "Large OID and short SOD",
+        "Small SID with unchanged OID"
+      ],
+      correct: 1,
+      explain: "Ug = F * OID / SOD. Therefore, reducing focal spot dimension (F) and object-to-image distance (OID) while maintaining maximum SOD produces the sharpest recorded detail."
+    },
+    {
+      prompt: "Geometric unsharpness (penumbra blur Ug) is calculated by which formula?",
+      options: [
+        "F × OID / SOD",
+        "SID / SOD",
+        "kVp / mAs",
+        "Field size × thickness"
+      ],
+      correct: 0,
+      explain: "Ug = F * OID / SOD. Focal spot size and OID increase blur; SOD reduces ray divergence and decreases blur."
+    },
+    {
+      prompt: "Spatial frequency in diagnostic radiology is commonly expressed in which unit?",
+      options: [
+        "mGy (milligray)",
+        "line pairs per millimeter (lp/mm)",
+        "degrees (°)",
+        "seconds (s)"
+      ],
+      correct: 1,
+      explain: "Line pairs per millimeter (lp/mm) describe how closely spaced detail can be resolved before blurring together."
+    },
+    {
+      prompt: "How do magnification and focal spot blur relate physically?",
+      options: [
+        "They are always identical in magnitude",
+        "They are different geometric effects that can occur together",
+        "They are controlled only by tube mAs",
+        "They are completely unrelated to distance geometry"
+      ],
+      correct: 1,
+      explain: "Magnification is size distortion (M = SID/SOD); unsharpness is penumbra boundary blur (Ug = F * OID/SOD). While both worsen with increasing OID, magnification can occur with minimal blur if a microfocus tube is used."
+    }
+  ],
+  scenario: {
+    prompt: "A fine-detail extremity image is blurred by geometry. Which combination best improves recorded detail?",
+    options: [
+      "Small focal spot, small OID, and adequate SID with patient immobilization",
+      "Large focal spot and large OID",
+      "Short SID and large OID",
+      "Increase mAs only"
+    ],
+    correct: 0,
+    explain: "Ug = F * OID / SOD. Utilizing a small focal spot, placing the part in direct contact with the receptor (minimal OID), and using adequate SID with immobilization minimizes both geometric and kinetic unsharpness."
+  },
+  worksheet: [
+    { id: "q1", label: "1. Record two focal-spot/OID combinations and calculate Ug for each." },
+    { id: "q2", label: "2. Explain how magnification differs from blur." },
+    { id: "q3", label: "3. What does a line-pair pattern test, and why does spatial frequency matter?" },
+    { id: "q4", label: "4. Critical thinking: explain a situation where deliberate magnification may be useful despite its trade-offs." }
+  ],
+  rubric: [
+    {
+      id: "c1",
+      name: "Sharpness and Resolution Concepts",
+      points: 4,
+      part: "Part I: In-Lab Interactive Activities (10 Points)",
+      levels: [
+        { desc: "Excellently defines spatial resolution, spatial frequency (lp/mm), magnification (SID/SOD), and focal spot blur (Ug = F*OID/SOD)." },
+        { desc: "Adequately explains core concepts with minor omissions in formulas or units." },
+        { desc: "Major conceptual errors or incomplete responses." }
+      ]
+    },
+    {
+      id: "c2",
+      name: "Geometry Simulation & Experimental Evidence",
+      points: 6,
+      part: "Part I: In-Lab Interactive Activities (10 Points)",
+      levels: [
+        { desc: "Records 3+ systematic experimental runs across clinical presets, formulates hypothesis, and accurately interprets Ug and resolution limit." },
+        { desc: "Records runs with limited parameter variation or brief observations." },
+        { desc: "Insufficient runs recorded or failure to isolate controlled variables." }
+      ]
+    },
+    {
+      id: "c3",
+      name: "Quantitative Calculations & Excel Plotting",
+      points: 5,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Accurately completes Table B calculations, provides required Excel plots (F vs Ug and OID vs M), and validates trends." },
+        { desc: "Calculations mostly correct with minor arithmetic errors or incomplete plot formatting." },
+        { desc: "Calculations missing, incorrect formulas used, or Excel analysis omitted." }
+      ]
+    },
+    {
+      id: "c4",
+      name: "Clinical Synthesis & ALARA Optimization",
+      points: 3,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Thoroughly analyzes scaphoid clinical scenario, discusses motion unsharpness vs geometric blur, and justifies macroradiography trade-offs." },
+        { desc: "Plausible clinical discussion but lacks quantitative depth or ALARA considerations." },
+        { desc: "Superficial or incorrect clinical reasoning." }
+      ]
+    },
+    {
+      id: "c5",
+      name: "Completeness, Organization & Professional Reporting",
+      points: 2,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Report is exceptionally organized, clear notation, thorough worksheet responses, and properly attached Excel file." },
+        { desc: "Minor formatting omissions or brief worksheet sections." },
+        { desc: "Substantially incomplete report or missing file attachments." }
+      ]
+    }
+  ]
+};
+
+const QUIZ_IDS = ["q6-1", "q6-2", "q6-3", "q6-4"];
+let currentResult = null;
+
+/* =========================================================================
+   TWO-TAB SWITCHER LOGIC
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (tabId === 'experiment') {
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    paneIntro.classList.remove('active');
+    paneExp.classList.add('active');
+    window.location.hash = '#tab-experiment';
+
+    // Refresh simulation on tab display
+    setTimeout(function () {
+      renderSimulation();
+    }, 50);
+
+    if (targetSectionId) {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  } else {
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    paneExp.classList.remove('active');
+    paneIntro.classList.add('active');
+    window.location.hash = '#tab-intro';
+
+    if (targetSectionId) {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+}
+
+/* =========================================================================
+   SIMULATION CONTROLS & COMPUTATIONS
+   ========================================================================= */
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    values[control.id] = el ? Number(el.value) : control.value;
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
-}
-
-function renderMetrics(result) {
-  const container = document.getElementById('sim-metrics');
-  RadLab.renderMetrics(container, result);
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + values[control.id] + ' ' + control.unit;
+  }).join('; ');
 }
 
 function renderSimulation() {
   const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = values[control.id] + ' ' + control.unit;
+  });
+
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
-  renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
+
+  const metricContainer = document.getElementById('sim-metrics');
+  if (metricContainer) {
+    RadLab.renderMetrics(metricContainer, currentResult);
+  }
+
+  const caption = document.getElementById('sim-caption');
+  if (caption) {
+    caption.textContent = currentResult.observation;
+  }
 }
 
+/* =========================================================================
+   RUN LOGGING & CSV EXPORT
+   ========================================================================= */
 function experimentActivity() {
   return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
 }
@@ -98,116 +1460,523 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
+
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Load a preset or adjust sliders and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) {
+    statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  }
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please write a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
+
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That exact setting is already recorded. Change one parameter to record a new run.', 'error');
+    return;
+  }
+
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
+
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
-  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
-  activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns) * 2; // Up to 6 points
+  activity.maxScore = 6;
+  activity.detail = activity.runs.length + ' unique experimental runs recorded across spatial resolution geometries.';
+
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  if (RadLab.sound && RadLab.sound.playExposure) RadLab.sound.playExposure();
+
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully!', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded runs to remove.', 'info');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns) * 2;
+  activity.detail = activity.runs.length + ' unique experimental runs recorded.';
+
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
 }
 
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) {
+    RadLab.toast('No runs recorded yet. Record at least 1 trial to download CSV.', 'error');
+    return;
+  }
+
+  let csv = 'Run Number,Focal Spot (mm),SID (cm),OID (cm),Frequency (lp/mm),Magnification (M),Ug Penumbra (mm),Resolution Limit (lp/mm),Pattern Visibility (%),Observation\n';
+  activity.runs.forEach(function (run, index) {
+    const v = run.values;
+    const mMag = run.metrics.find(function (m) { return m.label.includes('Magnification'); });
+    const mUg = run.metrics.find(function (m) { return m.label.includes('blur') || m.label.includes('Ug'); });
+    const mLim = run.metrics.find(function (m) { return m.label.includes('limit') || m.label.includes('Resolution'); });
+    const mVis = run.metrics.find(function (m) { return m.label.includes('visibility') || m.label.includes('Visibility'); });
+
+    const magVal = mMag ? mMag.value : '';
+    const ugVal = mUg ? mUg.value : '';
+    const limVal = mLim ? mLim.value : '';
+    const visVal = mVis ? mVis.value : '';
+
+    const obsClean = '"' + (run.observation || '').replace(/"/g, '""') + '"';
+    csv += `${index + 1},${v.focal},${v.sid},${v.oid},${v.freq},${magVal},${ugVal},${limVal},${visVal},${obsClean}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab06_Spatial_Resolution_Runs_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Exported runs CSV for Excel analysis!', 'success');
 }
 
+/* =========================================================================
+   STATION 3: CALIBRATED LINE-PAIR RESOLUTION GRID ANALYZER
+   ========================================================================= */
+const LP_DATA = [
+  { freq: 0.5, width: 1.00, desc: "Ultra-low frequency: Large gross structures (e.g., organ boundaries, foreign bodies)." },
+  { freq: 1.0, width: 0.50, desc: "Low frequency: Major cortical margins and large skeletal trabeculae." },
+  { freq: 1.5, width: 0.33, desc: "Moderate low: Standard soft-tissue and structural interfaces." },
+  { freq: 2.0, width: 0.25, desc: "Moderate frequency: Sub-millimeter bony cortical boundaries." },
+  { freq: 2.5, width: 0.20, desc: "Standard diagnostic baseline: Typical extremity trabecular micro-architecture." },
+  { freq: 3.0, width: 0.17, desc: "High frequency: Fine trabecular micro-fractures, hairline bone fissures." },
+  { freq: 4.0, width: 0.125, desc: "Very high frequency: High-detail extremity and fine cortical fissures." },
+  { freq: 5.0, width: 0.10, desc: "Ultra-high frequency: Microcalcifications in mammography and fine extremity detail." }
+];
+
+function initLinePairAnalyzer() {
+  const container = document.getElementById('lp-strip-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  LP_DATA.forEach(function (item, idx) {
+    const cell = document.createElement('div');
+    cell.className = 'lp-cell' + (idx === 4 ? ' active' : '');
+    cell.dataset.index = idx;
+
+    // Generate simulated stripes
+    const barPreview = document.createElement('div');
+    barPreview.className = 'lp-bar-preview';
+    const numStripes = Math.min(12, Math.max(3, Math.round(item.freq * 2)));
+    for (let s = 0; s < numStripes; s++) {
+      const stripe = document.createElement('div');
+      stripe.className = 'lp-bar-stripe';
+      stripe.style.background = (s % 2 === 0) ? '#ffffff' : '#000000';
+      barPreview.appendChild(stripe);
+    }
+
+    cell.innerHTML = `
+      <div style="font-weight:800;font-size:13px;color:var(--rad-navy);">${item.freq} lp/mm</div>
+      <div style="font-size:11px;color:var(--rad-text-soft);">w = ${item.width.toFixed(2)} mm</div>
+    `;
+    cell.appendChild(barPreview);
+
+    const badge = document.createElement('span');
+    badge.className = 'lp-status-badge ' + (item.freq <= 4.0 ? 'lp-status-resolved' : 'lp-status-blurred');
+    badge.textContent = item.freq <= 4.0 ? 'Resolved' : 'Blur Limit';
+    cell.appendChild(badge);
+
+    cell.addEventListener('click', function () {
+      document.querySelectorAll('.lp-cell').forEach(function (c) { c.classList.remove('active'); });
+      cell.classList.add('active');
+      selectLinePairGroup(idx);
+    });
+
+    container.appendChild(cell);
+  });
+
+  selectLinePairGroup(4); // Default to 2.5 lp/mm
+}
+
+function selectLinePairGroup(idx) {
+  const item = LP_DATA[idx];
+  if (!item) return;
+
+  const freqEl = document.getElementById('lp-sel-freq');
+  const widthEl = document.getElementById('lp-sel-width');
+  const limitEl = document.getElementById('lp-sel-limit');
+  const descEl = document.getElementById('lp-sel-desc');
+  const statusEl = document.getElementById('lp-sel-status');
+
+  if (freqEl) freqEl.textContent = item.freq + ' lp/mm';
+  if (widthEl) widthEl.textContent = item.width.toFixed(2) + ' mm';
+  if (limitEl) limitEl.textContent = '15.8 lp/mm (geometric upper bound only; system MTF/DQE lowers it)';
+  if (descEl) descEl.textContent = item.desc;
+
+  if (statusEl) {
+    if (item.freq <= 4.0) {
+      statusEl.className = 'lp-status-badge lp-status-resolved';
+      statusEl.textContent = 'Resolved Under Baseline Geometry';
+    } else {
+      statusEl.className = 'lp-status-badge lp-status-blurred';
+      statusEl.textContent = 'Penumbra Blur Warning: Requires Small Focus';
+    }
+  }
+
+  // Update the pattern frequency slider in Tab 2 to match
+  const freqSlider = document.getElementById('ctrl-freq');
+  if (freqSlider) {
+    freqSlider.value = item.freq;
+    const outFreq = document.getElementById('out-freq');
+    if (outFreq) outFreq.textContent = item.freq + ' lp/mm';
+    if (currentResult) renderSimulation();
+  }
+}
+
+/* =========================================================================
+   CLINICAL SCENARIO EVALUATION
+   ========================================================================= */
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please select an imaging setup option before checking.';
+    return;
+  }
+
+  const choice = Number(selected.value);
+  const correct = choice === 0;
+
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: choice === 0 ? "Correctly identified small focal spot, minimal OID, and immobilization to optimize fine detail." : "Reconsidered setup."
+  };
+
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  if (correct) {
+    feedback.innerHTML = '<strong><i class="fa-solid fa-circle-check"></i> Outstanding Clinical Judgment!</strong> Option A is the gold-standard protocol. Using a small focal spot ($0.6\\text{ mm}$) and keeping the pediatric wrist in direct contact with the receptor ($OID \\le 1\\text{ cm}$) minimizes penumbra unsharpness ($U_g = 0.6 \\times 1 / 99 \\approx 0.006\\text{ mm}$). Firm sponge immobilization and shortest exposure time mitigate patient kinetic tremor ($U_m$), ensuring hairline scaphoid waist trabecular fractures are diagnostic.';
+  } else {
+    feedback.innerHTML = '<strong><i class="fa-solid fa-circle-xmark"></i> Suboptimal Imaging Protocol:</strong> Option ' + String.fromCharCode(65 + choice) + ' will degrade diagnostic sharpness. Review the formula $U_g = F \\times OID / SOD$. Notice that large focal spots and increased OID severely expand penumbra blur. Also note that high kVp degrades bone subject contrast. Re-evaluate Option A!';
+  }
+
+  RadLab.save();
+  RadLab.progress.update();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-06', labTitle: "Lab 6 — Spatial Resolution & Magnification Lab", weekNumber: 6, rubric: { title: "Lab 6 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Sharpness and resolution concepts","points":4},{"id":"c2","name":"Geometry simulation","points":5},{"id":"c3","name":"Calculations and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab6-rubric',title:"Lab 6 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Sharpness and resolution concepts","points":4,"levels":[{"desc":"Correctly explains resolution, frequency, magnification, and blur."},{"desc":"Mostly correct with minor omissions."},{"desc":"Major conceptual errors."}]},{"id":"c2","name":"Geometry simulation","points":5,"levels":[{"desc":"Uses several settings and interprets blur/resolution trends."},{"desc":"Uses the tool with limited comparison."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":[{"desc":"Calculations are shown and correctly interpreted."},{"desc":"Mostly correct with limited interpretation."},{"desc":"Calculations missing or incorrect."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Balances detail, geometry, and clinical purpose."},{"desc":"Plausible but brief."},{"desc":"No defensible reasoning."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+/* =========================================================================
+   INFALLIBLE MATHEMATICAL TYPOGRAPHY HELPER
+   ========================================================================= */
+function formatMathTex(expr) {
+  let s = expr;
+  s = s.replace(/\$/g, '');
+  s = s.replace(/\\approx/g, '≈');
+  s = s.replace(/\\times/g, '×');
+  s = s.replace(/\\cdot/g, '·');
+  s = s.replace(/\\le/g, '≤');
+  s = s.replace(/\\ge/g, '≥');
+  s = s.replace(/\\Delta/g, 'Δ');
+  s = s.replace(/\\mu/g, 'μ');
+  s = s.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+  s = s.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)');
+  s = s.replace(/\\text\{([^}]+)\}/g, '$1');
+  s = s.replace(/\\quad/g, ' ');
+  s = s.replace(/\\,/g, ' ');
+  s = s.replace(/\\([a-zA-Z]+)/g, '$1');
+  s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>');
+  s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>');
+  s = s.replace(/_([a-zA-Z0-9])/g, '<sub>$1</sub>');
+  s = s.replace(/\^([a-zA-Z0-9])/g, '<sup>$1</sup>');
+  return s;
+}
+
+function renderAllMath() {
+  if (typeof renderMathInElement === 'function') {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (e) {
+      console.warn('KaTeX auto-render failed; applying semantic HTML fallback.', e);
+    }
   }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+
+  document.querySelectorAll('.math-tex, .math-display').forEach(function (el) {
+    const raw = el.textContent || '';
+    el.innerHTML = formatMathTex(raw);
+  });
+}
+
+/* =========================================================================
+   INITIALIZATION ON DOM LOAD
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. Initialize RadLab Platform Core
+  RadLab.init({
+    labId: 'lab-06',
+    labTitle: LAB.title,
+    weekNumber: LAB.week,
+    rubric: {
+      title: "Lab 6 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    },
+    sections: [
+      {
+        id: 'sec-geom-explorer',
+        label: '1 · Geometry & Stations',
+        checkComplete: function (s) {
+          const act = s.activities['sharpness-match'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-scenario',
+        label: '2 · Clinical Decision',
+        checkComplete: function (s) {
+          const act = s.activities['clinical-scenario'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-quiz',
+        label: '3 · Knowledge Check',
+        checkComplete: function (s) {
+          return QUIZ_IDS.every(function (id) {
+            return !!(s.quiz[id] && s.quiz[id].correct);
+          });
+        }
+      },
+      {
+        id: 'sec-experiment',
+        label: '4 · Simulation Suite',
+        checkComplete: function (s) {
+          const act = s.activities['experiment-log'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-worksheet',
+        label: '5 · Post-Lab Excel Analysis',
+        checkComplete: function (s) {
+          return !!(s.fields && s.fields['q1'] && s.fields['q1'].length > 20);
+        }
+      }
+    ]
+  });
+
+  // 2. Register Interactive Worksheet & Table Fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment hypothesis' });
+  RadLab.registerField('w-focal-spot-effect', { sectionId: 'sec-geom-explorer', label: 'Table A: Focal Spot effect' });
+  RadLab.registerField('w-focal-mag-effect', { sectionId: 'sec-geom-explorer', label: 'Table A: Focal Spot Magnification effect' });
+  RadLab.registerField('w-oid-effect', { sectionId: 'sec-geom-explorer', label: 'Table A: OID effect on Ug' });
+  RadLab.registerField('w-oid-mag-effect', { sectionId: 'sec-geom-explorer', label: 'Table A: OID Magnification effect' });
+  RadLab.registerField('w-sid-effect', { sectionId: 'sec-geom-explorer', label: 'Table A: SID effect on Ug' });
+  RadLab.registerField('w-sid-mag-effect', { sectionId: 'sec-geom-explorer', label: 'Table A: SID Magnification effect' });
+  RadLab.registerField('w-mag-penumbra-relation', { sectionId: 'sec-geom-explorer', label: 'Table A: Macroradiography focal spot' });
+  RadLab.registerField('w-macro-mag-val', { sectionId: 'sec-geom-explorer', label: 'Table A: Macroradiography magnification' });
+
+  RadLab.registerField('w-calc-t1-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 1 substitution' });
+  RadLab.registerField('w-calc-t1-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 1 result' });
+  RadLab.registerField('w-calc-t2-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 2 substitution' });
+  RadLab.registerField('w-calc-t2-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 2 result' });
+  RadLab.registerField('w-calc-t3-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 3 substitution' });
+  RadLab.registerField('w-calc-t3-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 3 result' });
+  RadLab.registerField('w-calc-t4-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 4 substitution' });
+  RadLab.registerField('w-calc-t4-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 4 result' });
+
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // 3. Build Formative Knowledge Check MCQs
+  const quizWrap = document.getElementById('quiz-wrap');
+  if (quizWrap) {
+    LAB.quiz.forEach(function (question, index) {
+      RadLab.mcq(quizWrap, {
+        id: QUIZ_IDS[index],
+        prompt: question.prompt,
+        options: question.options,
+        correctIndex: question.correct,
+        explain: question.explain,
+        allowRetry: true
+      });
+    });
+  }
+
+  // 4. Build Standardized 20-Point Grading Rubric
+  const rubricContainer = document.getElementById('rubric-container');
+  if (rubricContainer) {
+    RadLab.buildRubric(rubricContainer, {
+      id: 'lab6-rubric',
+      title: "Lab 6 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    });
+  }
+
+  // 5. Station 2: Sharpness & Resolution Matcher
+  const matchLeft = [
+    { id: "focal", label: "Focal Spot Size (F)" },
+    { id: "oid", label: "Increasing OID (Air Gap)" },
+    { id: "sid", label: "Extended SID (180 cm)" },
+    { id: "lp", label: "Line-Pair Pattern (lp/mm)" },
+    { id: "macro", label: "Intentional Macroradiography" },
+    { id: "motion", label: "Patient Kinetic Motion (v × t)" }
+  ];
+  const matchRight = [
+    { id: "f_focal", label: "Controls penumbra width (Ug) directly across all distances" },
+    { id: "f_oid", label: "Strongly elevates magnification (M) and penumbra blur" },
+    { id: "f_sid", label: "Enlarges SOD, reducing ray divergence and decreasing Ug and M" },
+    { id: "f_lp", label: "Standard QC tool for quantifying limiting spatial resolution" },
+    { id: "f_macro", label: "Requires fractional microfocus (0.1-0.3 mm) to prevent blur" },
+    { id: "f_motion", label: "Most common clinical blur; mitigated by short exposure time" }
+  ];
+  const matchPairs = {
+    "focal": "f_focal",
+    "oid": "f_oid",
+    "sid": "f_sid",
+    "lp": "f_lp",
+    "macro": "f_macro",
+    "motion": "f_motion"
+  };
+  RadLab.matchPairs(document.getElementById('sharpness-match-container'), {
+    id: 'sharpness-match',
+    left: matchLeft,
+    right: matchRight,
+    pairs: matchPairs,
+    leftTitle: 'Imaging Factor or Setting',
+    rightTitle: 'Physical & Clinical Consequence'
+  });
+
+  // 6. Station 3: Calibrated Line-Pair Resolution Grid Analyzer
+  initLinePairAnalyzer();
+
+  // 7. Math Helper in Worksheet
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, 'w-calc-t1-sub');
+  }
+
+  // 8. Event Listeners for Simulation Sliders
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // 9. Event Listeners for Simulation & Run Logging Buttons
   document.getElementById('record-run').addEventListener('click', recordRun);
   document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-download-runs-csv').addEventListener('click', downloadRunsCSV);
   document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
-  const btn3d = document.getElementById('btn-view-3d');
-  const btnClassic = document.getElementById('btn-view-classic');
-  if (btn3d && btnClassic) {
-    btn3d.addEventListener('click', function () {
-      currentViewMode = '3d-shadow';
-      btn3d.className = 'btn btn-secondary btn-sm';
-      btnClassic.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
-    });
-    btnClassic.addEventListener('click', function () {
-      currentViewMode = 'classic';
-      btnClassic.className = 'btn btn-secondary btn-sm';
-      btn3d.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
+  // 10. Tab Switcher Navigation Buttons
+  const tabBtnIntro = document.getElementById('tab-btn-intro');
+  const tabBtnExp = document.getElementById('tab-btn-experiment');
+  if (tabBtnIntro) tabBtnIntro.addEventListener('click', function () { switchTab('intro'); });
+  if (tabBtnExp) tabBtnExp.addEventListener('click', function () { switchTab('experiment'); });
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', function () {
+      switchTab('experiment', 'sec-exp-guide');
     });
   }
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) {
+    btnBack.addEventListener('click', function () {
+      switchTab('intro');
+    });
+  }
+
+  // 11. Clinical Operating Preset Buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
-      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
-      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
-      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
-      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
+      const focal = btn.dataset.focal;
+      const sid = btn.dataset.sid;
+      const oid = btn.dataset.oid;
+      const freq = btn.dataset.freq;
+
+      if (focal !== undefined && document.getElementById('ctrl-focal')) document.getElementById('ctrl-focal').value = focal;
+      if (sid !== undefined && document.getElementById('ctrl-sid')) document.getElementById('ctrl-sid').value = sid;
+      if (oid !== undefined && document.getElementById('ctrl-oid')) document.getElementById('ctrl-oid').value = oid;
+      if (freq !== undefined && document.getElementById('ctrl-freq')) document.getElementById('ctrl-freq').value = freq;
+
       renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+      RadLab.toast('Loaded preset: ' + btn.textContent.trim(), 'info');
     });
   });
 
+  // 12. Restore Saved Scenario Choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // 13. URL Hash Handling for Direct Tab Navigation
+  if (window.location.hash === '#tab-experiment') {
+    switchTab('experiment');
+  }
+
+  // 14. Render KaTeX & Semantic Math Fallback
+  renderAllMath();
+
+  // 15. Initial Simulation & Run Log Render
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

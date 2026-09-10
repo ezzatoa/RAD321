@@ -33,13 +33,13 @@
     <div class="handout-meta">
       <span><i class="fa-solid fa-calendar-week"></i> Week 1 of 15</span>
       <span><i class="fa-solid fa-clock"></i> Duration: 2 hours</span>
-      <span><i class="fa-solid fa-diagram-project"></i> Format: Interactive Digital Simulation</span>
+      <span><i class="fa-solid fa-diagram-project"></i> Format: Interactive Digital Physics Simulation</span>
     </div>
   </div>
 
   <div class="highlight-note">
     <span class="icon">💡</span>
-    <div><b>How This Lab Works:</b> This lab is a fully interactive digital simulation that lets you explore the imaging chain concepts hands-on, at your own pace, and as many times as you need. Complete the lab at <a href="../labs/lab-01/index.html">the Interactive Lab web app</a> — this handout explains the content and activities in detail so you understand exactly what to do and why.</div>
+    <div><b>How This Lab Works:</b> This lab features an interactive digital simulation of the complete X-ray tube physics and 4-stage imaging chain. Complete the simulation and interactive stations at <a href="../labs/lab-01/index.html">the Interactive Lab web app</a>. This handout details the physical principles, procedure steps, Excel workbook expectations, and rubric criteria.</div>
   </div>
 
   <div class="toc">
@@ -47,25 +47,27 @@
     <ol>
       <li><a href="#s-obj">Learning Objectives</a></li>
       <li><a href="#s-prep">Before You Start</a></li>
-      <li><a href="#s-theory">Background Concepts You Need</a></li>
-      <li><a href="#s-stations">Lab Stations — Step-by-Step Guide</a></li>
-      <li><a href="#s-worksheet">Worksheet Guidance</a></li>
-      <li><a href="#s-rubric">Grading Rubric</a></li>
-      <li><a href="#s-submit">How to Submit</a></li>
+      <li><a href="#s-theory">Background Concepts &amp; Physics Formulas</a></li>
+      <li><a href="#s-sim">Virtual Experiment: Step-by-Step Procedure</a></li>
+      <li><a href="#s-stations">Interactive Conceptual Stations</a></li>
+      <li><a href="#s-scenario">Clinical Decision Scenario</a></li>
+      <li><a href="#s-worksheet">Worksheet &amp; Excel Analysis Guidance</a></li>
+      <li><a href="#s-rubric">Standardized Grading Rubric (20 Points)</a></li>
+      <li><a href="#s-submit">Two-Phase Submission Workflow</a></li>
     </ol>
   </div>
 
   <div class="handout-section" id="s-obj">
     <h2>1. Learning Objectives</h2>
-    <p>By the end of this lab session, you should be able to:</p>
+    <p>By the end of this lab session, you will be able to:</p>
     <ol>
-      <li>Describe how X-rays are produced inside an X-ray tube and identify its main components.</li>
-      <li>Explain the four stages of radiographic image intensity formation.</li>
-      <li>Identify and compare the major image receptor types: film, CR, DR, and image intensifiers.</li>
-      <li>Distinguish between the radiographer's image recording role and image analysis role.</li>
-      <li>Recognize the geometric concepts SID, SOD, and OID.</li>
-      <li>Relate each stage of image formation to image quality factors studied in later labs.</li>
-      <li>Apply this model to a simulated scenario and submit a complete lab report.</li>
+      <li>Describe how X-rays are produced inside an X-ray tube and identify its main components (cathode filament, focusing cup, vacuum envelope, rotating anode, window, filtration, collimator).</li>
+      <li>Quantitatively evaluate thermionic electron emission, tube potential (kVp), and Bremsstrahlung conversion efficiency ($\eta \approx 10^{-9} \cdot Z \cdot V$), verifying that ~99% of energy becomes heat and only ~1% produces X-rays.</li>
+      <li>Explain the role of filtration in beam hardening, Half-Value Layer (HVL), and entrance skin dose reduction under ALARA radiation safety standards.</li>
+      <li>Explain the four stages of radiographic image intensity formation: primary beam propagation, patient interaction/attenuation, image capture, and image processing/display.</li>
+      <li>Identify, compare, and contrast the four major image receptor families: Screen-Film, Computed Radiography (CR), Digital Radiography (DR), and Fluoroscopic Image Intensifiers.</li>
+      <li>Distinguish between the radiographer's <em>image recording</em> role and <em>image analysis</em> role.</li>
+      <li>Apply this physical imaging chain model to a simulated ICU clinical underexposure case and submit a complete, professional two-phase lab report.</li>
     </ol>
     <div class="obj-box"><b>CLO Coverage:</b> K1 (Understand the role of the radiographer in recording medical imaging), K3 (Understand the effects of the imaging system components on image quality).</div>
   </div>
@@ -73,120 +75,121 @@
   <div class="handout-section" id="s-prep">
     <h2>2. Before You Start</h2>
     <ul>
-      <li>No prior knowledge of X-ray equipment is assumed — everything you need is explained in the lab's Background section.</li>
-      <li>Bring a laptop or tablet with a modern web browser (Chrome, Edge, Firefox, or Safari). No installation or internet connection is required after the page loads once.</li>
-      <li>Your answers automatically save in your browser as you work. If you plan to switch computers partway through, use the "Export JSON Backup" button first and "Import JSON" on the new computer.</li>
-      <li>Read Lecture 1 &amp; 2 (Course Overview and the Radiographer's Role) before this session — this lab builds directly on that material.</li>
+      <li>Review Lecture 1 &amp; 2 (Course Introduction, The Radiographer's Role, and Radiation Physics Fundamentals).</li>
+      <li>Bring a laptop with a modern web browser (Chrome, Edge, Firefox, or Safari). The lab app runs locally and offline-ready.</li>
+      <li>Your work auto-saves continuously in local browser storage. If switching devices, use "Export JSON Backup" and "Import JSON" in the bottom toolbar.</li>
+      <li>Prepare Microsoft Excel (or Google Sheets) for the Phase 2 post-lab quantitative workbook analysis.</li>
     </ul>
   </div>
 
   <div class="handout-section" id="s-theory">
-    <h2>3. Background Concepts You Need</h2>
+    <h2>3. Background Concepts &amp; Physics Formulas</h2>
 
-    <h3>3.1 The X-ray Tube</h3>
-    <p>Every exposure begins inside an evacuated tube. A heated <b>cathode</b> filament releases electrons, which are focused and accelerated toward the rotating <b>anode</b>. At the focal spot, roughly 1% of their kinetic energy becomes X-rays and nearly all the remainder becomes heat. The useful beam exits through the <b>tube window</b>, passes through inherent and specified added <b>filtration</b>, and is shaped by the lead shutters of the <b>collimator</b>.</p>
-    <figure>
-      <img src="../shared/assets/img/xray-tube-scientific.svg" alt="Scientific cutaway of a diagnostic rotating-anode X-ray tube and beam-limiting assembly">
-      <figcaption>Diagnostic rotating-anode tube assembly, including the tube insert, protective housing, filtration, and collimator. Schematic, not to scale.</figcaption>
-    </figure>
+    <h3>3.1 Thermionic Emission &amp; Tube Current</h3>
+    <p>The cathode assembly contains a coiled tungsten wire filament heated by an auxiliary electric current (3.8–4.8 Amperes). As filament temperature reaches 2200–2600°C, electrons overcome the tungsten work function and are "boiled off" via <i>thermionic emission</i>. The negatively charged molybdenum focusing cup electrostatically repels and condenses this electron cloud into a tight pencil stream directed toward the focal spot.</p>
 
-    <h3>3.2 Beam Geometry — SID, SOD, OID</h3>
-    <table class="data-table">
-      <tr><th>Term</th><th>Meaning</th></tr>
-      <tr><td><b>SID</b></td><td>Source-to-Image Distance — tube target to the image receptor</td></tr>
-      <tr><td><b>SOD</b></td><td>Source-to-Object Distance — tube target to the patient/part being imaged</td></tr>
-      <tr><td><b>OID</b></td><td>Object-to-Image Distance — patient/part to the image receptor</td></tr>
-    </table>
-    <p class="small muted">You will manipulate these distances quantitatively with live sliders in Lab 2. This week, focus on recognizing what each term means.</p>
-
-    <h3>3.3 The Four Stages of Image Intensity Formation</h3>
-    <table class="data-table">
-      <tr><th>#</th><th>Stage</th><th>What Happens</th><th>Key Influencing Factors</th></tr>
-      <tr><td>1</td><td>Primary Beam Propagation</td><td>X-rays travel from the tube target toward the patient</td><td>kVp, mAs, filtration, focal spot size, distance (inverse square law)</td></tr>
-      <tr><td>2</td><td>Patient Interaction</td><td>Beam is attenuated passing through tissue, forming the remnant beam</td><td>Patient thickness, tissue density, atomic number</td></tr>
-      <tr><td>3</td><td>Image Capture</td><td>Remnant beam is captured by the receptor</td><td>Receptor sensitivity, dynamic range, intrinsic noise/resolution</td></tr>
-      <tr><td>4</td><td>Image Processing</td><td>Captured signal becomes the viewable radiograph</td><td>Chemical development (film) or computer processing (digital)</td></tr>
-    </table>
-
-    <h3>3.4 Image Receptor Families</h3>
-    <figure>
-      <img src="../shared/assets/img/receptor-family-scientific.svg" alt="Scientific comparison of screen-film, CR, DR, and image-intensifier receptor systems">
-      <figcaption>Four receptor families showing their active recording layers and readout pathways. Schematic, not to scale.</figcaption>
-    </figure>
-    <ul>
-      <li><b>Screen-Film Cassette:</b> Forms a hidden "latent image" requiring wet chemical processing in a darkroom (explored fully in Lab 3).</li>
-      <li><b>CR Cassette:</b> Uses a reusable photostimulable phosphor plate, read by a laser scanner into a digital image.</li>
-      <li><b>DR Flat Panel:</b> Converts incident X-rays into electrical charge using an indirect scintillator-photodiode pathway or a direct photoconductor pathway — no cassette scanning.</li>
-      <li><b>Image Intensifier:</b> Converts the beam into amplified visible light for real-time viewing (fluoroscopy, explored in Lab 10).</li>
-    </ul>
-
-    <h3>3.5 The Radiographer's Two Roles</h3>
-    <div class="two-col">
-      <div class="card card-soft" style="margin-bottom:0;"><h4>Image Recording</h4>Setting up the receptor, positioning the patient, selecting exposure factors, processing the image.</div>
-      <div class="card card-soft" style="margin-bottom:0;"><h4>Image Analysis</h4>Confirming correct anatomy, judging image quality, evaluating display, deciding if repeat images are needed.</div>
+    <h3>3.2 Anode Thermodynamics: Heat vs. X-ray Yield</h3>
+    <p>A high potential difference (kVp) accelerates electrons across the vacuum envelope. Upon striking the rotating anode target (Tungsten $Z=74$ or Molybdenum $Z=42$), electrons interact via outer-shell coulombic collisions and nuclear Bremsstrahlung deceleration:</p>
+    <div class="formula-box" style="margin:14px 0;background:#f0f9ff;border-left:4px solid var(--rad-teal);padding:12px 16px;border-radius:6px;font-size:13.5px;">
+      <b>Bremsstrahlung Production Efficiency Equation:</b><br>
+      $$\eta \approx 10^{-9} \times Z \times V$$
+      <span class="small muted">Where $Z$ is target atomic number and $V$ is tube potential in Volts ($kVp \times 1000$). At 80 kVp on Tungsten ($Z=74$): $\eta = 10^{-9} \times 74 \times 80,000 \times 100\% = 0.59\%$. Over <b>99.4% of electron energy becomes thermal heat load</b>, necessitating rapid disc rotation (3,400–10,000 rpm) and oil bath cooling!</span>
     </div>
+
+    <h3>3.3 Beam Filtration &amp; Half-Value Layer (HVL)</h3>
+    <p>Unfiltered X-ray beams contain numerous low-energy ("soft") photons. These lack sufficient energy to penetrate through the patient to reach the receptor; instead, they are completely absorbed in superficial tissue, uselessly elevating patient skin entrance dose. Adding aluminum filtration (mandated at $\ge 2.5\text{ mm Al eq}$ for tube potentials $\ge 70\text{ kVp}$ under NCRP 102) selectively filters soft photons, increasing the mean photon energy (beam hardening) and raising the Half-Value Layer (HVL).</p>
+
+    <h3>3.4 The Four Stages of Image Intensity Formation</h3>
+    <table class="data-table">
+      <tr><th>#</th><th>Stage</th><th>What Happens</th><th>Controlling Factors</th></tr>
+      <tr><td>1</td><td>Primary Beam Propagation</td><td>Photons travel from focal spot through filtration and collimator to patient surface</td><td>Filament current (mA), kVp, filtration, collimation field size</td></tr>
+      <tr><td>2</td><td>Patient Interaction</td><td>Beam undergoes differential attenuation (photoelectric absorption &amp; Compton scatter)</td><td>Patient thickness, tissue density, atomic number ($Z$), pathology</td></tr>
+      <tr><td>3</td><td>Image Capture</td><td>Remnant radiation strikes receptor and deposits energy in active layer</td><td>Receptor sensitivity, detective quantum efficiency (DQE), dynamic range</td></tr>
+      <tr><td>4</td><td>Image Processing &amp; Display</td><td>Captured signal is converted into visible grayscale image for diagnosis</td><td>Chemical development (film) or histogram rescaling / LUT (digital)</td></tr>
+    </table>
+  </div>
+
+  <div class="handout-section" id="s-sim">
+    <h2>4. Virtual Experiment: Step-by-Step Procedure</h2>
+    <p>In Section 2 of the web app, perform the following controlled experimental protocol:</p>
+    <ol>
+      <li><b>Formulate a Prediction:</b> In the `#w-prediction` field, write a concise hypothesis regarding how adjusting filament current (mA) or kVp will affect the tube current, target heat, beam HVL, and receptor response.</li>
+      <li><b>Run 1 (Baseline Diagnostic):</b> Load the "Standard Diagnostic" preset (4.2 A filament, 80 kVp, Tungsten $Z=74$, 2.5 mm Al filtration, DR flat panel). Observe the glowing filament, the accelerated electron stream, the anode heat glow (~99.4%), the filtered beam cone, and the diagnostic radiograph on the monitor. Click <b>"Record This Run"</b>.</li>
+      <li><b>Run 2 (Low Emission / Quantum Mottle):</b> Reduce filament current to 3.9 A (approx. 25 mA). Observe the drop in thermionic emission, the severely diminished receptor signal (&lt; 8 a.u.), and the pronounced graininess/noise on the simulated radiograph. Click <b>"Record This Run"</b>.</li>
+      <li><b>Run 3 (Filtration Hardening &amp; Compliance):</b> Restore filament to 4.2 A and adjust filtration to 0.5 mm Al (non-compliant). Notice the drop in beam HVL and the red regulatory warning. Then increase filtration to 3.5 mm Al. Observe how beam hardening restores beam quality. Click <b>"Record This Run"</b>.</li>
+      <li><b>Export Run Data (CSV):</b> In Section 11 (Submission Hub), click <b>"Download Run Data (CSV)"</b> to save your experimental dataset for Phase 2 Excel spreadsheet analysis.</li>
+    </ol>
   </div>
 
   <div class="handout-section" id="s-stations">
-    <h2>4. Lab Stations — Step-by-Step Guide</h2>
-
+    <h2>5. Interactive Conceptual Stations</h2>
     <div class="station-card">
-      <h3>Station 1 — X-ray Tube &amp; Beam Production <span class="badge badge-sim">Simulation</span></h3>
-      <p><b>Purpose:</b> Builds a clear mental model of the anode/cathode and beam path before you work with real equipment.</p>
-      <p><b>What to do:</b> Click each of the 4 numbered markers on the tube diagram. Each click reveals the component's name and function. Identify all 4 to complete the station, then answer the follow-up question.</p>
+      <h3>Station 1 — Tube Cutaway Hotspots</h3>
+      <p>Identify all 6 key components: cathode filament, accelerated electron stream, rotating anode target, rotor/stator motor, tube window with filtration, and light-beam collimator.</p>
     </div>
-
     <div class="station-card">
-      <h3>Station 2 — Order the Image Formation Stages <span class="badge badge-sim">Simulation</span></h3>
-      <p><b>Purpose:</b> Reinforces the sequence of the imaging chain, from beam production to the final image.</p>
-      <p><b>What to do:</b> Drag the four shuffled stage cards into the correct chronological order (beam production → final image), then click "Check Order." Cards turn green if correct, red if not — you may re-order and re-check as many times as needed.</p>
+      <h3>Station 2 — Order the 4 Formation Stages</h3>
+      <p>Drag the cards into correct causal order: Primary Beam Propagation &rarr; Patient Interaction &rarr; Image Capture &rarr; Image Processing &amp; Display.</p>
     </div>
-
     <div class="station-card">
-      <h3>Station 3 — Image Receptor Family Explorer <span class="badge badge-sim">Simulation</span></h3>
-      <p><b>Purpose:</b> Helps you recognize and compare the film cassette, CR cassette, DR panel, and image intensifier before handling them in person.</p>
-      <p><b>What to do:</b> Click a description on the left, then click the matching receptor name on the right. Correct matches turn green and lock; incorrect ones turn red so you can retry.</p>
+      <h3>Station 3 — Receptor Family Explorer</h3>
+      <p>Match each description to its receptor: Screen-Film (silver halide emulsion, darkroom processing), CR (BaFBr photostimulable phosphor, laser scanner readout), DR (direct/indirect flat panel TFT, immediate 3s readout), and Image Intensifier (vacuum tube light amplification for real-time fluoroscopy).</p>
     </div>
-
     <div class="station-card">
-      <h3>Station 4 — Sort the Radiographer's Tasks <span class="badge badge-sim">Simulation</span></h3>
-      <p><b>Purpose:</b> Sharpens your ability to distinguish image recording tasks from image analysis tasks throughout a clinical procedure.</p>
-      <p><b>What to do:</b> Click each of the 8 tasks, then click whether it belongs to "Optimal Image Recording" or "Optimal Image Analysis." All 8 must be sorted correctly to complete the station.</p>
+      <h3>Station 4 — Radiographer Role Sort</h3>
+      <p>Classify 8 tasks into <b>Optimal Image Recording</b> (pre-exposure setup, positioning, exposure factor selection) vs. <b>Optimal Image Analysis</b> (evaluating anatomy, assessing noise/contrast, artifact recognition, repeat justification).</p>
     </div>
+  </div>
+
+  <div class="handout-section" id="s-scenario">
+    <h2>6. Clinical Decision Scenario</h2>
+    <p>Analyze the authentic ICU bedside chest case: A portable chest radiograph displays severe quantum mottle obscuring retrocardiac lung markings. Factors used were 3.9 A filament current (~25 mA) and 70 kVp with 2.5 mm Al filtration. Select the physical root cause and optimal ALARA corrective action to receive immediate clinical feedback.</p>
   </div>
 
   <div class="handout-section" id="s-worksheet">
-    <h2>5. Worksheet Guidance</h2>
-    <p>The worksheet section of the lab app asks you to:</p>
+    <h2>7. Worksheet &amp; Excel Analysis Guidance</h2>
+    <p>Your post-lab workbook submission requires:</p>
     <ul>
-      <li>Restate the function of each X-ray tube component in your own words (not copy-pasted from the lab text).</li>
-      <li>Answer 6 reflection/analysis questions, including one critical-thinking question connecting image formation stages to a real image quality problem (an underexposed radiograph).</li>
+      <li><b>Component Functions:</b> Clear definitions for cathode, anode, tube window, and collimator.</li>
+      <li><b>Quantitative Calculations:</b> Calculate Bremsstrahlung efficiency ($\eta$) and thermal heat load percentage for Tungsten at 80 kVp and Molybdenum at 50 kVp using data from your runs.</li>
+      <li><b>Excel Data Workbook:</b> Open your exported CSV in Excel. Plot Tube Current (mA) vs. Filament Current (A), and Receptor Signal Index vs. kVp. Document your formula cells and trend interpretations.</li>
+      <li><b>Critical Thinking:</b> Detailed explanation of quantum mottle and why digital post-processing cannot replace missing physical photon fluence.</li>
     </ul>
-    <div class="tip-note"><i class="fa-solid fa-lightbulb"></i> <b>Tip for Question 6 (critical thinking):</b> An underexposed image could result from too little beam intensity at Stage 1 (e.g., low mAs/kVp), excessive attenuation at Stage 2 (e.g., a very thick patient), or a receptor issue at Stage 3 (e.g., low sensitivity). Think about which of these are radiographer-controllable versus patient-dependent.</div>
   </div>
 
   <div class="handout-section" id="s-rubric">
-    <h2>6. Grading Rubric (20 points)</h2>
+    <h2>8. Standardized Grading Rubric (20 Points)</h2>
     <table class="data-table">
-      <tr><th>Criterion</th><th>Points</th></tr>
-      <tr><td>Pre-Lab Conceptual Understanding</td><td>4</td></tr>
-      <tr><td>Simulation Execution &amp; Interactive Activities</td><td>4</td></tr>
-      <tr><td>Worksheet Responses &amp; Results Interpretation</td><td>5</td></tr>
-      <tr><td>Critical-Thinking / Analysis Question</td><td>4</td></tr>
-      <tr><td>Completeness, Organization &amp; Professionalism</td><td>3</td></tr>
-      <tr style="font-weight:800;"><td>Total</td><td>20</td></tr>
+      <thead>
+        <tr><th>Part / Criterion</th><th>Points</th><th>Full-Credit Performance Standard</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:#e0f2fe;font-weight:bold;color:#0369a1;"><td colspan="3"><i class="fa-solid fa-flask"></i> Part I: In-Lab Interactive Activities (10 Points)</td></tr>
+        <tr><td><b>c1: Pre-Lab Concepts &amp; Knowledge Check</b></td><td>4.0</td><td>Accurately explains tube physics, Bremsstrahlung efficiency, and imaging chain; achieves mastery on all quizzes.</td></tr>
+        <tr><td><b>c2: Simulation Execution &amp; Interactive Stations</b></td><td>6.0</td><td>Logs &ge; 3 unique controlled simulation runs with systematic parameter shifts; completes all 4 stations and clinical scenario.</td></tr>
+        <tr style="background:#fef3c7;font-weight:bold;color:#92400e;"><td colspan="3"><i class="fa-solid fa-file-excel"></i> Part II: Post-Lab Excel Data Analysis &amp; Clinical Synthesis (10 Points)</td></tr>
+        <tr><td><b>c3: Quantitative Calculations &amp; Excel Workbook</b></td><td>5.0</td><td>Thorough, accurate mathematical conversion calculations (efficiency formula, heat percentage) with rigorous Excel data analysis.</td></tr>
+        <tr><td><b>c4: Clinical Reasoning &amp; ALARA Synthesis</b></td><td>3.0</td><td>Links physical factors (filtration, mA, kVp) to patient entrance dose and quantum mottle under ALARA principles.</td></tr>
+        <tr><td><b>c5: Completeness &amp; Professional Reporting</b></td><td>2.0</td><td>Complete, highly organized, professional submission format with attached Excel workbook.</td></tr>
+      </tbody>
+      <tfoot>
+        <tr style="font-weight:800;background:#f1f5f9;"><td colspan="1">Total Score</td><td>20.0</td><td>Departmental Gemini Flash Model Automated Rubric Evaluation</td></tr>
+      </tfoot>
     </table>
-    <p class="small muted">The full rubric with performance-level descriptions is visible inside the interactive lab app and is included automatically in your exported submission report.</p>
   </div>
 
   <div class="handout-section" id="s-submit">
-    <h2>7. How to Submit</h2>
-    <ol>
-      <li>Complete all 4 stations, the knowledge check questions, and the worksheet inside the <a href="../labs/lab-01/index.html">Interactive Lab</a>.</li>
-      <li>Fill in your Student Information (name, ID, section) at the top of the lab page — this appears on your report.</li>
-      <li>Scroll to the bottom and click <b>"Generate Submission Report."</b> A new tab opens with your complete report (responses + simulation results + rubric).</li>
-      <li>Click "Print / Save as PDF" in that report tab, save the PDF, and upload it to the LMS assignment submission link as instructed by your instructor.</li>
-    </ol>
+    <h2>9. Two-Phase Submission Workflow</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:16px 0;">
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:4px solid var(--rad-teal);border-radius:8px;padding:14px;">
+        <h4 style="margin:0 0 6px;color:var(--rad-navy);"><i class="fa-solid fa-desktop"></i> Phase 1: In-Lab Submission (10 Pts)</h4>
+        <p style="font-size:12.5px;margin:0 0 8px;">Submit in Section 11 before leaving the laboratory session to lock in your simulation execution score (c1 + c2).</p>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:4px solid var(--rad-blue);border-radius:8px;padding:14px;">
+        <h4 style="margin:0 0 6px;color:var(--rad-navy);"><i class="fa-solid fa-file-excel"></i> Phase 2: Post-Lab Excel Analysis (10 Pts)</h4>
+        <p style="font-size:12.5px;margin:0 0 8px;">Upload your completed Excel workbook (.xlsx / .csv) and submit before the post-lab deadline for complete evaluation (c3 + c4 + c5).</p>
+      </div>
+    </div>
   </div>
 
   <div class="print-btn-bar no-print">

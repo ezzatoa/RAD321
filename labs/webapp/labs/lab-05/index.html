@@ -5,75 +5,1187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 5: Radiographic Contrast Simulator — RAD 321</title>
   <link rel="stylesheet" href="../../shared/lab-styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- KaTeX for crisp, mathematically accurate equation rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Hero banner */
+    .hero-banner { position: relative; border-radius: var(--rad-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--rad-shadow-lg); }
+    .hero-banner img { width: 100%; height: 260px; object-fit: cover; }
+    .hero-banner .hero-overlay {
+      position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,37,69,0.92) 0%, rgba(11,37,69,0.6) 60%, rgba(11,37,69,0.1) 100%);
+      display: flex; flex-direction: column; justify-content: center; padding: 0 40px; color: #fff; max-width: 680px;
+    }
+    .hero-overlay .eyebrow { font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: #7fe0d6; font-weight: 700; }
+    .hero-overlay h1 { font-size: 28px; margin: 8px 0 10px; line-height: 1.25; }
+    .hero-overlay p { font-size: 14px; opacity: 0.92; margin: 0; }
+
+    /* Two-Tab Navigation System */
+    .lab-tabs-nav {
+      display: flex;
+      gap: 12px;
+      background: var(--rad-bg-soft, #f1f5f9);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--rad-border, #cbd5e1);
+      margin: 20px 0 24px 0;
+      box-shadow: var(--rad-shadow-sm);
+    }
+    .lab-tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--rad-text-muted, #475569);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .lab-tab-btn:hover {
+      color: var(--rad-navy, #0b2545);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    .lab-tab-btn.active {
+      background: #ffffff;
+      color: var(--rad-navy, #0b2545);
+      box-shadow: 0 4px 12px rgba(11, 37, 69, 0.1);
+      border-bottom: 3px solid var(--rad-teal, #0e7c86);
+    }
+    .lab-tab-btn .tab-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: rgba(14, 124, 134, 0.12);
+      color: var(--rad-teal, #0e7c86);
+      font-weight: 700;
+    }
+    .lab-tab-btn.active .tab-badge {
+      background: var(--rad-teal, #0e7c86);
+      color: #ffffff;
+    }
+    .lab-tab-pane {
+      display: none;
+      animation: fadeInPane 0.25s ease-in-out;
+    }
+    .lab-tab-pane.active {
+      display: block;
+    }
+    @keyframes fadeInPane {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mathematical Equation Typography & Styling */
+    .formula-box {
+      margin: 16px 0;
+      background: #f0fdfa;
+      border-left: 4px solid var(--rad-teal);
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      box-shadow: var(--rad-shadow-sm);
+    }
+    .formula-title {
+      font-weight: 700;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .math-display {
+      display: block;
+      text-align: center;
+      margin: 12px 0;
+      font-size: 18px;
+      color: var(--rad-navy);
+    }
+    .math-fallback-display {
+      display: block;
+      text-align: center;
+      margin: 10px 0;
+      font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      color: var(--rad-navy);
+      font-weight: 600;
+    }
+    .math-fallback-inline {
+      font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+      font-style: normal;
+      letter-spacing: 0.3px;
+      padding: 0 2px;
+      font-weight: 600;
+    }
+
+    /* Station diagrams and figures */
+    .checklist-fill-table input[type=text] { font-size: 13px; padding: 7px 9px; width: 100%; box-sizing: border-box; }
+    .lab-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 880px) { .lab-meta-grid { grid-template-columns: 1fr 1fr; } }
+    .why-sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 880px) { .why-sim-grid { grid-template-columns: 1fr; } }
+    .why-sim-card { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 16px; }
+    .why-sim-card .fa { color: var(--rad-teal); margin-right: 8px; }
+
+    /* Simulation Layout & Controls */
+    .sim-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .sim-canvas-wrap { position: relative; width: 100%; border-radius: var(--rad-radius-sm); overflow: hidden; background: #071a2b; border: 1px solid var(--rad-border); box-shadow: var(--rad-shadow-sm); }
+    .sim-canvas-wrap canvas { display: block; width: 100%; height: auto; }
+    .sim-presets-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+    .control-card { background: var(--rad-bg-soft); border: 1px solid var(--rad-border); border-radius: var(--rad-radius-sm); padding: 12px 14px; }
+    .control-card label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--rad-navy); margin-bottom: 6px; }
+    .control-card input[type=range] { width: 100%; cursor: pointer; }
+    
+    /* Clinical Scenario Options */
+    .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+    .scenario-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--rad-border); border-radius: 8px; background: #fff; cursor: pointer; transition: background 0.15s ease; }
+    .scenario-option:hover { background: var(--rad-bg-soft); }
+    .scenario-option input[type=radio] { margin-top: 3px; cursor: pointer; }
+    .feedback-box { min-height: 44px; border-radius: 8px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; background: var(--rad-bg-soft); border-left: 4px solid var(--rad-border); }
+    .feedback-box.correct { background: #eaf8f0; color: #12633f; border-left-color: #10b981; }
+    .feedback-box.incorrect { background: #fff0ee; color: #9d342d; border-left-color: #ef4444; }
+
+    /* Interactive Tissue Cards */
+    .tissue-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+    .tissue-card { background: #fff; border: 1px solid var(--rad-border); border-radius: 10px; padding: 14px; box-shadow: var(--rad-shadow-sm); transition: transform 0.15s ease, border-color 0.15s ease; }
+    .tissue-card:hover { transform: translateY(-2px); border-color: var(--rad-teal); }
+    .tissue-card .tissue-badge { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--rad-teal); margin-bottom: 4px; display: block; }
+    .tissue-card h4 { margin: 0 0 6px 0; font-size: 14.5px; color: var(--rad-navy); }
+    .tissue-card p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--rad-text-muted, #64748b); }
+
+    /* 10-Step Penetrometer Interactive Strip */
+    .penetrometer-wrap { overflow-x: auto; padding: 10px 0; margin: 16px 0; }
+    .penetrometer-strip { display: flex; min-width: 600px; height: 75px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rad-navy); box-shadow: var(--rad-shadow-sm); }
+    .penetrometer-step { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; cursor: pointer; transition: opacity 0.15s ease; border-right: 1px solid rgba(255,255,255,0.15); }
+    .penetrometer-step:hover { outline: 2px solid #f59e0b; outline-offset: -2px; }
+    .penetrometer-step.active { outline: 3px solid #10b981; outline-offset: -3px; }
+    .penetrometer-step .step-label { font-size: 10px; font-weight: 800; }
+
+    /* Protocol Steps Grid */
+    .protocol-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+    .protocol-step-card { background: #fff; border: 1px solid var(--rad-border); border-radius: 10px; padding: 14px; box-shadow: var(--rad-shadow-sm); }
+    .protocol-step-card .step-num { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--rad-teal); background: rgba(14,124,134,0.1); padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+    .protocol-step-card h4 { margin: 0 0 6px 0; font-size: 14px; color: var(--rad-navy); }
+    .protocol-step-card p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--rad-text-soft, #475569); }
+
+    /* Excel Instructions Box */
+    .excel-guide-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 16px 18px; margin: 16px 0; }
+    .excel-guide-box h4 { margin: 0 0 8px 0; color: #166534; font-size: 15px; display: flex; align-items: center; gap: 8px; }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
+<!-- ===================== TOPBAR ===================== -->
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 5 — Radiographic Contrast Simulator</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 5 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 5 — Radiographic Contrast Simulator</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline Ready</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 5 of 15 · Radiographic Contrast</span>
+    </div>
+  </div>
 </header>
+
+<!-- ===================== IN-PAGE NAVIGATION ===================== -->
 <nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
+<!-- ===================== MAIN CONTAINER ===================== -->
 <main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 5 · Assessed laboratory assignment</div><h1>Radiographic Contrast Simulator</h1><p>Separate subject contrast, receptor contrast, and displayed contrast. Directly aligned with: Visibility Factors II — Contrast.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Define radiographic, subject, and receptor contrast.</li><li><span class="num">2</span>Predict how kVp and tissue attenuation affect subject contrast.</li><li><span class="num">3</span>Compare long-scale and short-scale contrast images.</li><li><span class="num">4</span>Explain why digital processing can modify displayed contrast.</li><li><span class="num">5</span>Select a contrast strategy for a clinical imaging task.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Radiographic contrast is the visible difference between adjacent image regions. Subject contrast comes from differences in tissue attenuation; it is influenced by kVp, thickness, atomic number, and subject composition. Receptor contrast is the response characteristic of the receptor, while display processing can change the final appearance.</p><div class="formula-box"><b>Short scale:</b> few gray tones, higher visible contrast · <b>Long scale:</b> many gray tones, lower visible contrast. Lower kVp generally increases subject contrast, while higher kVp generally decreases it and increases penetration.</div><p>Contrast should be optimized for the diagnostic task, not maximized indiscriminately. The same raw signal can appear different when processing or windowing changes.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
+  <!-- Hero banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiographic contrast and differential attenuation laboratory environment">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 5 · Assessed Laboratory Assignment</div>
+      <h1>Radiographic Contrast Simulator</h1>
+      <p>Analyze how differential photon absorption, tissue physical density, beam energy (kVp), and digital Look-Up Tables govern subject contrast and displayed contrast scale.</p>
+    </div>
+  </div>
 
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict how increasing kVp changes subject contrast.</div><div class="procedure-step">Record a baseline run.</div><div class="procedure-step">Increase only kVp and record a second run.</div><div class="procedure-step">Restore kVp, change receptor/display processing, and record a third run.</div><div class="procedure-step">Separate subject-contrast changes from display-contrast changes.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card"><div class="experiment-layout"><div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Radiographic Contrast Simulator" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
-    <div class="control-card">
-      <label for="ctrl-kvp"><span>kVp</span><output id="out-kvp" for="ctrl-kvp">70 kVp</output></label>
-      <input type="range" id="ctrl-kvp" min="50" max="110" step="1" value="70" aria-describedby="sim-caption">
+  <!-- Two-Phase Assignment Guidance Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
     </div>
-    <div class="control-card">
-      <label for="ctrl-thickness"><span>Part thickness</span><output id="out-thickness" for="ctrl-thickness">15 cm</output></label>
-      <input type="range" id="ctrl-thickness" min="5" max="30" step="1" value="15" aria-describedby="sim-caption">
+    <p>This laboratory is an <b>interactive digital simulation and assessed laboratory module</b> evaluated across two required submission phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the background theory, inspect differential tissue attenuation, complete the contrast scale matcher, analyze the 10-step penetrometer wedge, and solve the knowledge check quizzes during your scheduled lab session.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Export your experimental run data via <em>"Download Run Data (CSV)"</em>, plot kVp vs Subject Contrast and Part Thickness vs Transmission curves in Excel, complete the quantitative verification calculations, and submit your analysis workbook for final evaluation.
+      </div>
     </div>
-    <div class="control-card">
-      <label for="ctrl-receptor"><span>Receptor contrast</span><output id="out-receptor" for="ctrl-receptor">1.4 factor</output></label>
-      <input type="range" id="ctrl-receptor" min="0.8" max="2.2" step="0.1" value="1.4" aria-describedby="sim-caption">
+    <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+      <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+      <span style="display:block;margin-top:4px;">In <b>Section 7 (Tab 1)</b>, submit <b>Phase 1 (In-Lab Activities)</b> before leaving the lab session to lock in your foundation score. Then in <b>Section 11 (Tab 2)</b>, upload and submit your completed <b>Phase 2 (Excel Data Analysis)</b> workbook before the post-lab deadline.</span>
     </div>
-    <div class="control-card">
-      <label for="ctrl-digital"><span>Digital processing</span><output id="out-digital" for="ctrl-digital">50 %</output></label>
-      <input type="range" id="ctrl-digital" min="0" max="100" step="1" value="50" aria-describedby="sim-caption">
-    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
-  </section>
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–6 min contrast triad demo (teaching model) · 6–14 min Stations 1–2 (tissue Z/ρ + scale matcher) · 14–22 min Station 3 penetrometer steps · 22–30 min Station 4 forearm case + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is 3 runs (baseline → low-kVp short scale → high-kVp long scale) + 2 plots (kVp vs contrast, thickness vs transmission) + Table B. If short on time, cut Run 4 hypersthenic to homework, not the scenario.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+      1) Subject contrast comes from differential attenuation (Z, ρ, thickness, kVp). 2) Low kVp = short scale/high contrast but higher dose; high kVp = long scale/lower dose. 3) Penetrate first, then window (WW/WL) — post-processing cannot recover missing signal.
+    </div>
+  </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Contrast gallery</h3><p>Match each appearance to long-scale, short-scale, or receptor/display processing.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Clinical contrast choice</h3><p>A soft-tissue task requires subtle differences to remain visible. Which approach is most defensible?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Use adequate penetration, preserve signal, then optimize display contrast</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Always choose the lowest possible kVp</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Increase display contrast even if the signal is clipped</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Increase OID</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Compare two kVp settings and describe the change in subject contrast and penetration. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Explain the difference between subject contrast and receptor contrast. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Why can a digital image show useful contrast over a wider exposure range than film? <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: explain why “more contrast” is not always the best diagnostic choice. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+  <!-- Student information card -->
+  <div class="card card-soft">
+    <h3>Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row">
+        <label class="field-label" for="meta-studentName">Full Name</label>
+        <input type="text" id="meta-studentName" required placeholder="e.g. Tariq Al-Ghamdi">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-studentId">Student ID</label>
+        <input type="text" id="meta-studentId" required placeholder="e.g. 441012345">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-section">Section / Group</label>
+        <input type="text" id="meta-section" required placeholder="e.g. A1 / Group 2">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-date">Date</label>
+        <input type="text" id="meta-date" required>
+      </div>
+    </div>
+    <p class="form-hint">Your work auto-saves locally in your browser session. Export a JSON backup before changing workstations.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION SYSTEM ===================== -->
+  <div class="lab-tabs-nav" role="tablist" aria-label="Laboratory Workspaces">
+    <button type="button" class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro" onclick="switchTab('intro')">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Introduction &amp; In-Lab Activities
+      <span class="tab-badge">Phase 1 · 10 Pts</span>
+    </button>
+    <button type="button" class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment" onclick="switchTab('experiment')">
+      <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis
+      <span class="tab-badge">Phase 2 · 10 Pts</span>
+    </button>
+  </div>
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 1: FOUNDATIONS & IN-LAB ACTIVITIES ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- ===================== OBJECTIVES ===================== -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives &amp; Curricular Alignment</h2>
+          <div class="lab-section-sub">Diagnostic Radiology Technology Program · Accreditation Standards Alignment</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list" style="margin-top:14px;">
+          <li><span class="num">1</span><b>Tripartite Contrast Model:</b> Define radiographic contrast and quantitatively separate its three interdependent components: Subject Contrast, Receptor Contrast, and Display Processing Contrast.</li>
+          <li><span class="num">2</span><b>Differential Attenuation Physics:</b> Explain how effective atomic number (Z), physical tissue density (ρ), part thickness (x), and beam energy (kVp) govern photoelectric absorption (∝ Z³/E³) versus Compton scattering.</li>
+          <li><span class="num">3</span><b>Contrast Scale Classification:</b> Compare short-scale contrast (high contrast, few gray shades, extremity bone) with long-scale contrast (low contrast, wide latitude, chest parenchyma) using penetrometer step wedges.</li>
+          <li><span class="num">4</span><b>Digital Image Processing &amp; Windowing:</b> Explain why digital detectors decouple image capture from display, and demonstrate how digital Look-Up Tables (LUT), Window Width (WW), and Window Level (WL) alter visual contrast without re-exposing the patient.</li>
+          <li><span class="num">5</span><b>Clinical Contrast Strategy &amp; ALARA:</b> Formulate an evidence-based clinical contrast strategy that achieves diagnostic tissue visualization through adequate penetration before post-processing, avoiding excessive patient radiation dose.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== THEORY PRIMER ===================== -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory &amp; Physical Foundations</h2>
+          <div class="lab-section-sub">Read thoroughly before beginning the interactive laboratory stations</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics &amp; Radiation Biology Primer</span>
+
+        <h3 style="color:var(--rad-navy);margin-top:18px;">1.1 The Definition &amp; Components of Radiographic Contrast</h3>
+        <p>
+          <b>Radiographic Contrast</b> is the visible difference in optical densities or digital pixel brightness values between adjacent anatomical structures on an image. High contrast presents sharp, distinct differences between black and white, whereas low contrast presents subtle gradations of gray. Radiographic contrast is governed by the <b>tripartite teaching-model equation (simulator model — not literal physics)</b>:
+        </p>
+        <span class="math-display">$$\text{Radiographic Contrast} = \text{Subject Contrast} \times \text{Receptor Contrast} \times \text{Display Contrast}$$</span>
+        <div class="small muted" style="margin-top:6px;">Teaching/simulator model — not literal physics: subject, receptor and display interact; they do not literally multiply.</div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.2 Physics of Subject Contrast &amp; Differential Absorption</h3>
+        <p>
+          <b>Subject Contrast</b> is the ratio of photon fluence intensities between different regions of the remnant X-ray beam emerging from the patient. It originates from <b>differential absorption</b> as the primary beam traverses anatomical tissues according to the Beer-Lambert exponential attenuation law:
+        </p>
+        <span class="math-display">$$I = I_0 e^{-\mu \cdot x}$$</span>
+        <p>
+          Where <span class="math-tex">$\mu$</span> is the linear attenuation coefficient (<span class="math-tex">$\text{cm}^{-1}$</span>) and <span class="math-tex">$x$</span> is anatomical thickness (<span class="math-tex">$\text{cm}$</span>). Four primary factors determine differential absorption:
+        </p>
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-atom"></i> Four Physical Determinants of Subject Contrast:</div>
+          <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
+            <li><b>Effective Atomic Number (<span class="math-tex">$Z$</span>):</b>
+              The probability of <b>Photoelectric Absorption</b> per unit mass is directly proportional to the cube of the atomic number:
+              <span class="math-display">$$\text{Probability}_{\text{Photoelectric}} \propto \frac{Z^3}{E^3}$$</span>
+              Because cortical bone (<span class="math-tex">$Z_{\text{eff}} \approx 13.8$</span>) has nearly double the atomic number of soft tissue (<span class="math-tex">$Z_{\text{eff}} \approx 7.4$</span>), bone absorbs <span class="math-tex">$(13.8 / 7.4)^3 \approx 6.5\times$</span> more photons via photoelectric interaction per gram!
+            </li>
+            <li><b>Tissue Physical Density (<span class="math-tex">$\rho$</span>):</b>
+              Compton scattering is proportional to electron density, which closely tracks physical density (<span class="math-tex">$\text{g/cm}^3$</span>). Bone (<span class="math-tex">$\rho \approx 1.85\text{ g/cm}^3$</span>) attenuates far more photons than muscle (<span class="math-tex">$\rho \approx 1.0\text{ g/cm}^3$</span>), fat (<span class="math-tex">$\rho \approx 0.92\text{ g/cm}^3$</span>), or aerated lung (<span class="math-tex">$\rho \approx 0.32\text{ g/cm}^3$</span>).
+            </li>
+            <li><b>Tissue Part Thickness (<span class="math-tex">$x$</span>):</b>
+              As anatomical thickness increases, more photons are removed exponentially, altering the relative remnant fluence.
+            </li>
+            <li><b>X-ray Tube Potential (kVp):</b>
+              <br>• <b>Low kVp (e.g. 50–65 kVp):</b> Photoelectric absorption dominates. The large difference in attenuation between bone and soft tissue produces <b>High Subject Contrast</b>. However, beam penetration is low, requiring higher mAs and elevating patient skin dose.
+              <br>• <b>High kVp (e.g. 90–120 kVp):</b> Compton scattering dominates; photoelectric absorption drops precipitously (<span class="math-tex">$\propto 1/E^3$</span>). Attenuation curves converge, yielding <b>Low Subject Contrast</b>, but beam penetration is high and patient dose is minimized under ALARA.
+            </li>
+          </ol>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.3 Contrast Scales: Short Scale vs Long Scale</h3>
+        <p>
+          The range of useful gray tones displayed on a radiograph defines its contrast scale:
+        </p>
+        <div class="tissue-cards-grid">
+          <div class="tissue-card" style="border-top:3px solid #0e7c86;">
+            <span class="tissue-badge">High Contrast</span>
+            <h4>Short-Scale Contrast</h4>
+            <p>Characterized by few shades of gray with abrupt, stark transitions between black and white. Produced by low kVp, high grid ratios, and steep receptor gamma. Ideal for extremity musculoskeletal imaging and foreign body detection.</p>
+          </div>
+          <div class="tissue-card" style="border-top:3px solid #10b981;">
+            <span class="tissue-badge">Low Contrast</span>
+            <h4>Long-Scale Contrast</h4>
+            <p>Characterized by many subtle shades of gray with gradual transitions. Produced by high kVp, wide-latitude digital detectors, and wide window width. Vital for chest radiography to visualize faint pulmonary vasculature and mediastinal structures simultaneously.</p>
+          </div>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.4 Receptor Contrast &amp; Digital Image Processing (LUT &amp; Windowing)</h3>
+        <p>
+          Unlike film-screen emulsions whose contrast is permanently fixed by chemical emulsion gamma (<span class="math-tex">$\gamma$</span>), digital image receptors (CR PSP plates and DR flat-panel detectors) exhibit a <b>wide, linear exposure response</b> across four orders of magnitude (<span class="math-tex">$10,000:1$</span>). Digital radiography cleanly separates image acquisition from display contrast:
+        </p>
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-sliders"></i> Digital Contrast Manipulation Tools:</div>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;">
+            <li><b>Look-Up Tables (LUT):</b> Mathematical algorithms that remap linear digital detector raw values into a customized non-linear S-curve optimized for the specific anatomical projection (e.g., Chest LUT vs Lumbar Spine LUT).</li>
+            <li><b>Window Width (WW):</b> Controls the <b>contrast scale</b> (range of pixel values displayed from pure black to pure white):
+              <br>• <b>Narrow Window Width (Small WW):</b> Displays fewer gray levels across a tight pixel range $\implies$ <b>Short scale / High contrast</b> (enhances subtle soft-tissue margins).
+              <br>• <b>Wide Window Width (Large WW):</b> Displays many gray levels across a broad pixel range $\implies$ <b>Long scale / Low contrast</b> (prevents clipping in high-dynamic anatomy like the chest).
+            </li>
+            <li><b>Window Level (WL):</b> Controls the <b>center point</b> of the window, adjusting overall displayed image brightness.</li>
+          </ul>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.5 Clinical Contrast Strategy &amp; ALARA Principles</h3>
+        <p>
+          A common clinical misconception is that "higher contrast is always superior." In reality, maximizing contrast by selecting excessively low kVp introduces two severe penalties:
+        </p>
+        <ol style="margin:0;padding-left:22px;font-size:13.5px;line-height:1.65;color:var(--rad-navy);">
+          <li><b>Radiation Protection Violation (ALARA):</b> Low-energy photons lack sufficient penetration to reach the detector and are absorbed entirely in the patient's superficial tissues, dramatically elevating entrance skin dose (ESD).</li>
+          <li><b>Information Clipping &amp; Burn-Out:</b> Extreme short-scale contrast saturates thin structures to black and under-penetrates dense bone to pure white, concealing critical pathology.</li>
+        </ol>
+        <p style="font-size:13.5px;color:var(--rad-navy);font-weight:600;">
+          The optimal modern strategy: Select optimal kVp to guarantee complete anatomical penetration, then utilize digital display post-processing (LUT and Window Width) to achieve the diagnostic contrast required without increasing patient dose.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 1: TISSUE ATTENUATION ===================== -->
+    <section class="lab-section" id="sec-tissue-diff">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1 — Anatomical Tissue &amp; Differential Attenuation Explorer</h2>
+          <div class="lab-section-sub">Inspect effective atomic numbers, tissue densities, and differential absorption coefficients</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-cubes-stacked"></i> Tissue Attenuation Explorer</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Examine the 4 primary human biological tissues below. Observe how atomic number (<span class="math-tex">$Z$</span>) and physical density (<span class="math-tex">$\rho$</span>) govern photon transmission, then complete Table A.
+        </p>
+
+        <div class="tissue-cards-grid">
+          <div class="tissue-card" style="border-top:3px solid #ef4444;">
+            <span class="tissue-badge">Dense Structure</span>
+            <h4>1. Cortical Bone</h4>
+            <p><b><span class="math-tex">$Z_{\text{eff}} = 13.8$</span> · Density: <span class="math-tex">$1.85\text{ g/cm}^3$</span></b><br>Rich in calcium (<span class="math-tex">$Z=20$</span>) and phosphorus (<span class="math-tex">$Z=15$</span>). Strong photoelectric absorption at diagnostic kVp. Appears radiopaque (white).</p>
+          </div>
+          <div class="tissue-card" style="border-top:3px solid #f59e0b;">
+            <span class="tissue-badge">Solid Soft Tissue</span>
+            <h4>2. Muscle &amp; Parenchyma</h4>
+            <p><b><span class="math-tex">$Z_{\text{eff}} = 7.4$</span> · Density: <span class="math-tex">$1.00\text{ g/cm}^3$</span></b><br>Primarily water and organic proteins. Attenuates moderately via Compton scatter and photoelectric effect. Appears intermediate gray.</p>
+          </div>
+          <div class="tissue-card" style="border-top:3px solid #10b981;">
+            <span class="tissue-badge">Lipid Compartment</span>
+            <h4>3. Adipose Fat</h4>
+            <p><b><span class="math-tex">$Z_{\text{eff}} = 6.3$</span> · Density: <span class="math-tex">$0.92\text{ g/cm}^3$</span></b><br>Higher hydrogen content and lower physical density than muscle. Transmits slightly more radiation; appears slightly darker gray than muscle.</p>
+          </div>
+          <div class="tissue-card" style="border-top:3px solid #6366f1;">
+            <span class="tissue-badge">Air-Filled Space</span>
+            <h4>4. Aerated Lung Parenchyma</h4>
+            <p><b><span class="math-tex">$Z_{\text{eff}} = 7.6$</span> · Density: <span class="math-tex">$0.32\text{ g/cm}^3$</span></b><br>Extremely low physical density due to alveolar air. Minimal photon attenuation; remnant beam strikes receptor with high fluence. Appears radiolucent (dark).</p>
+          </div>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-list-check"></i> Table A: Differential Attenuation &amp; Contrast Parameter Check</h4>
+        <p class="small muted">Synthesize your physical understanding by entering the exact parameters and clinical mechanisms below:</p>
+        <table class="data-table checklist-fill-table">
+          <thead>
+            <tr>
+              <th style="width:28%">Physical / Clinical Factor</th>
+              <th style="width:36%">Mathematical / Biophysical Mechanism</th>
+              <th>Radiographic Contrast Effect &amp; Clinical Rule</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Bone vs Soft Tissue Z Difference:</b></td>
+              <td><input type="text" id="w-bone-z-spec" placeholder="e.g., Z=13.8 (bone) vs Z=7.4 (muscle); PE proportional to Z^3"></td>
+              <td>Bone absorbs ~6.5x more photons per gram via photoelectric effect, creating primary subject contrast.</td>
+            </tr>
+            <tr>
+              <td><b>Low kVp Beam Selection:</b></td>
+              <td><input type="text" id="w-kvp-photoelectric" placeholder="e.g., Enhances photoelectric absorption (PE proportional to 1/E^3)"></td>
+              <td>Produces short-scale, high-contrast images (ideal for extremity skeletal detail), but elevates skin dose.</td>
+            </tr>
+            <tr>
+              <td><b>Short Scale vs Long Scale:</b></td>
+              <td><input type="text" id="w-short-scale-def" placeholder="e.g., Short scale = few gray shades (high contrast); Long scale = many gray shades"></td>
+              <td>Short scale enhances abrupt boundary visibility; long scale preserves subtle wide dynamic range (chest).</td>
+            </tr>
+            <tr>
+              <td><b>Digital Window Width (WW):</b></td>
+              <td><input type="text" id="w-window-width-fn" placeholder="e.g., Controls the number of gray shades mapped to the display"></td>
+              <td>Decreasing WW expands contrast; increasing WW extends dynamic range to prevent pixel saturation.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 2: CONTRAST MATCHER ===================== -->
+    <section class="lab-section" id="sec-scale-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2 — Contrast Scale &amp; Appearance Matcher</h2>
+          <div class="lab-section-sub">Pair radiographic contrast behaviors and factors with their clinical definitions</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-vial-circle-check"></i> Contrast Matcher Challenge</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Match each contrast feature or technical setting to its exact physical definition and clinical application:
+        </p>
+        <div id="scale-match-container" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 3: 10-STEP PENETROMETER ===================== -->
+    <section class="lab-section" id="sec-wedge-scale">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3 — Calibrated 10-Step Penetrometer Aluminum Step Wedge</h2>
+          <div class="lab-section-sub">Simulate radiographic penetrometer attenuation: Measure step thickness, transmission, and gray shade</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-barcode"></i> Aluminum Step Wedge Tool</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Below is a calibrated 10-step aluminum penetrometer wedge simulating progressive anatomical thickness. Click any step to inspect its physical thickness, transmission factor, and displayed gray value.
+        </p>
+
+        <div class="penetrometer-wrap">
+          <div class="penetrometer-strip" id="penetrometer-strip"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px;">
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Selected Step</span>
+            <h4 id="wedge-step-title" style="margin:4px 0 0;color:var(--rad-navy);font-size:18px;">Step 5 (Mid-scale)</h4>
+          </div>
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Equivalent Aluminum Thickness</span>
+            <h4 id="wedge-step-thick" style="margin:4px 0 0;color:var(--rad-teal);font-size:18px;">10.0 mm Al</h4>
+          </div>
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Remnant Beam Transmission</span>
+            <h4 id="wedge-step-trans" style="margin:4px 0 0;color:#f59e0b;font-size:18px;">38.5%</h4>
+          </div>
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Displayed Gray Level</span>
+            <h4 id="wedge-step-gray" style="margin:4px 0 0;color:#10b981;font-size:18px;">RGB 115 / 255</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 4: CLINICAL SCENARIO ===================== -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4 — Clinical Radiographic Contrast Scenario</h2>
+          <div class="lab-section-sub">Diagnostic Optimization Case: Subtle Soft-Tissue Lesion vs Severe Under-Penetration</div>
+        </div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Clinical Contrast Decision</span>
+        <h3 style="color:var(--rad-navy);margin-top:12px;">Case Scenario: Optimizing Contrast for a Suspected Soft-Tissue Forearm Lesion</h3>
+        <p style="font-size:13.5px;line-height:1.55;">
+          A radiographer must image an adult patient suspected of having a subtle, low-density soft-tissue intramuscular hemangioma in the proximal forearm. An initial attempt at an ultra-low technique (45 kVp) yielded high bone-to-soft-tissue contrast, but the soft-tissue compartment is severely quantum-mottled and under-penetrated, clipping all internal muscle fascial planes to black.
+          <br>What is the most scientifically defensible radiographic approach under ALARA?
+        </p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Choose the most defensible radiographic approach</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Ensure Adequate Beam Penetration First, then Optimize Digital Window Width:</b> Elevate kVp to 60–65 kVp to ensure adequate photon transmission through the soft tissues without photon starvation, then narrow the digital display Window Width (WW) on the PACS workstation to enhance subtle fascial plane density differences without increasing patient radiation dose.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Lower kVp further to 40 kVp and triple the mAs:</b> Maximize photoelectric absorption at all costs to force high short-scale contrast, regardless of entrance skin dose.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Increase display contrast aggressively even if signal is clipped:</b> Digital post-processing can recover anatomical signal that was never captured by the detector.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Increase Object-to-Image Distance (OID) to 25 cm without collimation:</b> Rely solely on geometric magnification to magnify soft tissue density.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="button" class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Check Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">Select an option above and check your clinical decision.</div>
+      </article>
+    </section>
+
+    <!-- ===================== KNOWLEDGE CHECK ===================== -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Mastery Quizzes</h2>
+          <div class="lab-section-sub">Formative assessment of subject contrast, kVp dependence, short vs long scale, and digital processing limits</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-circle-check"></i> Formative Mastery Assessment</span>
+        <div id="quiz-wrap" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 1 SUBMISSION HUB ===================== -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-paper-plane"></i></div>
+        <div>
+          <h2>Phase 1 Submission — In-Lab Interactive Activities</h2>
+          <div class="lab-section-sub">Submit and lock in your in-lab activities score (10 points) before leaving the laboratory session</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- ===================== CTA TRANSITION TO TAB 2 ===================== -->
+    <div class="card" style="background:linear-gradient(135deg, #071a2b 0%, #134e6f 100%);color:#fff;border-radius:12px;padding:26px;margin-top:24px;box-shadow:var(--rad-shadow-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div style="max-width:620px;">
+          <span style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7fe0d6;font-weight:700;">Foundations Complete · Ready for Experimentation</span>
+          <h3 style="color:#ffffff;margin:8px 0 10px;font-size:22px;">Proceed to Tab 2: Virtual Contrast Simulator</h3>
+          <p style="margin:0;font-size:14px;opacity:0.92;line-height:1.5;">Now that you have completed the conceptual primer and interactive stations, enter the digital laboratory to simulate dual-tissue attenuation, measure penetrometer step wedges, export your dataset, and complete your quantitative analysis.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-teal" id="btn-proceed-to-sim" style="padding:14px 28px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.25);">
+            <i class="fa-solid fa-flask"></i> Proceed to Tab 2: Virtual Experiment &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#tab-pane-intro -->
+
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 2: VIRTUAL SIMULATION & WORKBOOK ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:12.5px;"><i class="fa-solid fa-microscope"></i> Tab 2: Virtual Laboratory &amp; Analysis Workspace</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-intro" style="font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Return to Tab 1 (Theory &amp; Foundations)</button>
+    </div>
+
+    <!-- ===================== EXPERIMENT PROTOCOL & OBJECTIVES ===================== -->
+    <section class="card" id="sec-exp-guide" style="border-left:4px solid var(--rad-teal);margin-bottom:24px;">
+      <div class="flex items-center gap-12" style="margin-bottom:8px;">
+        <i class="fa-solid fa-list-check" style="color:var(--rad-teal);font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Virtual Physics Experiment: Protocol, Objectives &amp; Step-by-Step Procedure</h3>
+      </div>
+      <p style="margin:6px 0 14px 0;font-size:14px;line-height:1.5;">Follow the standardized experimental protocol below to record at least <b>3 unique controlled trials</b> into your run logger for post-lab Excel curve fitting and quantitative evaluation.</p>
+
+      <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+        <h4 style="margin:0 0 8px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-bullseye" style="color:var(--rad-teal);"></i> Specific Experimental Objectives:</h4>
+        <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;color:var(--rad-navy);">
+          <li><b>kVp vs Subject Contrast Response:</b> Quantify how raising tube potential from 55 kVp to 110 kVp reduces subject contrast from &gt;45% down to &lt;15% through Compton scatter dominance.</li>
+          <li><b>Part Thickness &amp; Remnant Fluence:</b> Measure how anatomical thickness (5 to 30 cm) attenuates the remnant beam exponentially.</li>
+          <li><b>Receptor Gamma &amp; Digital LUT Amplification:</b> Investigate how digital processing gain (0% to 100%) and receptor contrast factor (0.8 to 2.2) scale subject contrast into displayed contrast.</li>
+          <li><b>Contrast Scale Transition (simulator cutoffs):</b> Distinguish the transition thresholds between Short Scale (&gt;48% contrast), Moderate Scale (28–48%), and Long Scale (&lt;28%).</li>
+        </ol>
+      </div>
+
+      <h4 style="margin:0 0 10px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-clipboard-list" style="color:var(--rad-teal);"></i> Step-by-Step Laboratory Procedure:</h4>
+      <div class="protocol-steps-grid">
+        <div class="protocol-step-card">
+          <div class="step-num">Step 1 · Scientific Hypothesis</div>
+          <h4>Formulate Prediction</h4>
+          <p>Before modifying sliders, enter a clear hypothesis in the <b>Pre-Trial Scientific Prediction</b> field predicting how altering kVp or part thickness will affect subject contrast and displayed contrast.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 2 · Baseline Trial (Run 1)</div>
+          <h4>Standard Diagnostic Baseline</h4>
+          <p>Click preset <b>Standard Baseline (70 kVp, 15 cm, Receptor 1.4, Digital 50%)</b>. Observe the balanced tissue phantom and moderate contrast scale. Record Run 1.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 3 · Low kVp Trial (Run 2)</div>
+          <h4>Short Scale / High Contrast</h4>
+          <p>Click preset <b>Low kVp Extremity (55 kVp, 10 cm)</b>. Notice the sharp bone-to-tissue difference and stark step transitions on the penetrometer. Record Run 2.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 4 · High kVp Trial (Run 3)</div>
+          <h4>Long Scale / Wide Latitude</h4>
+          <p>Click preset <b>High kVp Chest (110 kVp, 20 cm)</b>. Observe the many subtle gray shades and gentle gradient across the 10-step penetrometer. Record Run 3.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 5 · Thickness Shift (Run 4)</div>
+          <h4>Hypersthenic Attenuation</h4>
+          <p>Click preset <b>Hypersthenic Patient (85 kVp, 28 cm)</b>. Observe the severe drop in remnant beam transmission requiring penetration compensation. Record Run 4.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 6 · Export Dataset</div>
+          <h4>Download Run Data (CSV)</h4>
+          <p>Click <b>Download Run Data (CSV)</b> in the toolbar to save your recorded contrast trials for post-lab Excel plotting and submission requirements.</p>
+        </div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+        <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+        ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline (70 kVp / 15 cm) + Record &nbsp; ☐ 3. Run 2 Low-kVp short scale (55 kVp) + Record &nbsp; ☐ 4. Run 3 High-kVp long scale (110 kVp) + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B.<br>
+        Run 4 Hypersthenic (28 cm) is bonus/optional — only after the required 3.<br>
+        <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider per run.
+      </div>
+    </section>
+
+    <!-- ===================== VIRTUAL EXPERIMENT SIMULATOR SUITE ===================== -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Virtual Simulation Suite — Radiographic Contrast &amp; Penetrometer Simulator</h2>
+          <div class="lab-section-sub">Interactive dual-tissue anatomical phantom (soft tissue + bone) and 10-step aluminum penetrometer</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Digital Simulator</span>
+        <p style="margin-top:10px;font-size:13.5px;">Adjust tube potential (kVp), anatomical thickness, receptor contrast factor, and digital LUT processing below. Observe the real-time anatomical phantom, step wedge, and displayed contrast scale. <b>Record at least 3 unique runs</b> with scientific hypotheses.</p>
+
+        <!-- Presets bar -->
+        <div class="sim-presets-bar">
+          <span class="small muted" style="font-weight:700;margin-right:6px;"><i class="fa-solid fa-sliders"></i> Clinical Presets:</span>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="70" data-thickness="15" data-receptor="1.4" data-digital="50">Standard Baseline (70 kVp, 15 cm)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="55" data-thickness="10" data-receptor="1.8" data-digital="70">Low kVp Extremity (55 kVp / Short Scale)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="110" data-thickness="20" data-receptor="1.0" data-digital="30">High kVp Chest (110 kVp / Long Scale)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="85" data-thickness="28" data-receptor="1.4" data-digital="50">Hypersthenic Patient (85 kVp, 28 cm)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="70" data-thickness="15" data-receptor="2.0" data-digital="95">Narrow Window LUT (70 kVp / Contrast Boost)</button>
+        </div>
+
+        <!-- Simulation Layout -->
+        <div class="sim-layout">
+          <!-- Interactive Canvas -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" width="900" height="300" aria-label="Interactive digital simulation of radiographic contrast in tissue phantom and penetrometer"></canvas>
+          </div>
+
+          <!-- Controls Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-kvp"><span>Tube Potential (kVp)</span><output id="out-kvp" for="ctrl-kvp">70 kVp</output></label>
+              <input type="range" id="ctrl-kvp" min="50" max="110" step="1" value="70">
+              <span class="small muted" style="display:block;margin-top:4px;">Governs photoelectric vs Compton ratio</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-thickness"><span>Part Thickness (cm)</span><output id="out-thickness" for="ctrl-thickness">15 cm</output></label>
+              <input type="range" id="ctrl-thickness" min="5" max="30" step="1" value="15">
+              <span class="small muted" style="display:block;margin-top:4px;">Patient thickness attenuation path</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-receptor"><span>Receptor Contrast Factor</span><output id="out-receptor" for="ctrl-receptor">1.40 factor</output></label>
+              <input type="range" id="ctrl-receptor" min="0.8" max="2.2" step="0.1" value="1.4">
+              <span class="small muted" style="display:block;margin-top:4px;">Emulsion gamma or detector gain</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-digital"><span>Digital Processing / LUT (%)</span><output id="out-digital" for="ctrl-digital">50 %</output></label>
+              <input type="range" id="ctrl-digital" min="0" max="100" step="1" value="50">
+              <span class="small muted" style="display:block;margin-top:4px;">Window Width contrast expansion</span>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Display -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+
+          <!-- Observation Box -->
+          <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:12px 16px;margin-top:10px;">
+            <strong style="color:var(--rad-navy);"><i class="fa-solid fa-microscope" style="color:var(--rad-teal);"></i> Contrast &amp; Attenuation Critique:</strong>
+            <p id="sim-caption" style="margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--rad-text-soft);">Adjust controls above to evaluate subject contrast, remnant penetration, and displayed scale.</p>
+          </div>
+
+          <!-- Pre-Trial Prediction Field -->
+          <div class="form-row" style="margin-top:18px;">
+            <label class="field-label" for="w-prediction">
+              <i class="fa-solid fa-pen-to-square" style="color:var(--rad-teal);"></i> Pre-Trial Scientific Prediction <span aria-hidden="true">*</span>
+            </label>
+            <textarea id="w-prediction" rows="3" required placeholder="State the variable you plan to change (e.g. kVp, part thickness, or digital LUT) and explain your predicted outcome on subject contrast, displayed contrast percentage, and contrast scale..."></textarea>
+            <p class="form-hint">Minimum 20 characters required before recording runs. Your prediction is locked into your exported dataset.</p>
+          </div>
+
+          <!-- Run Logging Toolbar -->
+          <div style="margin-top:18px;border-top:1px solid var(--rad-border);padding-top:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary" id="record-run"><i class="fa-solid fa-camera"></i> Record This Run</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash-can"></i> Remove Last Run</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-download-runs-csv"><i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)</button>
+              </div>
+              <span class="run-status" id="run-status" role="status" aria-live="polite" style="font-weight:700;color:var(--rad-navy);">0 / 3 unique runs recorded</span>
+            </div>
+
+            <!-- Run Log Table -->
+            <div class="table-responsive">
+              <table class="data-table run-table">
+                <thead>
+                  <tr>
+                    <th style="width:6%">Run</th>
+                    <th style="width:32%">Operating Parameters</th>
+                    <th style="width:32%">Contrast Telemetry Metrics</th>
+                    <th>Contrast Scale &amp; Process Critique</th>
+                  </tr>
+                </thead>
+                <tbody id="run-log-body">
+                  <tr><td colspan="4" class="muted">No runs recorded yet. Adjust controls above and click "Record This Run".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POST-LAB DATA ANALYSIS & WORKSHEET ===================== -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Required Data Analysis &amp; Post-Lab Reflection</h2>
+          <div class="lab-section-sub">Quantitative contrast calculations, Excel plotting instructions, and clinical reflection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and perform the following analytical steps in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Tube Potential vs Subject Contrast Curve (kVp vs Subject Contrast %):</b> Plot Tube Accelerating Potential (kVp) on the X-axis against Subject Contrast (%) on the Y-axis. Fit a power regression trendline demonstrating how subject contrast decreases non-linearly as beam energy rises and Compton scattering supersedes photoelectric absorption.</li>
+            <li><b>Plot 2 — Part Thickness vs Remnant Transmission Curve (Thickness vs Transmission %):</b> Plot Part Thickness (cm) on the X-axis against Remnant Transmission (%) on the Y-axis. Fit an exponential trendline (<span class="math-tex">$y = a \cdot e^{-bx}$</span>) illustrating the Beer-Lambert exponential attenuation law.</li>
+            <li><b>Calculated Spreadsheets Columns:</b> Add a calculated column computing Displayed Contrast using the simulator teaching-model formula (simulator model — not literal physics) <span class="math-tex">$\text{Displayed Contrast} = \text{Subject Contrast} \times \text{Receptor Factor} \times (0.65 + \text{Digital}/100)$</span> and verify that it matches your exported telemetry.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and upload it in <b>Section 10 (Phase 2 Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact contrast and transmission parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <thead>
+            <tr><th style="width:32%">Contrast / Transmission Parameter</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Interpretation</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Subject Contrast at 70 kVp:</b> Soft tissue signal (<span class="math-tex">$S_{\text{soft}} = 0.40$</span>), Bone signal (<span class="math-tex">$S_{\text{dense}} = 0.15$</span>)</td>
+              <td><input type="text" id="w-calc-subj-check" placeholder="e.g., C_subj = |0.40 - 0.15| / 0.40 = 0.25 / 0.40"></td>
+              <td><input type="text" id="w-calc-subj-out" placeholder="e.g., 62.5% subject contrast"></td>
+            </tr>
+            <tr>
+              <td><b>Displayed Contrast Calculation:</b> Baseline receptor 1.4× and digital 50%</td>
+              <td><input type="text" id="w-calc-disp-check" placeholder="e.g., C_disp = 62.5% * 1.4 * (0.65 + 50/100) = 87.5% * 1.15"></td>
+              <td><input type="text" id="w-calc-disp-out" placeholder="e.g., 100.0% (clamped saturation / short scale)"></td>
+            </tr>
+            <tr>
+              <td><b>Remnant Transmission through 15 cm:</b> Soft tissue penetration at 70 kVp</td>
+              <td><input type="text" id="w-calc-trans-check" placeholder="e.g., Transmission = exp(-mu_soft * thickness) = exp(-0.065 * 15)"></td>
+              <td><input type="text" id="w-calc-trans-out" placeholder="e.g., ~37.7% remnant transmission"></td>
+            </tr>
+            <tr>
+              <td><b>Contrast Scale Classification (simulator cutoffs):</b> Displayed contrast &gt; 48% vs &lt; 28%</td>
+              <td><input type="text" id="w-calc-scale-check" placeholder="e.g., > 48% = Short scale; 28-48% = Moderate; < 28% = Long scale (simulator cutoffs)"></td>
+              <td><input type="text" id="w-calc-scale-out" placeholder="e.g., Short scale (High contrast extremity bone)"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-comment-dots"></i> C. Post-Lab Reflection &amp; Clinical Analysis Questions</h4>
+
+        <div class="form-row">
+          <label class="field-label" for="q1">1. Compare two kVp settings and describe the change in subject contrast and beam penetration. <span aria-hidden="true">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="Contrast your baseline trial (70 kVp) with your low-kVp run (55 kVp) and high-kVp run (110 kVp), citing exact subject contrast percentages and explaining photoelectric vs Compton physics..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q2">2. Explain the difference between subject contrast and receptor contrast. <span aria-hidden="true">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="Distinguish between the differential photon fluence emerging from patient tissues (subject contrast) and the response characteristics/gamma of the image receptor capturing that signal..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q3">3. Why can a digital image show useful contrast over a wider exposure range than film? <span aria-hidden="true">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Explain how digital detectors have a wide linear dynamic range (10,000:1) compared to the narrow S-shaped H&D film curve, and how Window Width / Window Level decouple exposure from display..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q4">4. Critical thinking: Explain why “more contrast” is not always the best diagnostic choice under ALARA. <span aria-hidden="true">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Discuss patient entrance skin dose penalties at ultra-low kVp, anatomical burn-out, loss of wide thoracic latitude in chest radiography, and why adequate penetration must precede post-processing..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RUBRIC ===================== -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Standardized Grading Rubric</h2>
+          <div class="lab-section-sub">Total: 20 points — Departmental standardized evaluation criteria across Phase 1 and Phase 2</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-rubric"><i class="fa-solid fa-clipboard-list"></i> Standardized Department Rubric</span>
+        <div id="rubric-container" style="margin-top:14px; overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:10px;">Students: score yourself to evaluate your readiness. Official grades and Gemini Flash AI feedback are assigned via the department portal.</p>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 2 SUBMISSION HUB ===================== -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-file-excel"></i></div>
+        <div>
+          <h2>Phase 2 Submission — Post-Lab Excel Data Analysis</h2>
+          <div class="lab-section-sub">Upload your completed Excel analysis workbook and submit your post-lab reflection (10 points)</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div><!-- /#tab-pane-experiment -->
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 5 of 15 · assessed virtual laboratory</footer>
+
+<!-- ===================== STICKY ACTION BAR ===================== -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none;"></label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar"><i class="fa-solid fa-file-pdf"></i> Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 5 of 15 · Interactive Simulation Lab Platform
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
-const LAB = {"week":5,"title":"Radiographic Contrast Simulator","lecture":"Visibility Factors II — Contrast","type":"contrast","subtitle":"Separate subject contrast, receptor contrast, and displayed contrast.","objectives":["Define radiographic, subject, and receptor contrast.","Predict how kVp and tissue attenuation affect subject contrast.","Compare long-scale and short-scale contrast images.","Explain why digital processing can modify displayed contrast.","Select a contrast strategy for a clinical imaging task."],"theory":"<p>Radiographic contrast is the visible difference between adjacent image regions. Subject contrast comes from differences in tissue attenuation; it is influenced by kVp, thickness, atomic number, and subject composition. Receptor contrast is the response characteristic of the receptor, while display processing can change the final appearance.</p><div class=\"formula-box\"><b>Short scale:</b> few gray tones, higher visible contrast · <b>Long scale:</b> many gray tones, lower visible contrast. Lower kVp generally increases subject contrast, while higher kVp generally decreases it and increases penetration.</div><p>Contrast should be optimized for the diagnostic task, not maximized indiscriminately. The same raw signal can appear different when processing or windowing changes.</p>","controls":[{"id":"kvp","label":"kVp","min":50,"max":110,"step":1,"value":70,"unit":"kVp"},{"id":"thickness","label":"Part thickness","min":5,"max":30,"step":1,"value":15,"unit":"cm"},{"id":"receptor","label":"Receptor contrast","min":0.8,"max":2.2,"step":0.1,"value":1.4,"unit":"factor"},{"id":"digital","label":"Digital processing","min":0,"max":100,"step":1,"value":50,"unit":"%"}],"stations":[{"id":"contrast","title":"Station 1 — kVp versus subject contrast","text":"Move kVp and thickness sliders. Compare the number of distinguishable gray steps and the transmitted signal.","kind":"main"},{"id":"gallery","title":"Station 2 — Contrast gallery","text":"Match each appearance to long-scale, short-scale, or receptor/display processing.","kind":"match","left":[["few","Few gray tones with strong separation"],["many","Many gray tones with subtle separation"],["proc","Same exposure, altered display mapping"]],"right":[["short","Short-scale contrast"],["long","Long-scale contrast"],["digital","Digital processing / receptor contrast"]],"pairs":{"few":"short","many":"long","proc":"digital"}},{"id":"case","title":"Station 3 — Clinical contrast choice","text":"You need to demonstrate subtle soft-tissue differences. Choose the most defensible starting strategy.","kind":"case"}],"quiz":[{"prompt":"Which change generally increases subject contrast in film-screen radiography?","options":["Increase kVp substantially","Decrease kVp while maintaining adequate penetration","Increase OID only","Increase display window width"],"correct":1,"explain":"A lower kVp generally increases differential attenuation and subject contrast, provided penetration remains adequate."},{"prompt":"Subject contrast originates primarily from differences in:","options":["Tissue attenuation","Monitor brand","Cassette hinge color","Student viewing distance"],"correct":0,"explain":"Different tissues attenuate the beam differently, producing subject contrast."},{"prompt":"Higher kVp generally produces:","options":["Shorter-scale subject contrast","Longer-scale subject contrast with greater penetration","More OID","Smaller pixels"],"correct":1,"explain":"Higher kVp generally lowers differential attenuation while increasing penetration."},{"prompt":"Digital processing can:","options":["Recover anatomy never captured","Change displayed contrast of captured data","Eliminate quantum noise without trade-offs","Correct all positioning errors"],"correct":1,"explain":"Processing remaps captured data but cannot restore missing signal or anatomy."}],"worksheet":[{"id":"q1","label":"1. Compare two kVp settings and describe the change in subject contrast and penetration."},{"id":"q2","label":"2. Explain the difference between subject contrast and receptor contrast."},{"id":"q3","label":"3. Why can a digital image show useful contrast over a wider exposure range than film?"},{"id":"q4","label":"4. Critical thinking: explain why “more contrast” is not always the best diagnostic choice."}],"rubric":[{"id":"c1","name":"Contrast concepts","points":4,"levels":["Accurately separates subject, receptor, and displayed contrast.","Mostly accurate with minor gaps.","Concepts are confused."]},{"id":"c2","name":"Contrast simulation","points":5,"levels":["Explores kVp, thickness, receptor, and processing effects.","Explores some controls with limited interpretation.","Little meaningful investigation."]},{"id":"c3","name":"Comparisons and worksheet","points":5,"levels":["Uses clear visual and quantitative comparisons.","Comparisons are present but shallow.","Comparisons are missing or inaccurate."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Chooses contrast appropriately for a diagnostic task.","Choice is plausible but weakly justified.","No defensible choice."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict how increasing kVp changes subject contrast.","Record a baseline run.","Increase only kVp and record a second run.","Restore kVp, change receptor/display processing, and record a third run.","Separate subject-contrast changes from display-contrast changes."],"scenario":{"prompt":"A soft-tissue task requires subtle differences to remain visible. Which approach is most defensible?","options":["Use adequate penetration, preserve signal, then optimize display contrast","Always choose the lowest possible kVp","Increase display contrast even if the signal is clipped","Increase OID"],"correct":0,"explain":"Diagnostic contrast requires adequate signal first; display processing cannot recover clipped or missing information."},"minimumRuns":3};
-const QUIZ_IDS = ["q5-1","q5-2","q5-3","q5-4"];
-const CONCEPT = LAB.stations[1];
+/* =========================================================================
+   Tab Switching & Infallible LaTeX Mathematical Rendering
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (!btnIntro || !btnExp || !paneIntro || !paneExp) return;
+
+  if (tabId === 'intro') {
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    paneIntro.classList.add('active');
+    paneExp.classList.remove('active');
+  } else if (tabId === 'experiment') {
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    paneExp.classList.add('active');
+    paneIntro.classList.remove('active');
+
+    setTimeout(function () {
+      if (typeof renderSimulation === 'function') {
+        renderSimulation();
+      }
+    }, 60);
+  }
+
+  if (targetSectionId) {
+    setTimeout(function () {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function formatMathTex(tex, isDisplay) {
+  let clean = tex.trim();
+  clean = clean.replace(/\\text\{([^}]+)\}/g, '$1');
+  clean = clean.replace(/\\approx/g, '≈');
+  clean = clean.replace(/\\times/g, '×');
+  clean = clean.replace(/\\cdot/g, '·');
+  clean = clean.replace(/\\mu/g, 'μ');
+  clean = clean.replace(/\\rho/g, 'ρ');
+  clean = clean.replace(/\\gamma/g, 'γ');
+  clean = clean.replace(/\\Delta/g, 'Δ');
+  clean = clean.replace(/\\ge/g, '≥');
+  clean = clean.replace(/\\le/g, '≤');
+  clean = clean.replace(/\\propto/g, '∝');
+  clean = clean.replace(/\^3/g, '³');
+  clean = clean.replace(/\^2/g, '²');
+  clean = clean.replace(/\^([0-9a-zA-Z+-]+)/g, '<sup>$1</sup>');
+  clean = clean.replace(/_([0-9a-zA-Z+-]+)/g, '<sub>$1</sub>');
+
+  const fracMatch = clean.match(/\\frac\{([^}]+)\}\{([^}]+)\}/);
+  if (fracMatch) {
+    clean = clean.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/, `($1 / $2)`);
+  }
+
+  if (isDisplay) {
+    return `<span class="math-fallback-display">${clean}</span>`;
+  } else {
+    return `<span class="math-fallback-inline">${clean}</span>`;
+  }
+}
+
+function renderAllMath() {
+  const mathElements = document.querySelectorAll('.math-tex, .math-display');
+  mathElements.forEach(function (el) {
+    const raw = el.textContent.trim();
+    const isDisplay = raw.startsWith('$$') || raw.startsWith('\\[') || el.classList.contains('math-display');
+    let tex = raw;
+    if (tex.startsWith('$$') && tex.endsWith('$$')) tex = tex.slice(2, -2);
+    else if (tex.startsWith('$') && tex.endsWith('$')) tex = tex.slice(1, -1);
+    else if (tex.startsWith('\\[') && tex.endsWith('\\]')) tex = tex.slice(2, -2);
+    else if (tex.startsWith('\\(') && tex.endsWith('\\)')) tex = tex.slice(2, -2);
+
+    if (window.katex) {
+      try {
+        katex.render(tex, el, { displayMode: isDisplay, throwOnError: false });
+        return;
+      } catch (err) {
+        console.warn('KaTeX render error:', err);
+      }
+    }
+    el.innerHTML = formatMathTex(tex, isDisplay);
+  });
+
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('KaTeX auto-render error:', e);
+    }
+  }
+}
+
+/* =========================================================================
+   Laboratory Configuration & Physics Data
+   ========================================================================= */
+const LAB = {
+  week: 5,
+  title: "Lab 5 — Radiographic Contrast Simulator",
+  lecture: "Visibility Factors II — Contrast",
+  type: "contrast",
+  minimumRuns: 3,
+  controls: [
+    { id: "kvp", label: "Tube Potential", min: 50, max: 110, step: 1, value: 70, unit: "kVp" },
+    { id: "thickness", label: "Part Thickness", min: 5, max: 30, step: 1, value: 15, unit: "cm" },
+    { id: "receptor", label: "Receptor Contrast Factor", min: 0.8, max: 2.2, step: 0.1, value: 1.4, unit: "factor" },
+    { id: "digital", label: "Digital Processing / LUT", min: 0, max: 100, step: 1, value: 50, unit: "%" }
+  ],
+  quiz: [
+    {
+      prompt: "Which technical change generally increases subject contrast in radiographic imaging?",
+      options: [
+        "Increasing tube potential (kVp) substantially to accelerate penetration",
+        "Decreasing tube potential (kVp) while maintaining adequate anatomical penetration",
+        "Increasing Object-to-Image Distance (OID) only",
+        "Expanding the digital display Window Width (WW)"
+      ],
+      correct: 1,
+      explain: "Lowering kVp shifts X-ray interactions toward the photoelectric effect (proportional to Z³/E³), maximizing differential absorption between bone and soft tissue."
+    },
+    {
+      prompt: "Subject contrast in the remnant radiographic beam originates primarily from:",
+      options: [
+        "Differential tissue attenuation (atomic number, physical density, and thickness)",
+        "Diagnostic workstation monitor brand specifications",
+        "The color tint of the cassette locking latch",
+        "Student viewing distance in the reading room"
+      ],
+      correct: 0,
+      explain: "Subject contrast is the physical difference in photon fluence emerging from the patient caused by differential tissue attenuation (photoelectric absorption and Compton scattering)."
+    },
+    {
+      prompt: "Selecting a higher tube potential (kVp) in diagnostic imaging generally produces:",
+      options: [
+        "Shorter-scale subject contrast with severe beam attenuation",
+        "Longer-scale subject contrast with greater penetration and reduced patient entrance skin dose",
+        "Significant geometric penumbral magnification",
+        "Finer image display matrix pixel dimensions"
+      ],
+      correct: 1,
+      explain: "Higher kVp decreases differential attenuation (Compton scattering dominates over photoelectric effect), resulting in more subtle gray tones (longer scale) while reducing patient dose under ALARA."
+    },
+    {
+      prompt: "In digital radiographic systems, digital image post-processing (LUT & Windowing) can:",
+      options: [
+        "Reconstruct anatomical signals that were completely missed due to photon starvation",
+        "Modify the displayed contrast scale and brightness of captured diagnostic data",
+        "Eliminate quantum noise without any spatial resolution or dose trade-offs",
+        "Automatically correct all patient geometric positioning errors"
+      ],
+      correct: 1,
+      explain: "Digital processing tools (Look-Up Tables, Window Width, and Window Level) alter how captured pixel values are mapped to display luminances, but cannot recover missing signal."
+    }
+  ],
+  scenario: {
+    prompt: "A soft-tissue imaging task requires subtle differences to remain visible without photon starvation. Which approach is most defensible under ALARA?",
+    options: [
+      "Use adequate penetration (kVp) to preserve remnant signal, then optimize digital display contrast (Window Width)",
+      "Always choose the lowest possible kVp (40 kVp) regardless of mAs or entrance skin dose",
+      "Increase display contrast aggressively even if the primary diagnostic signal is clipped",
+      "Increase Object-to-Image Distance (OID) to 25 cm without collimation"
+    ],
+    correct: 0,
+    explain: "Diagnostic contrast requires adequate signal penetration first; digital window width can then optimize visual contrast on the workstation without elevating patient skin dose."
+  },
+  worksheet: [
+    { id: "w-bone-z-spec", label: "Table A: Bone vs Soft Tissue Z Difference" },
+    { id: "w-kvp-photoelectric", label: "Table A: Low kVp Photoelectric Mechanism" },
+    { id: "w-short-scale-def", label: "Table A: Short Scale vs Long Scale" },
+    { id: "w-window-width-fn", label: "Table A: Digital Window Width Function" },
+    { id: "w-calc-subj-check", label: "Table B: Subject Contrast Formula Check" },
+    { id: "w-calc-subj-out", label: "Table B: Subject Contrast Result at 70 kVp" },
+    { id: "w-calc-disp-check", label: "Table B: Displayed Contrast Formula Check" },
+    { id: "w-calc-disp-out", label: "Table B: Displayed Contrast Result" },
+    { id: "w-calc-trans-check", label: "Table B: Remnant Transmission Formula Check" },
+    { id: "w-calc-trans-out", label: "Table B: Remnant Transmission Result" },
+    { id: "w-calc-scale-check", label: "Table B: Contrast Scale Classification Check" },
+    { id: "w-calc-scale-out", label: "Table B: Contrast Scale Classification Result" },
+    { id: "q1", label: "1. Compare two kVp settings: subject contrast and penetration" },
+    { id: "q2", label: "2. Difference between subject contrast and receptor contrast" },
+    { id: "q3", label: "3. Why digital images show contrast over wider exposure range than film" },
+    { id: "q4", label: "4. Why 'more contrast' is not always the best clinical choice under ALARA" }
+  ],
+  rubric: [
+    { id: "c1", name: "Contrast concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Accurately separates subject, receptor, and displayed contrast.", "Mostly accurate with minor gaps.", "Concepts are confused."] },
+    { id: "c2", name: "Contrast simulation", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Explores kVp, thickness, receptor, and processing effects.", "Explores some controls with limited interpretation.", "Little meaningful investigation."] },
+    { id: "c3", name: "Comparisons and worksheet", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Uses clear visual and quantitative comparisons.", "Comparisons are present but shallow.", "Comparisons are missing or inaccurate."] },
+    { id: "c4", name: "Clinical reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Chooses contrast appropriately for a diagnostic task.", "Choice is plausible but weakly justified.", "No defensible choice."] },
+    { id: "c5", name: "Completeness and professionalism", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."] }
+  ]
+};
+
+const QUIZ_IDS = ["q5-1", "q5-2", "q5-3", "q5-4"];
 let currentResult = null;
-let currentViewMode = '3d-shadow';
 
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    values[control.id] = Number(document.getElementById('ctrl-' + control.id).value);
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + values[control.id] + ' ' + control.unit;
+  }).join('; ');
 }
 
 function renderMetrics(result) {
@@ -83,12 +1195,19 @@ function renderMetrics(result) {
 
 function renderSimulation() {
   const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = values[control.id] + ' ' + control.unit;
+  });
+
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas && canvas.getContext) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
   renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const caption = document.getElementById('sim-caption');
+  if (caption) caption.textContent = currentResult.observation;
 }
 
 function experimentActivity() {
@@ -98,116 +1217,326 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Adjust controls above and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) {
+    statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  }
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please formulate a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That exact operating setting has already been recorded. Modify a parameter and try again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
   activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
   activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  activity.detail = activity.runs.length + ' unique runs recorded; latest diagnostic index ' + run.modelScore + '/100.';
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  if (RadLab.sound && RadLab.sound.playExposure) RadLab.sound.playExposure();
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully.', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded trials to remove.', 'warning');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last recorded run removed.', 'info');
 }
 
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs || !activity.runs.length) {
+    RadLab.toast('No runs recorded yet. Record at least one run before downloading.', 'warning');
+    return;
+  }
+
+  let csv = 'Run Number,Tube Potential (kVp),Part Thickness (cm),Receptor Contrast Factor,Digital Processing (%),Subject Contrast (%),Displayed Contrast (%),Remnant Transmission (%),Contrast Scale,Process Critique\n';
+
+  activity.runs.forEach(function (r, idx) {
+    const v = r.values;
+    const m = r.metrics;
+    const subj = m[0] ? m[0].value : '';
+    const disp = m[1] ? m[1].value : '';
+    const trans = m[2] ? m[2].value : '';
+    const scale = m[3] ? m[3].value : '';
+    const cleanObs = '"' + (r.observation || '').replace(/"/g, '""') + '"';
+
+    csv += `${idx + 1},${v.kvp},${v.thickness},${v.receptor},${v.digital},${subj},${disp},${trans},${scale},${cleanObs}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab05_Radiographic_Contrast_Runs_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Contrast run data exported successfully as CSV.', 'success');
 }
 
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please choose a clinical contrast strategy before checking.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  feedback.innerHTML = (correct ? '<strong><i class="fa-solid fa-circle-check"></i> Correct Clinical Strategy!</strong> ' : '<strong><i class="fa-solid fa-triangle-exclamation"></i> Reconsider Case Evidence:</strong> ') + LAB.scenario.explain;
+  RadLab.save();
+  RadLab.progress.update();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-05', labTitle: "Lab 5 — Radiographic Contrast Simulator", weekNumber: 5, rubric: { title: "Lab 5 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Contrast concepts","points":4},{"id":"c2","name":"Contrast simulation","points":5},{"id":"c3","name":"Comparisons and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab5-rubric',title:"Lab 5 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Contrast concepts","points":4,"levels":[{"desc":"Accurately separates subject, receptor, and displayed contrast."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Concepts are confused."}]},{"id":"c2","name":"Contrast simulation","points":5,"levels":[{"desc":"Explores kVp, thickness, receptor, and processing effects."},{"desc":"Explores some controls with limited interpretation."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Comparisons and worksheet","points":5,"levels":[{"desc":"Uses clear visual and quantitative comparisons."},{"desc":"Comparisons are present but shallow."},{"desc":"Comparisons are missing or inaccurate."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Chooses contrast appropriately for a diagnostic task."},{"desc":"Choice is plausible but weakly justified."},{"desc":"No defensible choice."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
-  }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
-  document.getElementById('record-run').addEventListener('click', recordRun);
-  document.getElementById('remove-run').addEventListener('click', removeLastRun);
-  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+/* 10-Step Penetrometer Aluminum Step Wedge Generator */
+function initPenetrometer() {
+  const strip = document.getElementById('penetrometer-strip');
+  if (!strip) return;
+  strip.innerHTML = '';
 
-  const btn3d = document.getElementById('btn-view-3d');
-  const btnClassic = document.getElementById('btn-view-classic');
-  if (btn3d && btnClassic) {
-    btn3d.addEventListener('click', function () {
-      currentViewMode = '3d-shadow';
-      btn3d.className = 'btn btn-secondary btn-sm';
-      btnClassic.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
+  for (let step = 1; step <= 10; step++) {
+    const thickAl = (step * 2.0).toFixed(1);
+    const trans = (Math.exp(-0.08 * step) * 100).toFixed(1);
+    const grayLevel = Math.max(20, Math.min(240, Math.round(250 - step * 21)));
+
+    const stepEl = document.createElement('div');
+    stepEl.className = 'penetrometer-step' + (step === 5 ? ' active' : '');
+    stepEl.style.backgroundColor = `rgb(${grayLevel}, ${grayLevel}, ${grayLevel})`;
+    stepEl.style.color = grayLevel > 130 ? '#071a2b' : '#ffffff';
+    stepEl.dataset.step = step;
+    stepEl.dataset.thick = thickAl;
+    stepEl.dataset.trans = trans;
+    stepEl.dataset.gray = grayLevel;
+
+    stepEl.innerHTML = `<span class="step-label">${step}</span>`;
+
+    stepEl.addEventListener('click', function () {
+      document.querySelectorAll('.penetrometer-step').forEach(s => s.classList.remove('active'));
+      stepEl.classList.add('active');
+
+      document.getElementById('wedge-step-title').textContent = `Step ${step} (${step <= 3 ? 'High Trans' : step >= 8 ? 'Dense Attenuation' : 'Mid-Scale'})`;
+      document.getElementById('wedge-step-thick').textContent = `${thickAl} mm Al`;
+      document.getElementById('wedge-step-trans').textContent = `${trans}%`;
+      document.getElementById('wedge-step-gray').textContent = `RGB ${grayLevel} / 255`;
     });
-    btnClassic.addEventListener('click', function () {
-      currentViewMode = 'classic';
-      btnClassic.className = 'btn btn-secondary btn-sm';
-      btn3d.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
-    });
+
+    strip.appendChild(stepEl);
   }
-  document.querySelectorAll('.preset-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
-      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
-      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
-      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
-      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
-      renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+}
+
+/* =========================================================================
+   Application Initialization
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', function () {
+  RadLab.init({
+    labId: 'lab-05',
+    labTitle: "Lab 5 — Radiographic Contrast Simulator",
+    weekNumber: 5,
+    rubric: {
+      title: "Lab 5 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    },
+    sections: [
+      { id: 'sec-tissue-diff', label: '1 · Differential Attenuation', checkComplete: function (s) { return !!(s.activities['tissue-check'] && s.activities['tissue-check'].done); } },
+      { id: 'sec-scale-match', label: '2 · Contrast Matcher', checkComplete: function (s) { return !!(s.activities['scale-match'] && s.activities['scale-match'].done); } },
+      { id: 'sec-wedge-scale', label: '3 · 10-Step Penetrometer', checkComplete: function (s) { return !!(s.activities['wedge-check'] && s.activities['wedge-check'].done); } },
+      { id: 'sec-scenario', label: '4 · Clinical Contrast Choice', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '5 · Knowledge Check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-experiment', label: '6 · Virtual Experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-worksheet', label: '7 · Post-Lab Worksheet' }
+    ]
+  });
+
+  // Register Fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment scientific prediction' });
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // Render Knowledge Check MCQs
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
     });
   });
 
+  // Build Rubric Self-Assessment
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab5-rubric',
+    title: "Lab 5 Grading Rubric (20 points)",
+    criteria: LAB.rubric
+  });
+
+  // Station 2: Contrast Scale & Appearance Matcher
+  const scaleLeft = [
+    { id: "few", label: "Few Gray Shades / Abrupt Transitions" },
+    { id: "many", label: "Many Subtle Gray Shades / Gradual Gradient" },
+    { id: "low_kvp", label: "Low 55 kVp Exposure Technique" },
+    { id: "high_kvp", label: "High 110 kVp Exposure Technique" },
+    { id: "narrow_ww", label: "Narrow Display Window Width (Small WW)" },
+    { id: "wide_ww", label: "Wide Display Window Width (Large WW)" }
+  ];
+  const scaleRight = [
+    { id: "f_few", label: "Short-scale / High contrast (extremity bone detail)" },
+    { id: "f_many", label: "Long-scale / Low contrast (chest parenchymal survey)" },
+    { id: "f_low_kvp", label: "Dominant photoelectric absorption (PE ∝ Z³/E³)" },
+    { id: "f_high_kvp", label: "Dominant Compton scatter & penetration (ALARA low dose)" },
+    { id: "f_narrow_ww", label: "Expands visible contrast across a tight pixel range" },
+    { id: "f_wide_ww", label: "Broad dynamic latitude preventing white/black pixel clipping" }
+  ];
+  const scalePairs = {
+    "few": "f_few",
+    "many": "f_many",
+    "low_kvp": "f_low_kvp",
+    "high_kvp": "f_high_kvp",
+    "narrow_ww": "f_narrow_ww",
+    "wide_ww": "f_wide_ww"
+  };
+  RadLab.matchPairs(document.getElementById('scale-match-container'), {
+    id: 'scale-match',
+    left: scaleLeft,
+    right: scaleRight,
+    pairs: scalePairs,
+    leftTitle: 'Contrast Feature or Setting',
+    rightTitle: 'Physical & Clinical Classification'
+  });
+
+  // Initialize 10-Step Penetrometer Wedge
+  initPenetrometer();
+
+  // Math Helper in Worksheet
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, 'w-calc-subj-check');
+  }
+
+  // Simulation Sliders Event Listeners
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // Buttons Event Listeners
+  document.getElementById('record-run').addEventListener('click', recordRun);
+  document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-download-runs-csv').addEventListener('click', downloadRunsCSV);
+  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', function () {
+      switchTab('experiment', 'sec-exp-guide');
+    });
+  }
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) {
+    btnBack.addEventListener('click', function () {
+      switchTab('intro');
+    });
+  }
+
+  // Preset Buttons
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const kvp = btn.dataset.kvp;
+      const thickness = btn.dataset.thickness;
+      const receptor = btn.dataset.receptor;
+      const digital = btn.dataset.digital;
+
+      if (kvp !== undefined && document.getElementById('ctrl-kvp')) document.getElementById('ctrl-kvp').value = kvp;
+      if (thickness !== undefined && document.getElementById('ctrl-thickness')) document.getElementById('ctrl-thickness').value = thickness;
+      if (receptor !== undefined && document.getElementById('ctrl-receptor')) document.getElementById('ctrl-receptor').value = receptor;
+      if (digital !== undefined && document.getElementById('ctrl-digital')) document.getElementById('ctrl-digital').value = digital;
+
+      renderSimulation();
+      RadLab.toast('Loaded preset: ' + btn.textContent.trim(), 'info');
+    });
+  });
+
+  // Restore saved scenario choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // Render Math & LaTeX
+  renderAllMath();
+
+  // Initial Simulation & Log Render
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

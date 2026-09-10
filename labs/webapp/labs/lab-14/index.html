@@ -3,98 +3,1117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab 14: The IMAGE Process, Part 2 — Evaluate — RAD 321</title>
+  <title>Lab 14: The IMAGE Process, Part 2 — Evaluate (Critique) — RAD 321</title>
+
+  <!-- KaTeX Infallible Mathematical Typography Engine (CDN + Fallback) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <link rel="stylesheet" href="../../shared/lab-styles.css">
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}
-  .hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}
-  .hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}
-  .hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}
-  .hero-overlay p{font-size:15px;opacity:.94;margin:0}
-  .lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  .assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}
-  .assessment-note .note-mark{font-size:24px}
+    /* Two-Tab Navigation Styling */
+    .lab-tab-nav {
+      display: flex;
+      gap: 4px;
+      margin: 18px 0 24px;
+      border-bottom: 2px solid var(--rad-border);
+      background: var(--rad-bg-soft);
+      padding: 6px 6px 0;
+      border-radius: 12px 12px 0 0;
+    }
+    .tab-btn {
+      padding: 12px 22px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--rad-text-soft);
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover {
+      color: var(--rad-blue);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: var(--rad-teal);
+      border-color: var(--rad-border);
+      border-bottom: 2px solid #fff;
+      margin-bottom: -2px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  /* Full-Width Medical Simulation Workbench */
-  .sim-workbench{display:flex;flex-direction:column;gap:14px;width:100%}
-  .sim-canvas-wrap{position:relative;width:100%;background:#061320;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(6,19,32,.35)}
-  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/500;background:#061320;border-radius:12px;border:1px solid #1e3a5f}
+    /* Hero & Structure */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,.96), rgba(7,26,43,.64) 62%, rgba(7,26,43,.12));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 760px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 28px;
+      margin: 8px 0;
+      line-height: 1.25;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: .94;
+      margin: 0;
+    }
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
 
-  .preset-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
-  .preset-toolbar .preset-title{font-size:12.5px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:3px}
-  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:7px;padding:7px 11px;font-size:12px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
-  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
+    /* Sim Workbench */
+    .sim-workbench {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1000/500;
+      background: #040d16;
+      border-radius: 12px;
+      border: 1px solid #1e3a5f;
+      box-shadow: 0 6px 24px rgba(0,0,0,.35);
+    }
+    .preset-toolbar {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--rad-bg-soft);
+      padding: 11px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--rad-border);
+    }
+    .preset-toolbar .preset-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-right: 2px;
+    }
+    .preset-btn {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .preset-btn:hover {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      color: var(--rad-teal);
+      transform: translateY(-1px);
+    }
 
-  .sim-console-grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:14px;align-items:start}
-  .sim-controls-panel,.sim-tools-panel{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:12px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,0.03)}
-  .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--rad-border)}
-  .panel-header h4{margin:0;font-size:14px;font-weight:800;color:var(--rad-navy)}
-  .panel-tag{font-size:11px;font-weight:800;color:var(--rad-teal);background:#eef9f8;padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
-  .controls-subgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .control-card{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:10px 12px}
-  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
-  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:13px}
-  .control-card input[type="range"],.control-card select{width:100%;margin-top:6px}
-  .control-card select{padding:7px 9px;border-radius:6px;border:1px solid var(--rad-border);background:#fff;font-size:12px;font-weight:600;color:var(--rad-navy)}
-  .field-hint{display:block;font-size:11px;color:var(--rad-text-faint);margin-top:4px;line-height:1.35}
+    /* Dual-Column Console */
+    .sim-console-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      margin-top: 4px;
+    }
+    .sim-controls-panel, .sim-tools-panel {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid var(--rad-border);
+    }
+    .panel-header h4 {
+      margin: 0;
+      font-size: 14px;
+      color: var(--rad-navy);
+    }
+    .panel-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #e0f2fe;
+      color: #0369a1;
+      text-transform: uppercase;
+    }
+    .controls-subgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .control-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 11px 13px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      white-space: nowrap;
+      font-weight: 800;
+      font-size: 12.5px;
+    }
+    .control-card input, .control-card select {
+      width: 100%;
+      margin-top: 6px;
+    }
+    .field-hint {
+      display: block;
+      font-size: 11px;
+      color: var(--rad-text-soft);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
 
-  .workstation-toolbar{display:flex;flex-direction:column;gap:8px;background:#0f273d;padding:10px 14px;border-radius:10px;color:#fff;margin-bottom:10px}
-  .toolbar-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  .toolbar-row label{font-size:12px;font-weight:700;color:#94a3b8;display:flex;align-items:center;gap:6px}
-  .toolbar-row input[type="range"]{width:80px;accent-color:#38bdf8}
-  .toolbar-actions{display:flex;gap:6px;flex-wrap:wrap}
-  .tool-btn{background:#1e3a5f;border:1px solid #334e68;color:#e2e8f0;border-radius:6px;padding:5px 9px;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .15s ease}
-  .tool-btn:hover,.tool-btn.active{background:#0284c7;color:#fff;border-color:#38bdf8}
+    /* PACS Workstation Tools */
+    .workstation-toolbar {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .toolbar-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .toolbar-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-navy);
+      flex: 1;
+    }
+    .toolbar-row input[type="range"] {
+      flex: 1;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tool-btn {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .tool-btn:hover {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      color: var(--rad-teal);
+    }
+    .tool-btn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #0284c7;
+    }
 
-  .metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:10px}
-  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
-  .metric strong{display:block;color:var(--rad-teal);font-size:16.5px;line-height:1.2;margin:2px 0}
-  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:11px}
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 17px;
+      line-height: 1.2;
+      margin: 3px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      line-height: 1.35;
+      font-size: 11px;
+    }
 
-  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
+    /* Procedure Steps */
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
 
-  @media(max-width:960px){.sim-console-grid{grid-template-columns:1fr}.controls-subgrid{grid-template-columns:1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.procedure-grid,.submission-check,.lab-meta-grid,.metric-grid{grid-template-columns:1fr}}
+    /* Explorer & Calculator */
+    .explorer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .explorer-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .explorer-card:hover {
+      border-color: var(--rad-teal);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .explorer-card h4 {
+      margin: 0 0 8px;
+      font-size: 13.5px;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .explorer-card p {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--rad-text-soft);
+      margin: 0 0 10px;
+    }
+    .explorer-card .tag-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #e0f2fe;
+      color: #0369a1;
+      align-self: flex-start;
+    }
+
+    .calc-workbench {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 14px 0;
+    }
+    .calc-results-panel {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .calc-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+    .calc-stat-row:last-child {
+      border-bottom: none;
+    }
+    .calc-stat-val {
+      font-weight: 800;
+      color: var(--rad-teal);
+    }
+
+    /* Transition Cards */
+    .transition-card {
+      background: linear-gradient(135deg, #071a2b, #0f3554);
+      color: #fff;
+      border-radius: 12px;
+      padding: 24px 32px;
+      margin: 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .transition-card h3 {
+      color: #7fe0d6;
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+    .transition-card p {
+      margin: 0;
+      font-size: 13.5px;
+      opacity: 0.92;
+      line-height: 1.45;
+    }
+    .transition-card .btn {
+      background: var(--rad-teal);
+      color: #05202c;
+      font-weight: 800;
+      padding: 12px 24px;
+      border: none;
+      white-space: nowrap;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .transition-card .btn:hover {
+      background: #5eead4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(127, 224, 214, 0.35);
+    }
+
+    /* Table Styles */
+    .calc-table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    .calc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--rad-border);
+    }
+    .calc-table th, .calc-table td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--rad-border);
+    }
+    .calc-table th {
+      background: var(--rad-bg-soft);
+      color: var(--rad-navy);
+      font-weight: 800;
+    }
+    .calc-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    @media (max-width: 992px) {
+      .sim-console-grid {
+        grid-template-columns: 1fr;
+      }
+      .calc-workbench {
+        grid-template-columns: 1fr;
+      }
+      .explorer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .procedure-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .lab-meta-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
+      .explorer-grid, .procedure-grid, .lab-meta-grid, .controls-subgrid {
+        grid-template-columns: 1fr;
+      }
+      .transition-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to lab content</a>
-<header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 14 — The IMAGE Process, Part 2 — Evaluate</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 14 of 15</span></div></div>
-</header>
-<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
-<main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 14 · Assessed laboratory assignment</div><h1>The IMAGE Process, Part 2 — Evaluate</h1><p>Master Stage E (Evaluate) of the IMAGE framework: systematic 5-domain radiograph critique, diagnostic efficacy assessment, and evidence-based ALARA repeat gating. Directly aligned with: Image Analysis II — IMAGE Evaluation Stage.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Apply Stage E (Evaluate) of the IMAGE framework as a structured, 5-domain radiographic critique.</li><li><span class="num">2</span>Verify anatomical coverage: distal femur, femorotibial joint space, proximal tibia/fibula, and 4-sided collimation margins.</li><li><span class="num">3</span>Assess positioning geometry: true AP condylar symmetry, open joint space, and ⅓ proximal fibular head superimposition.</li><li><span class="num">4</span>Evaluate exposure physics: Exposure Index (EI), Deviation Index (DI), quantum mottle, and trabecular sharpness.</li><li><span class="num">5</span>Apply ALARA repeat decision rules: distinguish fatal non-diagnostic defects from rectifiable administrative/display variances.</li></ul></div></section>
-  
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span>
-    <p>The <b>IMAGE Process Stage E (Evaluate)</b> provides the final, rigorous quality assurance check before a radiograph is transmitted to PACS for radiologist interpretation. Clinical image evaluation follows 5 structured pillars:</p>
-    <ul>
-      <li><b>1. Anatomical Coverage &amp; Collimation:</b> Ensure the entire Volume of Interest (VOI) is included (distal ⅓ femur to proximal ⅓ tib/fib) without clipping critical landmarks, with clear 4-sided collimation margins to limit scatter.</li>
-      <li><b>2. Positioning &amp; Alignment:</b> For a True AP Knee, the femoral epicondyles must be parallel to the IR, the femorotibial joint space fully open, the patella centered over the distal femur, and exactly ⅓ of the proximal fibular head superimposed behind the lateral tibial condyle.</li>
-      <li><b>3. Exposure &amp; Noise Physics:</b> Verify detector exposure using the standard Exposure Index (Target EI = 200, DI = 0.0). Avoid photon starvation (DI &lt; &minus;1.0, severe quantum mottle) and unnecessary dose creep (DI &gt; +1.0).</li>
-      <li><b>4. Identification &amp; Lead Markers:</b> Verify patient demographics (2 unique identifiers) and the presence of a physical radiopaque lead side marker ('R' or 'L') placed in the primary beam outside the VOI.</li>
-      <li><b>5. Artifacts &amp; Motion:</b> Eliminate preventable external radiopaque items (zippers, snaps, jewelry) and assess for patient motion blur or hardware detector line defects.</li>
-    </ul>
-    <div class="formula-box">
-      <b>ALARA Repeat Rule:</b> A repeat exposure is clinically justified <i>only</i> when a defect obliterates diagnostic efficacy and cannot be rectified without re-irradiating the patient.<br>
-      <b>Missing Marker Policy:</b> A missing lead marker on an otherwise diagnostic image <u>MUST NOT</u> be repeated. Departmental policy dictates electronic annotation and dual-technologist verification.<br>
-      <b>Critique Weighting:</b> <i>Score</i> = 0.30&middot;<i>S</i><sub>Anat</sub> + 0.25&middot;<i>S</i><sub>Pos</sub> + 0.25&middot;<i>S</i><sub>Exp</sub> + 0.10&middot;<i>S</i><sub>Mark</sub> + 0.10&middot;<i>S</i><sub>Art</sub>.
+<header class="lab-header">
+  <div class="lab-header-inner">
+    <div class="brand-group">
+      <div class="logo-mark" aria-hidden="true">
+        <i class="fa-solid fa-microscope"></i>
+      </div>
+      <div>
+        <div class="program-title">Diagnostic Radiology Technology Program · Taibah University</div>
+        <div class="course-title">RAD 321 — Image Recording &amp; Analysis</div>
+      </div>
     </div>
-    <p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically accurate for teaching clinical image critique and ALARA gating. They are not calibrated equipment exposure charts.</p></div></section>
+    <div class="header-badges">
+      <span class="badge badge-week">Week 14</span>
+      <span class="badge badge-tech">DR PACS Workstation</span>
+    </div>
+  </div>
+</header>
 
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict whether a missing side marker alone justifies a repeat exposure under ALARA.</div><div class="procedure-step">Record a Gold Standard diagnostic AP Knee baseline.</div><div class="procedure-step">Select a severe rotation or collimation clipping defect and record a second run.</div><div class="procedure-step">Select a missing marker or quantum mottle case and record a third run.</div><div class="procedure-step">Compare critique scores, ALARA repeat verdicts, and actionable corrective directives.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    
-    <div class="card">
-      <div class="sim-workbench">
-        <!-- 1. Presets Header Toolbar -->
+<main class="lab-container">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="../../assets/images/heroes/lab-14.webp" alt="Radiologist reviewing digital radiograph on dual-monitor diagnostic workstation" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1200\' height=\'400\' viewBox=\'0 0 1200 400\'><rect width=\'1200\' height=\'400\' fill=\'%23071a2b\'/><path d=\'M0 320 Q300 240 600 320 T1200 320 L1200 400 L0 400 Z\' fill=\'%230b2842\' opacity=\'0.7\'/><text x=\'60\' y=\'160\' font-family=\'system-ui,sans-serif\' font-size=\'36\' font-weight=\'bold\' fill=\'%237fe0d6\'>IMAGE Process Stage E: Evaluate</text><text x=\'60\' y=\'210\' font-family=\'system-ui,sans-serif\' font-size=\'18\' fill=\'%23ffffff\' opacity=\'0.85\'>Systematic 5-Domain Image Critique &amp; ALARA Repeat Decision Gating</text></svg>';">
+    <div class="hero-overlay">
+      <span class="eyebrow">Assessed Virtual Laboratory Suite</span>
+      <h1>Lab 14: The IMAGE Process, Part 2 — Evaluate (Critique)</h1>
+      <p>Perform structured, evidence-based radiographic image critique across 5 domains: anatomy coverage, positioning geometry, exposure index &amp; noise, side markers, and artifacts. Distinguish fatal diagnostic defects from administrative variances under ALARA gating rules.</p>
+    </div>
+  </div>
+
+  <!-- Two-Tab Top Navigation Switcher -->
+  <nav class="lab-tab-nav" role="tablist" aria-label="Laboratory Progression Navigation">
+    <button type="button" class="tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro" onclick="switchTab('intro')">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities [10 Pts]
+    </button>
+    <button type="button" class="tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment" onclick="switchTab('experiment')">
+      <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis [10 Pts]
+    </button>
+  </nav>
+
+  <!-- =================================================================== -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 PTS)                -->
+  <!-- =================================================================== -->
+  <div class="tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-intro">
+
+    <!-- Phase Notice -->
+    <div class="card card-soft" style="border-left:4px solid var(--rad-teal);margin-bottom:18px;">
+      <div style="font-size:13px;color:var(--rad-navy);line-height:1.5;">
+        <strong><i class="fa-solid fa-circle-info" style="color:var(--rad-teal);margin-right:6px;"></i> Two-Phase Laboratory Progression:</strong>
+        <span style="display:block;margin-top:4px;">In the <strong>Phase 1 Submission Hub</strong> at the bottom of Tab 1, submit your in-lab activities before leaving the lab session to lock in your initial 10 points. Then navigate to Tab 2 to run your virtual experiments and submit <strong>Phase 2</strong> before the post-lab deadline.</span>
+      </div>
+    </div>
+
+    <!-- Student Metadata -->
+    <div class="card card-soft">
+      <h3>Student Information</h3>
+      <div class="lab-meta-grid">
+        <div class="form-row">
+          <label class="field-label" for="meta-studentName">Full name</label>
+          <input type="text" id="meta-studentName" required placeholder="e.g. Ahmed Al-Harbi">
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="meta-studentId">Student ID</label>
+          <input type="text" id="meta-studentId" required placeholder="e.g. 43100234">
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="meta-section">Section / group</label>
+          <input type="text" id="meta-section" required placeholder="e.g. Section B">
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="meta-date">Date</label>
+          <input type="text" id="meta-date" required>
+        </div>
+      </div>
+      <p class="form-hint">Work is saved in this browser. Export a JSON backup before changing workstations.</p>
+    </div>
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Knowledge, quantitative evaluation, and clinical synthesis</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list">
+          <li><span class="num">1</span>Apply Stage E (Evaluate) of the IMAGE framework as a rigorous, systematic 5-domain radiographic critique.</li>
+          <li><span class="num">2</span>Verify anatomical coverage standards: distal femur to proximal tib/fib Volume of Interest (VOI) with 4-sided collimation margins.</li>
+          <li><span class="num">3</span>Assess positioning geometry: true AP condylar symmetry, open joint space, and exactly 1/3 proximal fibular head superimposition.</li>
+          <li><span class="num">4</span>Evaluate exposure physics: Exposure Index (EI), Deviation Index (DI), quantum mottle, and trabecular micro-architecture sharpness.</li>
+          <li><span class="num">5</span>Apply ALARA repeat decision rules: distinguish fatal non-diagnostic defects from rectifiable administrative/display variances.</li>
+        </ul>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+        <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+        0–7 min PACS demo + EI/DI course SIM model · 7–20 min Stations 1–3 in pairs (explorer + Table A, checklist matcher, ALARA calculator) · 20–26 min missing-marker dilemma + quiz · 26–30 min Phase 1 submit.
+        Tab 2 (≈60 min): 3 anchor cases (Optimal baseline + 1 fatal-defect case + Missing-Marker contrast) + CSV export + 2 Excel plots + Table B. Only 3 anchor cases are required — cases 5–8 and any extra Table-B row are bonus/optional.
+        If short on time, cut calculator extremes, not the scenario.
+      </div>
+      <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+        <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+        1) EI = 25·mAs, DI and noise here are a course SIM model (not IEC) — 28 is arbitrary scaling, the form σ ∝ 1/√mAs is correct.
+        2) Fatal VOI defects (coverage &lt;70%, |θ| ≥ 15°, mottle ≤2.5 mAs, zipper/motion over VOI) justify repeat; a missing marker on a pristine image → annotate + dual sign-off per teaching policy, follow local policy.
+        3) Composite weights/cutoffs are a departmental rubric (Anatomy 30% dominant); wrong-side marker → escalate + document correct annotation per local policy.
+      </div>
+    </section>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory Primer</h2>
+          <div class="lab-section-sub">Systematic image evaluation, DICOM metrics, and radiation protection governance</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Theory Primer</span>
+
+        <h3>1.1 The IMAGE Stage E Framework: Systematic 5-Domain Critique</h3>
+        <p>
+          The final stage of the clinical imaging chain is <b>Stage E (Evaluate / Critique)</b>. Prior to PACS transmission or radiologist sign-off, the professional radiographer must execute a disciplined, multi-dimensional critique. Simply declaring an image "good" or "bad" is unprofessional and clinically unacceptable. Stage E organizes critique into <b>five core domains</b>:
+        </p>
+        <ul>
+          <li><b>1. Anatomical Coverage &amp; Collimation ($S_{\text{Anat}}$):</b> Confirmation that the required Volume of Interest (VOI) is entirely included without clipping critical anatomical margins, accompanied by distinct 4-sided collimation borders.</li>
+          <li><b>2. Positioning &amp; Part Alignment ($S_{\text{Pos}}$):</b> Evaluation of anatomical landmarks to verify true anatomical projection geometry and absence of rotation or tilt.</li>
+          <li><b>3. Receptor Exposure &amp; Quantum Noise ($S_{\text{Exp}}$):</b> Verification of detector photon fluence via calibrated Exposure Index ($EI$), Deviation Index ($DI$), and absence of photon starvation mottle.</li>
+          <li><b>4. Identification &amp; Lead Markers ($S_{\text{Mark}}$):</b> Verification of two legal patient demographic identifiers and a physical radiopaque lead side marker ('R' or 'L') placed within the collimated primary beam outside the VOI.</li>
+          <li><b>5. Artifacts &amp; Motion Integrity ($S_{\text{Art}}$):</b> Inspection for preventable external radiopaque items (clothing zippers, snaps, jewelry), patient motion blur (kinetic unsharpness), and detector hardware line defects.</li>
+        </ul>
+
+        <h3>1.2 Anatomical Coverage &amp; Collimation Standards (AP Knee)</h3>
+        <p>
+          For a diagnostic AP Knee projection, the Volume of Interest encompasses:
+        </p>
+        <ul>
+          <li>Distal $\frac{1}{3}$ of the femur, femorotibial joint space, patella, and proximal $\frac{1}{3}$ of the tibia and fibula.</li>
+          <li>Surrounding soft tissue margins with evidence of 4-sided beam collimation ($18 \times 24\text{ cm}$ nominal field size).</li>
+          <li><b>Failure threshold:</b> Anatomical coverage below $70\%$ clips essential diagnostic landmarks (e.g., adductor tubercle or fibular neck), resulting in an automatic non-diagnostic failure.</li>
+        </ul>
+
+        <h3>1.3 Positioning &amp; Alignment Criteria for True AP Knee</h3>
+        <p>
+          True AP alignment requires that the femoral epicondyles be positioned exactly parallel to the image receptor (requiring approximately $3^\circ–5^\circ$ internal limb rotation on a supine patient to overcome natural retroversion):
+        </p>
+        <ul>
+          <li><b>Symmetric Femoral &amp; Tibial Condyles:</b> Condylar outlines must appear symmetric with both medial and lateral femorotibial joint spaces fully open and unobstructed.</li>
+          <li><b>Patellar Centering:</b> The patella should sit slightly medial to the midline of the distal femoral shaft.</li>
+          <li><b>Fibular Head Overlap:</b> Exactly $\frac{1}{3}$ of the proximal fibular head must be superimposed behind the lateral tibial condyle.
+            <ul>
+              <li><i>External (Lateral) Rotation:</i> Causes excessive superimposition of the fibular head behind the tibia (greater than $\frac{1}{3}$ overlap) and closes the lateral joint space.</li>
+              <li><i>Internal (Medial) Rotation:</i> Separates the fibular head from the lateral tibia (total separation / space visible between fibula and tibia).</li>
+            </ul>
+          </li>
+          <li><b>Penalties:</b> Severe rotation ($|\theta| \ge 15^\circ$) renders the joint space uninterpretable and constitutes an unrecoverable positioning failure.</li>
+        </ul>
+
+        <h3>1.4 Exposure Physics: EI, DI &amp; Quantum Noise</h3>
+        <p>
+          Digital image receptors have a wide linear dynamic range. Therefore, receptor exposure is verified quantitatively via the course SIM Deviation Index ($DI$) — a simplified teaching model, not the IEC standard:
+        </p>
+        <div class="formula-box">
+          $$EI = 25 \cdot mAs \quad (\text{for standard tabletop } 70\text{ kVp})$$
+          $$DI = 10 \cdot \log_{10}\left(\frac{EI}{EI_{\text{target}}}\right) = 10 \cdot \log_{10}\left(\frac{mAs}{8.0}\right)$$
+          $$\sigma_{\text{noise}} = \frac{28}{\sqrt{mAs}}$$
+          <div style="font-size:12px;color:var(--rad-text-soft);margin-top:6px;">Course SIM model (not IEC): 28 is an arbitrary simulator scaling constant — the form $\sigma \propto 1/\sqrt{mAs}$ is correct. Math kept as defined for this lab.</div>
+        </div>
+        <ul>
+          <li><b>Target Exposure:</b> $8.0\text{ mAs}$ yields $EI = 200$ and $DI = 0.00$ (Optimal diagnostic window).</li>
+          <li><b>Acceptable Window:</b> $-1.0 \le DI \le +1.0$ (Receptor exposure within $25\%$ of target).</li>
+          <li><b>Severe Quantum Mottle (Photon Starvation):</b> At $mAs \le 2.5$ ($DI \le -5.0$), photon fluence is insufficient. High Poisson statistical noise ($\sigma > 17\%$) obliterates fine bone trabeculae and low-contrast cortical margins. This is a fatal diagnostic defect.</li>
+          <li><b>Dose Creep:</b> At $mAs > 16.0$ ($DI > +3.0$), excessive radiation dose occurs without clinical image quality benefit.</li>
+        </ul>
+
+        <h3>1.5 Legal Lead Markers vs. Administrative Electronic Annotation</h3>
+        <p>
+          The placement of a physical radiopaque lead side marker ('R' or 'L') in the primary X-ray beam before exposure is the accredited medico-legal standard. It confirms laterality beyond reasonable doubt:
+        </p>
+        <ul>
+          <li><b>Wrong Side Marker ('L' on Right Knee):</b> Poses severe medico-legal risk of wrong-site surgery. Requires immediate supervisory escalation and formal institutional review. Document the error, apply the correct annotation per local policy, and do not re-expose solely to swap the marker when diagnostic value is intact.</li>
+          <li><b>Missing Lead Marker:</b> An omission that must be governed by strict ALARA guidelines (see Section 1.6).</li>
+        </ul>
+
+        <h3>1.6 ALARA Repeat Decision Tree &amp; Gating Rules</h3>
+        <p>
+          Under the ALARA (As Low As Reasonably Achievable) radiation protection principle and national regulatory codes, a repeat exposure is clinically justified <b>only when critical diagnostic information is completely lost and unrecoverable</b>. Radiographers must rigorously distinguish fatal diagnostic defects from non-fatal administrative or post-processing variances:
+        </p>
+        <div class="formula-box" style="background:#071a2b;color:#e2e8f0;border-left:4px solid var(--rad-teal);">
+          <strong style="color:#7fe0d6;">ALARA Repeat Gating Decision Tree:</strong><br><br>
+          <strong>1. FATAL DIAGNOSTIC DEFECTS &rarr; MANDATORY REPEAT JUSTIFIED:</strong><br>
+          &bull; Essential VOI anatomy clipped ($S_{\text{Anat}} < 70\%$).<br>
+          &bull; Severe limb rotation ($|\theta| \ge 15^\circ$) closing femorotibial joint spaces.<br>
+          &bull; Severe quantum mottle ($mAs \le 2.5$, $EI \le 63$, $DI \le -5.0$) obscuring trabeculae.<br>
+          &bull; Radiopaque foreign body (metal zipper, brace) overlying diagnostic VOI.<br>
+          &bull; Severe patient kinetic motion blur smearing cortical boundaries.<br><br>
+          <strong>2. NON-FATAL ADMINISTRATIVE / DISPLAY VARIANCES &rarr; DO NOT REPEAT (ALARA GATE):</strong><br>
+          &bull; <u>Missing Side Marker:</u> If anatomy, positioning, and technique are pristine, <strong>DO NOT REPEAT (teaching-policy default)</strong>. Teaching policy: apply verified electronic annotation with dual-technologist sign-off and follow local policy.<br>
+          &bull; <u>Suboptimal Display Contrast:</u> Adjust Window Width (WW) and Window Level (WL) on PACS; do not re-expose.<br><br>
+          <strong>3. DETECTOR HARDWARE FAILURE &rarr; QUARANTINE (DO NOT RE-EXPOSE PATIENT):</strong><br>
+          &bull; Non-responsive TFT detector column line defect: Quarantine detector for biomedical servicing; never repeat on the same defective receptor.
+        </div>
+
+        <h3>1.7 Weighted Composite Critique Score Formulation</h3>
+        <p>
+          Departmental clinical evaluation synthesizes the five domains into a weighted composite score ($0–100$):
+        </p>
+        <div class="formula-box">
+          $$\text{Composite Score} = 0.30 \cdot S_{\text{Anat}} + 0.25 \cdot S_{\text{Pos}} + 0.25 \cdot S_{\text{Exp}} + 0.10 \cdot S_{\text{Mark}} + 0.10 \cdot S_{\text{Art}}$$
+        </div>
+        <p>
+          Images scoring $\ge 85$ with zero fatal flags are classified as <i>Accept &amp; Transmit to PACS</i>. Images scoring between $65–84$ without fatal flags are classified as <i>Accept with Documented Minor Variance</i>. Any fatal flag triggers an automatic repeat recommendation under ALARA. Weights and cutoffs above are a departmental rubric used in this simulator.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 2: Station 1 — 5-Domain Critique Explorer & Table A Pre-Lab Verification Check -->
+    <section class="lab-section" id="sec-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Station 1 — 5-Domain Critique Explorer &amp; Table A Verification Check</h2>
+          <div class="lab-section-sub">Inspect domain verification standards and validate theoretical baseline values</div>
+        </div>
+      </div>
+
+      <!-- 4 Explorer Cards -->
+      <div class="explorer-grid">
+        <article class="explorer-card">
+          <div>
+            <span class="tag-badge">Domain 1 (30%)</span>
+            <h4><i class="fa-solid fa-expand" style="color:var(--rad-teal);"></i> Anatomy &amp; Collimation</h4>
+            <p>Requires distal $\frac{1}{3}$ femur to proximal $\frac{1}{3}$ tib/fib with 4-sided beam collimation. Coverage below $70\%$ is clipped and clinically fatal.</p>
+          </div>
+          <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 30% · Fatal &lt;70%</span>
+        </article>
+
+        <article class="explorer-card">
+          <div>
+            <span class="tag-badge">Domain 2 (25%)</span>
+            <h4><i class="fa-solid fa-arrows-rotate" style="color:var(--rad-teal);"></i> Positioning &amp; Geometry</h4>
+            <p>True AP knee demands parallel epicondyles, open joint spaces, and exactly $\frac{1}{3}$ proximal fibular head superimposition behind the lateral tibial condyle.</p>
+          </div>
+          <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 25% · Fatal &ge;15°</span>
+        </article>
+
+        <article class="explorer-card">
+          <div>
+            <span class="tag-badge">Domain 3 (25%)</span>
+            <h4><i class="fa-solid fa-bolt" style="color:var(--rad-teal);"></i> Exposure &amp; Noise Physics</h4>
+            <p>Target $8\text{ mAs}$ ($EI = 200, DI = 0.0$). Photon starvation at $\le 2.5\text{ mAs}$ creates severe quantum mottle ($\sigma > 17\%$), destroying trabecular detail.</p>
+          </div>
+          <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 25% · Target EI 200</span>
+        </article>
+
+        <article class="explorer-card">
+          <div>
+            <span class="tag-badge">Domains 4 &amp; 5 (20%)</span>
+            <h4><i class="fa-solid fa-shield-halved" style="color:var(--rad-teal);"></i> Markers &amp; ALARA Gate</h4>
+            <p>Physical lead marker in primary beam is legal standard. Under this lab's teaching policy a missing marker on an otherwise diagnostic image should not trigger a repeat — rectify via dual-technologist electronic annotation and follow local policy.</p>
+          </div>
+          <span style="font-size:11.5px;font-weight:700;color:var(--rad-navy);">Weighting: 10% + 10% · ALARA Protected</span>
+        </article>
+      </div>
+
+      <!-- Table A Card -->
+      <div class="card">
+        <h3>Table A — Pre-Lab Evaluation Standards &amp; Verification Check</h3>
+        <p class="form-hint">Enter the theoretical parameters derived from the Background Theory Primer, then click "Verify Table A Inputs" to validate your baseline knowledge.</p>
+
+        <div class="calc-table-wrap">
+          <table class="calc-table">
+            <thead>
+              <tr>
+                <th style="width:38%;">Evaluation Standard / Critique Criterion</th>
+                <th style="width:28%;">Target Parameter / Clinical Rule</th>
+                <th style="width:34%;">Student Verification Input</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Structured IMAGE Critique Domains:</strong> Total number of distinct evaluation domains in Stage E</td>
+                <td>Domain Count ($N$)</td>
+                <td><input type="text" id="w-eval-domains" placeholder="e.g. 5" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>2. AP Knee Fibular Superimposition:</strong> Required proximal fibular head overlap behind lateral tibial condyle</td>
+                <td>Fractional Overlap</td>
+                <td><input type="text" id="w-ap-landmarks" placeholder="e.g. 1/3 or 33%" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>3. Target Deviation Index ($DI$):</strong> Standard IEC deviation index for optimal detector exposure</td>
+                <td>Target $DI$ Value</td>
+                <td><input type="text" id="w-ei-di-target" placeholder="e.g. 0.0 or 0" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>4. Missing Side Marker ALARA Rule:</strong> Clinical action for missing lead marker on pristine diagnostic radiograph</td>
+                <td>Action Protocol</td>
+                <td><input type="text" id="w-missing-marker-rule" placeholder="e.g. Electronic annotation" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>5. Repeat Exposure Justification:</strong> Threshold condition required to re-irradiate patient under ALARA</td>
+                <td>Repeat Threshold</td>
+                <td><input type="text" id="w-repeat-justification" placeholder="e.g. Unrecoverable diagnostic value" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>6. Consequence of External Rotation:</strong> Anatomical effect of $+18^\circ$ external rotation on fibular head</td>
+                <td>Fibular Overlap Sign</td>
+                <td><input type="text" id="w-rotation-signs" placeholder="e.g. Excessive overlap" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>7. Critique Composite Weighting:</strong> Domain assigned highest weight ($30\%$) in composite score formula</td>
+                <td>Dominant Domain</td>
+                <td><input type="text" id="w-critique-weighting" placeholder="e.g. Anatomy coverage" style="width:100%;max-width:200px;"></td>
+              </tr>
+              <tr>
+                <td><strong>8. Quantum Mottle Technique Correction:</strong> Proper technique adjustment for severe quantum mottle at $2\text{ mAs}$</td>
+                <td>Corrective Action</td>
+                <td><input type="text" id="w-corrective-action" placeholder="e.g. Increase mAs to 8" style="width:100%;max-width:200px;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="btn-verify-table-a" type="button">Verify Table A Inputs</button>
+          <span id="table-a-feedback" role="status" aria-live="polite" style="font-size:13px;font-weight:700;"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Station 2 — IMAGE Stage E Checklist Matching Challenge -->
+    <section class="lab-section" id="sec-concept">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Station 2 — IMAGE Stage E Checklist Matching Challenge</h2>
+          <div class="lab-section-sub">Pair each critique domain with its clinical verification standard and protection rationale</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-sim">Concept Challenge</span>
+        <h3>IMAGE Stage E Checklist Matching</h3>
+        <p>Match each image critique domain to its accredited clinical verification standard and protection evidence.</p>
+        <div id="concept-activity"></div>
+      </article>
+    </section>
+
+    <!-- Section 4: Station 3 — Calibrated Image Critique & ALARA Verdict Calculator -->
+    <section class="lab-section" id="sec-calculator">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Station 3 — Calibrated Image Critique &amp; ALARA Verdict Calculator</h2>
+          <div class="lab-section-sub">Experiment with clinical parameters to compute domain scores, composite indices, and repeat gating verdicts</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Interactive Image Quality &amp; ALARA Verdict Engine</h3>
+        <p class="form-hint">Adjust the clinical parameters below to observe real-time score computations and see whether an image triggers an unrecoverable repeat flag or qualifies for ALARA protection.</p>
+
+        <div class="calc-workbench">
+          <!-- Controls Column -->
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <div class="control-card">
+              <label for="calc-anatomy"><span>1. Anatomy Coverage</span><output id="calc-out-anatomy-disp">95 %</output></label>
+              <input type="range" id="calc-anatomy" min="40" max="100" step="1" value="95">
+              <span class="field-hint">&lt;70% triggers mandatory repeat due to clipped anatomy</span>
+            </div>
+
+            <div class="control-card">
+              <label for="calc-rotation"><span>2. Limb Rotation</span><output id="calc-out-rotation-disp">0 ° (True AP)</output></label>
+              <input type="range" id="calc-rotation" min="-20" max="20" step="1" value="0">
+              <span class="field-hint">0° = True AP (⅓ overlap); &plusmn;15° = non-diagnostic rotation</span>
+            </div>
+
+            <div class="control-card">
+              <label for="calc-mas"><span>3. Exposure Technique</span><output id="calc-out-mas-disp">8.0 mAs</output></label>
+              <input type="range" id="calc-mas" min="1" max="32" step="0.5" value="8">
+              <span class="field-hint">Target: 8.0 mAs (EI 200, 0.0 DI); &le;2.5 mAs = severe quantum mottle</span>
+            </div>
+
+            <div class="control-card">
+              <label for="calc-marker"><span>4. Side Marker Status</span></label>
+              <select id="calc-marker">
+                <option value="0" selected>0 — Correct physical lead 'R' marker</option>
+                <option value="1">1 — Wrong side ('L' marker on right knee)</option>
+                <option value="2">2 — Post-exposure digital annotation</option>
+                <option value="3">3 — Missing physical side marker</option>
+              </select>
+              <span class="field-hint">Missing marker on diagnostic image is protected under ALARA</span>
+            </div>
+
+            <div class="control-card">
+              <label for="calc-artifact"><span>5. Artifact / Motion Status</span></label>
+              <select id="calc-artifact">
+                <option value="0" selected>0 — None (Optimal clean baseline)</option>
+                <option value="1">1 — Metallic zipper over VOI</option>
+                <option value="2">2 — Patient motion blur</option>
+                <option value="3">3 — Detector column line defect</option>
+              </select>
+              <span class="field-hint">Metallic zippers and motion blur over VOI require repeat</span>
+            </div>
+          </div>
+
+          <!-- Computed Output Panel -->
+          <div class="calc-results-panel">
+            <h4 style="margin:0 0 10px;color:var(--rad-navy);border-bottom:1.5px solid var(--rad-border);padding-bottom:6px;">Calculated Critique Metrics</h4>
+            
+            <div class="calc-stat-row">
+              <span>Anatomy Score ($S_{\text{Anat}}$):</span>
+              <span class="calc-stat-val" id="calc-out-anat">95 / 100</span>
+            </div>
+            <div class="calc-stat-row">
+              <span>Positioning Score ($S_{\text{Pos}}$):</span>
+              <span class="calc-stat-val" id="calc-out-pos">100 / 100</span>
+            </div>
+            <div class="calc-stat-row">
+              <span>Exposure Score ($S_{\text{Exp}}$):</span>
+              <span class="calc-stat-val" id="calc-out-exp">100 / 100</span>
+            </div>
+            <div class="calc-stat-row">
+              <span>Exposure Index ($EI$) / $DI$:</span>
+              <span class="calc-stat-val" id="calc-out-ei">200 (+0.0 DI)</span>
+            </div>
+            <div class="calc-stat-row">
+              <span>Marker Score ($S_{\text{Mark}}$):</span>
+              <span class="calc-stat-val" id="calc-out-mark">100 / 100</span>
+            </div>
+            <div class="calc-stat-row">
+              <span>Artifact Score ($S_{\text{Art}}$):</span>
+              <span class="calc-stat-val" id="calc-out-art">100 / 100</span>
+            </div>
+            <div class="calc-stat-row" style="background:#f8fafc;padding:10px 6px;border-radius:6px;margin:4px 0;">
+              <span style="font-weight:800;color:var(--rad-navy);">Composite Score:</span>
+              <span class="calc-stat-val" id="calc-out-composite" style="font-size:18px;">99 / 100</span>
+            </div>
+            <div class="calc-stat-row">
+              <span>ALARA Repeat Verdict:</span>
+              <span class="calc-stat-val" id="calc-out-verdict" style="color:#059669;">ACCEPT &amp; SEND TO PACS</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--rad-text-soft);margin-top:8px;line-height:1.4;" id="calc-out-action">
+              Image meets all diagnostic criteria; ready for radiologist interpretation.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Station 4 — Clinical Patient Care Decision Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Station 4 — Clinical Patient Care Decision Scenario</h2>
+          <div class="lab-section-sub">Evaluate clinical trade-offs and justify action under radiation protection regulations</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-check">Clinical Decision</span>
+        <h3>The Missing Side Marker Dilemma</h3>
+        <p>An AP Knee radiograph demonstrates pristine anatomy, true AP alignment, open joint spaces, and optimal exposure ($EI = 200$), but the radiographer forgot to place the physical lead side marker. What is the correct clinical action under ALARA?</p>
+        <fieldset>
+          <legend class="sr-only">Choose the best clinical response</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span>Follow institutional electronic annotation policy with dual-technologist verification; do NOT repeat under ALARA</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span>Repeat the exposure immediately so a physical lead marker is present</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span>Disregard the missing marker entirely and send to PACS without annotation</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span>Increase window width on the workstation</span>
+            </label>
+          </div>
+        </fieldset>
+        <button class="btn btn-secondary" id="check-scenario" type="button">Check Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Quizzes</h2>
+          <div class="lab-section-sub">4 formative assessment questions · first attempt &amp; final score recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1 Submission Hub</h2>
+          <div class="lab-section-sub">In-Lab Interactive Activities (10 Points) · Submit before leaving the lab session</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-teal);padding:24px;">
+        <!-- Injected automatically by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- CTA Transition Card -->
+    <div class="transition-card">
+      <div>
+        <h3>Ready to Operate the PACS Review Workstation &amp; Critique Console?</h3>
+        <p>Proceed to Tab 2 to operate the 1000×500 high-resolution PACS review monitor, evaluate 8 clinical case presets, log experimental trials, and complete the Post-Lab Excel Data Analysis.</p>
+      </div>
+      <button class="btn" id="btn-proceed-to-sim" type="button" onclick="switchTab('experiment')">
+        Proceed to Tab 2: Virtual Simulation &rarr;
+      </button>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & POST-LAB ANALYSIS (10 PTS)     -->
+  <!-- =================================================================== -->
+  <div class="tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-experiment">
+
+    <!-- Tab 2 Top Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:10px 16px;margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--rad-navy);">
+        <i class="fa-solid fa-flask" style="color:var(--rad-teal);margin-right:6px;"></i> Tab 2: Virtual Physics Experiment &amp; Excel Analysis [10 Pts]
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro" type="button" onclick="switchTab('intro')">
+        &larr; Return to Tab 1 (Theory &amp; In-Lab Activities)
+      </button>
+    </div>
+
+    <!-- Section 8: Protocol Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol Guide</h2>
+          <div class="lab-section-sub">Step-by-step procedure for controlled simulation trials</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="procedure-grid">
+          <div class="procedure-step">Formulate a scientific prediction ($\ge 20$ chars) on whether a missing side marker alone justifies patient re-exposure under ALARA.</div>
+          <div class="procedure-step">Select Preset 1 (Optimal AP Knee Baseline) and record the pristine baseline critique score ($99/100$) and target $EI$ ($200$).</div>
+          <div class="procedure-step">Select Preset 2 (Ext Rotation $+18^\circ$) and Preset 3 (Clipped Anatomy) to evaluate severe positioning and collimation failures.</div>
+          <div class="procedure-step">Select Preset 4 (Quantum Mottle $2\text{ mAs}$) and record the severe photon starvation noise level ($\sigma > 19\%$) and $DI$ ($-6.0$).</div>
+          <div class="procedure-step">Select Preset 5 (Metal Zipper) and Preset 6 (Missing Lead Marker) to contrast fatal VOI defects against protected administrative omissions.</div>
+          <div class="procedure-step">Download trial data CSV, import into Excel, construct diagnostic plots, and complete Table B calculations.</div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction (≥20 chars) &nbsp; ☐ 2. Case 1 Optimal baseline + Record &nbsp; ☐ 3. Run 2 fatal defect (rotation/clip or mottle) + Record &nbsp; ☐ 4. Run 3 Missing-Marker contrast + Record — cases 5–8 bonus/optional &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel 2 plots + Table B (extra row bonus/optional).<br>
+          <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider a notch.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Virtual Experiment Simulator Suite</h2>
+          <div class="lab-section-sub">Interactive PACS review workstation, 5-domain clinical console, and real-time critique scorecard</div>
+        </div>
+      </div>
+      <div class="card">
+        
+        <!-- Presets Toolbar -->
         <div class="preset-toolbar">
           <span class="preset-title">Clinical Cases:</span>
           <button type="button" class="preset-btn" data-anatomy="95" data-rotation="0" data-mas="8" data-marker="0" data-artifact="0" data-ww="400" data-wl="200">1. Optimal AP Knee</button>
@@ -107,162 +1126,375 @@
           <button type="button" class="preset-btn" data-anatomy="95" data-rotation="0" data-mas="8" data-marker="1" data-artifact="0" data-ww="400" data-wl="200">8. Wrong Side Marker ('L')</button>
         </div>
 
-        <!-- 2. Full-Width High-Resolution Medical Workstation Canvas -->
-        <div class="sim-canvas-wrap">
-          <canvas id="sim-canvas" class="sim-canvas" width="1000" height="500" role="img" aria-label="Interactive PACS review workstation and IMAGE critique scorecard" aria-describedby="sim-caption"></canvas>
-          <p class="visual-note" id="sim-caption" role="status" aria-live="polite">PACS Review Viewport (left) and Systematic Critique Scorecard (right) update in real time.</p>
-        </div>
-
-        <!-- 3. Dual-Column Console: Interactive Controls & Workstation Tools -->
-        <div class="sim-console-grid">
-          <!-- Left Console: 5-Domain Clinical Controls -->
-          <div class="sim-controls-panel">
-            <div class="panel-header">
-              <h4>Interactive Exposure &amp; Alignment Parameters</h4>
-              <span class="panel-tag">Stage E Inputs</span>
-            </div>
-            <div class="controls-subgrid">
-              <div class="control-card">
-                <label for="ctrl-anatomy"><span>1. Anatomy &amp; Collimation</span><output id="out-anatomy">95 %</output></label>
-                <input type="range" id="ctrl-anatomy" min="40" max="100" step="1" value="95" aria-describedby="sim-caption">
-                <span class="field-hint">Coverage of distal femur, joint space, proximal tib/fib (&lt;70% = clipped)</span>
-              </div>
-
-              <div class="control-card">
-                <label for="ctrl-rotation"><span>2. Limb Rotation</span><output id="out-rotation">0 ° (True AP)</output></label>
-                <input type="range" id="ctrl-rotation" min="-20" max="20" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0° = True AP (⅓ fibular head overlap); &plusmn;15° = non-diagnostic rotation</span>
-              </div>
-
-              <div class="control-card">
-                <label for="ctrl-mas"><span>3. Exposure Technique (mAs)</span><output id="out-mas">8.0 mAs</output></label>
-                <input type="range" id="ctrl-mas" min="1" max="32" step="0.5" value="8" aria-describedby="sim-caption">
-                <span class="field-hint">Target: 8.0 mAs (EI 200, 0.0 DI); &le;2.5 mAs = severe quantum mottle</span>
-              </div>
-
-              <div class="control-card">
-                <label for="ctrl-marker"><span>4. Lead Side Marker</span><output id="out-marker">Correct lead 'R'</output></label>
-                <select id="ctrl-marker">
-                  <option value="0" selected>0 — Correct physical lead 'R' marker</option>
-                  <option value="1">1 — Wrong side ('L' marker on right knee)</option>
-                  <option value="2">2 — Post-exposure digital annotation</option>
-                  <option value="3">3 — Missing physical side marker</option>
-                </select>
-                <span class="field-hint">Physical lead marker in primary beam is the legal standard</span>
-              </div>
-
-              <div class="control-card" style="grid-column: span 2;">
-                <label for="ctrl-artifact"><span>5. Artifact / Motion Status</span><output id="out-artifact">None (Clean)</output></label>
-                <select id="ctrl-artifact">
-                  <option value="0" selected>0 — None (Optimal clean baseline)</option>
-                  <option value="1">1 — Metallic zipper over VOI</option>
-                  <option value="2">2 — Involuntary patient motion blur</option>
-                  <option value="3">3 — Detector column line defect</option>
-                </select>
-                <span class="field-hint">Foreign radiopaque objects over VOI require repeat under ALARA</span>
-              </div>
-            </div>
+        <!-- 1000x500 Medical Review Workstation Canvas -->
+        <div class="sim-workbench" style="margin-top:14px;">
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" class="sim-canvas" width="1000" height="500" role="img" aria-label="Interactive PACS review workstation and IMAGE critique scorecard" aria-describedby="sim-caption"></canvas>
+            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">PACS Review Viewport (left) and Systematic Critique Scorecard (right) update synchronously in real time.</p>
           </div>
 
-          <!-- Right Console: PACS Tools & Telemetry Metrics -->
-          <div class="sim-tools-panel">
-            <div class="panel-header">
-              <h4>PACS Workstation Display &amp; Telemetry</h4>
-              <span class="panel-tag">Review Tools</span>
-            </div>
-            <div class="workstation-toolbar">
-              <div class="toolbar-row">
-                <label for="ctrl-ww">WW: <input type="range" id="ctrl-ww" min="100" max="1000" step="25" value="400"><span id="out-ww">400</span></label>
-                <label for="ctrl-wl">WL: <input type="range" id="ctrl-wl" min="50" max="500" step="10" value="200"><span id="out-wl">200</span></label>
+          <!-- Dual-Column Console: Interactive Controls & Workstation Tools -->
+          <div class="sim-console-grid">
+            <!-- Left Console: 5-Domain Clinical Controls -->
+            <div class="sim-controls-panel">
+              <div class="panel-header">
+                <h4>Interactive Exposure &amp; Alignment Parameters</h4>
+                <span class="panel-tag">Stage E Inputs</span>
               </div>
-              <div class="toolbar-actions">
-                <button type="button" class="tool-btn" id="btn-win-bone">Bone Window</button>
-                <button type="button" class="tool-btn" id="btn-win-soft">Soft Tissue</button>
-                <button type="button" class="tool-btn" id="btn-invert-toggle">Invert Grayscale</button>
+              <div class="controls-subgrid">
+                <div class="control-card">
+                  <label for="ctrl-anatomy"><span>1. Anatomy Coverage</span><output id="out-anatomy">95 %</output></label>
+                  <input type="range" id="ctrl-anatomy" min="40" max="100" step="1" value="95" aria-describedby="sim-caption">
+                  <span class="field-hint">Coverage of distal femur, joint, proximal tib/fib (&lt;70% = clipped)</span>
+                </div>
+
+                <div class="control-card">
+                  <label for="ctrl-rotation"><span>2. Limb Rotation</span><output id="out-rotation">0 ° (True AP)</output></label>
+                  <input type="range" id="ctrl-rotation" min="-20" max="20" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0° = True AP (⅓ fibular overlap); &plusmn;15° = non-diagnostic rotation</span>
+                </div>
+
+                <div class="control-card">
+                  <label for="ctrl-mas"><span>3. Exposure Technique</span><output id="out-mas">8.0 mAs</output></label>
+                  <input type="range" id="ctrl-mas" min="1" max="32" step="0.5" value="8" aria-describedby="sim-caption">
+                  <span class="field-hint">Target: 8.0 mAs (EI 200, 0.0 DI); &le;2.5 mAs = severe quantum mottle</span>
+                </div>
+
+                <div class="control-card">
+                  <label for="ctrl-marker"><span>4. Lead Side Marker</span><output id="out-marker">Correct lead 'R'</output></label>
+                  <select id="ctrl-marker">
+                    <option value="0" selected>0 — Correct physical lead 'R' marker</option>
+                    <option value="1">1 — Wrong side ('L' marker on right knee)</option>
+                    <option value="2">2 — Post-exposure digital annotation</option>
+                    <option value="3">3 — Missing physical side marker</option>
+                  </select>
+                  <span class="field-hint">Physical lead marker in primary beam is legal standard</span>
+                </div>
+
+                <div class="control-card" style="grid-column: span 2;">
+                  <label for="ctrl-artifact"><span>5. Artifact / Motion Status</span><output id="out-artifact">None (Clean)</output></label>
+                  <select id="ctrl-artifact">
+                    <option value="0" selected>0 — None (Optimal clean baseline)</option>
+                    <option value="1">1 — Metallic zipper over VOI</option>
+                    <option value="2">2 — Involuntary patient motion blur</option>
+                    <option value="3">3 — Detector column line defect</option>
+                  </select>
+                  <span class="field-hint">Foreign radiopaque objects over VOI require repeat under ALARA</span>
+                </div>
               </div>
             </div>
-            <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+
+            <!-- Right Console: PACS Tools & Telemetry Metrics -->
+            <div class="sim-tools-panel">
+              <div class="panel-header">
+                <h4>PACS Workstation Display &amp; Telemetry</h4>
+                <span class="panel-tag">Review Tools</span>
+              </div>
+              <div class="workstation-toolbar">
+                <div class="toolbar-row">
+                  <label for="ctrl-ww">WW: <input type="range" id="ctrl-ww" min="100" max="1000" step="25" value="400"><span id="out-ww">400</span></label>
+                  <label for="ctrl-wl">WL: <input type="range" id="ctrl-wl" min="50" max="500" step="10" value="200"><span id="out-wl">200</span></label>
+                </div>
+                <div class="toolbar-actions">
+                  <button type="button" class="tool-btn" id="btn-win-bone">Bone Window</button>
+                  <button type="button" class="tool-btn" id="btn-win-soft">Soft Tissue</button>
+                  <button type="button" class="tool-btn" id="btn-invert-toggle">Invert Grayscale</button>
+                </div>
+              </div>
+              <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="run-toolbar">
-        <button class="btn btn-primary" id="record-run">Record this run</button>
-        <button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button>
-        <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
-      </div>
-      
-      <div class="run-table-wrap">
-        <table class="data-table run-table">
-          <thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead>
-          <tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+        <!-- Pre-Trial Prediction Input -->
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="w-prediction">
+            Pre-Trial Scientific Hypothesis / Prediction <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="w-prediction" rows="3" required placeholder="State which critique parameter you plan to perturb (e.g. introducing +18° external rotation or reducing exposure technique to 2 mAs) and predict the quantitative consequence on composite score, Deviation Index, and the ALARA repeat verdict..."></textarea>
+          <p class="form-hint">Minimum 20 characters required. Your prediction is locked into your experimental run log and exported report.</p>
+        </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>IMAGE Stage E Checklist Matching</h3><p>Match each image critique domain to its clinical verification standard and protection evidence.</p><div id="concept-activity"></div></article></section>
-  
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>The Missing Side Marker Dilemma</h3><p>An AP Knee radiograph demonstrates pristine anatomy, true AP alignment, open joint spaces, and optimal exposure (EI 200), but the radiographer forgot to place the physical lead side marker. What is the correct clinical action under ALARA?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Follow institutional electronic annotation policy with dual-technologist verification; do NOT repeat under ALARA</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Repeat the exposure immediately so a physical lead marker is present</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Disregard the missing marker entirely and send to PACS without annotation</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Increase window width on the workstation</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Complete the 5-domain IMAGE critique checklist for your baseline run and state your clinical disposition. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Analyze the effect of +18° external rotation on the fibular head, patella, and joint space visibility. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Compare a fatal diagnostic failure (e.g. quantum mottle / clipped anatomy) with a non-fatal administrative defect (missing marker) under ALARA. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: formulate a precise corrective action instruction for a junior radiographer presenting an underexposed, rotated radiograph. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run" type="button">Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run" type="button">Remove Last Run</button>
+          <button class="btn btn-secondary btn-sm" id="btn-download-runs-csv" type="button">
+            <i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)
+          </button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr>
+                <th>Run #</th>
+                <th>Clinical Settings (Anat, Rot, mAs, Marker, Art)</th>
+                <th>Key Results (Score, EI, DI, ALARA Verdict)</th>
+                <th>Finding &amp; Actionable Corrective Directive</th>
+              </tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr>
+                <td colspan="4" class="muted">No runs recorded yet. Formulate a prediction and click "Record This Run".</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 10: Post-Lab Excel Data Analysis & Clinical Synthesis -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Post-Lab Excel Data Analysis &amp; Clinical Synthesis</h2>
+          <div class="lab-section-sub">Evidence-based quantitative critique, graphical modeling, and ALARA synthesis</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet">Graded Responses</span>
+        <div id="math-helper-container" style="margin-bottom:14px;"></div>
+
+        <!-- Excel Plotting Instructions Guide -->
+        <div class="card card-soft" style="border-left:4px solid var(--rad-blue);margin:16px 0;">
+          <h4 style="margin:0 0 8px;color:var(--rad-navy);"><i class="fa-solid fa-chart-line" style="color:var(--rad-blue);margin-right:6px;"></i> Laboratory Excel Plotting Instructions Guide:</h4>
+          <p style="font-size:12.5px;line-height:1.45;color:var(--rad-text-soft);margin:0 0 10px;">
+            Export your recorded trial data using the <strong>Download Run Data (CSV)</strong> button above. Open the CSV file in Microsoft Excel or Google Sheets, generate the following two calibrated diagnostic scatter plots, and paste your quantitative insights into Table B and the reflection prompts below:
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div style="background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+              <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 1: Rotation Angle vs. Positioning Score &amp; Overlap</strong>
+              <ul style="font-size:11.5px;color:var(--rad-text-soft);margin:6px 0 0 16px;line-height:1.4;">
+                <li><strong>X-axis:</strong> Limb Rotation Angle ($-20^\circ$ to $+20^\circ$).</li>
+                <li><strong>Y-axis:</strong> Positioning Score ($S_{\text{Pos}}$, $0–100$).</li>
+                <li><strong>Clinical Trend:</strong> Parabolic peak at $0^\circ$ (True AP); score degrades linearly by $3.5\text{ pts/degree}$. Fibular overlap exceeds $\frac{1}{3}$ above $+10^\circ$.</li>
+              </ul>
+            </div>
+            <div style="background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+              <strong style="color:var(--rad-navy);font-size:12.5px;">Plot 2: Technique (mAs) vs. Exposure Index ($EI$) &amp; Noise</strong>
+              <ul style="font-size:11.5px;color:var(--rad-text-soft);margin:6px 0 0 16px;line-height:1.4;">
+                <li><strong>X-axis:</strong> Exposure Technique ($1.0$ to $32.0\text{ mAs}$).</li>
+                <li><strong>Y-axis 1 (Left):</strong> Exposure Index ($EI = 25 \cdot mAs$).</li>
+                <li><strong>Y-axis 2 (Right):</strong> Quantum Noise ($\sigma = 28 / \sqrt{mAs}$).</li>
+                <li><strong>Clinical Trend:</strong> Linear $EI$ scaling; noise plummets rapidly until target $8\text{ mAs}$, illustrating the diminishing returns of dose creep.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table B: Quantitative Critique & ALARA Disposition Analysis -->
+        <h3 style="margin-top:20px;">Table B — Quantitative Critique &amp; ALARA Disposition Analysis</h3>
+        <p class="form-hint">Record your calculated values and clinical decisions across four distinct trial configurations:</p>
+
+        <div class="calc-table-wrap">
+          <table class="calc-table">
+            <thead>
+              <tr>
+                <th style="width:16%;">Configuration</th>
+                <th style="width:8%;">Anat ($S_{\text{Anat}}$)</th>
+                <th style="width:8%;">Pos ($S_{\text{Pos}}$)</th>
+                <th style="width:8%;">EI / DI</th>
+                <th style="width:8%;">Mark ($S_{\text{Mark}}$)</th>
+                <th style="width:8%;">Art ($S_{\text{Art}}$)</th>
+                <th style="width:9%;">Comp Score</th>
+                <th style="width:17%;">ALARA Verdict</th>
+                <th style="width:18%;">Actionable Directive</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Optimal AP Knee</strong><br><span style="font-size:10.5px;color:var(--rad-text-soft);">95% cov, 0°, 8 mAs, R, clean</span></td>
+                <td><input type="text" id="tb-run1-anat" style="width:100%;" placeholder="95%"></td>
+                <td><input type="text" id="tb-run1-pos" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-ei" style="width:100%;" placeholder="200 / 0.0"></td>
+                <td><input type="text" id="tb-run1-mark" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-art" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-comp" style="width:100%;" placeholder="99%"></td>
+                <td><input type="text" id="tb-run1-verdict" style="width:100%;" placeholder="Accept & Send"></td>
+                <td><input type="text" id="tb-run1-action" style="width:100%;" placeholder="Ready for PACS"></td>
+              </tr>
+              <tr>
+                <td><strong>2. Ext Rotation (+18°)</strong><br><span style="font-size:10.5px;color:var(--rad-text-soft);">95% cov, +18°, 8 mAs, R, clean</span></td>
+                <td><input type="text" id="tb-run2-anat" style="width:100%;" placeholder="95%"></td>
+                <td><input type="text" id="tb-run2-pos" style="width:100%;" placeholder="37%"></td>
+                <td><input type="text" id="tb-run2-ei" style="width:100%;" placeholder="200 / 0.0"></td>
+                <td><input type="text" id="tb-run2-mark" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run2-art" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run2-comp" style="width:100%;" placeholder="83%"></td>
+                <td><input type="text" id="tb-run2-verdict" style="width:100%;" placeholder="Reject & Repeat"></td>
+                <td><input type="text" id="tb-run2-action" style="width:100%;" placeholder="Rotate 18° int"></td>
+              </tr>
+              <tr>
+                <td><strong>3. Quantum Mottle (2 mAs)</strong><br><span style="font-size:10.5px;color:var(--rad-text-soft);">95% cov, 0°, 2 mAs, R, clean</span></td>
+                <td><input type="text" id="tb-run3-anat" style="width:100%;" placeholder="95%"></td>
+                <td><input type="text" id="tb-run3-pos" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run3-ei" style="width:100%;" placeholder="50 / -6.0"></td>
+                <td><input type="text" id="tb-run3-mark" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run3-art" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run3-comp" style="width:100%;" placeholder="87%"></td>
+                <td><input type="text" id="tb-run3-verdict" style="width:100%;" placeholder="Reject & Repeat"></td>
+                <td><input type="text" id="tb-run3-action" style="width:100%;" placeholder="Increase to 8 mAs"></td>
+              </tr>
+              <tr>
+                <td><strong>4. Missing Side Marker</strong><br><span style="font-size:10.5px;color:var(--rad-text-soft);">95% cov, 0°, 8 mAs, missing, clean</span></td>
+                <td><input type="text" id="tb-run4-anat" style="width:100%;" placeholder="95%"></td>
+                <td><input type="text" id="tb-run4-pos" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run4-ei" style="width:100%;" placeholder="200 / 0.0"></td>
+                <td><input type="text" id="tb-run4-mark" style="width:100%;" placeholder="35%"></td>
+                <td><input type="text" id="tb-run4-art" style="width:100%;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run4-comp" style="width:100%;" placeholder="92%"></td>
+                <td><input type="text" id="tb-run4-verdict" style="width:100%;" placeholder="Accept (Do Not Repeat)"></td>
+                <td><input type="text" id="tb-run4-action" style="width:100%;" placeholder="Electronic annotation"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Reflection Questions -->
+        <div class="form-row" style="margin-top:18px;">
+          <label class="field-label" for="q1">
+            1. Complete the 5-domain IMAGE critique checklist for your baseline run and state your clinical disposition. <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q1" rows="4" required placeholder="Detail the individual scores and qualitative findings across Anatomy, Positioning, Exposure, Marker, and Artifacts. State your definitive clinical disposition and justify why this image represents the departmental Gold Standard..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q2">
+            2. Analyze the effect of +18° external rotation on the fibular head, patella, and joint space visibility. <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q2" rows="4" required placeholder="Explain how external rotation displaces the proximal fibula behind the lateral tibial condyle (superimposition > ⅓), shifts the patella laterally over the femoral condyle, closes the lateral femorotibial joint space, and why this prevents diagnostic evaluation of arthritis or fractures..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q3">
+            3. Compare a fatal diagnostic failure (e.g. quantum mottle / clipped anatomy) with a non-fatal administrative defect (missing marker) under ALARA. <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q3" rows="4" required placeholder="Contend why photon starvation or clipped joint spaces represent irreversible diagnostic loss requiring repeat under ALARA, whereas a missing lead marker on an otherwise pristine image must never be re-irradiated but rectified via verified electronic annotation..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q4">
+            4. Critical Thinking: Formulate a precise corrective action instruction for a junior radiographer presenting an underexposed, rotated radiograph. <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q4" rows="4" required placeholder="State exact, quantitative instructions: (1) internal rotation of the limb so femoral epicondyles are parallel to the IR, (2) technique increase from 2 mAs to 8 mAs (target EI 200), (3) verification of 4-sided collimation, and (4) placement of the anatomical lead marker..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Standardized Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized 20-Point Grading Rubric</h2>
+          <div class="lab-section-sub">Automated AI evaluation criteria (10 Pts In-Lab / 10 Pts Post-Lab)</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto;"></div>
+        <p class="form-hint">Self-scores assist in pre-submission verification. The official grade is generated by the departmental server's configured AI model.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2 Submission Hub</h2>
+          <div class="lab-section-sub">Post-Lab Excel Data Analysis &amp; Clinical Synthesis (10 Points) · Submit with workbook (.xlsx / .csv)</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-blue);padding:24px;">
+        <!-- Injected automatically by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div>
+
 </main>
 
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 14 of 15 · assessed virtual laboratory</footer>
+<!-- Lab Actionbar -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span>
+      <span id="autosave-dot-label">Autosave ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json" type="button">Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset" type="button">Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar" type="button">Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 14 of 15 · Assessed Virtual Laboratory Suite
+</footer>
 
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
+/**
+ * LAB 14: THE IMAGE PROCESS, PART 2 — EVALUATE (CRITIQUE)
+ * Authoritative Gold Standard Implementation
+ */
 const LAB = {
-  "week": 14,
-  "title": "The IMAGE Process, Part 2 — Evaluate",
-  "lecture": "Image Analysis II — IMAGE Evaluation Stage",
-  "type": "image-eval",
-  "subtitle": "Critique a virtual radiograph for anatomy, positioning, exposure, markers, and artifacts.",
-  "objectives": [
+  week: 14,
+  title: "The IMAGE Process, Part 2 — Evaluate (Critique)",
+  lecture: "Image Analysis II — IMAGE Evaluation Stage",
+  type: "image-eval",
+  subtitle: "Critique a virtual radiograph for anatomy, positioning, exposure, markers, and artifacts.",
+  objectives: [
     "Apply Stage E (Evaluate) of the IMAGE framework as a structured, 5-domain radiographic critique.",
     "Verify anatomical coverage: distal femur, femorotibial joint space, proximal tibia/fibula, and 4-sided collimation margins.",
     "Assess positioning geometry: true AP condylar symmetry, open joint space, and ⅓ proximal fibular head superimposition.",
     "Evaluate exposure physics: Exposure Index (EI), Deviation Index (DI), quantum mottle, and trabecular sharpness.",
     "Apply ALARA repeat decision rules: distinguish fatal non-diagnostic defects from rectifiable administrative/display variances."
   ],
-  "theory": "<p>The Evaluate stage has two connected parts: image critique and image-quality assessment. First confirm diagnostic value: required anatomy, surrounding structures, and positioning criteria. Then assess exposure criteria: density/intensity, contrast, sharpness, noise, identification details, lead markers, and artifacts.</p><div class=\"formula-box\"><b>Evaluation rule:</b> identify the finding → classify its impact → decide whether correction/repeat is justified → state the corrective action. Apply ALARA: a repeat is justified only when the diagnostic value cannot be recovered.</div><p>One image may contain more than one error. A professional critique names the evidence instead of simply saying “bad image.”</p>",
-  "controls": [
-    {"id": "anatomy", "label": "Anatomy coverage", "min": 40, "max": 100, "step": 1, "value": 95, "unit": "%"},
-    {"id": "rotation", "label": "Limb rotation", "min": -20, "max": 20, "step": 1, "value": 0, "unit": "°"},
-    {"id": "mas", "label": "Exposure technique", "min": 1, "max": 32, "step": 0.5, "value": 8, "unit": "mAs"},
-    {"id": "marker", "label": "Side marker status", "min": 0, "max": 3, "step": 1, "value": 0, "unit": "code"},
-    {"id": "artifact", "label": "Artifact overlay", "min": 0, "max": 3, "step": 1, "value": 0, "unit": "code"}
+  controls: [
+    { id: "anatomy", label: "Anatomy coverage", min: 40, max: 100, step: 1, value: 95, unit: "%" },
+    { id: "rotation", label: "Limb rotation", min: -20, max: 20, step: 1, value: 0, unit: "°" },
+    { id: "mas", label: "Exposure technique", min: 1, max: 32, step: 0.5, value: 8, unit: "mAs" },
+    { id: "marker", label: "Side marker status", min: 0, max: 3, step: 1, value: 0, unit: "code" },
+    { id: "artifact", label: "Artifact overlay", min: 0, max: 3, step: 1, value: 0, unit: "code" }
   ],
-  "stations": [
-    {"id": "critique", "title": "Station 1 — Virtual radiograph critique", "text": "Inspect the AP Knee radiograph on the PACS review monitor across all 5 evaluation domains. Formulate an evidence-based disposition and ALARA repeat justification.", "kind": "main"},
+  stations: [
     {
-      "id": "criteria",
-      "title": "Station 2 — IMAGE Stage E Checklist Matching",
-      "text": "Match each critique domain to its clinical verification standard.",
-      "kind": "match",
-      "left": [
+      id: "critique",
+      title: "Station 1 — Virtual Radiograph Critique",
+      text: "Inspect the AP Knee radiograph on the PACS review monitor across all 5 evaluation domains. Formulate an evidence-based disposition and ALARA repeat justification.",
+      kind: "main"
+    },
+    {
+      id: "criteria",
+      title: "Station 2 — IMAGE Stage E Checklist Matching",
+      text: "Match each critique domain to its clinical verification standard.",
+      kind: "match",
+      left: [
         ["anatomy", "Distal femur to proximal tib/fib with 4-sided collimation"],
         ["position", "Symmetric epicondyles, open joint space, ⅓ fibular superimposition"],
         ["exposure", "Target EI 200 (DI 0.0), no quantum mottle, sharp trabeculae"],
         ["identity", "2 verified patient IDs and physical lead marker in primary beam"],
         ["alara", "Repeat justified ONLY when diagnostic value cannot be recovered"]
       ],
-      "right": [
+      right: [
         ["value", "Anatomical Coverage Standard"],
         ["geometry", "True AP Positioning Criteria"],
         ["quality", "Receptor Exposure & Noise Quality"],
         ["safety", "Legal & Laterality Verification"],
         ["ethics", "ALARA Radiation Protection Gate"]
       ],
-      "pairs": {
+      pairs: {
         "anatomy": "value",
         "position": "geometry",
         "exposure": "quality",
@@ -270,86 +1502,91 @@ const LAB = {
         "alara": "ethics"
       }
     },
-    {"id": "case", "title": "Station 3 — The Missing Side Marker Dilemma", "text": "A radiograph has adequate anatomy, positioning, and exposure but no side marker. Choose the best action.", "kind": "case"}
-  ],
-  "quiz": [
     {
-      "prompt": "Which statement best reflects a professional image critique under the IMAGE framework?",
-      "options": [
+      id: "case",
+      title: "Station 4 — The Missing Side Marker Dilemma",
+      text: "A radiograph has adequate anatomy, positioning, and exposure but no side marker. Choose the best action under ALARA.",
+      kind: "case"
+    }
+  ],
+  quiz: [
+    {
+      prompt: "Which statement best reflects a professional image critique under the IMAGE framework?",
+      options: [
         "The image looks poor; repeat it immediately.",
         "The image has adequate anatomy and exposure but lacks a physical side marker; follow local electronic annotation policy before repeating under ALARA.",
         "Only display brightness matters on the review monitor.",
         "If bone is visible, no further positioning checks are needed."
       ],
-      "correct": 1,
-      "explain": "A professional critique identifies the specific finding, determines diagnostic impact, and applies ALARA to prevent unnecessary patient re-exposure."
+      correct: 1,
+      explain: "A professional critique identifies the specific finding, determines diagnostic impact, and applies ALARA to prevent unnecessary patient re-exposure."
     },
     {
-      "prompt": "On an AP Knee radiograph, which anatomical relationship confirms True AP positioning without rotation?",
-      "options": [
+      prompt: "On an AP Knee radiograph, which anatomical relationship confirms True AP positioning without rotation?",
+      options: [
         "The fibular head is completely separated from the lateral tibia",
         "Exactly ⅓ of the proximal fibular head is superimposed behind the lateral tibial condyle",
         "The patella is shifted entirely over the lateral femoral condyle",
         "The medial and lateral joint spaces are completely closed"
       ],
-      "correct": 1,
-      "explain": "In True AP alignment, the proximal ⅓ of the fibula is superimposed by the lateral tibial condyle. Complete separation indicates medial/internal rotation, while excessive overlap indicates lateral/external rotation."
+      correct: 1,
+      explain: "In True AP alignment, the proximal ⅓ of the fibula is superimposed by the lateral tibial condyle. Complete separation indicates medial/internal rotation, while excessive overlap indicates lateral/external rotation."
     },
     {
-      "prompt": "Under radiation protection regulations and ALARA principles, when is a repeat exposure justified?",
-      "options": [
+      prompt: "Under radiation protection regulations and ALARA principles, when is a repeat exposure justified?",
+      options: [
         "Whenever any cosmetic imperfection exists on the image",
         "Only when critical diagnostic information cannot be recovered and the diagnostic question cannot be answered",
         "Whenever the technologist wants a higher exposure index",
         "Whenever display windowing is slightly suboptimal"
       ],
-      "correct": 1,
-      "explain": "ALARA requires that patient re-exposure is permitted only when diagnostic value is genuinely compromised and unrecoverable by post-processing or policy."
+      correct: 1,
+      explain: "ALARA requires that patient re-exposure is permitted only when diagnostic value is genuinely compromised and unrecoverable by post-processing or policy."
     },
     {
-      "prompt": "An AP Knee image exhibits severe quantum mottle (EI 50, DI -6.0) obscuring fine trabeculae. What is the proper corrective action for the repeat?",
-      "options": [
+      prompt: "An AP Knee image exhibits severe quantum mottle (EI 50, DI -6.0) obscuring fine trabeculae. What is the proper corrective action for the repeat?",
+      options: [
         "Rotate the knee 20° externally",
         "Increase exposure technique from 2 mAs to 8 mAs (target EI 200)",
         "Change the monitor brightness setting",
         "Add a second grid"
       ],
-      "correct": 1,
-      "explain": "Quantum mottle is caused by photon starvation at the receptor. The corrective action is to increase mAs (or kVp) to achieve target detector photon fluence."
+      correct: 1,
+      explain: "Quantum mottle is caused by photon starvation at the receptor. The corrective action is to increase mAs (or kVp) to achieve target detector photon fluence."
     }
   ],
-  "worksheet": [
-    {"id": "q1", "label": "1. Complete the 5-domain IMAGE critique checklist for your baseline run and state your clinical disposition."},
-    {"id": "q2", "label": "2. Analyze the effect of +18° external rotation on the fibular head, patella, and joint space visibility."},
-    {"id": "q3", "label": "3. Compare a fatal diagnostic failure (e.g. quantum mottle / clipped anatomy) with a non-fatal administrative defect (missing marker) under ALARA."},
-    {"id": "q4", "label": "4. Critical thinking: formulate a precise corrective action instruction for a junior radiographer presenting an underexposed, rotated radiograph."}
+  worksheet: [
+    { id: "q1", label: "1. Complete the 5-domain IMAGE critique checklist for your baseline run and state your clinical disposition." },
+    { id: "q2", label: "2. Analyze the effect of +18° external rotation on the fibular head, patella, and joint space visibility." },
+    { id: "q3", label: "3. Compare a fatal diagnostic failure (e.g. quantum mottle / clipped anatomy) with a non-fatal administrative defect (missing marker) under ALARA." },
+    { id: "q4", label: "4. Critical thinking: formulate a precise corrective action instruction for a junior radiographer presenting an underexposed, rotated radiograph." }
   ],
-  "rubric": [
-    {"id": "c1", "name": "Evaluate-stage concepts", "points": 4, "levels": ["Correctly distinguishes critique, quality assessment, and repeat justification.", "Mostly correct with minor gaps.", "Major misconception."]},
-    {"id": "c2", "name": "Virtual critique simulation", "points": 5, "levels": ["Checks all dimensions and makes a defensible decision.", "Uses the tool with limited evidence.", "Little meaningful investigation."]},
-    {"id": "c3", "name": "Checklist and worksheet", "points": 5, "levels": ["Specific findings are linked to corrective actions.", "Mostly correct but vague.", "Incomplete or unsupported."]},
-    {"id": "c4", "name": "ALARA reasoning", "points": 3, "levels": ["Repeat decision is proportionate and evidence-based.", "Plausible but brief.", "No defensible decision."]},
-    {"id": "c5", "name": "Completeness and professionalism", "points": 3, "levels": ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."]}
+  rubric: [
+    { id: "c1", name: "Evaluate-stage concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Correctly distinguishes critique, quality assessment, and repeat justification.", "Mostly correct with minor gaps.", "Major misconception."] },
+    { id: "c2", name: "Virtual critique simulation", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Checks all dimensions and makes a defensible decision.", "Uses the tool with limited evidence.", "Little meaningful investigation."] },
+    { id: "c3", name: "Checklist and worksheet", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Specific findings are linked to corrective actions.", "Mostly correct but vague.", "Incomplete or unsupported."] },
+    { id: "c4", name: "ALARA reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Repeat decision is proportionate and evidence-based.", "Plausible but brief.", "No defensible decision."] },
+    { id: "c5", name: "Completeness and professionalism", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."] }
   ],
-  "procedure": [
+  procedure: [
     "Predict whether a missing side marker alone justifies a repeat exposure under ALARA.",
     "Record a Gold Standard diagnostic AP Knee baseline.",
     "Select a severe rotation or collimation clipping defect and record a second run.",
     "Select a missing marker or quantum mottle case and record a third run.",
     "Compare critique scores, ALARA repeat verdicts, and actionable corrective directives."
   ],
-  "scenario": {
-    "prompt": "An AP Knee radiograph demonstrates pristine anatomy, true AP alignment, open joint spaces, and optimal exposure (EI 200), but the radiographer forgot to place the physical lead side marker. What is the correct clinical action under ALARA?",
-    "options": [
+  scenario: {
+    prompt: "An AP Knee radiograph demonstrates pristine anatomy, true AP alignment, open joint spaces, and optimal exposure (EI 200), but the radiographer forgot to place the physical lead side marker. What is the correct clinical action under ALARA?",
+    options: [
       "Follow institutional electronic annotation policy with dual-technologist verification; do NOT repeat under ALARA",
       "Repeat the exposure immediately so a physical lead marker is present",
       "Disregard the missing marker entirely and send to PACS without annotation",
       "Increase window width on the workstation"
     ],
-    "correct": 0,
-    "explain": "Under ALARA, a patient must never be re-irradiated solely for a missing marker if diagnostic value is intact. Follow hospital electronic annotation and legal verification protocol."
+    correct: 0,
+    explain: "Under ALARA, a patient must never be re-irradiated solely for a missing marker if diagnostic value is intact. Follow hospital electronic annotation and legal verification protocol."
   },
-  "minimumRuns": 3
+  minimumRuns: 3
 };
 
 const QUIZ_IDS = ["q14-1", "q14-2", "q14-3", "q14-4"];
@@ -357,8 +1594,34 @@ const CONCEPT = LAB.stations[1];
 let currentResult = null;
 let currentViewTool = 'standard';
 
+// Semantic Fallback Mathematical Formatter
+function renderAllMath() {
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (e) {
+      console.warn('KaTeX auto-render failed, using semantic fallback', e);
+    }
+  }
+  var targets = document.querySelectorAll('.math-tex, .math-display');
+  targets.forEach(function (el) {
+    if (!el.innerHTML || el.innerHTML.indexOf('$') === -1) return;
+    el.innerHTML = el.innerHTML
+      .replace(/\$\$([^$]+)\$\$/g, '<span style="display:block;text-align:center;">$1</span>')
+      .replace(/\$([^$]+)\$/g, '<span>$1</span>');
+  });
+}
+
+// Control Values Extractor
 function controlValues() {
-  const values = {
+  return {
     anatomy: Number(document.getElementById('ctrl-anatomy').value),
     rotation: Number(document.getElementById('ctrl-rotation').value),
     mas: Number(document.getElementById('ctrl-mas').value),
@@ -368,7 +1631,6 @@ function controlValues() {
     wl: Number(document.getElementById('ctrl-wl').value),
     viewTool: currentViewTool
   };
-  return values;
 }
 
 function settingSummary(values) {
@@ -379,29 +1641,42 @@ function settingSummary(values) {
 
 function renderMetrics(result) {
   const container = document.getElementById('sim-metrics');
-  RadLab.renderMetrics(container, result);
+  if (container) RadLab.renderMetrics(container, result);
 }
 
 function renderSimulation() {
   const values = controlValues();
   
-  document.getElementById('out-anatomy').textContent = values.anatomy + ' %';
-  document.getElementById('out-rotation').textContent = values.rotation + ' ° ' + (values.rotation === 0 ? '(True AP)' : values.rotation > 0 ? '(External)' : '(Internal)');
-  document.getElementById('out-mas').textContent = values.mas.toFixed(1) + ' mAs';
+  const elAnat = document.getElementById('out-anatomy');
+  if (elAnat) elAnat.textContent = values.anatomy + ' %';
+  
+  const elRot = document.getElementById('out-rotation');
+  if (elRot) elRot.textContent = values.rotation + ' ° ' + (values.rotation === 0 ? '(True AP)' : values.rotation > 0 ? '(External)' : '(Internal)');
+  
+  const elMas = document.getElementById('out-mas');
+  if (elMas) elMas.textContent = values.mas.toFixed(1) + ' mAs';
   
   const markerLabels = ["Correct lead 'R'", "Wrong side ('L')", "Digital annotation", "Missing marker"];
-  document.getElementById('out-marker').textContent = markerLabels[values.marker];
+  const elMark = document.getElementById('out-marker');
+  if (elMark) elMark.textContent = markerLabels[values.marker];
   
   const artifactLabels = ["None (Clean)", "Metal zipper over VOI", "Patient motion blur", "Detector line defect"];
-  document.getElementById('out-artifact').textContent = artifactLabels[values.artifact];
+  const elArt = document.getElementById('out-artifact');
+  if (elArt) elArt.textContent = artifactLabels[values.artifact];
   
-  document.getElementById('out-ww').textContent = values.ww;
-  document.getElementById('out-wl').textContent = values.wl;
+  const elWw = document.getElementById('out-ww');
+  if (elWw) elWw.textContent = values.ww;
+  const elWl = document.getElementById('out-wl');
+  if (elWl) elWl.textContent = values.wl;
 
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas && canvas.getContext) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
   renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const caption = document.getElementById('sim-caption');
+  if (caption) caption.textContent = currentResult.observation;
 }
 
 function experimentActivity() {
@@ -411,29 +1686,58 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Formulate a prediction and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please formulate a scientific prediction (at least 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
   const values = controlValues();
-  const signature = JSON.stringify({ anatomy: values.anatomy, rotation: values.rotation, mas: values.mas, marker: values.marker, artifact: values.artifact });
+  const signature = JSON.stringify({
+    anatomy: values.anatomy,
+    rotation: values.rotation,
+    mas: values.mas,
+    marker: values.marker,
+    artifact: values.artifact
+  });
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That clinical setting is already recorded. Change one parameter and try again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
   activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
@@ -441,85 +1745,425 @@ function recordRun() {
   activity.detail = activity.runs.length + ' unique runs recorded; latest critique score ' + run.modelScore + '/100.';
   RadLab.state.activities['experiment-log'] = activity;
   RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully.', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There is no recorded trial to remove.');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
+}
+
+// Download Run Data CSV
+function downloadRunDataCsv() {
+  const activity = experimentActivity();
+  if (!activity.runs || !activity.runs.length) {
+    RadLab.toast('No experimental trials recorded yet. Record at least one run first.', 'error');
+    return;
+  }
+  const headers = ['Run_Number', 'Anatomy_Coverage_Pct', 'Rotation_Deg', 'Exposure_mAs', 'Marker_Code', 'Artifact_Code', 'Critique_Score', 'Exposure_Index', 'Deviation_Index', 'Noise_SD', 'ALARA_Verdict', 'Observation'];
+  const rows = activity.runs.map(function (r, idx) {
+    const v = r.values || {};
+    const m = r.metrics || [];
+    const scoreVal = m[0] ? m[0].value : (r.modelScore || '');
+    const eiVal = m[1] ? m[1].value : '';
+    const verdictVal = m[2] ? m[2].value : '';
+    const obsSafe = '"' + (r.observation || '').replace(/"/g, '""') + '"';
+    return [
+      idx + 1,
+      v.anatomy !== undefined ? v.anatomy : '',
+      v.rotation !== undefined ? v.rotation : '',
+      v.mas !== undefined ? v.mas : '',
+      v.marker !== undefined ? v.marker : '',
+      v.artifact !== undefined ? v.artifact : '',
+      scoreVal,
+      eiVal,
+      (v.mas ? (10 * Math.log10(v.mas / 8.0)).toFixed(1) : ''),
+      (v.mas ? (28 / Math.sqrt(v.mas)).toFixed(1) : ''),
+      verdictVal,
+      obsSafe
+    ].join(',');
+  });
+  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', 'RAD321_Lab14_IMAGE_Critique_Runs.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  RadLab.toast('Run data CSV downloaded.', 'success');
 }
 
 function setupConcept() {
   const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evaluation Domain', rightTitle: 'Clinical Verification Standard' });
+  if (!container) return;
+  if (CONCEPT.kind === 'match') {
+    RadLab.matchPairs(container, {
+      id: CONCEPT.id,
+      left: CONCEPT.left.map(function (x) { return { id: x[0], label: x[1] }; }),
+      right: CONCEPT.right.map(function (x) { return { id: x[0], label: x[1] }; }),
+      pairs: CONCEPT.pairs,
+      leftTitle: 'Evaluation Domain',
+      rightTitle: 'Clinical Verification Standard'
+    });
+  }
 }
 
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Select a response before checking.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
   feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  RadLab.save();
+  RadLab.progress.update();
+}
+
+// Station 3: Calibrated Image Critique Calculator Engine
+function updateCalculator() {
+  const anatomy = Number(document.getElementById('calc-anatomy').value);
+  const rotation = Number(document.getElementById('calc-rotation').value);
+  const mas = Number(document.getElementById('calc-mas').value);
+  const marker = Number(document.getElementById('calc-marker').value);
+  const artifact = Number(document.getElementById('calc-artifact').value);
+
+  // Update slider displays
+  document.getElementById('calc-out-anatomy-disp').textContent = anatomy + ' %';
+  document.getElementById('calc-out-rotation-disp').textContent = rotation + ' ° ' + (rotation === 0 ? '(True AP)' : rotation > 0 ? '(External)' : '(Internal)');
+  document.getElementById('calc-out-mas-disp').textContent = mas.toFixed(1) + ' mAs';
+
+  // Compute domain scores
+  const anatScore = Math.min(100, Math.max(0, anatomy));
+  const isAnatClipped = anatScore < 70;
+
+  const posScore = Math.min(100, Math.max(10, Math.round(100 - Math.abs(rotation) * 3.5)));
+  const isSevereRotation = Math.abs(rotation) >= 15;
+
+  const targetMas = 8.0;
+  const ei = Math.round(mas * 25);
+  const diNum = 10 * Math.log10(mas / targetMas);
+  const di = (diNum >= 0 ? '+' : '') + diNum.toFixed(1);
+  let expScore = 100;
+  if (mas < 4) expScore = Math.max(15, Math.round(100 - (4 - mas) * 22));
+  else if (mas > 16) expScore = Math.max(40, Math.round(100 - (mas - 16) * 3.5));
+  else expScore = Math.max(70, Math.round(100 - Math.abs(diNum) * 10));
+  const isSeverePhotonStarvation = mas <= 2.5;
+
+  let markScore = 100;
+  if (marker === 1) markScore = 15;
+  else if (marker === 2) markScore = 65;
+  else if (marker === 3) markScore = 35;
+
+  let artScore = 100;
+  if (artifact === 1) artScore = 25;
+  else if (artifact === 2) artScore = 30;
+  else if (artifact === 3) artScore = 60;
+
+  const composite = Math.round(anatScore * 0.30 + posScore * 0.25 + expScore * 0.25 + markScore * 0.10 + artScore * 0.10);
+
+  // Verdict determination
+  let verdictText = '';
+  let verdictColor = '';
+  let actionText = '';
+
+  if (isAnatClipped) {
+    verdictText = 'REJECT & REPEAT (Justified under ALARA)';
+    verdictColor = '#dc2626';
+    actionText = 'Fatal defect: critical VOI anatomy clipped. Expand collimation to 18×24 cm and center CR 1.25 cm distal to patellar apex.';
+  } else if (isSevereRotation) {
+    verdictText = 'REJECT & REPEAT (Justified under ALARA)';
+    verdictColor = '#dc2626';
+    actionText = 'Fatal defect: excessive rotation (' + (rotation > 0 ? '+' : '') + rotation + '°) obliterates joint spaces. Rotate limb so epicondyles are parallel to IR.';
+  } else if (isSeverePhotonStarvation) {
+    verdictText = 'REJECT & REPEAT (Justified under ALARA)';
+    verdictColor = '#dc2626';
+    actionText = 'Fatal defect: severe photon starvation (EI ' + ei + ', ' + di + ' DI). Increase exposure technique from ' + mas + ' mAs to 8.0 mAs.';
+  } else if (artifact === 1) {
+    verdictText = 'REJECT & REPEAT (Justified under ALARA)';
+    verdictColor = '#dc2626';
+    actionText = 'Fatal defect: radiopaque metallic zipper directly over VOI. Remove clothing, gown patient, and re-expose.';
+  } else if (artifact === 2) {
+    verdictText = 'REJECT & REPEAT (Justified under ALARA)';
+    verdictColor = '#dc2626';
+    actionText = 'Fatal defect: severe patient motion blur. Immobilize knee with sandbags and repeat with suspension instructions.';
+  } else if (marker === 1) {
+    verdictText = 'CLINICAL / LEGAL REVIEW (Escalate)';
+    verdictColor = '#d97706';
+    actionText = 'High legal risk: wrong side marker. Escalate to supervising radiologist and follow laterality verification protocol.';
+  } else if (marker === 3) {
+    verdictText = 'ACCEPT WITH ANNOTATION (DO NOT REPEAT — ALARA GATE)';
+    verdictColor = '#0284c7';
+    actionText = 'ALARA protection gate: missing marker on diagnostic image MUST NOT be repeated. Apply electronic annotation with dual-technologist verification.';
+  } else if (composite >= 85) {
+    verdictText = 'ACCEPT & TRANSMIT TO PACS';
+    verdictColor = '#059669';
+    actionText = 'Optimal diagnostic quality: image meets all 5-domain criteria. Ready for radiologist sign-off.';
+  } else {
+    verdictText = 'ACCEPT WITH MINOR VARIANCE';
+    verdictColor = '#059669';
+    actionText = 'Provisionally diagnostic: minor variance does not compromise patient management. Avoid unnecessary re-exposure.';
+  }
+
+  document.getElementById('calc-out-anat').textContent = anatScore + ' / 100';
+  document.getElementById('calc-out-pos').textContent = posScore + ' / 100';
+  document.getElementById('calc-out-exp').textContent = expScore + ' / 100';
+  document.getElementById('calc-out-ei').textContent = ei + ' (' + di + ' DI)';
+  document.getElementById('calc-out-mark').textContent = markScore + ' / 100';
+  document.getElementById('calc-out-art').textContent = artScore + ' / 100';
+  document.getElementById('calc-out-composite').textContent = composite + ' / 100';
+  
+  const verdictEl = document.getElementById('calc-out-verdict');
+  verdictEl.textContent = verdictText;
+  verdictEl.style.color = verdictColor;
+  
+  document.getElementById('calc-out-action').textContent = actionText;
+}
+
+// Table A Verification Handler
+function verifyTableA() {
+  const fields = {
+    domains: document.getElementById('w-eval-domains').value.trim(),
+    landmarks: document.getElementById('w-ap-landmarks').value.trim(),
+    targetDi: document.getElementById('w-ei-di-target').value.trim(),
+    missingMarker: document.getElementById('w-missing-marker-rule').value.trim(),
+    repeatJust: document.getElementById('w-repeat-justification').value.trim(),
+    rotationSigns: document.getElementById('w-rotation-signs').value.trim(),
+    weighting: document.getElementById('w-critique-weighting').value.trim(),
+    correctiveAction: document.getElementById('w-corrective-action').value.trim()
+  };
+
+  let score = 0;
+  const total = 8;
+
+  if (/^5(\.0)?$/i.test(fields.domains) || /five/i.test(fields.domains)) score++;
+  if (/(1\/3|33|one[\s-]third)/i.test(fields.landmarks)) score++;
+  if (/^(0|0\.0|\+0\.0)$/i.test(fields.targetDi)) score++;
+  if (/(electronic|annotation|do not repeat|alara|dual)/i.test(fields.missingMarker)) score++;
+  if (/(unrecoverable|diagnostic|cannot be recovered|efficacy|loss)/i.test(fields.repeatJust)) score++;
+  if (/(excessive|overlap|superimpos|increased)/i.test(fields.rotationSigns)) score++;
+  if (/(anat|30%?|coverage)/i.test(fields.weighting)) score++;
+  if (/(increase|mAs|8|technique)/i.test(fields.correctiveAction)) score++;
+
+  const feedback = document.getElementById('table-a-feedback');
+  if (score === total) {
+    feedback.style.color = '#059669';
+    feedback.textContent = `✅ Perfect! All ${total}/${total} Table A parameters verified. You have mastered the Stage E evaluation criteria.`;
+  } else if (score >= 5) {
+    feedback.style.color = '#d97706';
+    feedback.textContent = `⚠️ Good effort (${score}/${total} correct). Review the Background Theory Primer for any mismatched criteria.`;
+  } else {
+    feedback.style.color = '#dc2626';
+    feedback.textContent = `❌ ${score}/${total} verified. Review Section 1 (5 domains, True AP criteria, target EI/DI, and ALARA missing marker rule) before proceeding.`;
+  }
+}
+
+// Two-Tab Switching Function
+function switchTab(targetTab) {
+  const isExperiment = targetTab === 'experiment' || targetTab === 'tab-pane-experiment';
+  const btnIntro = document.getElementById('tab-btn-intro') || document.getElementById('tab-intro');
+  const btnExp = document.getElementById('tab-btn-experiment') || document.getElementById('tab-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (isExperiment) {
+    if (btnIntro) { btnIntro.classList.remove('active'); btnIntro.setAttribute('aria-selected', 'false'); }
+    if (btnExp) { btnExp.classList.add('active'); btnExp.setAttribute('aria-selected', 'true'); }
+    if (paneIntro) paneIntro.classList.remove('active');
+    if (paneExp) paneExp.classList.add('active');
+    window.location.hash = 'tab-experiment';
+    if (typeof renderSimulation === 'function') setTimeout(renderSimulation, 60);
+  } else {
+    if (btnExp) { btnExp.classList.remove('active'); btnExp.setAttribute('aria-selected', 'false'); }
+    if (btnIntro) { btnIntro.classList.add('active'); btnIntro.setAttribute('aria-selected', 'true'); }
+    if (paneExp) paneExp.classList.remove('active');
+    if (paneIntro) paneIntro.classList.add('active');
+    window.location.hash = 'tab-intro';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-14', labTitle: "Lab 14 — The IMAGE Process, Part 2 — Evaluate", weekNumber: 14, rubric: { title: "Lab 14 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Evaluate-stage concepts","points":4},{"id":"c2","name":"Virtual critique simulation","points":5},{"id":"c3","name":"Checklist and worksheet","points":5},{"id":"c4","name":"ALARA reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab14-rubric',title:"Lab 14 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Evaluate-stage concepts","points":4,"levels":[{"desc":"Correctly distinguishes critique, quality assessment, and repeat justification."},{"desc":"Mostly correct with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Virtual critique simulation","points":5,"levels":[{"desc":"Checks all dimensions and makes a defensible decision."},{"desc":"Uses the tool with limited evidence."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Checklist and worksheet","points":5,"levels":[{"desc":"Specific findings are linked to corrective actions."},{"desc":"Mostly correct but vague."},{"desc":"Incomplete or unsupported."}]},{"id":"c4","name":"ALARA reasoning","points":3,"levels":[{"desc":"Repeat decision is proportionate and evidence-based."},{"desc":"Plausible but brief."},{"desc":"No defensible decision."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  
+  RadLab.init({
+    labId: 'lab-14',
+    labTitle: "Lab 14 — The IMAGE Process, Part 2 — Evaluate",
+    weekNumber: 14,
+    rubric: {
+      title: "Lab 14 Grading Rubric (20 points)",
+      criteria: [
+        { id: "c1", name: "Evaluate-stage concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)" },
+        { id: "c2", name: "Virtual critique simulation", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)" },
+        { id: "c3", name: "Checklist and worksheet", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" },
+        { id: "c4", name: "ALARA reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" },
+        { id: "c5", name: "Completeness and professionalism", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" }
+      ]
+    },
+    sections: [
+      { id: 'sec-experiment', label: '1 · Experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-concept', label: '2 · Concept', checkComplete: function (s) { return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done); } },
+      { id: 'sec-scenario', label: '3 · Clinical decision', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '4 · Knowledge check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-worksheet', label: '5 · Worksheet' }
+    ]
+  });
+
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment prediction' });
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // Register Table A verification fields
+  ['w-eval-domains', 'w-ap-landmarks', 'w-ei-di-target', 'w-missing-marker-rule', 'w-repeat-justification', 'w-rotation-signs', 'w-critique-weighting', 'w-corrective-action'].forEach(function (id) {
+    RadLab.registerField(id, { sectionId: 'sec-explorer', label: 'Table A Verification Input' });
+  });
+
+  // Register Table B worksheet fields
+  ['tb-run1-anat', 'tb-run1-pos', 'tb-run1-ei', 'tb-run1-mark', 'tb-run1-art', 'tb-run1-comp', 'tb-run1-verdict', 'tb-run1-action',
+   'tb-run2-anat', 'tb-run2-pos', 'tb-run2-ei', 'tb-run2-mark', 'tb-run2-art', 'tb-run2-comp', 'tb-run2-verdict', 'tb-run2-action',
+   'tb-run3-anat', 'tb-run3-pos', 'tb-run3-ei', 'tb-run3-mark', 'tb-run3-art', 'tb-run3-comp', 'tb-run3-verdict', 'tb-run3-action',
+   'tb-run4-anat', 'tb-run4-pos', 'tb-run4-ei', 'tb-run4-mark', 'tb-run4-art', 'tb-run4-comp', 'tb-run4-verdict', 'tb-run4-action'].forEach(function (id) {
+    RadLab.registerField(id, { sectionId: 'sec-worksheet', label: 'Table B Analysis Input' });
+  });
+
+  // Render Quizzes
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
+    });
+  });
+
+  // Build Rubric
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab14-rubric',
+    title: "Lab 14 Grading Rubric (20 points)",
+    criteria: [
+      { id: "c1", name: "Evaluate-stage concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: [{ desc: "Correctly distinguishes critique, quality assessment, and repeat justification." }, { desc: "Mostly correct with minor gaps." }, { desc: "Major misconception." }] },
+      { id: "c2", name: "Virtual critique simulation", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: [{ desc: "Checks all dimensions and makes a defensible decision." }, { desc: "Uses the tool with limited evidence." }, { desc: "Little meaningful investigation." }] },
+      { id: "c3", name: "Checklist and worksheet", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: [{ desc: "Specific findings are linked to corrective actions." }, { desc: "Mostly correct but vague." }, { desc: "Incomplete or unsupported." }] },
+      { id: "c4", name: "ALARA reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: [{ desc: "Repeat decision is proportionate and evidence-based." }, { desc: "Plausible but brief." }, { desc: "No defensible decision." }] },
+      { id: "c5", name: "Completeness and professionalism", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: [{ desc: "Complete, organized, and ready for submission." }, { desc: "Minor omissions." }, { desc: "Substantially incomplete." }] }
+    ]
+  });
+
   setupConcept();
+
   if (LAB.worksheet && LAB.worksheet.length) {
     RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
   }
 
-  // Event Listeners for inputs
+  // Automatic Split Submission Hub Wiring
+  if (typeof RadLab._wireSplitSubmitHub === 'function') {
+    RadLab._wireSplitSubmitHub(document.getElementById('sec-submit-phase1'), document.getElementById('sec-submit-phase2'));
+  }
+
+  // Two-Tab Switching Event Listeners
+  const btnIntro = document.getElementById('tab-btn-intro') || document.getElementById('tab-intro');
+  const btnExp = document.getElementById('tab-btn-experiment') || document.getElementById('tab-experiment');
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  const btnBack = document.getElementById('btn-back-to-intro');
+
+  if (btnIntro) btnIntro.addEventListener('click', function () { switchTab('intro'); });
+  if (btnExp) btnExp.addEventListener('click', function () { switchTab('experiment'); });
+  if (btnProceed) btnProceed.addEventListener('click', function () { switchTab('experiment'); });
+  if (btnBack) btnBack.addEventListener('click', function () { switchTab('intro'); });
+
+  // Handle URL Hash on load
+  if (window.location.hash === '#tab-experiment') {
+    switchTab('experiment');
+  }
+
+  // Event Listeners for Simulation Controls
   ['ctrl-anatomy', 'ctrl-rotation', 'ctrl-mas', 'ctrl-marker', 'ctrl-artifact', 'ctrl-ww', 'ctrl-wl'].forEach(function (id) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', renderSimulation);
   });
 
-  document.getElementById('record-run').addEventListener('click', recordRun);
-  document.getElementById('remove-run').addEventListener('click', removeLastRun);
-  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+  // Event Listeners for Calculator Controls
+  ['calc-anatomy', 'calc-rotation', 'calc-mas', 'calc-marker', 'calc-artifact'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', updateCalculator);
+      el.addEventListener('change', updateCalculator);
+    }
+  });
+
+  // Table A Verification Button
+  const btnTableA = document.getElementById('btn-verify-table-a');
+  if (btnTableA) btnTableA.addEventListener('click', verifyTableA);
+
+  const btnRecord = document.getElementById('record-run');
+  if (btnRecord) btnRecord.addEventListener('click', recordRun);
+  const btnRemove = document.getElementById('remove-run');
+  if (btnRemove) btnRemove.addEventListener('click', removeLastRun);
+  const btnCsv = document.getElementById('btn-download-runs-csv');
+  if (btnCsv) btnCsv.addEventListener('click', downloadRunDataCsv);
+  const btnScenario = document.getElementById('check-scenario');
+  if (btnScenario) btnScenario.addEventListener('click', checkScenario);
 
   // Workstation quick tool buttons
-  document.getElementById('btn-win-bone').addEventListener('click', function () {
-    document.getElementById('ctrl-ww').value = '1000';
-    document.getElementById('ctrl-wl').value = '350';
-    renderSimulation();
-    RadLab.toast('Window preset: Bone Window (WW 1000 / WL 350)', 'info');
-  });
+  const btnBone = document.getElementById('btn-win-bone');
+  if (btnBone) {
+    btnBone.addEventListener('click', function () {
+      document.getElementById('ctrl-ww').value = '1000';
+      document.getElementById('ctrl-wl').value = '350';
+      renderSimulation();
+      RadLab.toast('Window preset: Bone Window (WW 1000 / WL 350)', 'info');
+    });
+  }
 
-  document.getElementById('btn-win-soft').addEventListener('click', function () {
-    document.getElementById('ctrl-ww').value = '350';
-    document.getElementById('ctrl-wl').value = '150';
-    renderSimulation();
-    RadLab.toast('Window preset: Soft Tissue (WW 350 / WL 150)', 'info');
-  });
+  const btnSoft = document.getElementById('btn-win-soft');
+  if (btnSoft) {
+    btnSoft.addEventListener('click', function () {
+      document.getElementById('ctrl-ww').value = '350';
+      document.getElementById('ctrl-wl').value = '150';
+      renderSimulation();
+      RadLab.toast('Window preset: Soft Tissue (WW 350 / WL 150)', 'info');
+    });
+  }
 
   const btnInvert = document.getElementById('btn-invert-toggle');
-  btnInvert.addEventListener('click', function () {
-    currentViewTool = currentViewTool === 'invert' ? 'standard' : 'invert';
-    btnInvert.classList.toggle('active', currentViewTool === 'invert');
-    renderSimulation();
-    RadLab.toast(currentViewTool === 'invert' ? 'Inverted grayscale enabled' : 'Standard grayscale enabled', 'info');
-  });
+  if (btnInvert) {
+    btnInvert.addEventListener('click', function () {
+      currentViewTool = currentViewTool === 'invert' ? 'standard' : 'invert';
+      btnInvert.classList.toggle('active', currentViewTool === 'invert');
+      renderSimulation();
+      RadLab.toast(currentViewTool === 'invert' ? 'Inverted grayscale enabled' : 'Standard grayscale enabled', 'info');
+    });
+  }
 
   // Clinical Case Presets
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
@@ -537,14 +2181,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Restore saved clinical scenario choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
   if (savedScenario && savedScenario.selected !== undefined) {
     const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
     if (radio) radio.checked = true;
   }
   
+  updateCalculator();
   renderSimulation();
   renderRunLog();
+  renderAllMath();
   RadLab.progress.update();
 });
 </script>

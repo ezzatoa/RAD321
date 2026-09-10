@@ -4,136 +4,1497 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9: Quantum Noise, DQE &amp; SNR Lab — RAD 321</title>
+
+  <!-- KaTeX Infallible Mathematical Typography Engine (CDN + Fallback) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <link rel="stylesheet" href="../../shared/lab-styles.css">
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}
-  .experiment-layout{display:flex;flex-direction:column;gap:18px}
-  .sim-canvas-wrap{position:relative;width:100%}
-  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/420;background:#071a2b;border-radius:14px;border:1px solid #28546a;box-shadow:0 4px 18px rgba(0,0,0,.25)}
-  .preset-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
-  .preset-toolbar .preset-title{font-size:12px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:2px}
-  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:6px 13px;font-size:12.5px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
-  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
-  .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-  .control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:12px}
-  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
-  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:13px}
-  .control-card input{width:100%;margin-top:8px}
-  .control-card .field-hint{font-size:11px;color:var(--rad-text-faint);margin-top:4px;display:block}
-  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:2px}
-  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:13px}
-  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
-  .metric strong{display:block;color:var(--rad-teal);font-size:20px;line-height:1.2;margin:4px 0}
-  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:12px}
-  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.control-grid,.metric-grid{grid-template-columns:repeat(2,1fr)}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Two-Tab Navigation Styling */
+    .lab-tab-nav {
+      display: flex;
+      gap: 4px;
+      margin: 18px 0 24px;
+      border-bottom: 2px solid var(--rad-border);
+      background: var(--rad-bg-soft);
+      padding: 6px 6px 0;
+      border-radius: 12px 12px 0 0;
+    }
+    .tab-btn {
+      padding: 12px 22px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--rad-text-soft);
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover {
+      color: var(--rad-blue);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: var(--rad-teal);
+      border-color: var(--rad-border);
+      border-bottom: 2px solid #fff;
+      margin-bottom: -2px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero & Structure */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,.96), rgba(7,26,43,.64) 62%, rgba(7,26,43,.12));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 760px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 28px;
+      margin: 8px 0;
+      line-height: 1.25;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: .94;
+      margin: 0;
+    }
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    /* Cards & Layout */
+    .experiment-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1000/420;
+      background: #071a2b;
+      border-radius: 14px;
+      border: 1px solid #28546a;
+      box-shadow: 0 4px 18px rgba(0,0,0,.25);
+    }
+    .preset-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--rad-bg-soft);
+      padding: 11px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--rad-border);
+    }
+    .preset-toolbar .preset-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-right: 4px;
+    }
+    .preset-btn {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 6px 13px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .preset-btn:hover {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      color: var(--rad-teal);
+      transform: translateY(-1px);
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .control-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      white-space: nowrap;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .control-card input {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .control-card .field-hint {
+      font-size: 11px;
+      color: var(--rad-text-faint);
+      margin-top: 4px;
+      display: block;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 2px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 4px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      line-height: 1.35;
+      font-size: 11.5px;
+    }
+
+    /* In-Lab Stations Grid */
+    .station-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .station-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s ease;
+    }
+    .station-card:hover {
+      border-color: var(--rad-teal);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .station-card h4 {
+      margin: 0 0 8px;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .station-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 6px;
+      background: #eef8f7;
+      color: var(--rad-teal);
+      text-transform: uppercase;
+    }
+
+    /* Calculator Box */
+    .calc-box {
+      background: #f8fafc;
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+    .calc-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .calc-row label {
+      font-weight: 700;
+      font-size: 13px;
+      min-width: 170px;
+      color: var(--rad-navy);
+    }
+    .calc-result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--rad-border);
+    }
+    .calc-result-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .calc-result-card .c-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--rad-text-faint);
+    }
+    .calc-result-card .c-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--rad-teal);
+      margin: 4px 0 2px;
+    }
+
+    /* Procedure Steps */
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    /* Tables & Inputs */
+    .table-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      border: 1px solid var(--rad-border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .table-input:focus {
+      border-color: var(--rad-teal);
+      outline: none;
+      background: #f0fdfc;
+    }
+    .run-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .run-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rad-blue);
+    }
+    .run-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+    }
+    .run-table {
+      margin: 0;
+      min-width: 760px;
+    }
+    .run-table td, .run-table th {
+      font-size: 12px;
+    }
+
+    /* Challenges & Scenarios */
+    .challenge-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .scenario-options {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .scenario-option {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .scenario-option:has(input:checked) {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+    }
+    .feedback-box {
+      min-height: 44px;
+      border-radius: 9px;
+      padding: 10px 12px;
+      background: var(--rad-bg-soft);
+      font-size: 13px;
+    }
+    .feedback-box.correct {
+      background: #eaf8f0;
+      color: #12633f;
+    }
+    .feedback-box.incorrect {
+      background: #fff0ee;
+      color: #9d342d;
+    }
+
+    /* CTA Card */
+    .cta-card {
+      background: linear-gradient(135deg, #07253b, #0d3856);
+      color: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin: 24px 0;
+      box-shadow: 0 4px 16px rgba(7,37,59,0.18);
+    }
+    .cta-card h3 {
+      margin: 0 0 6px;
+      color: #7fe0d6;
+      font-size: 18px;
+    }
+    .cta-card p {
+      margin: 0;
+      font-size: 13.5px;
+      opacity: 0.9;
+    }
+
+    /* Instructions Box */
+    .excel-guide-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .excel-guide-box h4 {
+      color: #166534;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Math Formula Block */
+    .formula-box {
+      background: #eef8f7;
+      border-left: 4px solid var(--rad-teal);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 14px 0;
+      color: #164b53;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .model-note {
+      font-size: 12px;
+      color: var(--rad-text-faint);
+      margin: 8px 0 0;
+    }
+
+    @media(max-width: 980px) {
+      .control-grid, .metric-grid, .procedure-grid, .calc-result-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .lab-meta-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media(max-width: 560px) {
+      .hero-overlay { padding: 0 20px; }
+      .hero-overlay h1 { font-size: 23px; }
+      .control-grid, .metric-grid, .procedure-grid, .calc-result-grid, .lab-meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .cta-card { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
+<!-- Header & Topbar -->
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 9 — Quantum Noise, DQE &amp; SNR Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 9 of 15</span></div></div>
-</header>
-<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
-<main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 9 · Assessed laboratory assignment</div><h1>Quantum Noise, DQE &amp; SNR Lab</h1><p>Relate photon statistics, mAs, detector efficiency, and signal-to-noise. Directly aligned with: Image Noise.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
-
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Distinguish intrinsic receptor noise from quantum noise/mottle.</li><li><span class="num">2</span>Understand <b>Object Signal (<i>S</i>)</b>, arbitrary units (<b>a.u.</b>), and photon statistics.</li><li><span class="num">3</span>Predict how mAs and DQE change SNR according to Poisson statistics (SNR &prop; &radic;mAs).</li><li><span class="num">4</span>Calculate simplified SNR, CNR, and evaluate against the <b>Rose Criterion</b> (SNR &ge; 5).</li><li><span class="num">5</span>Compare detector DQE and conversion efficiency conceptually for dose optimization.</li></ul></div></section>
-  
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span>
-    <p><b>Image noise</b> is unwanted statistical fluctuation that obscures subtle anatomical details and low-contrast lesions. In medical radiography, total noise consists of two primary independent sources:</p>
-    <ul>
-      <li><b>Quantum Noise (Quantum Mottle, &sigma;<sub>q</sub>):</b> Arises from the discrete, random Poisson arrival of X-ray photons at the detector. When fewer photons are detected (low mAs or low DQE), statistical fluctuations are relatively large. The standard deviation of quantum noise is &sigma;<sub>q</sub> = <i>S</i> / &radic;<i>N</i><sub>detected</sub>.</li>
-      <li><b>Intrinsic Electronic Noise (&sigma;<sub>int</sub>):</b> A fixed background noise floor generated by detector readout electronics, thermal fluctuations, and digitization, independent of radiation exposure.</li>
-      <li><b>Total Combined Noise (&sigma;<sub>tot</sub>):</b> Because these noise sources are statistically independent, they combine in quadrature: &sigma;<sub>tot</sub> = &radic;(&sigma;<sub>q</sub><sup>2</sup> + &sigma;<sub>int</sub><sup>2</sup>).</li>
-    </ul>
-    <div class="formula-box">
-      <b>Object Signal (<i>S</i>, in arbitrary units `a.u.`):</b> Mean transmitted X-ray intensity / pixel value in a region of interest.<br>
-      <b>Detected Quanta (<i>N</i>):</b> <i>N</i> &prop; mAs &times; DQE.<br>
-      <b>Signal-to-Noise Ratio (SNR):</b> SNR = <sup><i>S</i></sup>&frasl;<sub>&sigma;<sub>tot</sub></sub> = (Mean Signal <i>S</i>) / (Total Noise &sigma;<sub>tot</sub>).<br>
-      <b>Contrast-to-Noise Ratio (CNR):</b> CNR = <sup>|<i>S</i><sub>target</sub> &minus; <i>S</i><sub>background</sub>|</sup>&frasl;<sub>&sigma;<sub>tot</sub></sub>.<br>
-      <b>Rose Criterion:</b> A visual psychophysics threshold establishing that an SNR &ge; 5 (or CNR &ge; 3) is necessary for human observers to reliably detect a subtle lesion.<br>
-      <b>Detective Quantum Efficiency (DQE):</b> DQE = SNR<sub>out</sub><sup>2</sup> / SNR<sub>in</sub><sup>2</sup>. Measures how effectively a detector preserves input SNR per unit radiation dose.
-    </div>
-    <p><b>Why does increasing Object Signal increase Noise SD?</b> In Poisson processes, the absolute photon variance increases as the signal increases (&sigma; &prop; &radic;<i>N</i>). On a fixed-scale monitor, larger absolute fluctuations appear as larger pixel-to-pixel variations. However, increasing total photon fluence (mAs) increases detected photons much faster than noise grows, steadily improving the <i>relative</i> SNR (SNR &prop; &radic;mAs).</p>
-    <p class="model-note"><b>Model boundary:</b> Values are expressed in arbitrary units (<b>a.u.</b>) to teach normalized physical relationships and statistical scaling laws without requiring equipment-specific dosimetric calibration.</p></div></section>
-
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict how a fourfold mAs increase changes quantum SNR.</div><div class="procedure-step">Record a low-mAs baseline.</div><div class="procedure-step">Increase only mAs and record a second run.</div><div class="procedure-step">Restore mAs, change DQE or intrinsic noise, and record a third run.</div><div class="procedure-step">Identify whether quantum or intrinsic noise dominates.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card">
-      <div class="experiment-layout">
-        <div class="preset-toolbar">
-          <span class="preset-title">Clinical Presets:</span>
-          <button type="button" class="preset-btn" data-mas="10" data-signal="100" data-detector="0.7" data-intrinsic="5">Standard Baseline (10 mAs, DQE 0.7)</button>
-          <button type="button" class="preset-btn" data-mas="2" data-signal="100" data-detector="0.7" data-intrinsic="5">Low Dose (2 mAs — High Quantum Mottle)</button>
-          <button type="button" class="preset-btn" data-mas="5" data-signal="100" data-detector="0.85" data-intrinsic="5">High DQE Optimization (5 mAs, DQE 0.85)</button>
-          <button type="button" class="preset-btn" data-mas="8" data-signal="40" data-detector="0.6" data-intrinsic="15">Electronic Noise Dominance (15 SD Floor)</button>
-          <button type="button" class="preset-btn" data-mas="30" data-signal="120" data-detector="0.8" data-intrinsic="3">High-Dose Benchmark (30 mAs, Crisp)</button>
-        </div>
-        <div class="sim-canvas-wrap">
-          <canvas id="sim-canvas" class="sim-canvas" width="1000" height="420" role="img" aria-label="Interactive visual model for Quantum Noise, DQE &amp; SNR Lab" aria-describedby="sim-caption"></canvas>
-          <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results and noise decomposition update in real time.</p>
-        </div>
-        <div class="control-grid">
-          <div class="control-card">
-            <label for="ctrl-mas"><span>Exposure (mAs)</span><output id="out-mas" for="ctrl-mas">10 mAs</output></label>
-            <input type="range" id="ctrl-mas" min="1" max="40" step="1" value="10" aria-describedby="sim-caption">
-            <span class="field-hint">Controls incident X-ray photon quantity</span>
-          </div>
-          <div class="control-card">
-            <label for="ctrl-signal"><span>Object signal</span><output id="out-signal" for="ctrl-signal">100 a.u.</output></label>
-            <input type="range" id="ctrl-signal" min="40" max="160" step="1" value="100" aria-describedby="sim-caption">
-            <span class="field-hint">Transmitted intensity in arbitrary units</span>
-          </div>
-          <div class="control-card">
-            <label for="ctrl-detector"><span>Detector DQE</span><output id="out-detector" for="ctrl-detector">0.7 fraction</output></label>
-            <input type="range" id="ctrl-detector" min="0.3" max="0.9" step="0.05" value="0.7" aria-describedby="sim-caption">
-            <span class="field-hint">SNR preservation efficiency (0.3 to 0.9)</span>
-          </div>
-          <div class="control-card">
-            <label for="ctrl-intrinsic"><span>Intrinsic noise</span><output id="out-intrinsic" for="ctrl-intrinsic">5 SD</output></label>
-            <input type="range" id="ctrl-intrinsic" min="1" max="20" step="1" value="5" aria-describedby="sim-caption">
-            <span class="field-hint">Electronic background noise floor (SD)</span>
-          </div>
-        </div>
-        <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 9 — Quantum Noise, DQE &amp; SNR Lab</div>
       </div>
-      <div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div>
-      <div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div>
     </div>
-  </section>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 9 of 15</span>
+    </div>
+  </div>
+</header>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>DQE and conversion efficiency</h3><p>Match detector descriptions to low/high DQE and direct/indirect conversion behavior.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Noise troubleshooting</h3><p>A low-dose image is noisy, but positioning and processing are correct. What is the best first technical review?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Check whether detected exposure was adequate for the receptor and patient</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Increase displayed contrast only</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Increase OID</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Ignore the noise</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record low- and high-mAs SNR values and describe the visual change in mottle. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Calculate SNR for mean signal S = 120 a.u. and total noise SD σ = 12 a.u., and explain what arbitrary units (a.u.) mean. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain the practical meaning of DQE for dose optimization and how high DQE achieves diagnostic SNR at lower mAs. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: distinguish a quantum-noise problem from an intrinsic detector-noise problem using the simulator evidence. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+<!-- Two-Tab Switcher Navigation -->
+<nav class="lab-tab-nav" aria-label="Laboratory Phases">
+  <button class="tab-btn active" id="tab-btn-intro" data-tab="tab-pane-intro" type="button">
+    <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities (10 Pts)
+  </button>
+  <button class="tab-btn" id="tab-btn-experiment" data-tab="tab-pane-experiment" type="button">
+    <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis (10 Pts)
+  </button>
+</nav>
+
+<main class="lab-container" id="main-content">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 9 · Assessed Laboratory Suite</div>
+      <h1>Quantum Noise, DQE &amp; SNR Lab</h1>
+      <p>Investigate photon Poisson arrival statistics, quantum mottle, detector Detective Quantum Efficiency (DQE), Contrast-to-Noise Ratio (CNR), and the Rose Criterion under ALARA.</p>
+    </div>
+  </div>
+
+  <!-- Student Meta Information Card -->
+  <div class="card card-soft">
+    <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <h3 style="margin:0;">Student &amp; Course Credentials</h3>
+      <span class="badge badge-primary">Course: RAD 321 · Week 9 of 15</span>
+    </div>
+    <div class="lab-meta-grid">
+      <div class="form-row">
+        <label class="field-label" for="meta-studentName">Full Name</label>
+        <input type="text" id="meta-studentName" placeholder="e.g. Ahmed Al-Harbi" required>
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-studentId">Student ID</label>
+        <input type="text" id="meta-studentId" placeholder="e.g. 431001234" required>
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-section">Section / Group</label>
+        <input type="text" id="meta-section" placeholder="e.g. A1 / Male Cohort" required>
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-date">Date of Session</label>
+        <input type="text" id="meta-date" required>
+      </div>
+    </div>
+    <p class="form-hint" style="margin-top:8px;">All progress, simulator runs, and worksheets automatically save to your local browser storage.</p>
+  </div>
+
+  <!-- Two-Phase Overview Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-graduation-cap" style="color:var(--rad-teal);font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Structured Two-Phase Laboratory Assessment (20 Points Total)</h3>
+    </div>
+    <p>This laboratory module evaluates your scientific competencies across two distinct assessment phases:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i>
+        <b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the 4 interactive learning stations, Table A verification check, concept matching, calibrated calculator, clinical scenario, and 4 knowledge-check MCQs on Tab 1. Submit before leaving the in-person lab session.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i>
+        <b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Conduct virtual experimental trials on Tab 2, export run data via CSV, construct Excel regression charts (mAs vs. SNR; DQE vs. SNR/CNR), complete Table B quantitative calculations, and submit with your completed workbook.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================================= -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 PTS)                                       -->
+  <!-- ========================================================================================= -->
+  <div class="tab-pane active" id="tab-pane-intro">
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Diagnostic photon statistics, noise decomposition, and receptor efficiency</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list" style="margin-top:12px;">
+          <li><span class="num">1</span><b>Distinguish Noise Regimes:</b> Differentiate intrinsic electronic detector noise from quantum noise (Poisson photon mottle).</li>
+          <li><span class="num">2</span><b>Understand Photon Statistics:</b> Relate object signal (S, in arbitrary units a.u.) to incident detected quanta (N) where σq = √(N).</li>
+          <li><span class="num">3</span><b>Model SNR Scaling:</b> Predict and verify how changes in mAs and DQE modulate Signal-to-Noise Ratio according to Poisson statistics (SNR ∝ √(mAs × DQE)).</li>
+          <li><span class="num">4</span><b>Apply Rose Criterion:</b> Calculate Contrast-to-Noise Ratio (CNR) and evaluate whether subtle low-contrast lesions satisfy the Rose Criterion (SNR ≥ 5.0, CNR ≥ 2.5) for confident visual detection.</li>
+          <li><span class="num">5</span><b>Synthesize Clinical ALARA:</b> Formulate dose-sparing technical protocols utilizing high-DQE digital flat panels to prevent pediatric quantum mottle without unnecessary radiation dose creep.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–8 min demo mottle + SNR idea · 8–22 min Stations 1–3 in pairs (Explorer, Matcher, Calculator) · 22–30 min NICU scenario + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is 3 runs + 2 Excel plots (mAs vs SNR, DQE vs CNR). If short on time, cut Station 2 matching to 4 pairs, not the scenario.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+      1) SNR ∝ √(mAs × DQE) — 4× mAs to double SNR. 2) Classroom Rose threshold CNR ≥ 2.5 (classic CNR ≥ 5) separates visible vs mottle.
+      3) High DQE (≈0.85 CsI) holds SNR at half dose — ALARA.
+    </div>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory Primer</h2>
+          <div class="lab-section-sub">Fundamental physics of photon noise, detector transfer efficiency, and psychophysics</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics Primer</span>
+
+        <h3>1.1 Poisson Photon Statistics &amp; Quantum Mottle</h3>
+        <p>In medical radiography, X-ray photon emission and receptor interaction are inherently stochastic (random) processes governed by <b>Poisson statistics</b>. When a uniform beam irradiates an image receptor, the number of photons $N$ arriving in any localized detector pixel varies randomly around a mean value:</p>
+        <div class="formula-box">
+          $$\sigma_q = \sqrt{N}$$
+          $$\text{Relative Noise Fraction} = \frac{\sigma_q}{N} = \frac{\sqrt{N}}{N} = \frac{1}{\sqrt{N}}$$
+        </div>
+        <p><b>The Photon Starvation Paradox:</b> Notice that while absolute standard deviation ($\sigma_q = \sqrt{N}$) increases as more photons are detected, the <i>relative fluctuation</i> ($\frac{1}{\sqrt{N}}$) steadily decreases. At low exposure (low mAs), fewer photons are available to form each pixel, producing large relative intensity variations visible as graininess or <b>quantum mottle</b>.</p>
+
+        <h3>1.2 Intrinsic Electronic Noise &amp; Quadrature Noise Addition</h3>
+        <p>Total radiographic noise in a digital flat-panel detector (FPD) or computed radiography (CR) reader is a composite of two statistically independent physical processes:</p>
+        <ul>
+          <li><b>Quantum Noise ($\sigma_q$):</b> Dose-dependent fluctuation arising from discrete photon arrival statistics. Scales with $\sqrt{\text{mAs} \cdot \text{DQE}}$.</li>
+          <li><b>Intrinsic Electronic Noise ($\sigma_{\text{int}}$):</b> Dose-independent background noise floor generated by detector readout electronics, thin-film transistor (TFT) thermal noise, and analog-to-digital converter (ADC) quantization error.</li>
+        </ul>
+        <p>Because these two noise mechanisms are uncorrelated, their variances add linearly, meaning standard deviations add in <b>quadrature</b>:</p>
+        <div class="formula-box">
+          $$\sigma_{\text{tot}} = \sqrt{\sigma_q^2 + \sigma_{\text{int}}^2}$$
+        </div>
+        <p>When exposure is moderate to high, quantum noise vastly exceeds electronic noise ($\sigma_q \gg \sigma_{\text{int}}$), placing the system in the <i>quantum-limited regime</i> (optimal imaging). At ultra-low detector exposures, the electronic noise floor dominates ($\sigma_{\text{int}} \gg \sigma_q$), causing severe SNR loss regardless of patient thickness.</p>
+
+        <h3>1.3 Signal-to-Noise Ratio (SNR) &amp; Contrast-to-Noise Ratio (CNR)</h3>
+        <p>The diagnostic quality of an image is fundamentally quantified by how strongly anatomical signals stand out above the background noise floor:</p>
+        <div class="formula-box">
+          $$\text{SNR} = \frac{\bar{S}}{\sigma_{\text{tot}}} = \frac{\text{Mean Object Signal}}{\text{Total Noise SD}} \propto \sqrt{\text{mAs} \cdot \text{DQE}}$$
+          $$\text{CNR} = \frac{|\bar{S}_{\text{target}} - \bar{S}_{\text{background}}|}{\sigma_{\text{tot}}}$$
+        </div>
+        <p><b>Arbitrary Units (a.u.):</b> In physical and educational modeling, signal values are normalized into arbitrary units (`a.u.`) representing relative detector digital driving levels (pixel gray levels) independent of manufacturer-specific calibrations.</p>
+
+        <h3>1.4 The Rose Criterion for Threshold Lesion Conspicuity</h3>
+        <p>Albert Rose established a foundational psychophysical standard in imaging science: for a human observer to reliably detect a low-contrast target object against a noisy background with high (≈95%+) detectability, the signal-to-noise ratio must satisfy:</p>
+        <div class="formula-box">
+          $$\text{Rose Criterion: } \text{SNR}_{\text{object}} \ge 5.0 \quad (\text{or } \text{CNR} \ge 2.5 \text{ to } 3.0)$$
+          <div style="font-size:12px;color:#065f46;margin-top:6px;">Classroom simplified threshold — classic Rose criterion is CNR ≥ 5.</div>
+        </div>
+        <p>If $\text{CNR} < 2.5$ (classroom simplified threshold; classic Rose criterion is CNR ≥ 5), the human visual cortex cannot reliably separate subtle pathology (e.g., small pulmonary nodules, microcalcifications, hair-line fractures) from random statistical noise clumps.</p>
+
+        <h3>1.5 Detective Quantum Efficiency (DQE) &amp; ALARA Optimization</h3>
+        <p><b>Detective Quantum Efficiency (DQE)</b> is the gold-standard physical metric characterizing the dose efficiency of an imaging detector. It describes the fraction of input signal-to-noise power preserved at the detector output across spatial frequencies:</p>
+        <div class="formula-box">
+          $$\text{DQE} = \frac{\text{SNR}_{\text{out}}^2}{\text{SNR}_{\text{in}}^2}$$
+        </div>
+        <p>A detector with $\text{DQE} = 0.85$ (e.g., modern Cesium Iodide CsI / a-Si indirect digital flat panel) captures 85% of the information available in the incident X-ray beam. In contrast, an older CR photostimulable phosphor plate with $\text{DQE} = 0.35$ absorbs and converts far fewer photons, requiring more than double the patient radiation dose ($\text{mAs}$) to achieve an equivalent diagnostic SNR!</p>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Station 1 — Photon Statistics & Noise Modalities Explorer -->
+    <section class="lab-section" id="sec-noise-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1: Photon Statistics &amp; Noise Modalities Explorer</h2>
+          <div class="lab-section-sub">Inspect how exposure, detector technology, and noise mechanisms alter radiographic quality</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim">Station 1: Concept Explorer</span>
+        <p>Examine the four primary imaging conditions below. Review the physical mechanisms, then complete the <b>Table A Verification Check</b>.</p>
+
+        <div class="station-grid">
+          <div class="station-card">
+            <h4><span class="station-badge">Condition 1</span> Photon Starvation (Low mAs)</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Occurs when insufficient mAs is selected. The sparse photon fluence creates severe statistical fluctuations ($\frac{1}{\sqrt{N}}$ is large). Manifests as salt-and-pepper graininess that obliterates low-contrast trabecular bone and subtle lung nodules.</p>
+            <div style="font-size:11.5px;background:#fef2f2;border:1px solid #fecaca;padding:6px 10px;border-radius:6px;color:#991b1b;">
+              <strong>Diagnostic Outcome:</strong> Sub-threshold lesion conspicuity ($\text{CNR} < 2.5$ — classroom simplified threshold; classic Rose criterion is CNR ≥ 5). Fails Rose criterion. High repeat risk.
+            </div>
+          </div>
+
+          <div class="station-card">
+            <h4><span class="station-badge">Condition 2</span> Diagnostic Quantum-Limited</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Standard clinical baseline ($10\text{ mAs}$, $\text{DQE} = 0.70$). Abundant detected photons keep relative noise low. Quantum noise exceeds electronic noise ($\sigma_q \gg \sigma_{\text{int}}$), achieving crisp trabecular detail while adhering strictly to ALARA.</p>
+            <div style="font-size:11.5px;background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:6px;color:#166534;">
+              <strong>Diagnostic Outcome:</strong> $\text{SNR} \approx 14.5$, $\text{CNR} \approx 2.6$. Satisfies Rose criterion (classroom simplified threshold; classic Rose criterion is CNR ≥ 5) with zero excess dose.
+            </div>
+          </div>
+
+          <div class="station-card">
+            <h4><span class="station-badge">Condition 3</span> High-DQE Receptor Optimization</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Deploying a high-DQE detector ($\text{DQE} = 0.85$, structured needle-like CsI scintillator) dramatically improves photon absorption and conversion. Allows a 50% reduction in patient exposure ($5\text{ mAs}$) while maintaining diagnostic SNR!</p>
+            <div style="font-size:11.5px;background:#eff6ff;border:1px solid #bfdbfe;padding:6px 10px;border-radius:6px;color:#1e40af;">
+              <strong>Diagnostic Outcome:</strong> Optimal pediatric/ALARA protocol. Maximum dose efficiency without mottle degradation.
+            </div>
+          </div>
+
+          <div class="station-card">
+            <h4><span class="station-badge">Condition 4</span> Electronic Noise Floor Dominance</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">In heavily attenuating regions or damaged detectors with elevated intrinsic noise ($\sigma_{\text{int}} \ge 15\text{ SD}$), the electronic background swamps the weak transmitted signal. Increasing mAs slightly fails to resolve the noise floor.</p>
+            <div style="font-size:11.5px;background:#fffbeb;border:1px solid #fde68a;padding:6px 10px;border-radius:6px;color:#92400e;">
+              <strong>Diagnostic Outcome:</strong> Electronic-dominant regime. Requires hardware calibration, gain recalibration, or detector replacement.
+            </div>
+          </div>
+        </div>
+
+        <!-- Table A: Verification Check -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-table-check" style="color:var(--rad-teal)"></i> Table A: In-Lab Noise &amp; DQE Verification Check</h4>
+        <p style="font-size:12.5px;color:var(--rad-text-soft);">Provide concise technical entries for each physical and clinical parameter based on your review above.</p>
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="font-size:12.5px;">
+            <thead>
+              <tr style="background:var(--rad-bg-soft);">
+                <th style="width:28%;">Physical Parameter</th>
+                <th style="width:36%;">Primary Cause / Mathematical Law</th>
+                <th style="width:36%;">Impact on Radiographic Image Quality &amp; ALARA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. Quantum Mottle</b></td>
+                <td><input type="text" class="table-input" id="w-noise-mottle" placeholder="e.g., Poisson statistical photon starvation (low mAs)"></td>
+                <td><input type="text" class="table-input" id="w-noise-poisson" placeholder="e.g., Salt-and-pepper graininess, degrades low-contrast detail"></td>
+              </tr>
+              <tr>
+                <td><b>2. SNR vs. mAs Scaling</b></td>
+                <td><input type="text" class="table-input" id="w-noise-snr-mas" placeholder="e.g., SNR proportional to sqrt(mAs)"></td>
+                <td><input type="text" class="table-input" id="w-noise-quadrature" placeholder="e.g., Doubling SNR requires a 4-fold increase in mAs"></td>
+              </tr>
+              <tr>
+                <td><b>3. Rose Criterion</b></td>
+                <td><input type="text" class="table-input" id="w-noise-rose" placeholder="e.g., SNR >= 5.0 (or CNR >= 2.5 — classroom simplified; classic is CNR >= 5)"></td>
+                <td><input type="text" class="table-input" id="w-noise-cnr" placeholder="e.g., Threshold for high (≈95%+) human observer lesion detectability"></td>
+              </tr>
+              <tr>
+                <td><b>4. Detective Quantum Efficiency (DQE)</b></td>
+                <td><input type="text" class="table-input" id="w-noise-dqe" placeholder="e.g., SNR_out^2 / SNR_in^2 (conversion efficiency)"></td>
+                <td><input type="text" class="table-input" id="w-noise-alara" placeholder="e.g., High DQE achieves diagnostic SNR at significantly lower patient dose"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Station 2 — Noise Metrics & Detector Matcher -->
+    <section class="lab-section" id="sec-noise-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2: Noise Metrics &amp; Detector Performance Matcher</h2>
+          <div class="lab-section-sub">Pair physical definitions with their exact diagnostic principles</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-sim">Station 2: Concept Challenge</span>
+        <h3>Noise, DQE &amp; Psychophysics Matching Activity</h3>
+        <p>Match each technical imaging parameter on the left with its corresponding physical definition or clinical manifestation on the right. Completed matches are locked automatically.</p>
+        <div id="concept-activity" style="margin-top:14px;"></div>
+      </article>
+    </section>
+
+    <!-- Section 4: Interactive Station 3 — Calibrated SNR, CNR & Rose Calculator -->
+    <section class="lab-section" id="sec-snr-calc">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3: Calibrated SNR, CNR &amp; Rose Criterion Calculator</h2>
+          <div class="lab-section-sub">Real-time quantitative model of Poisson noise, electronic noise floor, and conspicuity</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-tool">Station 3: Analytical Tool</span>
+        <p>Adjust exposure mAs, detector DQE, object signal, and intrinsic noise to observe real-time mathematical decomposition of $\sigma_q$, $\sigma_{\text{tot}}$, $\text{SNR}$, and $\text{CNR}$ against the <b>Rose Criterion</b>.</p>
+
+        <div class="calc-box">
+          <div class="calc-row">
+            <label for="calc-mas">Tube Exposure (mAs):</label>
+            <input type="range" id="calc-mas" min="1" max="40" step="1" value="10" style="flex:1;">
+            <span id="calc-mas-val" style="font-weight:800;color:var(--rad-teal);min-width:60px;">10 mAs</span>
+          </div>
+          <div class="calc-row">
+            <label for="calc-dqe">Detector DQE ($\times$):</label>
+            <input type="range" id="calc-dqe" min="0.30" max="0.90" step="0.05" value="0.70" style="flex:1;">
+            <span id="calc-dqe-val" style="font-weight:800;color:var(--rad-teal);min-width:60px;">0.70</span>
+          </div>
+          <div class="calc-row">
+            <label for="calc-sig">Object Signal ($S$, a.u.):</label>
+            <input type="range" id="calc-sig" min="40" max="160" step="5" value="100" style="flex:1;">
+            <span id="calc-sig-val" style="font-weight:800;color:var(--rad-teal);min-width:60px;">100 a.u.</span>
+          </div>
+          <div class="calc-row">
+            <label for="calc-int">Intrinsic Noise Floor ($\sigma_{\text{int}}$, SD):</label>
+            <input type="range" id="calc-int" min="1" max="20" step="1" value="5" style="flex:1;">
+            <span id="calc-int-val" style="font-weight:800;color:var(--rad-teal);min-width:60px;">5 SD</span>
+          </div>
+
+          <div class="calc-result-grid">
+            <div class="calc-result-card">
+              <div class="c-label">Quantum SD ($\sigma_q$)</div>
+              <div class="c-val" id="res-qsd">5.42 a.u.</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$\sigma_q = S / \sqrt{N/25}$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Total Noise SD ($\sigma_{\text{tot}}$)</div>
+              <div class="c-val" id="res-totsd">7.38 a.u.</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$\sqrt{\sigma_q^2 + \sigma_{\text{int}}^2}$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Signal-to-Noise (SNR)</div>
+              <div class="c-val" id="res-snr">13.56</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$\bar{S} / \sigma_{\text{tot}}$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Contrast-to-Noise (CNR)</div>
+              <div class="c-val" id="res-cnr">2.44</div>
+              <small id="res-rose-badge" style="font-size:10.5px;font-weight:800;color:#d97706;">BORDERLINE</small>
+            </div>
+          </div>
+          <div id="calc-regime-status" style="margin-top:12px;font-size:12.5px;padding:8px 12px;border-radius:6px;background:#eef8f7;color:#164b53;">
+            <strong>Noise Dominance Regime:</strong> Quantum Noise Dominates ($\sigma_q = 5.42 > \sigma_{\text{int}} = 5.00$). System is operating in the quantum-limited realm.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Station 4 — Clinical Radiation Protection Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4: Clinical Radiation Protection &amp; Low-Dose Scenario</h2>
+          <div class="lab-section-sub">Pediatric radiography, quantum mottle diagnosis, and ALARA decision-making</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-check">Station 4: Clinical Decision</span>
+        <h3>Pediatric ICU Neonatal Chest Radiography Case</h3>
+        <p>A portable neonatal chest radiograph is obtained in the NICU at ultra-low technique ($1\text{ mAs}$, $60\text{ kVp}$). The technologist notices severe salt-and-pepper graininess across the lung fields that obscures subtle pulmonary markings and makes excluding a pneumothorax uncertain. The patient positioning, collimation, and digital processing are verified as completely correct.</p>
+        <p><b>What is the most appropriate first technical and clinical action to resolve this image quality issue under ALARA?</b></p>
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Choose the best clinical response</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Option A:</b> Check whether detected exposure (photons arriving at detector) was adequate for the receptor technology, and adjust mAs or verify receptor sensitivity to achieve diagnostic SNR under ALARA.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Option B:</b> Sharpen the digital display filter and increase window contrast aggressively to artificially enhance lung border sharpness without changing exposure.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Option C:</b> Increase Object-to-Image Distance (OID) by 15 cm to create an air gap that cleans up quantum mottle.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Option D:</b> Accept the image as diagnostic and send to PACS since pediatric patients should never receive repeat exposures regardless of diagnostic uncertainty.</span>
+            </label>
+          </div>
+        </fieldset>
+        <button class="btn btn-secondary" id="check-scenario" type="button" style="margin-top:10px;">Check Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">
+          Select an option and click "Check Decision" to review evidence-based clinical reasoning.
+        </div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Quizzes</h2>
+          <div class="lab-section-sub">4 formative assessment questions · first attempt and final mastery recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1 Submission Hub — In-Lab Activities</h2>
+          <div class="lab-section-sub">Submit your in-lab concept activities, Table A verification, and quiz scores (10 Points)</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-teal);padding:24px;">
+        <div style="max-width:700px;margin:0 auto;text-align:center;">
+          <div style="font-size:36px;color:var(--rad-teal);margin-bottom:10px;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <h3 style="margin:0 0 8px;color:var(--rad-navy);">Submit Phase 1: In-Lab Activities</h3>
+          <p style="font-size:13.5px;color:var(--rad-text-soft);margin:0 0 16px;">
+            This submission records your <b>Part I In-Lab Score (10 Points)</b> evaluated under Criterion <b>c1</b> (4 pts: Concepts, Quizzes, Table A) and Criterion <b>c2</b> (6 pts: Interactive Stations, Calculator, Clinical Scenario). Submit before leaving the in-person lab session.
+          </p>
+          <div class="submission-check" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:18px;">
+            <div style="background:var(--rad-bg-soft);padding:10px;border-radius:8px;font-size:12px;">
+              <b>Table A &amp; Calculator</b><br><span class="muted">Verified Entries</span>
+            </div>
+            <div style="background:var(--rad-bg-soft);padding:10px;border-radius:8px;font-size:12px;">
+              <b>Matching &amp; Scenario</b><br><span class="muted">Decision Recorded</span>
+            </div>
+            <div style="background:var(--rad-bg-soft);padding:10px;border-radius:8px;font-size:12px;">
+              <b>Knowledge Check</b><br><span class="muted">4 MCQs Complete</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btn-submit-phase1" type="button" style="padding:10px 24px;font-size:14px;">
+            <i class="fa-solid fa-paper-plane" style="margin-right:6px;"></i> Submit In-Lab Activities (Phase 1)
+          </button>
+          <div id="submit-phase1-status" role="status" aria-live="polite" style="margin-top:12px;font-size:13px;font-weight:700;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- High-Contrast Transition Card -->
+    <div class="cta-card">
+      <div>
+        <h3>Ready for the Physics Simulation Experiment?</h3>
+        <p>Proceed to Tab 2 to record virtual radiographic exposures across 5 clinical presets, evaluate Poisson noise decomposition, and perform post-lab Excel data plotting.</p>
+      </div>
+      <button class="btn btn-teal" id="btn-proceed-to-sim" type="button" style="background:#7fe0d6;color:#07253b;font-weight:800;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;white-space:nowrap;">
+        Proceed to Tab 2: Virtual Experiment →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================================= -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & ANALYSIS (10 PTS)                                      -->
+  <!-- ========================================================================================= -->
+  <div class="tab-pane" id="tab-pane-experiment">
+
+    <!-- Quick Navigation Return Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:10px 16px;margin-bottom:20px;">
+      <span style="font-size:13px;font-weight:700;color:var(--rad-navy);"><i class="fa-solid fa-arrow-left" style="color:var(--rad-teal);margin-right:6px;"></i> Phase 2: Experimental Simulation &amp; Excel Analysis</span>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro" type="button">← Return to Tab 1 (Intro &amp; In-Lab)</button>
+    </div>
+
+    <!-- Step-by-Step Procedure Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol &amp; Scientific Methodology</h2>
+          <div class="lab-section-sub">Controlled investigation of Poisson photon mottle, DQE dose efficiency, and lesion conspicuity</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim">Protocol Guide</span>
+        <div class="procedure-grid" style="margin-top:14px;">
+          <div class="procedure-step">
+            <b>Scientific Hypothesis:</b> Formulate a quantitative prediction before running trials ($\ge 20$ characters).
+          </div>
+          <div class="procedure-step">
+            <b>Baseline Acquisition:</b> Record Run 1 using Standard Baseline ($10\text{ mAs}$, $\text{DQE} = 0.70$).
+          </div>
+          <div class="procedure-step">
+            <b>Low-Dose Mottle:</b> Record Run 2 at $2\text{ mAs}$. Observe Poisson graininess and whether $\text{CNR} < 2.5$.
+          </div>
+          <div class="procedure-step">
+            <b>High-DQE Spared Dose:</b> Record Run 3 at $5\text{ mAs}$ with $\text{DQE} = 0.85$. Compare SNR recovery.
+          </div>
+          <div class="procedure-step">
+            <b>Electronic Noise Floor:</b> Record Run 4 at low signal ($40\text{ a.u.}$) and high electronic floor ($\sigma_{\text{int}} = 15$).
+          </div>
+          <div class="procedure-step">
+            <b>Data Export &amp; Excel:</b> Download CSV, build scatter plots, and calculate Table B values.
+          </div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline 10 mAs + Record &nbsp; ☐ 3. Run 2 Low-dose 2 mAs + Record &nbsp; ☐ 4. Run 3 High-DQE 5 mAs + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B (Run 4 noise floor = bonus/optional).<br>
+          <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider a notch.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Virtual Experiment Simulator Suite</h2>
+          <div class="lab-section-sub">Live 2D procedural rendering: simulated radiograph, trabecular bone phantom, and noise decomposition</div>
+        </div>
+      </div>
+      <div class="card">
+
+        <!-- Pre-Trial Scientific Prediction -->
+        <div class="form-row" style="margin-bottom:18px;">
+          <label class="field-label" for="w-prediction">
+            Pre-Trial Scientific Prediction <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="w-prediction" rows="3" required placeholder="State precisely how increasing mAs fourfold will alter quantum noise standard deviation (σ_q) and Signal-to-Noise Ratio (SNR) according to Poisson statistics..."></textarea>
+          <p class="form-hint">Minimum 20 characters required before logging trial runs. Saved into your final laboratory report.</p>
+        </div>
+
+        <div class="experiment-layout">
+          <!-- Preset Toolbar -->
+          <div class="preset-toolbar">
+            <span class="preset-title">Clinical Presets:</span>
+            <button type="button" class="preset-btn" data-mas="10" data-signal="100" data-detector="0.70" data-intrinsic="5">1. Standard Baseline (10 mAs, DQE 0.70)</button>
+            <button type="button" class="preset-btn" data-mas="2" data-signal="100" data-detector="0.70" data-intrinsic="5">2. Low Dose / Severe Mottle (2 mAs)</button>
+            <button type="button" class="preset-btn" data-mas="5" data-signal="100" data-detector="0.85" data-intrinsic="5">3. High DQE Optimization (5 mAs, DQE 0.85)</button>
+            <button type="button" class="preset-btn" data-mas="8" data-signal="40" data-detector="0.60" data-intrinsic="15">4. Electronic Noise Floor Dominance</button>
+            <button type="button" class="preset-btn" data-mas="30" data-signal="120" data-detector="0.80" data-intrinsic="3">5. High-Dose Benchmark (30 mAs, Crisp)</button>
+          </div>
+
+          <!-- 2D Canvas Display -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" class="sim-canvas" width="1000" height="420" role="img" aria-label="Interactive procedural model for Quantum Noise, DQE and SNR" aria-describedby="sim-caption"></canvas>
+            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Procedural radiograph and noise decomposition dashboard update in real time.</p>
+          </div>
+
+          <!-- Sliders Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-mas"><span>Exposure (mAs)</span><output id="out-mas" for="ctrl-mas">10 mAs</output></label>
+              <input type="range" id="ctrl-mas" min="1" max="40" step="1" value="10" aria-describedby="sim-caption">
+              <span class="field-hint">Controls incident X-ray photon quantity ($N \propto \text{mAs}$)</span>
+            </div>
+            <div class="control-card">
+              <label for="ctrl-signal"><span>Object Signal ($S$)</span><output id="out-signal" for="ctrl-signal">100 a.u.</output></label>
+              <input type="range" id="ctrl-signal" min="40" max="160" step="1" value="100" aria-describedby="sim-caption">
+              <span class="field-hint">Transmitted mean intensity in arbitrary units</span>
+            </div>
+            <div class="control-card">
+              <label for="ctrl-detector"><span>Detector DQE</span><output id="out-detector" for="ctrl-detector">0.70 fraction</output></label>
+              <input type="range" id="ctrl-detector" min="0.30" max="0.90" step="0.05" value="0.70" aria-describedby="sim-caption">
+              <span class="field-hint">SNR preservation efficiency (0.30 to 0.90)</span>
+            </div>
+            <div class="control-card">
+              <label for="ctrl-intrinsic"><span>Intrinsic Noise ($\sigma_{\text{int}}$)</span><output id="out-intrinsic" for="ctrl-intrinsic">5 SD</output></label>
+              <input type="range" id="ctrl-intrinsic" min="1" max="20" step="1" value="5" aria-describedby="sim-caption">
+              <span class="field-hint">Electronic background noise floor (SD)</span>
+            </div>
+          </div>
+
+          <!-- Telemetry Grid -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+        </div>
+
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run" type="button"><i class="fa-solid fa-floppy-disk" style="margin-right:6px;"></i> Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run" type="button">Remove Last Run</button>
+          <button class="btn btn-ghost btn-sm" id="btn-export-csv" type="button"><i class="fa-solid fa-file-csv" style="margin-right:4px;"></i> Download Run Data (CSV)</button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr>
+                <th style="width:6%;">Run</th>
+                <th style="width:30%;">Settings</th>
+                <th style="width:34%;">Telemetry Results</th>
+                <th style="width:30%;">Clinical Interpretation</th>
+              </tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr><td colspan="4" class="muted">No runs recorded yet. Select presets or adjust sliders, then click "Record This Run".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 10: Worksheet & Post-Lab Excel Analysis -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Worksheet &amp; Post-Lab Excel Data Analysis</h2>
+          <div class="lab-section-sub">Spreadsheet charting, quantitative calculations, and clinical ALARA synthesis</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet">Assessed Synthesis</span>
+
+        <!-- Math Helper Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:16px;"></div>
+
+        <!-- Excel Data Analysis Guidance Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Post-Lab Excel Graphing &amp; Regression Guide</h4>
+          <p style="font-size:13px;color:#166534;margin:0 0 10px;">
+            Export your trial data using <b>"Download Run Data (CSV)"</b> above, open it in Microsoft Excel, and generate the following two required scientific charts:
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:12px;font-size:12.5px;color:#14532d;">
+            <div style="background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:12px;">
+              <b>Plot 1: Exposure (mAs) vs. Total Noise SD &amp; Measured SNR</b>
+              <ul style="margin:6px 0 0;padding-left:18px;line-height:1.45;">
+                <li>X-axis: Exposure ($mAs$, $1$ to $40$).</li>
+                <li>Primary Y-axis: Signal-to-Noise Ratio ($SNR$).</li>
+                <li>Secondary Y-axis: Total Noise Standard Deviation ($\sigma_{\text{tot}}$).</li>
+                <li>Trendline: Fit a Power regression line to SNR ($y = a \cdot x^{0.5}$) confirming the square-root law ($\text{SNR} \propto \sqrt{\text{mAs}}$).</li>
+              </ul>
+            </div>
+            <div style="background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:12px;">
+              <b>Plot 2: Detector DQE vs. Contrast-to-Noise Ratio (CNR)</b>
+              <ul style="margin:6px 0 0;padding-left:18px;line-height:1.45;">
+                <li>X-axis: Detector DQE ($0.30$ to $0.90$).</li>
+                <li>Y-axis: Lesion Contrast-to-Noise Ratio ($CNR$).</li>
+                <li>Reference Threshold: Add a horizontal dashed line at $\text{CNR} = 2.50$ (Rose Criterion classroom simplified limit; classic is CNR ≥ 5).</li>
+                <li>Highlight the minimum DQE required to achieve confident lesion detection at low mAs.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table B: Quantitative Calculations -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-calculator" style="color:var(--rad-teal)"></i> Table B: Post-Lab Quantitative Noise &amp; SNR Calculations</h4>
+        <p style="font-size:12.5px;color:var(--rad-text-soft);">
+          Perform the exact calculations for the four clinical scenarios below using the physical model formulas: $\sigma_q = S / \sqrt{N/25}$, $\sigma_{\text{tot}} = \sqrt{\sigma_q^2 + \sigma_{\text{int}}^2}$, $\text{SNR} = S / \sigma_{\text{tot}}$, and $\text{CNR} = (S \cdot 0.18) / \sigma_{\text{tot}}$ (assumes 18% subject contrast).
+        </p>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="font-size:12px;min-width:780px;">
+            <thead>
+              <tr style="background:var(--rad-bg-soft);">
+                <th>Configuration / Scenario</th>
+                <th>mAs</th>
+                <th>DQE</th>
+                <th>Signal ($S$)</th>
+                <th>$\sigma_q$ (a.u.)</th>
+                <th>$\sigma_{\text{int}}$ (SD)</th>
+                <th>$\sigma_{\text{tot}}$ (a.u.)</th>
+                <th>SNR</th>
+                <th>CNR</th>
+                <th>Rose Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. Low-Dose Screening</b></td>
+                <td>2</td>
+                <td>0.70</td>
+                <td>100</td>
+                <td><input type="text" class="table-input" id="w-t2-c1-qsd" placeholder="calc"></td>
+                <td>5</td>
+                <td><input type="text" class="table-input" id="w-t2-c1-tot" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-snr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-cnr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-rose" placeholder="FAIL / PASS"></td>
+              </tr>
+              <tr>
+                <td><b>2. Standard Baseline</b></td>
+                <td>10</td>
+                <td>0.70</td>
+                <td>100</td>
+                <td><input type="text" class="table-input" id="w-t2-c2-qsd" placeholder="calc"></td>
+                <td>5</td>
+                <td><input type="text" class="table-input" id="w-t2-c2-tot" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-snr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-cnr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-rose" placeholder="FAIL / PASS"></td>
+              </tr>
+              <tr>
+                <td><b>3. High-DQE Dose Spared</b></td>
+                <td>5</td>
+                <td>0.85</td>
+                <td>100</td>
+                <td><input type="text" class="table-input" id="w-t2-c3-qsd" placeholder="calc"></td>
+                <td>5</td>
+                <td><input type="text" class="table-input" id="w-t2-c3-tot" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-snr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-cnr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-rose" placeholder="FAIL / PASS"></td>
+              </tr>
+              <tr>
+                <td><b>4. High-Exposure Overkill</b></td>
+                <td>30</td>
+                <td>0.80</td>
+                <td>120</td>
+                <td><input type="text" class="table-input" id="w-t2-c4-qsd" placeholder="calc"></td>
+                <td>3</td>
+                <td><input type="text" class="table-input" id="w-t2-c4-tot" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-snr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-cnr" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-rose" placeholder="FAIL / PASS"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Written Reflection Questions -->
+        <h4 style="margin-top:24px;color:var(--rad-navy);"><i class="fa-solid fa-pen-to-square" style="color:var(--rad-teal)"></i> Written Analytical Questions</h4>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label class="field-label" for="q1">
+            1. Record low- and high-mAs SNR values from your simulation runs and describe the visual change in quantum mottle across trabecular bone and soft-tissue phantom areas. <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q1" rows="4" required placeholder="Cite specific numerical values for mAs, total noise SD (σ), and SNR from your recorded runs. Detail how photon starvation visually degrades edge clarity..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q2">
+            2. Calculate SNR for mean signal $S = 120\text{ a.u.}$ and total noise SD $\sigma = 12\text{ a.u.}$, and explain what arbitrary units (a.u.) mean in imaging science. <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q2" rows="4" required placeholder="Show the full mathematical step-by-step division. Clarify why arbitrary units (a.u.) are used to represent normalized digital detector pixel values..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q3">
+            3. Explain the practical meaning of Detective Quantum Efficiency (DQE) for patient dose optimization, and demonstrate how high DQE achieves diagnostic SNR at lower mAs. <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q3" rows="4" required placeholder="Compare CsI needle-structure scintillators (DQE ~0.85) to standard CR plates (DQE ~0.35). Use DQE = SNR_out^2 / SNR_in^2 to explain how doubling DQE allows cutting dose in half..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q4">
+            4. Critical Thinking &amp; Troubleshooting: How can a radiographer distinguish a quantum-noise problem from an intrinsic detector electronic noise floor problem using experimental evidence? <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q4" rows="4" required placeholder="Describe what happens when mAs is incrementally increased in both cases: does noise decrease as a fraction of signal (quantum) or remain pinned to a constant fixed standard deviation (electronic)?..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Standardized Grading Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized Grading Rubric</h2>
+          <div class="lab-section-sub">20 points total · evaluated by departmental Gemini Flash AI model</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:8px;">Self-evaluation scores allow you to verify completeness prior to final submission.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2 Submission Hub — Post-Lab Excel Analysis</h2>
+          <div class="lab-section-sub">Upload completed Excel workbook (.xlsx / .csv) and submit final analysis (10 Points)</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-blue);padding:24px;">
+        <div style="max-width:700px;margin:0 auto;text-align:center;">
+          <div style="font-size:36px;color:var(--rad-blue);margin-bottom:10px;"><i class="fa-solid fa-file-arrow-up"></i></div>
+          <h3 style="margin:0 0 8px;color:var(--rad-navy);">Submit Phase 2: Post-Lab Excel Analysis</h3>
+          <p style="font-size:13.5px;color:var(--rad-text-soft);margin:0 0 16px;">
+            This submission finalizes your laboratory assessment across Criterion <b>c3</b> (5 pts: Quantitative Worksheet &amp; Table B), Criterion <b>c4</b> (3 pts: Dose/Noise Clinical Reasoning), and Criterion <b>c5</b> (2 pts: Professionalism &amp; Completeness).
+          </p>
+
+          <div style="background:var(--rad-bg-soft);border:1px dashed var(--rad-border);border-radius:10px;padding:16px;margin-bottom:18px;text-align:left;">
+            <label class="field-label" for="file-upload-phase2" style="margin-bottom:6px;">
+              <i class="fa-solid fa-paperclip" style="color:var(--rad-teal);margin-right:6px;"></i> Attach Completed Excel Workbook (.xlsx, .xls, .csv):
+            </label>
+            <input type="file" id="file-upload-phase2" accept=".xlsx,.xls,.csv" style="display:block;width:100%;font-size:13px;">
+            <span class="field-hint">Upload your saved spreadsheet with Plot 1 (mAs vs. SNR) and Plot 2 (DQE vs. CNR).</span>
+          </div>
+
+          <button class="btn btn-primary" id="btn-submit-phase2" type="button" style="padding:10px 24px;font-size:14px;background:var(--rad-blue);">
+            <i class="fa-solid fa-check-double" style="margin-right:6px;"></i> Submit Post-Lab Excel Analysis (Phase 2)
+          </button>
+          <div id="submit-phase2-status" role="status" aria-live="polite" style="margin-top:12px;font-size:13px;font-weight:700;"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 9 of 15 · assessed virtual laboratory</footer>
+
+<!-- Bottom Action Bar -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span>
+      <span id="autosave-dot-label">Autosave ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json" type="button">Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">
+        Import JSON <input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset" type="button">Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar" type="button">Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 9 of 15 · Assessed Virtual Laboratory Suite · Gold Standard Architecture
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
-const LAB = {"week":9,"title":"Quantum Noise, DQE & SNR Lab","lecture":"Image Noise","type":"noise","subtitle":"Relate photon statistics, mAs, detector efficiency, and signal-to-noise.","objectives":["Distinguish intrinsic receptor noise from quantum noise/mottle.","Understand Object Signal (S), arbitrary units (a.u.), and photon statistics.","Predict how mAs and DQE change SNR according to Poisson statistics (SNR ∝ √mAs).","Calculate simplified SNR, CNR, and evaluate against the Rose Criterion (SNR ≥ 5).","Compare detector DQE and conversion efficiency conceptually for dose optimization."],"theory":"<p><b>Image noise</b> is unwanted statistical fluctuation that obscures subtle anatomical details and low-contrast lesions. In medical radiography, total noise consists of two primary independent sources: <b>Quantum Noise (Quantum Mottle, σ_q)</b> from Poisson photon arrival statistics, and <b>Intrinsic Electronic Noise (σ_int)</b> from detector electronics.</p><div class=\"formula-box\"><b>Object Signal (S, in a.u.):</b> Mean transmitted X-ray intensity / pixel value in a region of interest.<br><b>Detected Quanta (N):</b> N ∝ mAs × DQE.<br><b>Signal-to-Noise Ratio (SNR):</b> SNR = S / σ_total.<br><b>Contrast-to-Noise Ratio (CNR):</b> CNR = |S_object - S_background| / σ_total.<br><b>Rose Criterion:</b> SNR ≥ 5 (or CNR ≥ 3) is required for reliable human visual detection.<br><b>Detective Quantum Efficiency (DQE):</b> DQE = SNR_out² / SNR_in².</div><p><b>Why does increasing Object Signal increase Noise SD?</b> In Poisson processes, absolute variance scales with signal (σ ∝ √N). However, increasing overall photon fluence (mAs) increases detected photons faster than noise grows, improving relative SNR (SNR ∝ √mAs).</p>","controls":[{"id":"mas","label":"Exposure (mAs)","min":1,"max":40,"step":1,"value":10,"unit":"mAs"},{"id":"signal","label":"Object signal","min":40,"max":160,"step":1,"value":100,"unit":"a.u."},{"id":"detector","label":"Detector DQE","min":0.3,"max":0.9,"step":0.05,"value":0.7,"unit":"fraction"},{"id":"intrinsic","label":"Intrinsic noise","min":1,"max":20,"step":1,"value":5,"unit":"SD"}],"stations":[{"id":"noise","title":"Station 1 — mAs versus quantum mottle","text":"Run the virtual exposure at low, medium, and high mAs. Compare noise amplitude, SNR, and the displayed noisy image.","kind":"main"},{"id":"detectors","title":"Station 2 — DQE and conversion efficiency","text":"Match detector descriptions to low/high DQE and direct/indirect conversion behavior.","kind":"match","left":[["dqe","High DQE detector"],["direct","Direct conversion"],["indirect","Indirect conversion"]],"right":[["efficient","Preserves more input SNR for a target dose"],["charge","X-rays converted directly to charge"],["light","X-rays converted to light then charge"]],"pairs":{"dqe":"efficient","direct":"charge","indirect":"light"}},{"id":"case","title":"Station 3 — Noise troubleshooting","text":"A low-dose image is noisy but the anatomy is positioned correctly. Choose the first technical factor to review.","kind":"case"}],"quiz":[{"prompt":"If photon number increases fourfold, quantum SNR approximately:","options":["Halves","Stays identical","Doubles","Becomes zero"],"correct":2,"explain":"Quantum SNR scales approximately with the square root of photon number; √4 = 2."},{"prompt":"Quantum SNR changes approximately with the:","options":["Square root of detected photons","Inverse of SID only","Square of OID","Grid ratio only"],"correct":0,"explain":"Poisson statistics give SNR proportional to the square root of photon number."},{"prompt":"DQE describes how well a detector:","options":["Preserves input SNR at a given dose","Positions the patient","Controls SID","Removes all artifacts"],"correct":0,"explain":"DQE measures efficiency of SNR transfer through the imaging system."},{"prompt":"CNR compares:","options":["Signal difference with noise","SID with SOD","kVp with mAs","Field size with grid ratio"],"correct":0,"explain":"CNR is the difference between two signals divided by noise."}],"worksheet":[{"id":"q1","label":"1. Record low- and high-mAs SNR values and describe the visual change in mottle."},{"id":"q2","label":"2. Calculate SNR for mean signal S = 120 a.u. and total noise SD σ = 12 a.u., and explain what arbitrary units (a.u.) mean."},{"id":"q3","label":"3. Explain the practical meaning of DQE for dose optimization and how high DQE achieves diagnostic SNR at lower mAs."},{"id":"q4","label":"4. Critical thinking: distinguish a quantum-noise problem from an intrinsic detector-noise problem using the simulator evidence."}],"rubric":[{"id":"c1","name":"Noise and DQE concepts","points":4,"levels":["Accurately distinguishes quantum/intrinsic noise, object signal (a.u.), SNR, CNR, and DQE.","Mostly accurate with minor gaps.","Major misconception."]},{"id":"c2","name":"Noise simulation","points":5,"levels":["Compares multiple mAs/DQE conditions and interprets SNR against the Rose criterion.","Uses the tool with limited interpretation.","Little meaningful investigation."]},{"id":"c3","name":"Quantitative worksheet","points":5,"levels":["Calculations are correct and linked to the visual result.","Mostly correct but shallow.","Missing or incorrect."]},{"id":"c4","name":"Dose/noise reasoning","points":3,"levels":["Chooses a dose-efficient correction with sound reasoning.","Plausible but brief.","No defensible reasoning."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict how a fourfold mAs increase changes quantum SNR.","Record a low-mAs baseline.","Increase only mAs and record a second run.","Restore mAs, change DQE or intrinsic noise, and record a third run.","Identify whether quantum or intrinsic noise dominates."],"scenario":{"prompt":"A low-dose image is noisy, but positioning and processing are correct. What is the best first technical review?","options":["Check whether detected exposure was adequate for the receptor and patient","Increase displayed contrast only","Increase OID","Ignore the noise"],"correct":0,"explain":"Quantum noise is addressed by evaluating detected exposure and receptor efficiency while respecting dose optimization."},"minimumRuns":3};
-const QUIZ_IDS = ["q9-1","q9-2","q9-3","q9-4"];
-const CONCEPT = LAB.stations[1];
+const LAB = {
+  "week": 9,
+  "title": "Quantum Noise, DQE & SNR Lab",
+  "lecture": "Image Noise",
+  "type": "noise",
+  "subtitle": "Relate photon statistics, mAs, detector efficiency, and signal-to-noise under ALARA.",
+  "objectives": [
+    "Distinguish intrinsic receptor noise from quantum noise/mottle.",
+    "Understand Object Signal (S), arbitrary units (a.u.), and photon statistics.",
+    "Predict how mAs and DQE change SNR according to Poisson statistics (SNR ∝ √mAs).",
+    "Calculate simplified SNR, CNR, and evaluate against the Rose Criterion (SNR ≥ 5).",
+    "Compare detector DQE and conversion efficiency conceptually for dose optimization."
+  ],
+  "controls": [
+    { "id": "mas", "label": "Exposure (mAs)", "min": 1, "max": 40, "step": 1, "value": 10, "unit": "mAs" },
+    { "id": "signal", "label": "Object signal", "min": 40, "max": 160, "step": 1, "value": 100, "unit": "a.u." },
+    { "id": "detector", "label": "Detector DQE", "min": 0.30, "max": 0.90, "step": 0.05, "value": 0.70, "unit": "fraction" },
+    { "id": "intrinsic", "label": "Intrinsic noise", "min": 1, "max": 20, "step": 1, "value": 5, "unit": "SD" }
+  ],
+  "stations": [
+    { "id": "noise", "title": "Station 1 — Photon Statistics & Noise Modalities", "kind": "main" },
+    {
+      "id": "concept-match",
+      "title": "Station 2 — DQE & Noise Metrics Matcher",
+      "kind": "match",
+      "left": [
+        ["mottle", "Quantum Mottle (σ_q)"],
+        ["dqe", "Detective Quantum Efficiency (DQE)"],
+        ["rose", "Rose Criterion Threshold"],
+        ["intrinsic", "Intrinsic Electronic Noise Floor"],
+        ["cnr", "Contrast-to-Noise Ratio (CNR)"],
+        ["quadrature", "Quadrature Noise Addition"]
+      ],
+      "right": [
+        ["poisson", "Poisson statistical photon fluctuation inversely related to √N"],
+        ["snr_eff", "SNR_out² / SNR_in² metric of detector dose efficiency"],
+        ["threshold", "SNR ≥ 5 threshold required for high (≈95%+) human visual lesion detection (classroom simplified; classic Rose criterion is CNR ≥ 5)"],
+        ["electronic", "Dose-independent background noise floor from TFT readout and ADC"],
+        ["contrast_diff", "Difference in region signals divided by total noise (|ΔS| / σ_tot)"],
+        ["sum_sq", "σ_tot = √(σ_q² + σ_int²) for independent uncorrelated noise sources"]
+      ],
+      "pairs": {
+        "mottle": "poisson",
+        "dqe": "snr_eff",
+        "rose": "threshold",
+        "intrinsic": "electronic",
+        "cnr": "contrast_diff",
+        "quadrature": "sum_sq"
+      }
+    },
+    { "id": "case", "title": "Station 4 — Pediatric Low-Dose Case", "kind": "case" }
+  ],
+  "quiz": [
+    {
+      "prompt": "If the incident photon quantity (mAs) increases fourfold, the quantum SNR approximately:",
+      "options": ["Halves", "Stays identical", "Doubles", "Becomes zero"],
+      "correct": 2,
+      "explain": "Quantum SNR scales with the square root of detected photon fluence; √4 = 2, so doubling occurs."
+    },
+    {
+      "prompt": "Quantum SNR changes approximately in direct proportion to the:",
+      "options": ["Square root of detected photons", "Inverse of SID only", "Square of OID", "Grid ratio only"],
+      "correct": 0,
+      "explain": "Poisson statistics dictate that SNR is directly proportional to the square root of detected photon number (SNR ∝ √N)."
+    },
+    {
+      "prompt": "Detective Quantum Efficiency (DQE) fundamentally describes how effectively a detector:",
+      "options": ["Preserves input SNR at a given radiation dose", "Positions the patient automatically", "Limits focal spot blur", "Removes scatter without any lead strips"],
+      "correct": 0,
+      "explain": "DQE = SNR_out² / SNR_in² measures how efficiently an imaging detector preserves input information per unit radiation exposure."
+    },
+    {
+      "prompt": "Contrast-to-Noise Ratio (CNR) evaluates:",
+      "options": ["The signal difference between two structures divided by background noise", "SID divided by SOD", "Tube kVp multiplied by mAs", "Grid ratio divided by Bucky factor"],
+      "correct": 0,
+      "explain": "CNR = |S_target - S_background| / σ_total and represents the true conspicuity of low-contrast lesions against noise."
+    }
+  ],
+  "worksheet": [
+    { "id": "q1", "label": "1. Record low- and high-mAs SNR values and describe the visual change in mottle." },
+    { "id": "q2", "label": "2. Calculate SNR for mean signal S = 120 a.u. and total noise SD σ = 12 a.u., and explain what arbitrary units (a.u.) mean." },
+    { "id": "q3", "label": "3. Explain the practical meaning of DQE for dose optimization and how high DQE achieves diagnostic SNR at lower mAs." },
+    { "id": "q4", "label": "4. Critical thinking: distinguish a quantum-noise problem from an intrinsic detector-noise problem using the simulator evidence." }
+  ],
+  "rubric": [
+    { "id": "c1", "name": "Noise and DQE concepts", "points": 4, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": ["Accurately distinguishes quantum/intrinsic noise, object signal (a.u.), SNR, CNR, and DQE.", "Mostly accurate with minor gaps.", "Major misconception."] },
+    { "id": "c2", "name": "Noise simulation & in-lab stations", "points": 6, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": ["Compares multiple mAs/DQE conditions and interprets SNR against the Rose criterion.", "Uses the tool with limited interpretation.", "Little meaningful investigation."] },
+    { "id": "c3", "name": "Quantitative worksheet & Table B", "points": 5, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": ["Calculations are correct and linked to the visual result.", "Mostly correct but shallow.", "Missing or incorrect."] },
+    { "id": "c4", "name": "Dose/noise reasoning & ALARA", "points": 3, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": ["Chooses a dose-efficient correction with sound reasoning.", "Plausible but brief.", "No defensible reasoning."] },
+    { "id": "c5", "name": "Completeness & professionalism", "points": 2, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."] }
+  ],
+  "scenario": {
+    "prompt": "A portable neonatal chest radiograph is obtained in the NICU at ultra-low technique (1 mAs, 60 kVp). The image exhibits severe salt-and-pepper graininess across the lung fields that obscures subtle markings. What is the most appropriate first technical and clinical action?",
+    "options": [
+      "Check whether detected exposure was adequate for the receptor technology, and adjust mAs or verify receptor sensitivity to achieve diagnostic SNR under ALARA.",
+      "Sharpen the digital display filter and increase window contrast aggressively to artificially enhance lung border sharpness without changing exposure.",
+      "Increase Object-to-Image Distance (OID) by 15 cm to create an air gap that cleans up quantum mottle.",
+      "Accept the image as diagnostic and send to PACS since pediatric patients should never receive repeat exposures regardless of diagnostic uncertainty."
+    ],
+    "correct": 0,
+    "explain": "Quantum mottle is caused by photon starvation. When subtle pathology cannot be diagnosed due to noise, the technologist must evaluate whether detected exposure was adequate for the receptor technology and optimize mAs/kVp to restore diagnostic SNR while adhering to pediatric ALARA."
+  },
+  "minimumRuns": 3
+};
+
+const QUIZ_IDS = ["q9-1", "q9-2", "q9-3", "q9-4"];
 let currentResult = null;
-let currentViewMode = '3d-shadow';
+
+// Tab Switcher with URL Hash Synchronization
+function initTabs() {
+  const tabIntroBtn = document.getElementById('tab-btn-intro');
+  const tabExpBtn = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+  const proceedBtn = document.getElementById('btn-proceed-to-sim');
+  const backBtn = document.getElementById('btn-back-to-intro');
+
+  function switchTab(target) {
+    if (target === 'experiment') {
+      tabIntroBtn.classList.remove('active');
+      tabExpBtn.classList.add('active');
+      paneIntro.classList.remove('active');
+      paneExp.classList.add('active');
+      window.location.hash = 'tab-experiment';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderSimulation();
+    } else {
+      tabExpBtn.classList.remove('active');
+      tabIntroBtn.classList.add('active');
+      paneExp.classList.remove('active');
+      paneIntro.classList.add('active');
+      window.location.hash = 'tab-intro';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  tabIntroBtn.addEventListener('click', () => switchTab('intro'));
+  tabExpBtn.addEventListener('click', () => switchTab('experiment'));
+  if (proceedBtn) proceedBtn.addEventListener('click', () => switchTab('experiment'));
+  if (backBtn) backBtn.addEventListener('click', () => switchTab('intro'));
+
+  if (window.location.hash === '#tab-experiment') {
+    switchTab('experiment');
+  }
+}
 
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    values[control.id] = Number(document.getElementById('ctrl-' + control.id).value);
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
+  return LAB.controls.map(function (c) {
+    return c.label + ': ' + values[c.id] + ' ' + c.unit;
+  }).join('; ');
 }
 
 function renderMetrics(result) {
@@ -143,12 +1504,20 @@ function renderMetrics(result) {
 
 function renderSimulation() {
   const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = values[control.id] + ' ' + control.unit;
+  });
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas && canvas.getContext) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
   renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const cap = document.getElementById('sim-caption');
+  if (cap && currentResult.observation) {
+    cap.textContent = currentResult.observation;
+  }
 }
 
 function experimentActivity() {
@@ -160,13 +1529,19 @@ function renderRunLog() {
   const body = document.getElementById('run-log-body');
   body.innerHTML = '';
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Select presets or adjust sliders, then click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
@@ -174,13 +1549,28 @@ function renderRunLog() {
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please enter a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  if (activity.runs.some(function (r) { return r.signature === signature; })) {
+    RadLab.toast('This exact setting combination has already been recorded. Modify a parameter and test again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
   activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
@@ -188,70 +1578,313 @@ function recordRun() {
   activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
   RadLab.state.activities['experiment-log'] = activity;
   RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' successfully recorded!', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded runs to remove.');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
 }
 
+function exportRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs || !activity.runs.length) {
+    RadLab.toast('No trial runs recorded to export. Complete simulation runs first.', 'error');
+    return;
+  }
+  let csv = 'Run,mAs,Signal_au,DQE,Intrinsic_SD,Detected_Quanta_au,Total_Noise_SD_au,SNR,CNR,Rose_Criterion_Met,Observation\n';
+  activity.runs.forEach((r, idx) => {
+    const v = r.values;
+    const m = r.metrics;
+    const q = m[0] ? m[0].value : '';
+    const sd = m[1] ? m[1].value : '';
+    const snr = m[2] ? m[2].value : '';
+    const cnr = m[3] ? m[3].value : '';
+    const roseMet = Number(cnr) >= 2.5 ? 'YES' : 'NO';
+    const obs = (r.observation || '').replace(/"/g, '""');
+    csv += `${idx + 1},${v.mas},${v.signal},${v.detector},${v.intrinsic},${q},${sd},${snr},${cnr},${roseMet},"${obs}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab09_Noise_DQE_Runs_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('CSV dataset downloaded successfully!', 'success');
+}
+
+// Station 2 Matcher
 function setupConcept() {
   const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+  const matchDef = LAB.stations[1];
+  RadLab.matchPairs(container, {
+    id: matchDef.id,
+    left: matchDef.left.map(x => ({ id: x[0], label: x[1] })),
+    right: matchDef.right.map(x => ({ id: x[0], label: x[1] })),
+    pairs: matchDef.pairs,
+    leftTitle: 'Technical Parameter / Law',
+    rightTitle: 'Physical Principle / Consequence'
+  });
 }
 
+// Station 3 Calibrated SNR Calculator
+function initSnrCalculator() {
+  const masEl = document.getElementById('calc-mas');
+  const dqeEl = document.getElementById('calc-dqe');
+  const sigEl = document.getElementById('calc-sig');
+  const intEl = document.getElementById('calc-int');
+
+  const masVal = document.getElementById('calc-mas-val');
+  const dqeVal = document.getElementById('calc-dqe-val');
+  const sigVal = document.getElementById('calc-sig-val');
+  const intVal = document.getElementById('calc-int-val');
+
+  const qsdRes = document.getElementById('res-qsd');
+  const totsdRes = document.getElementById('res-totsd');
+  const snrRes = document.getElementById('res-snr');
+  const cnrRes = document.getElementById('res-cnr');
+  const roseBadge = document.getElementById('res-rose-badge');
+  const regimeBox = document.getElementById('calc-regime-status');
+
+  function updateCalc() {
+    const mas = Number(masEl.value);
+    const dqe = Number(dqeEl.value);
+    const sig = Number(sigEl.value);
+    const intSd = Number(intEl.value);
+
+    masVal.textContent = mas + ' mAs';
+    dqeVal.textContent = dqe.toFixed(2);
+    sigVal.textContent = sig + ' a.u.';
+    intVal.textContent = intSd + ' SD';
+
+    const detected = Math.max(1, mas * 850 * dqe);
+    const qSd = sig / Math.sqrt(detected / 25);
+    const totSd = Math.sqrt(qSd * qSd + intSd * intSd);
+    const snr = sig / totSd;
+    const cnr = (sig * 0.18) / totSd;
+
+    qsdRes.textContent = qSd.toFixed(2) + ' a.u.';
+    totsdRes.textContent = totSd.toFixed(2) + ' a.u.';
+    snrRes.textContent = snr.toFixed(2);
+    cnrRes.textContent = cnr.toFixed(2);
+
+    if (cnr >= 2.5) {
+      roseBadge.textContent = 'ROSE MET (CONSPICUOUS)';
+      roseBadge.style.color = '#166534';
+    } else if (cnr >= 1.8) {
+      roseBadge.textContent = 'BORDERLINE CONSPICUITY';
+      roseBadge.style.color = '#d97706';
+    } else {
+      roseBadge.textContent = 'ROSE FAILED (MOTTLE BLUR)';
+      roseBadge.style.color = '#dc2626';
+    }
+
+    if (qSd >= intSd) {
+      regimeBox.style.background = '#eef8f7';
+      regimeBox.style.color = '#164b53';
+      regimeBox.innerHTML = `<strong>Noise Dominance Regime:</strong> Quantum Noise Dominates ($\sigma_q = ${qSd.toFixed(2)} \ge \sigma_{\\text{int}} = ${intSd.toFixed(2)}$). Standard quantum-limited imaging. Increasing mAs or DQE effectively reduces visible mottle.`;
+    } else {
+      regimeBox.style.background = '#fef3c7';
+      regimeBox.style.color = '#92400e';
+      regimeBox.innerHTML = `<strong>Noise Dominance Regime:</strong> Intrinsic Electronic Noise Dominates ($\sigma_{\\text{int}} = ${intSd.toFixed(2)} > \sigma_q = ${qSd.toFixed(2)}$). Increasing mAs has diminished return because the electronic background floor limits overall SNR.`;
+    }
+  }
+
+  [masEl, dqeEl, sigEl, intEl].forEach(el => el.addEventListener('input', updateCalc));
+  updateCalc();
+}
+
+// Station 4 Scenario
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please choose a clinical option before checking your decision.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  feedback.textContent = (correct ? 'Correct! ' : 'Clinical reconsideration needed. ') + LAB.scenario.explain;
+  RadLab.save();
+  RadLab.progress.update();
+}
+
+function renderAllMath() {
+  if (typeof renderMathInElement === 'function') {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (e) {
+      console.warn('KaTeX auto-render failed; applying semantic HTML fallback.', e);
+    }
+  }
+  document.querySelectorAll('.math-tex, .math-display').forEach(function (el) {
+    if (el.classList.contains('math-tex')) {
+      el.style.fontFamily = '"Cambria Math", "STIXGeneral", "Times New Roman", serif';
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-09', labTitle: "Lab 9 — Quantum Noise, DQE & SNR Lab", weekNumber: 9, rubric: { title: "Lab 9 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Noise and DQE concepts","points":4},{"id":"c2","name":"Noise simulation","points":5},{"id":"c3","name":"Quantitative worksheet","points":5},{"id":"c4","name":"Dose/noise reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab9-rubric',title:"Lab 9 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Noise and DQE concepts","points":4,"levels":[{"desc":"Accurately distinguishes quantum/intrinsic noise, object signal (a.u.), SNR, CNR, and DQE."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Noise simulation","points":5,"levels":[{"desc":"Compares multiple mAs/DQE conditions and interprets SNR against the Rose criterion."},{"desc":"Uses the tool with limited interpretation."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Quantitative worksheet","points":5,"levels":[{"desc":"Calculations are correct and linked to the visual result."},{"desc":"Mostly correct but shallow."},{"desc":"Missing or incorrect."}]},{"id":"c4","name":"Dose/noise reasoning","points":3,"levels":[{"desc":"Chooses a dose-efficient correction with sound reasoning."},{"desc":"Plausible but brief."},{"desc":"No defensible reasoning."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
+  RadLab.init({
+    labId: 'lab-09',
+    labTitle: "Lab 9 — Quantum Noise, DQE & SNR Lab",
+    weekNumber: 9,
+    rubric: {
+      title: "Lab 9 Grading Rubric (20 points)",
+      criteria: [
+        { "id": "c1", "name": "Noise and DQE concepts", "points": 4, "part": "Part I: In-Lab Interactive Activities (10 Points)" },
+        { "id": "c2", "name": "Noise simulation & in-lab stations", "points": 6, "part": "Part I: In-Lab Interactive Activities (10 Points)" },
+        { "id": "c3", "name": "Quantitative worksheet & Table B", "points": 5, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" },
+        { "id": "c4", "name": "Dose/noise reasoning & ALARA", "points": 3, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" },
+        { "id": "c5", "name": "Completeness & professionalism", "points": 2, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" }
+      ]
+    },
+    sections: [
+      { id: 'sec-experiment', label: '1 · Simulation', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-noise-match', label: '2 · Concept matcher', checkComplete: function (s) { return !!(s.activities['concept-match'] && s.activities['concept-match'].done); } },
+      { id: 'sec-scenario', label: '3 · Clinical decision', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '4 · Knowledge check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-worksheet', label: '5 · Post-lab worksheet' }
+    ]
+  });
+
+  initTabs();
+
+  // Register Form Fields for Autosave
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment prediction' });
+
+  // Table A inputs
+  const tableAIds = [
+    'w-noise-mottle', 'w-noise-poisson', 'w-noise-snr-mas', 'w-noise-quadrature',
+    'w-noise-rose', 'w-noise-cnr', 'w-noise-dqe', 'w-noise-alara'
+  ];
+  tableAIds.forEach(id => RadLab.registerField(id, { sectionId: 'sec-noise-explorer', label: 'Table A: ' + id }));
+
+  // Table B inputs
+  const tableBIds = [
+    'w-t2-c1-qsd', 'w-t2-c1-tot', 'w-t2-c1-snr', 'w-t2-c1-cnr', 'w-t2-c1-rose',
+    'w-t2-c2-qsd', 'w-t2-c2-tot', 'w-t2-c2-snr', 'w-t2-c2-cnr', 'w-t2-c2-rose',
+    'w-t2-c3-qsd', 'w-t2-c3-tot', 'w-t2-c3-snr', 'w-t2-c3-cnr', 'w-t2-c3-rose',
+    'w-t2-c4-qsd', 'w-t2-c4-tot', 'w-t2-c4-snr', 'w-t2-c4-cnr', 'w-t2-c4-rose'
+  ];
+  tableBIds.forEach(id => RadLab.registerField(id, { sectionId: 'sec-worksheet', label: 'Table B: ' + id }));
+
+  // Worksheet Reflection inputs
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // Render Quizzes
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
+    });
+  });
+
+  // Build Rubric Table
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab9-rubric',
+    title: "Lab 9 Grading Rubric (20 points)",
+    criteria: [
+      { "id": "c1", "name": "Noise and DQE concepts", "points": 4, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": [{ "desc": "Accurately distinguishes quantum/intrinsic noise, object signal (a.u.), SNR, CNR, and DQE." }, { "desc": "Mostly accurate with minor gaps." }, { "desc": "Major misconception." }] },
+      { "id": "c2", "name": "Noise simulation & in-lab stations", "points": 6, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": [{ "desc": "Compares multiple mAs/DQE conditions and interprets SNR against the Rose criterion." }, { "desc": "Uses the tool with limited interpretation." }, { "desc": "Little meaningful investigation." }] },
+      { "id": "c3", "name": "Quantitative worksheet & Table B", "points": 5, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": [{ "desc": "Calculations are correct and linked to the visual result." }, { "desc": "Mostly correct but shallow." }, { "desc": "Missing or incorrect." }] },
+      { "id": "c4", "name": "Dose/noise reasoning & ALARA", "points": 3, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": [{ "desc": "Chooses a dose-efficient correction with sound reasoning." }, { "desc": "Plausible but brief." }, { "desc": "No defensible reasoning." }] },
+      { "id": "c5", "name": "Completeness & professionalism", "points": 2, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": [{ "desc": "Complete, organized, and ready for submission." }, { "desc": "Minor omissions." }, { "desc": "Substantially incomplete." }] }
+    ]
+  });
+
   setupConcept();
+  initSnrCalculator();
+
   if (LAB.worksheet && LAB.worksheet.length) {
     RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
   }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+
+  // Bind Simulation Controls
+  LAB.controls.forEach(function (control) {
+    document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation);
+  });
   document.getElementById('record-run').addEventListener('click', recordRun);
   document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-export-csv').addEventListener('click', exportRunsCSV);
   document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
+  // Preset Buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const mas = btn.dataset.mas, signal = btn.dataset.signal, detector = btn.dataset.detector, intrinsic = btn.dataset.intrinsic;
-      if (document.getElementById('ctrl-mas') && mas !== undefined) document.getElementById('ctrl-mas').value = mas;
-      if (document.getElementById('ctrl-signal') && signal !== undefined) document.getElementById('ctrl-signal').value = signal;
-      if (document.getElementById('ctrl-detector') && detector !== undefined) document.getElementById('ctrl-detector').value = detector;
-      if (document.getElementById('ctrl-intrinsic') && intrinsic !== undefined) document.getElementById('ctrl-intrinsic').value = intrinsic;
+      const mas = btn.dataset.mas;
+      const sig = btn.dataset.signal;
+      const det = btn.dataset.detector;
+      const intr = btn.dataset.intrinsic;
+
+      if (mas !== undefined) document.getElementById('ctrl-mas').value = mas;
+      if (sig !== undefined) document.getElementById('ctrl-signal').value = sig;
+      if (det !== undefined) document.getElementById('ctrl-detector').value = det;
+      if (intr !== undefined) document.getElementById('ctrl-intrinsic').value = intr;
+
       renderSimulation();
       RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
     });
   });
 
+  // Restore Saved Scenario Selection
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // Wire Split Submission Hubs
+  if (typeof RadLab._wireSplitSubmitHub === 'function') {
+    RadLab._wireSplitSubmitHub();
+  }
+
+  renderAllMath();
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

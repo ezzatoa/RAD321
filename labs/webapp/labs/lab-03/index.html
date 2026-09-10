@@ -3,77 +3,1186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab 3: Film Receptors &amp; the Darkroom — RAD 321</title>
+  <title>Lab 3: Film Receptors &amp; Darkroom Conditions — RAD 321</title>
   <link rel="stylesheet" href="../../shared/lab-styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- KaTeX for crisp, mathematically accurate equation rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Hero banner */
+    .hero-banner { position: relative; border-radius: var(--rad-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--rad-shadow-lg); }
+    .hero-banner img { width: 100%; height: 260px; object-fit: cover; }
+    .hero-banner .hero-overlay {
+      position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,37,69,0.92) 0%, rgba(11,37,69,0.6) 60%, rgba(11,37,69,0.1) 100%);
+      display: flex; flex-direction: column; justify-content: center; padding: 0 40px; color: #fff; max-width: 680px;
+    }
+    .hero-overlay .eyebrow { font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: #7fe0d6; font-weight: 700; }
+    .hero-overlay h1 { font-size: 28px; margin: 8px 0 10px; line-height: 1.25; }
+    .hero-overlay p { font-size: 14px; opacity: 0.92; margin: 0; }
+
+    /* Two-Tab Navigation System */
+    .lab-tabs-nav {
+      display: flex;
+      gap: 12px;
+      background: var(--rad-bg-soft, #f1f5f9);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--rad-border, #cbd5e1);
+      margin: 20px 0 24px 0;
+      box-shadow: var(--rad-shadow-sm);
+    }
+    .lab-tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--rad-text-muted, #475569);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .lab-tab-btn:hover {
+      color: var(--rad-navy, #0b2545);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    .lab-tab-btn.active {
+      background: #ffffff;
+      color: var(--rad-navy, #0b2545);
+      box-shadow: 0 4px 12px rgba(11, 37, 69, 0.1);
+      border-bottom: 3px solid var(--rad-teal, #0e7c86);
+    }
+    .lab-tab-btn .tab-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: rgba(14, 124, 134, 0.12);
+      color: var(--rad-teal, #0e7c86);
+      font-weight: 700;
+    }
+    .lab-tab-btn.active .tab-badge {
+      background: var(--rad-teal, #0e7c86);
+      color: #ffffff;
+    }
+    .lab-tab-pane {
+      display: none;
+      animation: fadeInPane 0.25s ease-in-out;
+    }
+    .lab-tab-pane.active {
+      display: block;
+    }
+    @keyframes fadeInPane {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mathematical Equation Typography & Styling */
+    .formula-box {
+      margin: 16px 0;
+      background: #f0fdfa;
+      border-left: 4px solid var(--rad-teal);
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      box-shadow: var(--rad-shadow-sm);
+    }
+    .formula-title {
+      font-weight: 700;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .math-display {
+      display: block;
+      text-align: center;
+      margin: 12px 0;
+      font-size: 18px;
+      color: var(--rad-navy);
+    }
+    .math-fallback-display {
+      display: block;
+      text-align: center;
+      margin: 10px 0;
+      font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      color: var(--rad-navy);
+      font-weight: 600;
+    }
+    .math-fallback-inline {
+      font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+      font-style: normal;
+      letter-spacing: 0.3px;
+      padding: 0 2px;
+      font-weight: 600;
+    }
+
+    /* Station diagrams and figures */
+    .station-diagram-figure { text-align: center; }
+    .station-diagram-figure figcaption { font-size: 12.5px; color: var(--rad-text-faint); margin-top: 8px; }
+    .checklist-fill-table input[type=text] { font-size: 13px; padding: 7px 9px; width: 100%; box-sizing: border-box; }
+    .obj-cross-table td, .obj-cross-table th { font-size: 12.5px; }
+    .lab-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 880px) { .lab-meta-grid { grid-template-columns: 1fr 1fr; } }
+    .why-sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 880px) { .why-sim-grid { grid-template-columns: 1fr; } }
+    .why-sim-card { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 16px; }
+    .why-sim-card .fa { color: var(--rad-teal); margin-right: 8px; }
+
+    /* Simulation Layout & Controls */
+    .sim-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .sim-canvas-wrap { position: relative; width: 100%; border-radius: var(--rad-radius-sm); overflow: hidden; background: #071a2b; border: 1px solid var(--rad-border); box-shadow: var(--rad-shadow-sm); }
+    .sim-canvas-wrap canvas { display: block; width: 100%; height: auto; }
+    .sim-presets-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+    .control-card { background: var(--rad-bg-soft); border: 1px solid var(--rad-border); border-radius: var(--rad-radius-sm); padding: 12px 14px; }
+    .control-card label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--rad-navy); margin-bottom: 6px; }
+    .control-card input[type=range] { width: 100%; cursor: pointer; }
+    
+    /* Clinical Scenario Options */
+    .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+    .scenario-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--rad-border); border-radius: 8px; background: #fff; cursor: pointer; transition: background 0.15s ease; }
+    .scenario-option:hover { background: var(--rad-bg-soft); }
+    .scenario-option input[type=radio] { margin-top: 3px; cursor: pointer; }
+    .feedback-box { min-height: 44px; border-radius: 8px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; background: var(--rad-bg-soft); border-left: 4px solid var(--rad-border); }
+    .feedback-box.correct { background: #eaf8f0; color: #12633f; border-left-color: #10b981; }
+    .feedback-box.incorrect { background: #fff0ee; color: #9d342d; border-left-color: #ef4444; }
+
+    /* Interactive Station Layer Cards */
+    .cassette-layers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+    .cassette-layer-card { background: #fff; border: 1px solid var(--rad-border); border-radius: 10px; padding: 14px; box-shadow: var(--rad-shadow-sm); transition: transform 0.15s ease, border-color 0.15s ease; }
+    .cassette-layer-card:hover { transform: translateY(-2px); border-color: var(--rad-teal); }
+    .cassette-layer-card .layer-badge { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--rad-teal); margin-bottom: 4px; display: block; }
+    .cassette-layer-card h4 { margin: 0 0 6px 0; font-size: 14.5px; color: var(--rad-navy); }
+    .cassette-layer-card p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--rad-text-muted, #64748b); }
+
+    /* Protocol Steps Grid */
+    .protocol-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+    .protocol-step-card { background: #fff; border: 1px solid var(--rad-border); border-radius: 10px; padding: 14px; box-shadow: var(--rad-shadow-sm); }
+    .protocol-step-card .step-num { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--rad-teal); background: rgba(14,124,134,0.1); padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+    .protocol-step-card h4 { margin: 0 0 6px 0; font-size: 14px; color: var(--rad-navy); }
+    .protocol-step-card p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--rad-text-soft, #475569); }
+
+    /* Excel Instructions Box */
+    .excel-guide-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 16px 18px; margin: 16px 0; }
+    .excel-guide-box h4 { margin: 0 0 8px 0; color: #166534; font-size: 15px; display: flex; align-items: center; gap: 8px; }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
+<!-- ===================== TOPBAR ===================== -->
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 3 — Film Receptors &amp; the Darkroom</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 3 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 3 — Film Receptors &amp; Darkroom Conditions</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline Ready</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 3 of 15 · Film Receptors</span>
+    </div>
+  </div>
 </header>
+
+<!-- ===================== IN-PAGE NAVIGATION ===================== -->
 <nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
+<!-- ===================== MAIN CONTAINER ===================== -->
 <main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 3 · Assessed laboratory assignment</div><h1>Film Receptors &amp; the Darkroom</h1><p>Follow a double-emulsion film from cassette loading to a visible radiograph. Directly aligned with: Recording Film Radiographs.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Identify the layers and purpose of a screen-film cassette.</li><li><span class="num">2</span>Describe latent-image formation in silver halide crystals.</li><li><span class="num">3</span>Sequence darkroom and automatic-processor steps safely.</li><li><span class="num">4</span>Predict how safelight, temperature, humidity, and processing time affect film quality.</li><li><span class="num">5</span>Apply darkroom safety and quality-control reasoning to a virtual film case.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Screen-film radiography uses a double-emulsion film between intensifying screens. X-rays stimulate the screens, which emit light and expose silver halide crystals. This invisible pattern is the latent image. Chemical processing converts it into a visible image through developer, fixer, washing, and drying.</p><div class="formula-box"><b>Safe processing sequence:</b> expose → developer → rinse/stop → fixer → wash → dry. The safelight must be appropriate for the film emulsion and placed far enough away to prevent fog.</div><p>Temperature, time, replenishment, and contamination control are quality variables. A film can be correctly exposed yet diagnostically poor if the darkroom or processor introduces fog, stains, or incomplete development.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
+  <!-- Hero banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography darkroom and processing environment">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 3 · Assessed Laboratory Assignment</div>
+      <h1>Film Receptors &amp; Darkroom Conditions</h1>
+      <p>Investigate the physical anatomy of screen-film cassettes, trace the 5-stage Gurney-Mott latent-image mechanism, and evaluate automatic processor chemistry and safelight limits.</p>
+    </div>
+  </div>
 
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict the effect of excessive developer temperature.</div><div class="procedure-step">Record the recommended baseline condition.</div><div class="procedure-step">Change only temperature and record a second run.</div><div class="procedure-step">Restore temperature, then move the safelight closer and record a third run.</div><div class="procedure-step">Compare development activity, fog risk, and quality index.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card"><div class="experiment-layout"><div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Film Receptors &amp; the Darkroom" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
-    <div class="control-card">
-      <label for="ctrl-temp"><span>Developer temperature</span><output id="out-temp" for="ctrl-temp">35 °C</output></label>
-      <input type="range" id="ctrl-temp" min="28" max="38" step="0.5" value="35" aria-describedby="sim-caption">
+  <!-- Two-Phase Assignment Guidance Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
     </div>
-    <div class="control-card">
-      <label for="ctrl-time"><span>Processing time</span><output id="out-time" for="ctrl-time">90 s</output></label>
-      <input type="range" id="ctrl-time" min="30" max="180" step="5" value="90" aria-describedby="sim-caption">
+    <p>This laboratory is an <b>interactive digital simulation and assessed laboratory module</b> evaluated across two required submission phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the background theory, explore the screen-film cassette layers, sequence the Gurney-Mott latent image formation stages, match processor chemical agents, and pass the knowledge check quizzes during your scheduled lab session.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Export your experimental run data via <em>"Download Run Data (CSV)"</em>, plot developer temperature and safelight distance sensitivity curves in Excel, complete the quantitative verification calculations, and submit your analysis workbook for final evaluation.
+      </div>
     </div>
-    <div class="control-card">
-      <label for="ctrl-humidity"><span>Darkroom humidity</span><output id="out-humidity" for="ctrl-humidity">45 %</output></label>
-      <input type="range" id="ctrl-humidity" min="25" max="75" step="1" value="45" aria-describedby="sim-caption">
+    <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+      <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+      <span style="display:block;margin-top:4px;">In <b>Section 7 (Tab 1)</b>, submit <b>Phase 1 (In-Lab Activities)</b> before leaving the lab session to lock in your foundation score. Then in <b>Section 11 (Tab 2)</b>, upload and submit your completed <b>Phase 2 (Excel Data Analysis)</b> workbook before the post-lab deadline.</span>
     </div>
-    <div class="control-card">
-      <label for="ctrl-safelight"><span>Safelight distance</span><output id="out-safelight" for="ctrl-safelight">90 cm</output></label>
-      <input type="range" id="ctrl-safelight" min="30" max="150" step="5" value="90" aria-describedby="sim-caption">
-    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
-  </section>
+  </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Automatic processor sequence</h3><p>Arrange the processing stages in order and connect each stage to its function.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Darkroom troubleshooting</h3><p>Several films show uniform gray fog, including unexposed control film left in the darkroom. What should be checked first?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Darkroom light leaks and safelight conditions</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Focal-spot size</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>SID calibration</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Patient positioning</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Label the film/cassette layers and state the function of screens and emulsion. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Describe how an X-ray exposure becomes a latent image and then a visible image. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain what would happen if developer temperature is too high or too low. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: distinguish a darkroom fog problem from an underdeveloped film using the appearance and process evidence. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+  <!-- Student information card -->
+  <div class="card card-soft">
+    <h3>Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row">
+        <label class="field-label" for="meta-studentName">Full Name</label>
+        <input type="text" id="meta-studentName" required placeholder="e.g. Tariq Al-Ghamdi">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-studentId">Student ID</label>
+        <input type="text" id="meta-studentId" required placeholder="e.g. 441012345">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-section">Section / Group</label>
+        <input type="text" id="meta-section" required placeholder="e.g. A1 / Group 2">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-date">Date</label>
+        <input type="text" id="meta-date" required>
+      </div>
+    </div>
+    <p class="form-hint">Your work auto-saves locally in your browser session. Export a JSON backup before changing workstations.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION SYSTEM ===================== -->
+  <div class="lab-tabs-nav" role="tablist" aria-label="Laboratory Workspaces">
+    <button type="button" class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro" onclick="switchTab('intro')">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Introduction &amp; In-Lab Activities
+      <span class="tab-badge">Phase 1 · 10 Pts</span>
+    </button>
+    <button type="button" class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment" onclick="switchTab('experiment')">
+      <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis
+      <span class="tab-badge">Phase 2 · 10 Pts</span>
+    </button>
+  </div>
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 1: FOUNDATIONS & IN-LAB ACTIVITIES ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- ===================== OBJECTIVES ===================== -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives &amp; Curricular Alignment</h2>
+          <div class="lab-section-sub">Diagnostic Radiology Technology Program · Accreditation Standards Alignment</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list" style="margin-top:14px;">
+          <li><span class="num">1</span><b>Cassette &amp; Film Anatomy:</b> Identify and explain the structural layers and physical functions of a screen-film cassette (carbon fiber face, rare-earth intensifying screens, double-emulsion film, foam compression pad, and lead foil backing).</li>
+          <li><span class="num">2</span><b>Gurney-Mott Latent Image Theory:</b> Detail the 5-stage mechanism of latent-image formation in silver halide microcrystals (AgBr) upon photon absorption, electron trapping at sensitivity specks, and interstitial silver ion reduction.</li>
+          <li><span class="num">3</span><b>Automatic Processing Chemistry:</b> Sequence and describe the precise chemical reactions across the 5 automatic processor stages: Developer (PQ reducing agents), Stop/Rinse squeegee, Fixer (ammonium thiosulfate clearing and alum hardening), Wash, and Dryer.</li>
+          <li><span class="num">4</span><b>Darkroom Environmental Physics:</b> Predict and quantify how safelight spectral filtration (Kodak GBX-2 vs Wratten 6B), safelight distance threshold (≥1.2 m), and darkroom relative humidity (40%–60%) govern film quality and prevent fog/static artifacts.</li>
+          <li><span class="num">5</span><b>Clinical Troubleshooting &amp; Quality Control:</b> Distinguish darkroom post-exposure fog from developer temperature errors and handling static marks, applying ALARA corrective actions to prevent unnecessary patient repeat exposure.</li>
+        </ul>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+        <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+        0–8 min film + screen idea (light does 95% of the work) · 8–22 min Stations 1–3 in pairs · 22–30 min fog scenario + Phase 1 submit.
+        Tab 2 (≈60 min): 3 required runs — baseline, overheated, safelight-close; 4th static run is bonus. Rule: change ONE slider per run.
+      </div>
+      <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+        <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+        1) Screens make the light; film catches it — match green↔green, blue↔blue. 2) 35 °C / 90 s / 120 cm / 40–60% RH is home base. 3) Gray control film = darkroom fault; pale thin = cold/under; dark dense = hot/over.
+      </div>
+    </section>
+
+    <!-- ===================== THEORY PRIMER ===================== -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory &amp; Physical Foundations</h2>
+          <div class="lab-section-sub">Read thoroughly before beginning the interactive laboratory stations</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics &amp; Chemistry Primer</span>
+
+        <h3 style="color:var(--rad-navy);margin-top:18px;">1.1 Cross-Sectional Anatomy of Double-Emulsion Film</h3>
+        <p>
+          Medical radiographic film is primarily <b>duplitized (double-emulsion)</b>, featuring an identical emulsion layer coated on both sides of a central transparent base. This double coating doubles the radiation absorption efficiency, allowing a <b>50% reduction in patient exposure dose</b> compared to single-emulsion film.
+        </p>
+        <div class="cassette-layers-grid">
+          <div class="cassette-layer-card">
+            <span class="layer-badge">Surface Layer (~1 µm)</span>
+            <h4>Supercoat / Overcoat</h4>
+            <p>A thin, hardened gelatin layer that protects the delicate emulsion from mechanical scratches, abrasions, pressure marks, and darkroom chemical contamination.</p>
+          </div>
+          <div class="cassette-layer-card">
+            <span class="layer-badge">Active Layer (~5–10 µm)</span>
+            <h4>Double Emulsion</h4>
+            <p>Gelatin suspension containing photosensitive silver halide microcrystals (95–98% <span class="math-tex">$\text{AgBr}$</span>, 2–5% <span class="math-tex">$\text{AgI}$</span>) with structural surface defects called <b>sensitivity specks</b> (<span class="math-tex">$\text{Ag}_2\text{S}$</span>).</p>
+          </div>
+          <div class="cassette-layer-card">
+            <span class="layer-badge">Bonding Layer (~0.2 µm)</span>
+            <h4>Adhesive / Subbing</h4>
+            <p>A specialized gelatin bonding layer ensuring uniform, permanent adhesion between the hydrophilic emulsion and the hydrophobic polyester base.</p>
+          </div>
+          <div class="cassette-layer-card">
+            <span class="layer-badge">Structural Support (~175 µm)</span>
+            <h4>Polyester Base</h4>
+            <p>Dimensionally stable, flexible, non-flammable polyethylene terephthalate tinted with a subtle blue dye to reduce diagnostic eyestrain on luminous viewboxes.</p>
+          </div>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.2 Intensifying Screen Physics &amp; Spectral Matching</h3>
+        <p>
+          Less than <b>1% to 5%</b> of film blackening is caused by direct X-ray photon absorption. Instead, the cassette houses two <b>intensifying screens</b> that absorb remnant X-ray photons and convert them into thousands of visible light photons through <b>fluorescence</b>. Over <b>95% to 99%</b> of the radiographic image is recorded by visible light emitted from these intensifying screens, reducing patient radiation dose by a factor of 50 to 100.
+        </p>
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-lightbulb"></i> Spectral Matching Principle:</div>
+          <p style="margin:0 0 8px 0;">
+            The light emitted by the intensifying screen phosphor MUST match the spectral sensitivity of the radiographic film emulsion:
+          </p>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;">
+            <li><b>Green-Emitting Rare Earth Screens:</b> Gadolinium oxysulfide (<span class="math-tex">$\text{Gd}_2\text{O}_2\text{S:Tb}$</span>, peak emission 545 nm) must be paired with <b>Orthochromatic film</b> (green + blue sensitive).</li>
+            <li><b>Blue/UV-Emitting Screens:</b> Lanthanum oxybromide (<span class="math-tex">$\text{LaOBr:Tm}$</span>, peak emission 400 nm) or Calcium tungstate (<span class="math-tex">$\text{CaWO}_4$</span>) must be paired with <b>Monochromatic film</b> (blue/UV sensitive).</li>
+            <li><b style="color:#b91c1c;">Spectral Mismatch Penalty:</b> Mismatching green-emitting screens with blue-sensitive film causes an <b>approx. 50% to 70% loss of system speed</b> (classroom estimate — direction is what matters), forcing the radiographer to double or triple patient mAs to prevent underexposure!</li>
+          </ul>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.3 Latent Image Formation: The Gurney-Mott Hypothesis</h3>
+        <p>
+          When remnant light and X-rays strike the silver halide crystal, an invisible electrochemical alteration occurs within the crystal lattice known as the <b>latent image</b>. The Gurney-Mott theory explains this process in 5 distinct stages:
+        </p>
+        <ol style="margin:0;padding-left:22px;font-size:13.5px;line-height:1.65;color:var(--rad-navy);">
+          <li><b>Photoelectron Ejection:</b> An incoming light or X-ray photon is absorbed by a bromide ion (<span class="math-tex">$\text{Br}^-$</span>), releasing a high-speed photoelectron into the crystal conduction band:
+            <span class="math-display">$$\text{Br}^- + h\nu \longrightarrow \text{Br}^0 + e^-$$</span>
+            The neutral bromine atom (<span class="math-tex">$\text{Br}^0$</span>) diffuses away into the surrounding gelatin matrix.
+          </li>
+          <li><b>Electron Trapping:</b> The free conduction electron migrates through the crystal lattice until it becomes trapped at a <b>sensitivity speck</b> (silver sulfide defect, <span class="math-tex">$\text{Ag}_2\text{S}$</span>) on the crystal surface, imparting a temporary negative electrostatic charge to the speck.</li>
+          <li><b>Interstitial Silver Ion Migration:</b> Mobile, positively charged interstitial silver ions (<span class="math-tex">$\text{Ag}^+$</span>) within the crystal lattice are electrostatically drawn toward the negatively charged sensitivity speck.</li>
+          <li><b>Neutral Silver Atom Deposition:</b> Upon reaching the speck, the silver ion neutralizes the trapped electron, precipitating a single atom of metallic black silver:
+            <span class="math-display">$$\text{Ag}^+ + e^- \longrightarrow \text{Ag}^0$$</span>
+          </li>
+          <li><b>Latent Image Center Formation:</b> As successive photons interact with the crystal, this cycle repeats. When a sensitivity speck accumulates a cluster of <b>3 or more metallic silver atoms</b> (<span class="math-tex">$\text{Ag}_n^0,\ n \ge 3$</span>), it forms a stable <b>latent image center</b> capable of catalyzing full chemical reduction in the developer tank.</li>
+        </ol>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.4 Darkroom Environmental &amp; Safelight Physics</h3>
+        <p>
+          The darkroom must be completely light-tight, utilizing a maze labyrinth or double-door interlock. Working illumination is provided by specialized safelights designed to deliver visible illumination without exposing the photosensitive film emulsion:
+        </p>
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-shield-halved"></i> Safelight Specifications &amp; Inverse-Square Protection:</div>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;">
+            <li><b>Filter Transmission:</b>
+              <br>• <b>Kodak GBX-2 (Ruby Red):</b> Transmits wavelengths <span class="math-tex">$\lambda > 600\text{ nm}$</span>. Safe for <b>both</b> orthochromatic (green) and monochromatic (blue) films.
+              <br>• <b>Kodak Wratten 6B (Amber):</b> Transmits wavelengths <span class="math-tex">$\lambda > 560\text{ nm}$</span>. Safe <b>only</b> for monochromatic (blue) films. Will rapidly fog orthochromatic film!
+            </li>
+            <li><b>Bulb Wattage &amp; Minimum Distance:</b> Maximum <b>15-watt</b> frosted bulb positioned at a minimum distance of <b>1.2 meters (120 cm / 4 feet)</b> from workbenches. Under the inverse-square law, reducing distance from 120 cm to 60 cm quadruples light intensity (<span class="math-tex">$4\times$</span>), causing severe darkroom post-exposure fog.</li>
+            <li><b>Relative Humidity (RH):</b> Must be maintained between <b>40% and 60%</b>. Low humidity (<span class="math-tex">$< 35\%$</span>) promotes electrostatic discharges, creating permanent tree, crown, or smudge static artifacts. High humidity (<span class="math-tex">$> 60\%$</span>) causes emulsion swelling, roller slippage, and transport jamming.</li>
+          </ul>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.5 Automatic Processor Chemistry (5 Stages)</h3>
+        <p>
+          In 90-second rapid automatic processing, the film travels sequentially through 5 dedicated functional stages:
+        </p>
+        <ol style="margin:0;padding-left:22px;font-size:13.5px;line-height:1.65;color:var(--rad-navy);">
+          <li><b>Developer Tank (Alkaline pH ~10.0–10.5, 35°C / 95°F, ~22s):</b>
+            Converts latent image centers into visible metallic black silver grains (<span class="math-tex">$\text{Ag}^0$</span>). Uses a synergistic combination of <b>Phenidone</b> (fast-acting reducer, develops gray mid-tones) and <b>Hydroquinone</b> (slow-acting reducer, builds heavy black densities and high contrast). Contains potassium bromide as a restrainer to prevent chemical fog, sodium sulfite as an antioxidant preservative, and glutaraldehyde as a gelatin hardener.
+            <div class="formula-box" style="margin:8px 0;background:#fff;">
+              <div class="formula-title"><i class="fa-solid fa-temperature-arrow-up"></i> Classroom Activity Model (simplified temperature rule, not the full Arrhenius law):</div>
+              Developer chemical activity doubles approximately every 5°C elevation above baseline:
+              <span class="math-display">$$\text{Activity} = 2^{\frac{T - 35}{5}} \times \left(\frac{t}{90}\right)$$</span>
+              Where <span class="math-tex">$T$</span> is developer temperature (°C) and <span class="math-tex">$t$</span> is total processing immersion time (seconds). Overheating causes rapid chemical fog and loss of diagnostic contrast!
+            </div>
+          </li>
+          <li><b>Stop / Squeegee Rollers:</b> Squeegee roller racks compress the film, removing excess alkaline developer fluid to prevent chemical carryover and neutralizer exhaustion in the fixer.</li>
+          <li><b>Fixer Tank (Acidic pH ~4.0–4.5, ~35°C, ~20s):</b>
+            Halts all development immediately with acetic acid neutralizer. Contains <b>Ammonium thiosulfate</b> ("hypo"), which dissolves unexposed, undeveloped silver halide crystals into soluble silver thiosulfate complexes:
+            <span class="math-display">$$\text{AgBr} + 2(\text{NH}_4)_2\text{S}_2\text{O}_3 \longrightarrow (\text{NH}_4)_3[\text{Ag}(\text{S}_2\text{O}_3)_2] + \text{NH}_4\text{Br}$$</span>
+            Also contains potassium alum to harden and stiffen the gelatin for roller transport.
+          </li>
+          <li><b>Wash Tank (Fresh Running Water, 30°C–35°C, ~20s):</b> Removes residual ammonium thiosulfate and dissolved silver complexes. Inadequate washing leaves residual hypo, causing the radiograph to turn brown/yellow over time due to silver sulfide formation.</li>
+          <li><b>Dryer (Warm Forced Air, 45°C–55°C, ~20s):</b> Evaporates moisture from the swollen gelatin, producing a permanent, scratch-resistant, diagnostically stable radiograph.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 1: CASSETTE ANATOMY ===================== -->
+    <section class="lab-section" id="sec-cassette">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1 — Cassette &amp; Film Anatomy Explorer</h2>
+          <div class="lab-section-sub">Cross-sectional analysis of screen-film construction and protective layers</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-layer-group"></i> Physical Structure Explorer</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Examine the 6 distinct structural components of a modern screen-film cassette below. Review each layer's material composition and physical role, then complete the quantitative parameter verification check in Table A.
+        </p>
+
+        <div class="cassette-layers-grid">
+          <div class="cassette-layer-card" style="border-top:3px solid #0e7c86;">
+            <span class="layer-badge">Anterior Face</span>
+            <h4>1. Carbon Fiber Front Face</h4>
+            <p>Constructed of low-<span class="math-tex">$Z$</span>, highly radiolucent carbon fiber composite or lightweight magnesium to ensure maximum remnant X-ray transmission with minimal beam attenuation.</p>
+          </div>
+          <div class="cassette-layer-card" style="border-top:3px solid #10b981;">
+            <span class="layer-badge">Fluorescent Converter</span>
+            <h4>2. Front Intensifying Screen</h4>
+            <p>Coated with rare-earth phosphor crystals (<span class="math-tex">$\text{Gd}_2\text{O}_2\text{S}$</span> or <span class="math-tex">$\text{LaOBr}$</span>) that absorb remnant X-rays and fluoresce visible light directly onto the anterior film emulsion.</p>
+          </div>
+          <div class="cassette-layer-card" style="border-top:3px solid #f59e0b;">
+            <span class="layer-badge">Recording Medium</span>
+            <h4>3. Double-Emulsion Film</h4>
+            <p>Active recording receptor with photosensitive <span class="math-tex">$\text{AgBr}$</span> microcrystals on both sides of a blue-tinted polyester base, capturing front and back screen light simultaneously.</p>
+          </div>
+          <div class="cassette-layer-card" style="border-top:3px solid #10b981;">
+            <span class="layer-badge">Fluorescent Converter</span>
+            <h4>4. Back Intensifying Screen</h4>
+            <p>Identical rare-earth phosphor layer capturing remnant photons passing through the film and exposing the posterior emulsion layer to maximize speed.</p>
+          </div>
+          <div class="cassette-layer-card" style="border-top:3px solid #6366f1;">
+            <span class="layer-badge">Mechanical Contact</span>
+            <h4>5. Foam Compression Pad</h4>
+            <p>Resilient elastomeric foam pad exerting uniform mechanical pressure across the entire cassette face, ensuring intimate screen-film contact to prevent severe image blur.</p>
+          </div>
+          <div class="cassette-layer-card" style="border-top:3px solid #ef4444;">
+            <span class="layer-badge">Radiation Shield</span>
+            <h4>6. Lead Foil Backing</h4>
+            <p>Thin sheet of radiopaque lead foil (<span class="math-tex">$Z=82$</span>) lining the rear lid, absorbing backscattered radiation from the Bucky tray/wall stand to eliminate foggy image degradation.</p>
+          </div>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-list-check"></i> Table A: Cassette &amp; Emulsion Parameter Verification Check</h4>
+        <p class="small muted">Synthesize your structural understanding by entering the exact technical parameters below:</p>
+        <table class="data-table checklist-fill-table">
+          <thead>
+            <tr>
+              <th style="width:28%">Component / Layer</th>
+              <th style="width:36%">Structural Composition &amp; Material</th>
+              <th>Primary Clinical Function &amp; Radiographic Impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Cassette Front Face:</b></td>
+              <td><input type="text" id="w-cassette-front" placeholder="e.g., Low-Z radiolucent carbon fiber composite / plastic"></td>
+              <td>Minimizes X-ray beam attenuation before striking intensifying screens; protects internal elements.</td>
+            </tr>
+            <tr>
+              <td><b>Intensifying Screen Phosphor:</b></td>
+              <td><input type="text" id="w-screen-speed" placeholder="e.g., Rare-earth Gadolinium oxysulfide (Gd2O2S:Tb) / Lanthanum"></td>
+              <td>Converts 1 X-ray photon into ~1000 visible light photons (~99% exposure from screen light, saving patient dose).</td>
+            </tr>
+            <tr>
+              <td><b>Emulsion Sensitivity Specks:</b></td>
+              <td><input type="text" id="w-emulsion-speck" placeholder="e.g., Silver sulfide (Ag2S) surface lattice defects"></td>
+              <td>Traps freed photoelectrons, attracting Ag+ ions to precipitate metallic silver latent image centers.</td>
+            </tr>
+            <tr>
+              <td><b>Rear Lead Foil Backing:</b></td>
+              <td><input type="text" id="w-lead-foil" placeholder="e.g., High-Z radiopaque lead sheet (Z=82)"></td>
+              <td>Absorbs backscattered radiation from Bucky tray hardware to prevent contrast-destroying backscatter fog.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 2: LATENT IMAGE SEQUENCE ===================== -->
+    <section class="lab-section" id="sec-latent">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2 — Gurney-Mott Latent Image Sequence</h2>
+          <div class="lab-section-sub">Sequence the electrochemical stages of silver halide crystal activation</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-sort"></i> Chronological Drag-Order Challenge</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Arrange the 5 sequential stages of the Gurney-Mott latent-image formation hypothesis in correct chronological order from first photon absorption to stable catalytic center:
+        </p>
+        <div id="latent-drag-container" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 3: CHEMISTRY MATCHER ===================== -->
+    <section class="lab-section" id="sec-chemistry">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3 — Automatic Processing Chemistry Matcher</h2>
+          <div class="lab-section-sub">Pair chemical processing agents with their precise functional mechanisms</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-vial-circle-check"></i> Chemistry Matcher Challenge</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Match each chemical reagent found in automatic developer and fixer formulations to its exact chemical action:
+        </p>
+        <div id="chemistry-match-container" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 4: CLINICAL SCENARIO ===================== -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4 — Clinical Troubleshooting Scenario</h2>
+          <div class="lab-section-sub">Darkroom Quality Control Case: Diagnosing Uniform Radiographic Gray Fog</div>
+        </div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Clinical QC Case Study</span>
+        <h3 style="color:var(--rad-navy);margin-top:12px;">Case Scenario: Unexplained Base Gray Fog in the Orthopedic Suite</h3>
+        <p style="font-size:13.5px;line-height:1.55;">
+          The chief quality control radiographer notices that every radiograph processed in Darkroom 2 displays an elevated, hazy base density with severe contrast degradation. Even an unexposed control film stored in a closed box on the darkroom workbench exhibits a high uniform gray optical density (<span class="math-tex">$OD > 0.45$</span>) after standard processing. Exposure calibration checks on the X-ray tubes demonstrate accurate kVp and timer outputs.
+        </p>
+        <p style="font-weight:700;color:var(--rad-navy);margin-top:14px;">
+          What is the primary root cause that the radiographer must investigate first?
+        </p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Choose the primary darkroom troubleshooting check</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Darkroom Light Leaks &amp; Safelight Filter Integrity:</b> Perform a darkroom coin fog test and inspect door gaskets, pass-through boxes, and safelight filters for cracked housings, incorrect bulb wattage (&gt;15W), or amber filter mismatch with orthochromatic film.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>X-ray Tube Focal-Spot Size Calibration:</b> Recalibrate the rotating anode dual focal spots using a star resolution pattern test tool to eliminate geometric penumbral blur.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Source-to-Image Distance (SID) Alignment:</b> Verify the tape measure laser alignment on the overhead tube crane to correct inverse-square law beam divergence errors.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Patient Positioning &amp; Respiration Coaching:</b> Instruct the orthopedic patients to hold deeper suspended inspiration to minimize involuntary lung parenchymal motion.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="button" class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Check Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">Select an option above and verify your troubleshooting decision.</div>
+      </article>
+    </section>
+
+    <!-- ===================== KNOWLEDGE CHECK ===================== -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Mastery Quizzes</h2>
+          <div class="lab-section-sub">Formative assessment of film anatomy, latent image physics, fixer chemistry, and developer temperature</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-circle-check"></i> Formative Mastery Assessment</span>
+        <div id="quiz-wrap" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 1 SUBMISSION HUB ===================== -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-paper-plane"></i></div>
+        <div>
+          <h2>Phase 1 Submission — In-Lab Interactive Activities</h2>
+          <div class="lab-section-sub">Submit and lock in your in-lab activities score (10 points) before leaving the laboratory session</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- ===================== CTA TRANSITION TO TAB 2 ===================== -->
+    <div class="card" style="background:linear-gradient(135deg, #071a2b 0%, #134e6f 100%);color:#fff;border-radius:12px;padding:26px;margin-top:24px;box-shadow:var(--rad-shadow-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div style="max-width:620px;">
+          <span style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7fe0d6;font-weight:700;">Foundations Complete · Ready for Experimentation</span>
+          <h3 style="color:#ffffff;margin:8px 0 10px;font-size:22px;">Proceed to Tab 2: Virtual Darkroom Simulator</h3>
+          <p style="margin:0;font-size:14px;opacity:0.92;line-height:1.5;">Now that you have completed the conceptual foundations and interactive stations, enter the digital laboratory to simulate automatic processor tanks, analyze developer temperatures and safelight distances, export your dataset, and complete your quantitative analysis.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-teal" id="btn-proceed-to-sim" style="padding:14px 28px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.25);">
+            <i class="fa-solid fa-flask"></i> Proceed to Tab 2: Virtual Experiment &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#tab-pane-intro -->
+
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 2: VIRTUAL SIMULATION & WORKBOOK ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:12.5px;"><i class="fa-solid fa-microscope"></i> Tab 2: Virtual Laboratory &amp; Analysis Workspace</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-intro" style="font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Return to Tab 1 (Theory &amp; Foundations)</button>
+    </div>
+
+    <!-- ===================== EXPERIMENT PROTOCOL & OBJECTIVES ===================== -->
+    <section class="card" id="sec-exp-guide" style="border-left:4px solid var(--rad-teal);margin-bottom:24px;">
+      <div class="flex items-center gap-12" style="margin-bottom:8px;">
+        <i class="fa-solid fa-list-check" style="color:var(--rad-teal);font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Virtual Physics Experiment: Protocol, Objectives &amp; Step-by-Step Procedure</h3>
+      </div>
+      <p style="margin:6px 0 14px 0;font-size:14px;line-height:1.5;">Follow the standardized experimental protocol below to record at least <b>3 unique controlled trials</b> into your run logger for post-lab Excel curve fitting and quantitative evaluation.</p>
+
+      <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+        <h4 style="margin:0 0 8px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-bullseye" style="color:var(--rad-teal);"></i> Specific Experimental Objectives:</h4>
+        <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;color:var(--rad-navy);">
+          <li><b>Developer Temperature Response (classroom model):</b> Quantify how raising developer temperature from 30°C to 38°C accelerates chemical activity (<span class="math-tex">$\text{Activity} \propto 2^{(T-35)/5}$</span> — a teaching rule of thumb, not the full Arrhenius equation), causing chemical overdevelopment and gross fog.</li>
+          <li><b>Processing Immersion Time Impact:</b> Evaluate how prolonged immersion time alters overall film density and processing penalties.</li>
+          <li><b>Safelight Proximity &amp; Inverse-Square Fog Threshold:</b> Demonstrate that positioning safelight illumination closer than 120 cm introduces severe post-exposure fogging risk.</li>
+          <li><b>Darkroom Relative Humidity &amp; Static Spark Hazard:</b> Investigate how low humidity (&lt;35% RH) elevates electrostatic discharge artifacts (tree, crown, smudge static).</li>
+        </ol>
+      </div>
+
+      <h4 style="margin:0 0 10px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-clipboard-list" style="color:var(--rad-teal);"></i> Step-by-Step Laboratory Procedure:</h4>
+      <div class="protocol-steps-grid">
+        <div class="protocol-step-card">
+          <div class="step-num">Step 1 · Scientific Hypothesis</div>
+          <h4>Formulate Prediction</h4>
+          <p>Before moving any sliders, enter a clear hypothesis in the <b>Pre-Trial Scientific Prediction</b> field predicting how altering developer temperature or safelight distance will alter film quality and fog risk.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 2 · Baseline Trial (Run 1)</div>
+          <h4>Standard Diagnostic Baseline</h4>
+          <p>Click preset <b>Standard Baseline (35°C, 90s, 120cm, 45%)</b>. Observe the balanced developer activity (1.00 rel) and optimal diagnostic index. Record Run 1.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 3 · Overheating Trial (Run 2)</div>
+          <h4>Chemical Overdevelopment / Fog</h4>
+          <p>Click preset <b>Overheated Developer (38°C)</b> or raise temperature to 38°C. Observe how chemical activity surges to ~1.52×, producing chemical fog. Record Run 2.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 4 · Safelight Trial (Run 3)</div>
+          <h4>Safelight Proximity Hazard</h4>
+          <p>Click preset <b>Safelight Proximity Hazard (40 cm)</b> with temperature restored to 35°C. Notice the severe surge in safelight fog risk to ~30.4%. Record Run 3.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 5 · Static Risk Trial (Run 4 — optional)</div>
+          <h4>Low Humidity Static Hazard</h4>
+          <p>Click preset <b>Dry Winter / Static Hazard (25% RH)</b>. Observe the spike in handling static risk due to dry ambient air. Record Run 4 <b>only if time allows — 3 runs already meet the requirement</b>.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 6 · Export Dataset</div>
+          <h4>Download Run Data (CSV)</h4>
+          <p>Click <b>Download Run Data (CSV)</b> in the toolbar to save your recorded trials for your post-lab Excel curve plotting and submission requirements.</p>
+        </div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+        <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+        ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline + Record &nbsp; ☐ 3. Run 2 Overheated 38 °C + Record &nbsp; ☐ 4. Run 3 Safelight 40 cm + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel plots + Table B.<br>
+        <b>Stuck?</b> Record blocked → write the prediction first. Change ONE slider per run. Safelight/humidity numbers are classroom simulator scales showing direction, not darkroom meters.
+      </div>
+    </section>
+
+    <!-- ===================== VIRTUAL EXPERIMENT SIMULATOR SUITE ===================== -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Virtual Simulation Suite — Film Processor &amp; Darkroom Simulator</h2>
+          <div class="lab-section-sub">Interactive 5-tank automatic processor cutaway, safelight distance beacon, and diagnostic index telemetry</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Digital Simulator</span>
+        <p style="margin-top:10px;font-size:13.5px;">Adjust developer chemistry, immersion timing, ambient relative humidity, and safelight distance below. Observe the dynamic 5-tank processor cutaway and real-time telemetry. <b>Record at least 3 unique runs</b> with scientific hypotheses.</p>
+
+        <!-- Presets bar -->
+        <div class="sim-presets-bar">
+          <span class="small muted" style="font-weight:700;margin-right:6px;"><i class="fa-solid fa-sliders"></i> Operating Presets:</span>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-temp="35" data-time="90" data-humidity="45" data-safelight="120">Standard Baseline (35°C, 90s, 120cm, 45%)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-temp="38" data-time="90" data-humidity="45" data-safelight="120">Overheated Developer (38°C / Fog)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-temp="29" data-time="90" data-humidity="45" data-safelight="120">Cold Developer (29°C / Underdev)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-temp="35" data-time="90" data-humidity="45" data-safelight="40">Safelight Proximity Hazard (40 cm)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-temp="35" data-time="90" data-humidity="25" data-safelight="120">Dry Winter / Static Hazard (25% RH)</button>
+        </div>
+
+        <!-- Simulation Layout -->
+        <div class="sim-layout">
+          <!-- Interactive Canvas -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" width="900" height="300" aria-label="Interactive digital cutaway simulation of automatic film processor tanks and darkroom conditions"></canvas>
+          </div>
+
+          <!-- Controls Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-temp"><span>Developer Temperature (°C)</span><output id="out-temp" for="ctrl-temp">35.0 °C</output></label>
+              <input type="range" id="ctrl-temp" min="28" max="38" step="0.5" value="35">
+              <span class="small muted" style="display:block;margin-top:4px;">Optimal baseline: 35.0°C (95°F)</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-time"><span>Total Processing Time (s)</span><output id="out-time" for="ctrl-time">90 s</output></label>
+              <input type="range" id="ctrl-time" min="30" max="180" step="5" value="90">
+              <span class="small muted" style="display:block;margin-top:4px;">Rapid automatic cycle: 90 s</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-humidity"><span>Darkroom Humidity (% RH)</span><output id="out-humidity" for="ctrl-humidity">45 %</output></label>
+              <input type="range" id="ctrl-humidity" min="25" max="75" step="1" value="45">
+              <span class="small muted" style="display:block;margin-top:4px;">Safe window: 40%–60% RH</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-safelight"><span>Safelight Distance (cm)</span><output id="out-safelight" for="ctrl-safelight">120 cm</output></label>
+              <input type="range" id="ctrl-safelight" min="30" max="150" step="5" value="120">
+              <span class="small muted" style="display:block;margin-top:4px;">Safe minimum: ≥ 120 cm (4 ft)</span>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Display -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+
+          <!-- Observation Box -->
+          <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:12px 16px;margin-top:10px;">
+            <strong style="color:var(--rad-navy);"><i class="fa-solid fa-microscope" style="color:var(--rad-teal);"></i> Radiographic Process Critique:</strong>
+            <p id="sim-caption" style="margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--rad-text-soft);">Adjust controls above to evaluate chemical activity and darkroom safety.</p>
+          </div>
+
+          <!-- Pre-Trial Prediction Field -->
+          <div class="form-row" style="margin-top:18px;">
+            <label class="field-label" for="w-prediction">
+              <i class="fa-solid fa-pen-to-square" style="color:var(--rad-teal);"></i> Pre-Trial Scientific Prediction <span aria-hidden="true">*</span>
+            </label>
+            <textarea id="w-prediction" rows="3" required placeholder="State the variable you plan to change (e.g. developer temperature or safelight distance) and explain your predicted outcome on chemical activity, optical density, and fog risk..."></textarea>
+            <p class="form-hint">Minimum 20 characters required before recording runs. Your prediction is locked into your exported dataset.</p>
+          </div>
+
+          <!-- Run Logging Toolbar -->
+          <div style="margin-top:18px;border-top:1px solid var(--rad-border);padding-top:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary" id="record-run"><i class="fa-solid fa-camera"></i> Record This Run</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash-can"></i> Remove Last Run</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-download-runs-csv"><i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)</button>
+              </div>
+              <span class="run-status" id="run-status" role="status" aria-live="polite" style="font-weight:700;color:var(--rad-navy);">0 / 3 unique runs recorded</span>
+            </div>
+
+            <!-- Run Log Table -->
+            <div class="table-responsive">
+              <table class="data-table run-table">
+                <thead>
+                  <tr>
+                    <th style="width:6%">Run</th>
+                    <th style="width:32%">Operating Parameters</th>
+                    <th style="width:32%">Chemical &amp; Risk Metrics</th>
+                    <th>Diagnostic Quality &amp; Process Critique</th>
+                  </tr>
+                </thead>
+                <tbody id="run-log-body">
+                  <tr><td colspan="4" class="muted">No runs recorded yet. Adjust controls above and click "Record This Run".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POST-LAB DATA ANALYSIS & WORKSHEET ===================== -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Required Data Analysis &amp; Post-Lab Reflection</h2>
+          <div class="lab-section-sub">Quantitative chemistry calculations, Excel plotting instructions, and clinical reflection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and perform the following analytical steps in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Developer Temperature Curve (Temperature vs Activity):</b> Plot Developer Temperature (°C) on the X-axis against Developer Activity (rel) on the Y-axis. Fit an exponential trendline (<span class="math-tex">$y = a \cdot e^{bx}$</span>) demonstrating the classroom temperature rule where chemical reaction rate roughly doubles with every 5°C increase.</li>
+            <li><b>Plot 2 — Safelight Fog Risk Curve (Safelight Distance vs Fog Risk %):</b> Plot Safelight Distance (cm) on the X-axis against Safelight Fog Risk (%) on the Y-axis. Add a trendline showing how fog risk remains zero beyond the 120 cm safe threshold and rises steeply below 120 cm under the inverse-square law.</li>
+            <li><b>Calculated Spreadsheets Columns:</b> Add a column calculating theoretical developer activity using the equation <span class="math-tex">$\text{Activity} = 2^{(T-35)/5} \times (t/90)$</span> and compare it against the simulation telemetry values.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and upload it in <b>Section 10 (Phase 2 Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact physical and chemical parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <thead>
+            <tr><th style="width:32%">Chemical / Physical Parameter</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Interpretation</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Developer Activity at 38°C:</b> Standard 90s cycle (<span class="math-tex">$T=38^\circ\text{C}, t=90\text{s}$</span>)</td>
+              <td><input type="text" id="w-calc-activity-check" placeholder="e.g., Activity = 2^((38 - 35)/5) * (90/90) = 2^(0.6)"></td>
+              <td><input type="text" id="w-calc-activity-out" placeholder="e.g., 1.52 rel (Overdeveloped / Chemical Fog)"></td>
+            </tr>
+            <tr>
+              <td><b>Safelight Fog Risk at 60 cm:</b> Lamp positioned at half safe distance</td>
+              <td><input type="text" id="w-calc-safelight-check" placeholder="e.g., Fog Risk = max(0, 120 - 60) * 0.38 = 60 * 0.38"></td>
+              <td><input type="text" id="w-calc-safelight-out" placeholder="e.g., 22.8% (Critical post-exposure fogging risk)"></td>
+            </tr>
+            <tr>
+              <td><b>Handling Static Risk at 25% RH:</b> Dry winter darkroom condition</td>
+              <td><input type="text" id="w-calc-humidity-check" placeholder="e.g., Static Risk = |25 - 45| * 0.55 = 20 * 0.55"></td>
+              <td><input type="text" id="w-calc-humidity-out" placeholder="e.g., 11.0% penalty (High risk of tree/crown static sparks)"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-comment-dots"></i> C. Post-Lab Reflection &amp; Clinical Analysis Questions</h4>
+
+        <div class="form-row">
+          <label class="field-label" for="q1">1. Label the film/cassette layers and state the function of screens and emulsion. <span aria-hidden="true">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="Detail the structural layers of a cassette, the role of rare-earth intensifying screens in dose reduction, and how double emulsion operates..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q2">2. Describe how an X-ray exposure becomes a latent image and then a visible image. <span aria-hidden="true">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="Trace the Gurney-Mott latent image stages in AgBr crystals and explain how developer PQ chemistry and fixer clearing convert it into a visible radiograph..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q3">3. Explain what would happen if developer temperature is too high or too low. Cite specific run numbers and telemetry data from your trials. <span aria-hidden="true">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Contrast your baseline trial (35°C) with your overheated (38°C) and cold (29°C) runs, citing exact activity multipliers and image contrast changes..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q4">4. Critical thinking: Distinguish a darkroom fog problem from an underdeveloped film using the appearance and process evidence. <span aria-hidden="true">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Explain how base optical density, unexposed control film appearance, and developer temperature/replenishment rates differentiate fog from underdevelopment..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RUBRIC ===================== -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Standardized Grading Rubric</h2>
+          <div class="lab-section-sub">Total: 20 points — Departmental standardized evaluation criteria across Phase 1 and Phase 2</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-rubric"><i class="fa-solid fa-clipboard-list"></i> Standardized Department Rubric</span>
+        <div id="rubric-container" style="margin-top:14px; overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:10px;">Students: score yourself to evaluate your readiness. Official grades and Gemini Flash AI feedback are assigned via the department portal.</p>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 2 SUBMISSION HUB ===================== -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-file-excel"></i></div>
+        <div>
+          <h2>Phase 2 Submission — Post-Lab Excel Data Analysis</h2>
+          <div class="lab-section-sub">Upload your completed Excel analysis workbook and submit your post-lab reflection (10 points)</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div><!-- /#tab-pane-experiment -->
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 3 of 15 · assessed virtual laboratory</footer>
+
+<!-- ===================== STICKY ACTION BAR ===================== -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none;"></label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar"><i class="fa-solid fa-file-pdf"></i> Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 3 of 15 · Interactive Simulation Lab Platform
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
-const LAB = {"week":3,"title":"Film Receptors & the Darkroom","lecture":"Recording Film Radiographs","type":"film","subtitle":"Follow a double-emulsion film from cassette loading to a visible radiograph.","objectives":["Identify the layers and purpose of a screen-film cassette.","Describe latent-image formation in silver halide crystals.","Sequence darkroom and automatic-processor steps safely.","Predict how safelight, temperature, humidity, and processing time affect film quality.","Apply darkroom safety and quality-control reasoning to a virtual film case."],"theory":"<p>Screen-film radiography uses a double-emulsion film between intensifying screens. X-rays stimulate the screens, which emit light and expose silver halide crystals. This invisible pattern is the latent image. Chemical processing converts it into a visible image through developer, fixer, washing, and drying.</p><div class=\"formula-box\"><b>Safe processing sequence:</b> expose → developer → rinse/stop → fixer → wash → dry. The safelight must be appropriate for the film emulsion and placed far enough away to prevent fog.</div><p>Temperature, time, replenishment, and contamination control are quality variables. A film can be correctly exposed yet diagnostically poor if the darkroom or processor introduces fog, stains, or incomplete development.</p>","controls":[{"id":"temp","label":"Developer temperature","min":28,"max":38,"step":0.5,"value":35,"unit":"°C"},{"id":"time","label":"Processing time","min":30,"max":180,"step":5,"value":90,"unit":"s"},{"id":"humidity","label":"Darkroom humidity","min":25,"max":75,"step":1,"value":45,"unit":"%"},{"id":"safelight","label":"Safelight distance","min":30,"max":150,"step":5,"value":90,"unit":"cm"}],"stations":[{"id":"darkroom","title":"Station 1 — Virtual darkroom inspection","text":"Adjust temperature, time, humidity, and safelight distance. Observe the film-quality indicator and identify the safest operating window.","kind":"main"},{"id":"processor","title":"Station 2 — Automatic processor sequence","text":"Arrange the processing stages in order and connect each stage to its function.","kind":"order","items":[["dev","Developer — reduces exposed silver halide"],["rinse","Rinse / stop — limits developer action"],["fix","Fixer — removes unexposed silver halide"],["wash","Wash — removes residual chemicals"],["dry","Dry — produces a stable visible film"]],"correct":["dev","rinse","fix","wash","dry"]},{"id":"case","title":"Station 3 — Darkroom troubleshooting","text":"A film has uniform gray fog even though the exposure factors were correct. Choose the most likely first check.","kind":"case"}],"quiz":[{"prompt":"A uniformly gray film with correct exposure factors is most consistent with:","options":["Safelight or light leak fog","Too little fixer only","A smaller focal spot","A longer SID"],"correct":0,"explain":"Uniform gray fog points to unwanted light exposure or chemical fog; inspect the darkroom and safelight first."},{"prompt":"The latent image in film is formed mainly by changes in:","options":["Silver halide crystals in the emulsion","The cassette hinge","Lead backing only","The processor dryer"],"correct":0,"explain":"Exposure creates an invisible latent-image pattern in silver halide crystals."},{"prompt":"The fixer primarily:","options":["Reduces exposed crystals to metallic silver","Removes unexposed silver halide and hardens emulsion","Creates X-rays","Increases focal-spot size"],"correct":1,"explain":"Fixer removes unexposed crystals and stabilizes the visible image."},{"prompt":"Excessive developer activity most commonly makes film:","options":["Too pale","Too dark and potentially fogged","Magnified","Geometrically distorted"],"correct":1,"explain":"Excessive time/temperature increases development and density/fog."}],"worksheet":[{"id":"q1","label":"1. Label the film/cassette layers and state the function of screens and emulsion."},{"id":"q2","label":"2. Describe how an X-ray exposure becomes a latent image and then a visible image."},{"id":"q3","label":"3. Explain what would happen if developer temperature is too high or too low."},{"id":"q4","label":"4. Critical thinking: distinguish a darkroom fog problem from an underdeveloped film using the appearance and process evidence."}],"rubric":[{"id":"c1","name":"Receptor and latent-image concepts","points":4,"levels":["Accurately explains double emulsion and latent-image formation.","Mostly accurate with minor omissions.","Confuses key receptor or processing concepts."]},{"id":"c2","name":"Darkroom simulation and safety","points":5,"levels":["Explores all controls and identifies a safe operating window.","Explores controls but interpretation is limited.","Little or unsafe investigation."]},{"id":"c3","name":"Processing sequence and worksheet","points":5,"levels":["Correct sequence with clear cause-and-effect explanations.","Sequence mostly correct with shallow explanation.","Sequence or explanations substantially incorrect."]},{"id":"c4","name":"Troubleshooting reasoning","points":3,"levels":["Uses visual/process evidence to choose a defensible cause.","Choice is plausible but weakly justified.","No evidence-based reasoning."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict the effect of excessive developer temperature.","Record the recommended baseline condition.","Change only temperature and record a second run.","Restore temperature, then move the safelight closer and record a third run.","Compare development activity, fog risk, and quality index."],"scenario":{"prompt":"Several films show uniform gray fog, including unexposed control film left in the darkroom. What should be checked first?","options":["Darkroom light leaks and safelight conditions","Focal-spot size","SID calibration","Patient positioning"],"correct":0,"explain":"Fog on unexposed control film implicates darkroom light/safelight or chemical fog, not exposure geometry."},"minimumRuns":3};
-const QUIZ_IDS = ["q3-1","q3-2","q3-3","q3-4"];
-const CONCEPT = LAB.stations[1];
+/* =========================================================================
+   Tab Switching & Infallible LaTeX Mathematical Rendering
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (!btnIntro || !btnExp || !paneIntro || !paneExp) return;
+
+  if (tabId === 'intro') {
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    paneIntro.classList.add('active');
+    paneExp.classList.remove('active');
+  } else if (tabId === 'experiment') {
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    paneExp.classList.add('active');
+    paneIntro.classList.remove('active');
+
+    // Trigger simulation re-draw on canvas when tab becomes visible
+    setTimeout(function () {
+      if (typeof renderSimulation === 'function') {
+        renderSimulation();
+      }
+    }, 60);
+  }
+
+  if (targetSectionId) {
+    setTimeout(function () {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function formatMathTex(tex, isDisplay) {
+  let clean = tex.trim();
+  clean = clean.replace(/\\text\{([^}]+)\}/g, '$1');
+  clean = clean.replace(/\\approx/g, '≈');
+  clean = clean.replace(/\\times/g, '×');
+  clean = clean.replace(/\\longrightarrow/g, '→');
+  clean = clean.replace(/\\longrightarrow/g, '→');
+  clean = clean.replace(/\\ge/g, '≥');
+  clean = clean.replace(/\\le/g, '≤');
+  clean = clean.replace(/\\cdot/g, '·');
+  clean = clean.replace(/\\nu/g, 'ν');
+  clean = clean.replace(/\\eta/g, 'η');
+  clean = clean.replace(/\\lambda/g, 'λ');
+  clean = clean.replace(/\^2/g, '²');
+  clean = clean.replace(/\^0/g, '⁰');
+  clean = clean.replace(/\^([0-9a-zA-Z+-]+)/g, '<sup>$1</sup>');
+  clean = clean.replace(/_([0-9a-zA-Z+-]+)/g, '<sub>$1</sub>');
+
+  const fracMatch = clean.match(/\\frac\{([^}]+)\}\{([^}]+)\}/);
+  if (fracMatch) {
+    clean = clean.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/, `($1 / $2)`);
+  }
+
+  if (isDisplay) {
+    return `<span class="math-fallback-display">${clean}</span>`;
+  } else {
+    return `<span class="math-fallback-inline">${clean}</span>`;
+  }
+}
+
+function renderAllMath() {
+  const mathElements = document.querySelectorAll('.math-tex, .math-display');
+  mathElements.forEach(function (el) {
+    const raw = el.textContent.trim();
+    const isDisplay = raw.startsWith('$$') || raw.startsWith('\\[') || el.classList.contains('math-display');
+    let tex = raw;
+    if (tex.startsWith('$$') && tex.endsWith('$$')) tex = tex.slice(2, -2);
+    else if (tex.startsWith('$') && tex.endsWith('$')) tex = tex.slice(1, -1);
+    else if (tex.startsWith('\\[') && tex.endsWith('\\]')) tex = tex.slice(2, -2);
+    else if (tex.startsWith('\\(') && tex.endsWith('\\)')) tex = tex.slice(2, -2);
+
+    if (window.katex) {
+      try {
+        katex.render(tex, el, { displayMode: isDisplay, throwOnError: false });
+        return;
+      } catch (err) {
+        console.warn('KaTeX render error:', err);
+      }
+    }
+    el.innerHTML = formatMathTex(tex, isDisplay);
+  });
+
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('KaTeX auto-render error:', e);
+    }
+  }
+}
+
+/* =========================================================================
+   Laboratory Configuration & Physics Data
+   ========================================================================= */
+const LAB = {
+  week: 3,
+  title: "Lab 3 — Film Receptors & Darkroom Conditions",
+  lecture: "Recording Film Radiographs",
+  type: "film",
+  minimumRuns: 3,
+  controls: [
+    { id: "temp", label: "Developer Temperature", min: 28, max: 38, step: 0.5, value: 35, unit: "°C" },
+    { id: "time", label: "Processing Time", min: 30, max: 180, step: 5, value: 90, unit: "s" },
+    { id: "humidity", label: "Darkroom Humidity", min: 25, max: 75, step: 1, value: 45, unit: "%" },
+    { id: "safelight", label: "Safelight Distance", min: 30, max: 150, step: 5, value: 120, unit: "cm" }
+  ],
+  quiz: [
+    {
+      prompt: "A uniformly gray radiograph with correct tube exposure factors is most consistent with:",
+      options: [
+        "Safelight filter fog, lamp distance too close, or darkroom light leaks",
+        "Insufficient fixer clearing time only",
+        "A smaller focal-spot size selection",
+        "An excessively long Source-to-Image Distance (SID)"
+      ],
+      correct: 0,
+      explain: "Uniform gray fog across an entire film (including borders and unexposed controls) indicates unwanted light exposure, cracked safelight filters, or excessive chemical developer activity."
+    },
+    {
+      prompt: "The latent image in radiographic film is formed predominantly by photochemical changes in:",
+      options: [
+        "Silver halide microcrystals (AgBr) at sensitivity specks in the emulsion",
+        "The cassette stainless steel locking hinge",
+        "The rear lead foil absorption backing only",
+        "The automatic processor dryer blower motor"
+      ],
+      correct: 0,
+      explain: "X-ray and fluorescent screen light interactions create an invisible electrochemical pattern of metallic silver atoms (Ag⁰) at sensitivity specks in the silver halide emulsion."
+    },
+    {
+      prompt: "In the automatic processor chemistry sequence, the primary role of the fixer is to:",
+      options: [
+        "Chemically reduce exposed silver halide crystals to black metallic silver",
+        "Clear and remove unexposed silver halide crystals and harden the gelatin emulsion",
+        "Generate primary bremsstrahlung X-ray photons",
+        "Increase the effective focal-spot size"
+      ],
+      correct: 1,
+      explain: "Fixer uses ammonium thiosulfate to dissolve unexposed silver halide into soluble complexes, halting development and stabilizing the clear background."
+    },
+    {
+      prompt: "Operating the developer tank at an excessively high temperature (e.g. 38°C instead of 35°C) most commonly causes:",
+      options: [
+        "An excessively pale, underdeveloped radiograph",
+        "A dark radiograph with elevated optical density and severe chemical fog",
+        "Severe geometric magnification of anatomy",
+        "Penumbral edge unsharpness from focal-spot expansion"
+      ],
+      correct: 1,
+      explain: "Under the Arrhenius relationship, elevated developer temperature accelerates chemical reduction non-selectively, causing unexposed crystals to develop as gross chemical fog."
+    }
+  ],
+  scenario: {
+    prompt: "Several films show uniform gray fog, including unexposed control film left in the darkroom. What should be checked first?",
+    options: [
+      "Darkroom light leaks and safelight filter integrity (coin test, filter crack inspection, wattage, distance)",
+      "X-ray tube focal-spot size calibration",
+      "Source-to-Image Distance (SID) laser alignment",
+      "Patient positioning and respiration instructions"
+    ],
+    correct: 0,
+    explain: "Fog appearing on an unexposed control film stored in the darkroom conclusively isolates the root cause to darkroom illumination (safelight proximity, cracked filter, light leaks) or chemical developer overactivity, not radiographic exposure geometry."
+  },
+  worksheet: [
+    { id: "w-cassette-front", label: "Table A: Cassette Front Face Material" },
+    { id: "w-screen-speed", label: "Table A: Intensifying Screen Phosphor & Dose Reduction" },
+    { id: "w-emulsion-speck", label: "Table A: Sensitivity Speck Function" },
+    { id: "w-lead-foil", label: "Table A: Lead Foil Backing Function" },
+    { id: "w-calc-activity-check", label: "Table B: Developer Activity Formula Check" },
+    { id: "w-calc-activity-out", label: "Table B: Developer Activity at 38°C Result" },
+    { id: "w-calc-safelight-check", label: "Table B: Safelight Fog Risk Check at 60cm" },
+    { id: "w-calc-safelight-out", label: "Table B: Safelight Fog Risk at 60cm Result" },
+    { id: "w-calc-humidity-check", label: "Table B: Static Risk Formula Check at 25% RH" },
+    { id: "w-calc-humidity-out", label: "Table B: Static Risk at 25% RH Result" },
+    { id: "q1", label: "1. Label cassette/film layers and state functions of screens & emulsion" },
+    { id: "q2", label: "2. Latent image formation (Gurney-Mott) and chemical conversion to visible image" },
+    { id: "q3", label: "3. Developer temperature effects (overheating vs cold) citing run numbers" },
+    { id: "q4", label: "4. Distinguish darkroom fog from underdeveloped film using process evidence" }
+  ],
+  rubric: [
+    { id: "c1", name: "Receptor and latent-image concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Accurately explains double emulsion and latent-image formation.", "Mostly accurate with minor omissions.", "Confuses key receptor or processing concepts."] },
+    { id: "c2", name: "Darkroom simulation and safety", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Explores all controls and identifies a safe operating window.", "Explores controls but interpretation is limited.", "Little or unsafe investigation."] },
+    { id: "c3", name: "Processing sequence and worksheet", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Correct sequence with clear cause-and-effect explanations.", "Sequence mostly correct with shallow explanation.", "Sequence or explanations substantially incorrect."] },
+    { id: "c4", name: "Troubleshooting reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Uses visual/process evidence to choose a defensible cause.", "Choice is plausible but weakly justified.", "No evidence-based reasoning."] },
+    { id: "c5", name: "Completeness and professionalism", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."] }
+  ]
+};
+
+const QUIZ_IDS = ["q3-1", "q3-2", "q3-3", "q3-4"];
 let currentResult = null;
-let currentViewMode = '3d-shadow';
 
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    values[control.id] = Number(document.getElementById('ctrl-' + control.id).value);
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + values[control.id] + ' ' + control.unit;
+  }).join('; ');
 }
 
 function renderMetrics(result) {
@@ -83,12 +1192,19 @@ function renderMetrics(result) {
 
 function renderSimulation() {
   const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = values[control.id] + ' ' + control.unit;
+  });
+
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas && canvas.getContext) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
   renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const caption = document.getElementById('sim-caption');
+  if (caption) caption.textContent = currentResult.observation;
 }
 
 function experimentActivity() {
@@ -98,116 +1214,301 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Adjust controls above and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) {
+    statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  }
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please formulate a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That exact operating setting has already been recorded. Modify a parameter and try again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
   activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
   activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  activity.detail = activity.runs.length + ' unique runs recorded; latest diagnostic index ' + run.modelScore + '/100.';
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  if (RadLab.sound && RadLab.sound.playExposure) RadLab.sound.playExposure();
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully.', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded trials to remove.', 'warning');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last recorded run removed.', 'info');
 }
 
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs || !activity.runs.length) {
+    RadLab.toast('No runs recorded yet. Record at least one run before downloading.', 'warning');
+    return;
+  }
+
+  let csv = 'Run Number,Developer Temp (C),Processing Time (s),Darkroom Humidity (%),Safelight Distance (cm),Developer Activity (rel),Safelight Fog Risk (%),Static Risk (%),Film Quality Index (/100),Process Observation\n';
+
+  activity.runs.forEach(function (r, idx) {
+    const v = r.values;
+    const m = r.metrics;
+    const act = m[0] ? m[0].value : '';
+    const fog = m[1] ? m[1].value : '';
+    const stat = m[2] ? m[2].value : '';
+    const qual = m[3] ? m[3].value : '';
+    const cleanObs = '"' + (r.observation || '').replace(/"/g, '""') + '"';
+
+    csv += `${idx + 1},${v.temp},${v.time},${v.humidity},${v.safelight},${act},${fog},${stat},${qual},${cleanObs}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab03_Film_Processor_Runs_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Run data exported successfully as CSV.', 'success');
 }
 
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please choose a clinical troubleshooting option before checking.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  feedback.innerHTML = (correct ? '<strong><i class="fa-solid fa-circle-check"></i> Correct Diagnostic Decision!</strong> ' : '<strong><i class="fa-solid fa-triangle-exclamation"></i> Reconsider Case Evidence:</strong> ') + LAB.scenario.explain;
+  RadLab.save();
+  RadLab.progress.update();
 }
 
+/* =========================================================================
+   Application Initialization
+   ========================================================================= */
 document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-03', labTitle: "Lab 3 — Film Receptors & the Darkroom", weekNumber: 3, rubric: { title: "Lab 3 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Receptor and latent-image concepts","points":4},{"id":"c2","name":"Darkroom simulation and safety","points":5},{"id":"c3","name":"Processing sequence and worksheet","points":5},{"id":"c4","name":"Troubleshooting reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab3-rubric',title:"Lab 3 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Receptor and latent-image concepts","points":4,"levels":[{"desc":"Accurately explains double emulsion and latent-image formation."},{"desc":"Mostly accurate with minor omissions."},{"desc":"Confuses key receptor or processing concepts."}]},{"id":"c2","name":"Darkroom simulation and safety","points":5,"levels":[{"desc":"Explores all controls and identifies a safe operating window."},{"desc":"Explores controls but interpretation is limited."},{"desc":"Little or unsafe investigation."}]},{"id":"c3","name":"Processing sequence and worksheet","points":5,"levels":[{"desc":"Correct sequence with clear cause-and-effect explanations."},{"desc":"Sequence mostly correct with shallow explanation."},{"desc":"Sequence or explanations substantially incorrect."}]},{"id":"c4","name":"Troubleshooting reasoning","points":3,"levels":[{"desc":"Uses visual/process evidence to choose a defensible cause."},{"desc":"Choice is plausible but weakly justified."},{"desc":"No evidence-based reasoning."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
-  }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
-  document.getElementById('record-run').addEventListener('click', recordRun);
-  document.getElementById('remove-run').addEventListener('click', removeLastRun);
-  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+  RadLab.init({
+    labId: 'lab-03',
+    labTitle: "Lab 3 — Film Receptors & Darkroom Conditions",
+    weekNumber: 3,
+    rubric: {
+      title: "Lab 3 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    },
+    sections: [
+      { id: 'sec-cassette', label: '1 · Cassette Anatomy', checkComplete: function (s) { return !!(s.activities['cassette-check'] && s.activities['cassette-check'].done); } },
+      { id: 'sec-latent', label: '2 · Latent Image Formation', checkComplete: function (s) { return !!(s.activities['latent-order'] && s.activities['latent-order'].done); } },
+      { id: 'sec-chemistry', label: '3 · Processor Chemistry', checkComplete: function (s) { return !!(s.activities['chemistry-match'] && s.activities['chemistry-match'].done); } },
+      { id: 'sec-scenario', label: '4 · Clinical Troubleshooting', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '5 · Knowledge Check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-experiment', label: '6 · Virtual Experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-worksheet', label: '7 · Post-Lab Worksheet' }
+    ]
+  });
 
-  const btn3d = document.getElementById('btn-view-3d');
-  const btnClassic = document.getElementById('btn-view-classic');
-  if (btn3d && btnClassic) {
-    btn3d.addEventListener('click', function () {
-      currentViewMode = '3d-shadow';
-      btn3d.className = 'btn btn-secondary btn-sm';
-      btnClassic.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
-    });
-    btnClassic.addEventListener('click', function () {
-      currentViewMode = 'classic';
-      btnClassic.className = 'btn btn-secondary btn-sm';
-      btn3d.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
-    });
-  }
-  document.querySelectorAll('.preset-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
-      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
-      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
-      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
-      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
-      renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+  // Register Fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment scientific prediction' });
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // Render Knowledge Check MCQs
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
     });
   });
 
+  // Build Rubric Self-Assessment
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab3-rubric',
+    title: "Lab 3 Grading Rubric (20 points)",
+    criteria: LAB.rubric
+  });
+
+  // Station 2: Gurney-Mott Latent Image Sequence (Drag Order)
+  const latentStages = [
+    { id: "st1", label: "Stage 1: Photoelectron Ejection (Light/X-ray absorbed by Br⁻ releasing free electron: Br⁻ + hν → Br⁰ + e⁻)" },
+    { id: "st2", label: "Stage 2: Electron Trapping (Conduction electron trapped at Ag₂S sensitivity speck, imparting negative charge)" },
+    { id: "st3", label: "Stage 3: Interstitial Silver Ion Migration (Positively charged Ag⁺ drawn electrostatically to negative speck)" },
+    { id: "st4", label: "Stage 4: Neutral Silver Atom Precipitation (Ag⁺ + e⁻ → Ag⁰ metallic black silver atom deposited at speck)" },
+    { id: "st5", label: "Stage 5: Latent Image Center (Cycle repeats; cluster of ≥3 Ag⁰ atoms forms stable catalytic center)" }
+  ];
+  RadLab.dragOrder(document.getElementById('latent-drag-container'), {
+    id: 'latent-order',
+    items: latentStages,
+    correctOrder: ["st1", "st2", "st3", "st4", "st5"]
+  });
+
+  // Station 3: Automatic Processor Chemistry Matcher
+  const chemLeft = [
+    { id: "pq", label: "Phenidone & Hydroquinone" },
+    { id: "hypo", label: "Ammonium Thiosulfate ('Hypo')" },
+    { id: "glut", label: "Glutaraldehyde" },
+    { id: "acetic", label: "Acetic Acid" },
+    { id: "kbr", label: "Potassium Bromide" },
+    { id: "sulfite", label: "Sodium Sulfite" }
+  ];
+  const chemRight = [
+    { id: "f_pq", label: "Synergistic reducing agents: reduces exposed Ag⁺ to black metallic silver grains" },
+    { id: "f_hypo", label: "Clearing agent: dissolves unexposed/undeveloped AgBr into soluble thiosulfate complexes" },
+    { id: "f_glut", label: "Hardening agent in developer: controls gelatin swelling to prevent transport jams" },
+    { id: "f_acetic", label: "Neutralizer in fixer: halts alkaline developer action immediately" },
+    { id: "f_kbr", label: "Restrainer in developer: prevents chemical fog on unexposed silver crystals" },
+    { id: "f_sulfite", label: "Preservative in both tanks: prevents aerial oxidation and dissolves oxidation products" }
+  ];
+  const chemPairs = {
+    "pq": "f_pq",
+    "hypo": "f_hypo",
+    "glut": "f_glut",
+    "acetic": "f_acetic",
+    "kbr": "f_kbr",
+    "sulfite": "f_sulfite"
+  };
+  RadLab.matchPairs(document.getElementById('chemistry-match-container'), {
+    id: 'chemistry-match',
+    left: chemLeft,
+    right: chemRight,
+    pairs: chemPairs,
+    leftTitle: 'Processing Chemical Agent',
+    rightTitle: 'Chemical Mechanism & Radiographic Role'
+  });
+
+  // Math Helper in Worksheet
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, 'w-calc-activity-check');
+  }
+
+  // Simulation Sliders Event Listeners
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // Buttons Event Listeners
+  document.getElementById('record-run').addEventListener('click', recordRun);
+  document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-download-runs-csv').addEventListener('click', downloadRunsCSV);
+  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', function () {
+      switchTab('experiment', 'sec-exp-guide');
+    });
+  }
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) {
+    btnBack.addEventListener('click', function () {
+      switchTab('intro');
+    });
+  }
+
+  // Preset Buttons
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const temp = btn.dataset.temp;
+      const time = btn.dataset.time;
+      const humidity = btn.dataset.humidity;
+      const safelight = btn.dataset.safelight;
+
+      if (temp !== undefined && document.getElementById('ctrl-temp')) document.getElementById('ctrl-temp').value = temp;
+      if (time !== undefined && document.getElementById('ctrl-time')) document.getElementById('ctrl-time').value = time;
+      if (humidity !== undefined && document.getElementById('ctrl-humidity')) document.getElementById('ctrl-humidity').value = humidity;
+      if (safelight !== undefined && document.getElementById('ctrl-safelight')) document.getElementById('ctrl-safelight').value = safelight;
+
+      renderSimulation();
+      RadLab.toast('Loaded preset: ' + btn.textContent.trim(), 'info');
+    });
+  });
+
+  // Restore saved scenario choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // Render Math & LaTeX
+  renderAllMath();
+
+  // Initial Simulation & Log Render
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

@@ -435,6 +435,14 @@ function checkUrlActivation() {
     document.getElementById('act-token').value = token;
     showModal('modal-activate');
   }
+
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.get('login') === '1' && !currentToken) {
+    showModal('modal-login');
+  } else if (searchParams.get('register') === '1' && !currentToken) {
+    loadRegistrationSections();
+    showModal('modal-register');
+  }
 }
 
 async function loadRegistrationSections() {
@@ -507,10 +515,34 @@ async function loadPublicOrStudentView() {
     } catch (e) {}
   }
 
-  // Render 15 Labs Grid
+  // Only show labs for logged-in students
   const grid = document.getElementById('student-lab-grid');
   if (!grid) return;
   grid.innerHTML = '';
+
+  if (!currentUser || !currentToken) {
+    // Show login requirement callout instead of the lab modules
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; background: #ffffff; border: 2px dashed #94a3b8; border-radius: 12px; padding: 48px 24px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: #e0f2fe; color: #0284c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 style="color: var(--rad-navy); font-size: 22px; margin: 0 0 8px;">Student Authentication Required</h3>
+        <p style="color: #64748b; max-width: 540px; margin: 0 auto 24px; font-size: 15px; line-height: 1.6;">
+          To access the 15 weekly virtual laboratory simulations, record experimental trials, and submit your coursework for AI grading, please log in with your university account or register for your department section.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="showModal('modal-login')" style="padding: 10px 24px; font-size: 15px;">
+            <i class="fa-solid fa-right-to-bracket"></i> Student Login
+          </button>
+          <button class="btn btn-teal" onclick="loadRegistrationSections(); showModal('modal-register')" style="padding: 10px 24px; font-size: 15px;">
+            <i class="fa-solid fa-user-plus"></i> Self-Register
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
   for (let i = 1; i <= 15; i++) {
     const pad = String(i).padStart(2, '0');

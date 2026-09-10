@@ -31,98 +31,100 @@
     <div class="handout-meta">
       <span><i class="fa-solid fa-calendar-week"></i> Week 1 of 15</span>
       <span><i class="fa-solid fa-clock"></i> Session Length: 2 hours</span>
-      <span><i class="fa-solid fa-users"></i> Format: Individual, computer-based</span>
+      <span><i class="fa-solid fa-users"></i> Format: Interactive Digital Physics Simulation</span>
     </div>
   </div>
 
-  <div class="info-note"><i class="fa-solid fa-circle-info"></i> <b>Purpose of this document:</b> Use this as your quick-reference guide at the start of the lab session — a 10–15 minute briefing outline, timing plan, key talking points, common student pitfalls, and an answer key for the worksheet/knowledge-check questions.</div>
+  <div class="info-note"><i class="fa-solid fa-circle-info"></i> <b>Instructor Quick Reference:</b> Use this guide during the opening briefing and in-lab facilitation. This lab features an interactive digital physics simulation of the X-ray tube and imaging chain with 3 required runs and CSV export for Excel workbook evaluation.</div>
 
   <div class="handout-section">
-    <h2>1. Session Opening Script (~10 minutes)</h2>
+    <h2>1. Session Opening Briefing Script (~10 minutes)</h2>
     <ol>
-      <li>Introduce the virtual lab format: "Today's lab is an interactive digital simulation. It lets you explore the imaging chain concepts hands-on, at your own pace, and as many times as you need — you'll achieve all 7 learning objectives just as you would in a traditional lab session."</li>
-      <li>Direct students to open <code>labs/lab-01/index.html</code> (double-click the file, or open it in any browser) and fill in their Student Information fields immediately (name, ID, section) — this is required for their eventual submission report.</li>
-      <li>Briefly preview the 4 stations and worksheet so students know the session's structure and time budget.</li>
-      <li>Remind students that their work autosaves locally in the browser, and to use "Export JSON Backup" if they need to continue on a different device.</li>
+      <li><b>Introduce the Simulation:</b> "Welcome to Lab 1. Today we use an interactive digital simulation that puts you inside the X-ray tube: you'll control the cathode filament heating current, see the thermionic electron cloud accelerate across the vacuum gap, observe the anode convert 99% of energy into heat and only 1% into X-rays, see how aluminum filtration hardens the beam to protect the patient, and evaluate the final radiograph on the monitor."</li>
+      <li><b>Emphasize the Two-Phase Assessment:</b> Remind students that Lab 1 requires <b>3 unique recorded runs</b> and completion of all 4 stations before submitting Phase 1. In Phase 2, they export their data via <b>"Download Run Data (CSV)"</b> to complete quantitative Excel calculations and graphing.</li>
+      <li><b>Verify Student Info:</b> Ensure all students enter their Full Name, Student ID, and Section immediately to ensure valid autosave fingerprints.</li>
     </ol>
   </div>
 
   <div class="handout-section">
-    <h2>2. Suggested Timing Plan (120 minutes)</h2>
+    <h2>2. Recommended Timing Plan (120 minutes)</h2>
     <table class="data-table timing-table">
       <tr><th>Time</th><th>Activity</th></tr>
-      <tr><td>0:00–0:10</td><td>Opening briefing (context, objectives, navigation)</td></tr>
-      <tr><td>0:10–0:20</td><td>Background theory primer — students read individually; instructor available for questions</td></tr>
-      <tr><td>0:20–0:35</td><td>Station 1 — X-ray Tube hotspot activity + quiz question</td></tr>
-      <tr><td>0:35–0:50</td><td>Station 2 — Drag-order the 4 formation stages + quiz question</td></tr>
-      <tr><td>0:50–1:10</td><td>Station 3 — Receptor family matching + quiz question</td></tr>
-      <tr><td>1:10–1:25</td><td>Station 4 — Radiographer role sorting + quiz question</td></tr>
-      <tr><td>1:25–1:35</td><td>Final knowledge check (2 questions)</td></tr>
-      <tr><td>1:35–1:55</td><td>Worksheet — reflection &amp; analysis questions</td></tr>
-      <tr><td>1:55–2:00</td><td>Self-assess against rubric, generate &amp; export submission report</td></tr>
+      <tr><td>0:00–0:10</td><td>Instructor briefing: Objectives, tube thermodynamics, and two-phase workflow</td></tr>
+      <tr><td>0:10–0:20</td><td>Background theory primer &amp; Bremsstrahlung efficiency equation review</td></tr>
+      <tr><td>0:20–0:45</td><td><b>Virtual Experiment (Core Simulator):</b> Systematic manipulation of filament current, kVp, target, filtration, and receptor; logging 3 unique runs</td></tr>
+      <tr><td>0:45–0:55</td><td>Station 1 — X-ray tube cutaway hotspot exploration (all 6 markers)</td></tr>
+      <tr><td>0:55–1:05</td><td>Station 2 — Drag-order the 4 stages of image formation</td></tr>
+      <tr><td>1:05–1:15</td><td>Station 3 — Receptor family explorer (Film, CR, DR, Fluoro II)</td></tr>
+      <tr><td>1:15–1:25</td><td>Station 4 — Radiographer task classification (Recording vs. Analysis)</td></tr>
+      <tr><td>1:25–1:35</td><td>Clinical Decision Scenario — ICU bedside portable chest mottle case</td></tr>
+      <tr><td>1:35–1:45</td><td>Knowledge Check mastery quizzes (4 comprehensive questions)</td></tr>
+      <tr><td>1:45–1:55</td><td>Preliminary worksheet entries &amp; rubric self-assessment</td></tr>
+      <tr><td>1:55–2:00</td><td>Submit Phase 1 in Section 11 &amp; download Run Data CSV for post-lab Excel work</td></tr>
     </table>
-    <p class="small muted">Adjust as needed — stronger groups may finish stations faster and can be encouraged to write more detailed worksheet answers.</p>
   </div>
 
   <div class="handout-section">
-    <h2>3. Key Talking Points Per Station</h2>
+    <h2>3. Key Instructional Talking Points</h2>
     <ul class="talking-points">
-      <li><b>Station 1 (Tube):</b> Emphasize the electron path: cathode → vacuum gap → anode. Ask students "why does the anode rotate?" before they click the hotspot (answer: heat distribution — reinforces later noise/heat-loading discussions).</li>
-      <li><b>Station 2 (4 Stages):</b> This ordering activity is foundational — every later lab (contrast, sharpness, noise, artifacts) maps back to one of these four stages. Consider pausing here to preview how Lab 4 (density) relates to Stage 1/3, and Lab 8 (scatter) relates to Stage 2.</li>
-      <li><b>Station 3 (Receptors):</b> Clarify that CR and DR are both "digital" but differ in mechanism (cassette-based/laser-read vs. direct panel readout) — a common point of confusion.</li>
-      <li><b>Station 4 (RT Role):</b> Reinforce that "recording" happens before exposure/processing and "analysis" happens after — a useful distinction that recurs throughout the IMAGE mnemonic in Labs 13–14.</li>
+      <li><b>Thermionic Emission Sensitivity:</b> Point out how a tiny change in filament heating current (e.g. 3.9 A to 4.3 A, ~10% change) causes a huge swing in tube current (25 mA to 100 mA, a 400% change!). This illustrates why filament temperature circuits require precise regulation.</li>
+      <li><b>The 99% Heat Reality:</b> Highlight the formula $\eta \approx 10^{-9} \cdot Z \cdot V$. At diagnostic energies (80 kVp), less than 1% of kinetic energy yields X-ray photons. Explain that anode rotation, massive tungsten target discs, molybdenum stems, and circulating oil baths are all required solely to keep the tube from vaporizing itself from this 99% heat load.</li>
+      <li><b>Filtration as Radiation Protection:</b> Have students try 0.5 mm Al vs 2.5 mm Al. Emphasize that removing filtration doesn't improve the image; it only bombards the patient's skin with low-energy photons that never exit the patient.</li>
+      <li><b>Receptor Latitudes:</b> Contrast conventional film (steep H&amp;D curve, narrow latitude) with digital flat panels (wide linear dynamic range). Warn students about "dose creep" — digital detectors can absorb excessive radiation without looking dark, risking overexposure unless the Exposure Index is checked.</li>
     </ul>
   </div>
 
   <div class="handout-section">
-    <h2>4. Common Student Pitfalls</h2>
-    <div class="pitfall"><b>Confusing SOD and OID:</b> Some students think OID is the same as SID. Clarify using the diagram: SID = full path (tube→receptor); SOD = tube→patient; OID = patient→receptor. SID = SOD + OID (approximately, for typical setups).</div>
-    <div class="pitfall"><b>Thinking "digital" means "no darkroom" only:</b> Students sometimes forget CR still uses a physical cassette (just no wet chemistry) — it's a middle ground between film and DR.</div>
-    <div class="pitfall"><b>Underexposure critical-thinking question:</b> Weaker answers only cite "not enough mAs." Push students to also consider patient thickness (Stage 2) and receptor sensitivity (Stage 3) as valid root causes.</div>
+    <h2>4. Common Student Pitfalls &amp; Misconceptions</h2>
+    <div class="pitfall"><b>Confusing Filament Current (Amperes) with Tube Current (mA):</b> Students often confuse the low-voltage heating current flowing through the filament wire (3.8–4.8 A) with the high-voltage accelerated electron stream crossing the vacuum gap (10–500 mA). Clarify the difference during the briefing.</div>
+    <div class="pitfall"><b>Believing Digital Eliminates Underexposure:</b> Students often assume DR panels can "fix" any exposure. Point out the quantum mottle simulated on the monitor when signal drops below 8 a.u. — digital post-processing cannot reconstruct missing photon statistical data.</div>
+    <div class="pitfall"><b>Missing 3 Unique Runs:</b> Ensure students adjust a parameter before clicking "Record This Run", as the app prevents duplicate setting entries.</div>
   </div>
 
   <div class="handout-section">
-    <h2>5. Answer Key — Knowledge Check &amp; Worksheet</h2>
+    <h2>5. Complete Answer Key</h2>
     <dl class="answer-key">
-      <dt>Q (Station 1): Function of the collimator?</dt>
-      <dd>Restricts/shapes the useful beam size reaching the patient — reduces dose and scatter.</dd>
+      <dt>Station 1 Quiz: Primary collimator function?</dt>
+      <dd>Restricts and shapes the useful beam size reaching the patient, reducing patient dose and scatter.</dd>
 
-      <dt>Q (Station 2): Stage most affected by patient thickness/density?</dt>
-      <dd>Patient Interaction.</dd>
+      <dt>Station 2 Quiz: Stage most affected by patient thickness/composition?</dt>
+      <dd>Patient Interaction (attenuation: photoelectric absorption &amp; Compton scatter).</dd>
 
-      <dt>Q (Station 3): Which receptor needs wet chemical processing?</dt>
+      <dt>Station 3 Quiz: Receptor requiring wet darkroom processing?</dt>
       <dd>Screen-film cassette.</dd>
 
-      <dt>Q (Station 4): Judging image contrast/sharpness quality belongs to which role?</dt>
-      <dd>Image Analysis.</dd>
+      <dt>Station 4 Quiz: Judging contrast/sharpness quality belongs to which role?</dt>
+      <dd>Optimal Image Analysis.</dd>
 
-      <dt>Final Q1: Inverse square law effect of distance on intensity?</dt>
-      <dd>Decreases with the square of the distance.</dd>
+      <dt>Clinical Scenario: ICU bedside portable chest mottle correction?</dt>
+      <dd>Filament current set too low (3.9 A / ~25 mA); increase filament heating/mA to achieve adequate photon statistics without unnecessary kVp elevation.</dd>
 
-      <dt>Final Q2: Definition of attenuation?</dt>
-      <dd>Reduction in X-ray beam intensity as it passes through matter.</dd>
+      <dt>Knowledge Check Q1: Inverse square law when distance doubles?</dt>
+      <dd>Drops to one-quarter (25%) of original intensity.</dd>
 
-      <dt>Worksheet Q2 — Four stages + one factor each (sample):</dt>
-      <dd>1) Propagation — kVp/mAs/distance; 2) Interaction — patient thickness/density; 3) Capture — receptor sensitivity; 4) Processing — chemical development or digital algorithm.</dd>
+      <dt>Knowledge Check Q2: Definition of attenuation?</dt>
+      <dd>Reduction in beam intensity through absorption and scatter as it traverses matter.</dd>
 
-      <dt>Worksheet Q3 — Recording vs Analysis (sample):</dt>
-      <dd>Recording example: selecting exposure factors. Analysis example: judging if the image needs to be repeated.</dd>
+      <dt>Knowledge Check Q3: Anode energy conversion at 80 kVp (Tungsten)?</dt>
+      <dd>~99% heat, ~1% useful X-rays.</dd>
 
-      <dt>Worksheet Q5 — Electron source vs photon source:</dt>
-      <dd>Cathode (releases electrons) and Anode (produces X-ray photons when struck by electrons).</dd>
+      <dt>Knowledge Check Q4: Purpose of 2.5 mm Al filtration above 70 kVp?</dt>
+      <dd>Selectively absorbs low-energy soft photons that only contribute to skin dose without penetrating to the receptor.</dd>
 
-      <dt>Worksheet Q6 — Critical thinking (underexposure), acceptable stages:</dt>
-      <dd>Stage 1 (too little kVp/mAs, excess filtration, long SID without compensation), Stage 2 (unusually thick/dense patient causing excess attenuation), Stage 3 (low receptor sensitivity or processing error). Full credit requires at least two stages with sound reasoning.</dd>
+      <dt>Worksheet Calculations:</dt>
+      <dd><b>Tungsten at 80 kVp:</b> $\eta = 10^{-9} \times 74 \times 80,000 \times 100\% = 0.59\% \text{ X-rays}$; $\text{Heat} = 99.41\%$.<br>
+          <b>Molybdenum at 50 kVp:</b> $\eta = 10^{-9} \times 42 \times 50,000 \times 100\% = 0.21\% \text{ X-rays}$; $\text{Heat} = 99.79\%$.</dd>
     </dl>
   </div>
 
   <div class="handout-section">
-    <h2>6. Grading Notes</h2>
-    <p>The rubric (20 points) is visible to students inside the lab app for self-assessment before submission. When grading the submitted report:</p>
+    <h2>6. Automated AI Grading Rubric Alignment (20 Points)</h2>
     <ul>
-      <li>The report's "Interactive Simulation &amp; Activity Results" section shows completion status and score (e.g., 4/4 hotspots identified) for each station — use this to verify Criterion 2 (Simulation Execution) objectively.</li>
-      <li>The "Knowledge Check Results" section shows first-attempt quiz accuracy — useful as a quick proxy for Criterion 1 (Conceptual Understanding), though the worksheet answers should carry more weight for depth.</li>
-      <li>Worksheet answers are transcribed verbatim into the report — grade Criteria 3 and 4 directly from that section.</li>
+      <li><b>c1 (4 pts):</b> Pre-Lab Concepts &amp; Knowledge Check (mastery quiz first-attempt and final scores).</li>
+      <li><b>c2 (6 pts):</b> Simulation Execution &amp; Interactive Stations (&ge; 3 unique runs recorded in virtual lab, all 4 stations done, clinical scenario checked).</li>
+      <li><b>c3 (5 pts):</b> Post-Lab Excel Data Analysis &amp; Calculations (formula calculations and uploaded .xlsx workbook).</li>
+      <li><b>c4 (3 pts):</b> Clinical Reasoning &amp; ALARA Synthesis (quantum mottle root cause and radiation protection rationale).</li>
+      <li><b>c5 (2 pts):</b> Completeness, Organization &amp; Professional Reporting.</li>
     </ul>
   </div>
 

@@ -21,6 +21,7 @@
 
 (function (global) {
   const STORAGE_PREFIX = 'rad321_lab_';
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   const RadLab = {
     config: null,
@@ -41,6 +42,7 @@
     init(config) {
       this.config = config; // {labId, labTitle, weekNumber, sections: [{id,label}]}
       this._sectionRegistry = config.sections || [];
+      if (!this._checkStudentAuth()) return;
       this.load();
       this._wireMeta();
       this._wireAutosaveIndicator();
@@ -57,6 +59,41 @@
       // periodic autosave
       setInterval(() => this.save(), 8000);
       this.progress.update();
+    },
+
+    _checkStudentAuth() {
+      const token = localStorage.getItem('rad321_jwt');
+      const isTeacherParam = window.location.search.includes('mode=teacher');
+      if (token || isTeacherParam) return true;
+
+      // Render blocking authentication gate modal overlay
+      const gate = document.createElement('div');
+      gate.id = 'auth-required-modal-gate';
+      gate.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(11,37,69,0.92);backdrop-filter:blur(6px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;font-family:inherit;';
+      gate.innerHTML = `
+        <div style="background:#ffffff;border-radius:16px;max-width:500px;width:100%;padding:36px 30px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.4);">
+          <div style="width:68px;height:68px;margin:0 auto 18px;background:#e0f2fe;color:#0284c7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h2 style="color:#0b2545;margin:0 0 10px;font-size:22px;">Student Authentication Required</h2>
+          <p style="color:#475569;font-size:14.5px;line-height:1.6;margin:0 0 24px;">
+            You must be logged in with your university student account to access this virtual laboratory simulation, record experimental runs, and submit coursework.
+          </p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="../../index.html?login=1" class="btn btn-primary" style="padding:10px 24px;text-decoration:none;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+              <i class="fa-solid fa-right-to-bracket"></i> Student Login
+            </a>
+            <a href="../../index.html?register=1" class="btn btn-teal" style="padding:10px 22px;text-decoration:none;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+              <i class="fa-solid fa-user-plus"></i> Self-Register
+            </a>
+            <a href="../../index.html" class="btn btn-secondary" style="padding:10px 20px;text-decoration:none;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+              Portal Home
+            </a>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(gate);
+      return false;
     },
 
     /* ------------------------- persistence ---------------------------- */
@@ -288,6 +325,13 @@
       return { correct, total: ids.length };
     },
 
+    buildQuiz(container, questions, ids) {
+      if (!container) return;
+      container.innerHTML = '';
+      const list = Array.isArray(questions) ? questions : (questions && typeof questions === 'object' ? Object.values(questions) : []);
+      list.forEach(q => this.mcq(container, q));
+    },
+
     /* ------------------------- Drag to order ------------------------------ */
     // config = {id, items:[{id,label}], correctOrder:[ids...]}
     dragOrder(container, config) {
@@ -505,26 +549,37 @@
     },
 
     /* ------------------------- Rubric ------------------------------------- */
-    // rubric = {id, title, criteria:[{id,name,points,levels:[{label,desc,pts}]}]}
+    // rubric = {id, title, criteria:[{id,name,points,part,levels:[{label,desc,pts}]}]}
     buildRubric(container, rubric) {
       const table = document.createElement('table');
       table.className = 'rubric-table';
       const maxTotal = rubric.criteria.reduce((s, c) => s + c.points, 0);
 
-      let thead = '<tr><th>Criterion</th><th>Points</th><th>Excellent</th><th>Proficient</th><th>Needs Improvement</th><th>Student self-assessment</th></tr>';
+      let thead = '<tr><th>Criterion</th><th>Points</th><th>Excellent</th><th>Proficient</th><th>Needs Improvement</th><th>Self-Score</th></tr>';
       let rows = '';
+
+      let currentPart = null;
       rubric.criteria.forEach((c) => {
-        const savedScore = RadLab.state.rubric[c.id] !== undefined ? RadLab.state.rubric[c.id] : '';
+        const partName = c.part || (c.id === 'c1' || c.id === 'c2' ? 'Part I: In-Lab Interactive Activities & Simulation (10 Points)' : 'Part II: Post-Lab Excel Data Analysis & Synthesis (10 Points)');
+        if (partName !== currentPart) {
+          currentPart = partName;
+          rows += `<tr style="background:#0b2545;color:#ffffff;font-weight:bold;"><td colspan="6" style="padding:8px 12px;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;"><i class="fa-solid fa-layer-group" style="color:#7fe0d6;margin-right:8px;"></i>${esc(partName)}</td></tr>`;
+        }
+
+        const savedScore = (RadLab.state?.rubric && RadLab.state.rubric[c.id] !== undefined) ? RadLab.state.rubric[c.id] : '';
+        const d0 = esc(c.levels?.[0]?.desc || c.levels?.[0] || 'Full mastery demonstrated');
+        const d1 = esc(c.levels?.[1]?.desc || c.levels?.[1] || 'Partial mastery / minor omissions');
+        const d2 = esc(c.levels?.[2]?.desc || c.levels?.[2] || 'Needs substantial revision');
         rows += `<tr>
-          <td class="crit-name">${c.name}</td>
+          <td class="crit-name"><b>${esc(c.name)}</b></td>
           <td class="crit-pts">${c.points}</td>
-          <td>${c.levels[0].desc}</td>
-          <td>${c.levels[1].desc}</td>
-          <td>${c.levels[2].desc}</td>
+          <td>${d0}</td>
+          <td>${d1}</td>
+          <td>${d2}</td>
           <td><input type="number" min="0" max="${c.points}" step="0.5" class="rubric-score-input" data-crit="${c.id}" aria-label="Self-assessment score for ${c.name}, maximum ${c.points}" value="${savedScore}"></td>
         </tr>`;
       });
-      rows += `<tr class="rubric-total-row"><td colspan="5">Total</td><td><span id="${rubric.id}-total">0</span> / ${maxTotal}</td></tr>`;
+      rows += `<tr class="rubric-total-row" style="font-weight:800;background:var(--rad-bg-soft);"><td colspan="5">Total Evaluation Score</td><td><span id="${rubric.id}-total">0</span> / ${maxTotal}</td></tr>`;
       table.innerHTML = thead + rows;
       container.appendChild(table);
 
@@ -655,13 +710,18 @@
     },
 
     /* ------------------------- Printable submission report ------------------ */
-    submissionIssues() {
+    submissionIssues(phase) {
       this.progress.update();
       const issues = [];
       ['studentName', 'studentId', 'section', 'date'].forEach((key) => {
         if (!String(this.state.meta[key] || '').trim()) issues.push('Missing student ' + key.replace(/([A-Z])/g, ' $1').toLowerCase());
       });
+
+      const isPhase1 = phase === 'in_lab';
       this._sectionRegistry.forEach((section) => {
+        if (isPhase1 && (section.id === 'sec-worksheet' || section.id === 'sec-submit-phase2' || section.tab === 'experiment')) {
+          return;
+        }
         if (!this._isSectionComplete(section)) issues.push('Incomplete section: ' + section.label);
       });
       return issues;
@@ -1178,6 +1238,10 @@
       }
     },
 
+    buildMathHelper(container, type, targetFieldId) {
+      return this.mathHelper(container, type || (this.config && this.config.type), targetFieldId);
+    },
+
     /* ------------------------- Gradebook Batch JSON Aggregator ---------- */
     aggregateJSONReports(fileList, callback) {
       if (!fileList || !fileList.length) return;
@@ -1416,58 +1480,20 @@
 
     /* ------------------------- Attachment Uploading ----------------------- */
     _wireAttachmentUploader() {
-      const submitSec = document.getElementById('sec-submit') || document.querySelector('.submission-check')?.parentElement;
-      if (!submitSec || document.getElementById('assignment-uploader-card')) return;
-
-      const card = document.createElement('div');
-      card.id = 'assignment-uploader-card';
-      card.className = 'card';
-      card.style.marginTop = '20px';
-      card.style.textAlign = 'left';
-      card.innerHTML = `
-        <h3 style="margin-top:0;color:var(--rad-navy);"><i class="fa-solid fa-paperclip"></i> Lab Assignment Attachments &amp; Analysis Data</h3>
-        <p class="muted small" style="margin:4px 0 12px;">Upload your Excel/CSV analysis sheets, calculation work, or additional lab writeup files here before final submission (Max 25MB).</p>
-        <div class="attachment-dropzone" id="lab-attachment-dropzone">
-          <i class="fa-solid fa-cloud-arrow-up" style="font-size:28px;color:var(--rad-teal);margin-bottom:6px;"></i>
-          <p style="margin:0 0 4px;font-weight:700;">Drag and drop assignment files here</p>
-          <p class="muted small" style="margin:0 0 10px;">or click to select files (.csv, .xlsx, .pdf, .docx, .png, .jpg)</p>
-          <input type="file" id="lab-file-input" style="display:none">
-          <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('lab-file-input').click()">Select Attachment</button>
-        </div>
-        <div class="attachment-list" id="lab-attachment-list"></div>
-      `;
-
-      submitSec.insertBefore(card, submitSec.lastElementChild);
-
-      const dropzone = card.querySelector('#lab-attachment-dropzone');
-      const fileInput = card.querySelector('#lab-file-input');
-
-      dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-      dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        if (e.dataTransfer.files.length) this._uploadAttachment(e.dataTransfer.files[0]);
-      });
-
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) this._uploadAttachment(e.target.files[0]);
-      });
-
-      this._loadAttachments();
+      // Handled directly inside _wireSubmitButton's structured Two-Phase Submission Hub
     },
 
-    _uploadAttachment(file) {
+    _uploadAttachment(file, callback) {
       const token = localStorage.getItem('rad321_jwt');
       if (!token) {
-        this.toast('You must be logged in to upload attachments to the department server.', 'error');
+        this.toast('Please log in to the Department Portal to upload assignment files.', 'error');
         return;
       }
 
       const formData = new FormData();
       formData.append('file', file);
 
-      this.toast('Uploading assignment attachment...', 'info');
+      this.toast('Uploading data analysis file to department server...', 'info');
       fetch(`/api/student/labs/${this.config.labId}/upload`, {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token },
@@ -1476,8 +1502,9 @@
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          this.toast('Attachment uploaded successfully!', 'success');
+          this.toast('Data analysis file uploaded successfully!', 'success');
           this._loadAttachments();
+          if (callback) callback(data);
         } else {
           this.toast(data.error || 'Upload failed', 'error');
         }
@@ -1499,7 +1526,7 @@
         list.innerHTML = '';
         const attachments = data?.submission?.attachments || [];
         if (!attachments.length) {
-          list.innerHTML = '<p class="muted small" style="margin:6px 0;">No attachments uploaded yet.</p>';
+          list.innerHTML = '<p class="muted small" style="margin:6px 0;">No analysis files uploaded yet.</p>';
           return;
         }
         attachments.forEach(att => {
@@ -1507,15 +1534,15 @@
           item.className = 'attachment-item';
           item.innerHTML = `
             <div class="file-info">
-              <i class="fa-solid fa-file-lines" style="color:var(--rad-teal);"></i>
+              <i class="fa-solid fa-file-excel" style="color:var(--rad-teal);font-size:20px;"></i>
               <div>
-                <div class="file-name">${att.original_filename}</div>
-                <div class="file-size">${Math.round(att.file_size / 1024)} KB · Uploaded ${new Date(att.created_at).toLocaleDateString()}</div>
+                <div class="file-name" style="font-weight:700;">${att.original_filename}</div>
+                <div class="file-size muted small">${Math.round(att.file_size / 1024)} KB · Uploaded ${new Date(att.created_at).toLocaleDateString()}</div>
               </div>
             </div>
             <div class="flex gap-8">
-              <a href="/api/attachments/${att.id}/download" class="btn btn-ghost btn-sm" target="_blank"><i class="fa-solid fa-download"></i></a>
-              <button type="button" class="btn btn-ghost btn-sm text-danger" onclick="RadLab._deleteAttachment(${att.id})"><i class="fa-solid fa-trash"></i></button>
+              <a href="/api/attachments/${att.id}/download" class="btn btn-ghost btn-sm" target="_blank" title="Download"><i class="fa-solid fa-download"></i></a>
+              <button type="button" class="btn btn-ghost btn-sm text-danger" onclick="RadLab._deleteAttachment(${att.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
             </div>
           `;
           list.appendChild(item);
@@ -1525,7 +1552,7 @@
 
     _deleteAttachment(attachId) {
       const token = localStorage.getItem('rad321_jwt');
-      if (!token || !confirm('Remove this attachment?')) return;
+      if (!token || !confirm('Remove this analysis file?')) return;
 
       fetch(`/api/student/attachments/${attachId}`, {
         method: 'DELETE',
@@ -1533,75 +1560,320 @@
       })
       .then(res => res.json())
       .then(() => {
-        this.toast('Attachment removed.', 'success');
+        this.toast('File removed.', 'success');
         this._loadAttachments();
       });
     },
 
-    /* ------------------------- Formal Submit Button ----------------------- */
+    /* ------------------------- Two-Phase Submit Hub ----------------------- */
     _wireSubmitButton() {
+      const p1Container = document.getElementById('sec-submit-phase1') || document.getElementById('hub-phase1');
+      const p2Container = document.getElementById('sec-submit-phase2') || document.getElementById('hub-phase2');
+
+      if (p1Container && p2Container) {
+        this._wireSplitSubmitHub(p1Container, p2Container);
+        return;
+      }
+
       const submitSec = document.getElementById('sec-submit');
       if (!submitSec) return;
 
       const submitWrap = submitSec.querySelector('.card.text-center');
-      if (!submitWrap || document.getElementById('btn-submit-lab-online')) return;
+      if (!submitWrap || document.getElementById('two-phase-submission-hub')) return;
 
-      const submitBtn = document.createElement('button');
-      submitBtn.type = 'button';
-      submitBtn.id = 'btn-submit-lab-online';
-      submitBtn.className = 'btn btn-teal';
-      submitBtn.style.margin = '10px 8px';
-      submitBtn.innerHTML = '🚀 Submit Assignment to Department Server';
+      const hasExperiment = !!(this.config && Array.isArray(this.config.sections) && this.config.sections.find(s => s.id === 'sec-experiment')) || !!document.querySelector('.run-toolbar');
 
-      submitBtn.addEventListener('click', () => {
-        const token = localStorage.getItem('rad321_jwt');
-        if (!token) {
-          this.toast('Please log in through the Department Portal to submit your assignment online.', 'error');
-          return;
-        }
+      const hub = document.createElement('div');
+      hub.id = 'two-phase-submission-hub';
+      hub.style.textAlign = 'left';
+      hub.style.marginTop = '20px';
 
-        const issues = this.submissionIssues();
-        if (issues.length) {
-          if (!confirm(`Your lab submission is missing some required items:\n\n- ${issues.join('\n- ')}\n\nSubmit anyway?`)) return;
-        } else {
-          if (!confirm(`Are you ready to submit your Lab ${this.config.weekNumber || ''} assignment to your instructor for evaluation?`)) return;
-        }
+      hub.innerHTML = `
+        <div style="background:var(--rad-navy);color:#ffffff;padding:16px 20px;border-radius:10px 10px 0 0;">
+          <h3 style="margin:0;color:#7fe0d6;font-size:18px;"><i class="fa-solid fa-clipboard-check"></i> Standardized Department Submission Hub</h3>
+          <p style="margin:4px 0 0;font-size:13px;opacity:0.9;">Each laboratory assignment consists of two evaluated phases graded by the departmental Gemini Flash AI model against the standardized 20-point rubric.</p>
+        </div>
 
-        const runs = this.state.activities['experiment-log']?.runs || [];
-        const quizScore = Object.values(this.state.quiz).filter(q => q.correct).length;
-        const quizTotal = Object.keys(this.state.quiz).length || 4;
-        const prediction = this.state.fields['w-prediction'] || '';
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-top:none;padding:20px;border-radius:0 0 10px 10px;">
+          
+          <!-- Phase 1 Card -->
+          <div style="background:#ffffff;border:1px solid var(--rad-border);border-radius:8px;padding:16px;border-top:4px solid var(--rad-teal);display:flex;flex-direction:column;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:800;">Phase 1 (10 Points)</span>
+              <span class="muted small">In-Lab Session</span>
+            </div>
+            <h4 style="margin:0 0 8px;color:var(--rad-navy);font-size:15px;"><i class="fa-solid fa-flask"></i> In-Lab Interactive Activities</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);line-height:1.45;margin:0 0 12px;flex-grow:1;">Complete and record your simulated trial runs, knowledge-check quizzes, and preliminary worksheet answers during the scheduled lab session.</p>
+            
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:12px;margin-bottom:12px;">
+              <div>✔ <b>c1: Concepts & Quiz:</b> 4.0 pts</div>
+              <div>✔ <b>c2: Simulation & Data:</b> 6.0 pts</div>
+            </div>
 
-        this.toast('Submitting lab assignment to department server...', 'info');
+            <button type="button" class="btn btn-teal btn-sm" id="btn-submit-phase1" style="width:100%;"><i class="fa-solid fa-paper-plane"></i> Submit In-Lab Activities</button>
+          </div>
 
-        fetch(`/api/student/labs/${this.config.labId}/submit`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-          },
-          body: JSON.stringify({
-            state: this.state,
-            runs,
-            quizScore,
-            quizTotal,
-            prediction,
-            rubricScores: this.state.rubric
-          })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            this.toast(data.message, 'success');
-            setTimeout(() => location.reload(), 1500);
-          } else {
-            this.toast(data.error || 'Submission failed.', 'error');
-          }
-        })
-        .catch(err => this.toast('Submission error: ' + err.message, 'error'));
+          <!-- Phase 2 Card -->
+          <div style="background:#ffffff;border:1px solid var(--rad-border);border-radius:8px;padding:16px;border-top:4px solid var(--rad-blue);display:flex;flex-direction:column;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:800;">Phase 2 (10 Points)</span>
+              <span class="muted small">Post-Lab Due Date</span>
+            </div>
+            <h4 style="margin:0 0 8px;color:var(--rad-navy);font-size:15px;"><i class="fa-solid fa-file-excel"></i> Post-Lab Excel Data Analysis</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);line-height:1.45;margin:0 0 12px;">
+              ${hasExperiment 
+                ? 'Download your experimental run data via <b>"Download Run Data (CSV)"</b>, conduct in-depth data analysis and plotting in Excel, and submit your completed workbook (.xlsx / .csv) below.'
+                : 'Complete the comprehensive clinical scenario writeup and analysis workbook, then upload your completed analysis sheet (.xlsx / .pdf / .docx) below.'
+              }
+            </p>
+
+            ${hasExperiment ? `
+              <div style="margin-bottom:10px;">
+                <button type="button" class="btn btn-secondary btn-sm" style="width:100%;font-size:12px;" onclick="RadLab.downloadRunsCSV()"><i class="fa-solid fa-download"></i> Download Run Data (CSV)</button>
+              </div>
+            ` : ''}
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:12px;margin-bottom:12px;">
+              <div>✔ <b>c3: Excel Calculations:</b> 5.0 pts</div>
+              <div>✔ <b>c4: Clinical ALARA:</b> 3.0 pts</div>
+              <div>✔ <b>c5: Professionalism:</b> 2.0 pts</div>
+            </div>
+
+            <div class="attachment-dropzone" id="lab-attachment-dropzone" style="padding:12px;margin-bottom:10px;cursor:pointer;">
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size:22px;color:var(--rad-teal);margin-bottom:4px;"></i>
+              <div style="font-size:12px;font-weight:700;">Click or drop your completed Excel (.xlsx / .csv) workbook here</div>
+              <input type="file" id="lab-file-input" style="display:none" accept=".xlsx,.xls,.csv,.pdf,.docx">
+            </div>
+
+            <div class="attachment-list" id="lab-attachment-list" style="margin-bottom:10px;"></div>
+
+            <div style="margin-bottom:10px;">
+              <textarea id="excel-analysis-notes" rows="2" placeholder="Optional: Add any brief methodology or analysis notes for your instructor..." style="width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--rad-border);border-radius:6px;"></textarea>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-sm" id="btn-submit-phase2" style="width:100%;margin-top:auto;"><i class="fa-solid fa-file-arrow-up"></i> Submit Post-Lab Excel Analysis</button>
+          </div>
+
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:0 8px;flex-wrap:wrap;gap:8px;">
+          <span class="muted small"><i class="fa-solid fa-info-circle"></i> Submissions trigger automated evaluation by Gemini Flash and update your gradebook record instantly.</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-export-report-inline"><i class="fa-solid fa-file-pdf"></i> Generate Printable Report (PDF Backup)</button>
+        </div>
+      `;
+
+      submitWrap.innerHTML = '';
+      submitWrap.appendChild(hub);
+
+      const dropzone = hub.querySelector('#lab-attachment-dropzone');
+      const fileInput = hub.querySelector('#lab-file-input');
+
+      if (dropzone && fileInput) {
+        dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('dragover');
+          if (e.dataTransfer.files.length) this._uploadAttachment(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+          if (e.target.files.length) this._uploadAttachment(e.target.files[0]);
+        });
+      }
+
+      hub.querySelector('#btn-submit-phase1').addEventListener('click', () => {
+        this._executeSubmission('in_lab');
       });
 
-      submitWrap.appendChild(submitBtn);
+      hub.querySelector('#btn-submit-phase2').addEventListener('click', () => {
+        const notes = hub.querySelector('#excel-analysis-notes')?.value || '';
+        this._executeSubmission('excel_analysis', notes);
+      });
+
+      hub.querySelector('#btn-export-report-inline').addEventListener('click', () => {
+        this.exportReport();
+      });
+
+      this._loadAttachments();
+    },
+
+    _wireSplitSubmitHub(p1Container, p2Container) {
+      p1Container = p1Container || document.getElementById('sec-submit-phase1') || document.getElementById('hub-phase1');
+      p2Container = p2Container || document.getElementById('sec-submit-phase2') || document.getElementById('hub-phase2');
+      if (!p1Container || !p2Container) return;
+
+      const p1Card = p1Container.querySelector('.card') || p1Container;
+      p1Card.innerHTML = `
+        <div style="background:var(--rad-navy);color:#ffffff;padding:16px 20px;border-radius:10px 10px 0 0;text-align:left;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:800;">Phase 1 (10 Points)</span>
+            <span style="color:#7fe0d6;font-size:12.5px;font-weight:700;"><i class="fa-solid fa-clock"></i> In-Lab Session</span>
+          </div>
+          <h3 style="margin:8px 0 4px;color:#ffffff;font-size:18px;"><i class="fa-solid fa-paper-plane" style="color:#7fe0d6;"></i> In-Lab Interactive Activities Submission</h3>
+          <p style="margin:0;font-size:13px;opacity:0.9;">Lock in your in-lab interactive activities score (10 points) before leaving the laboratory session. Evaluated by Gemini Flash AI against criteria c1 and c2.</p>
+        </div>
+
+        <div style="background:#ffffff;border:1px solid var(--rad-border);border-top:none;padding:20px;border-radius:0 0 10px 10px;text-align:left;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:16px;">
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+              <div style="font-weight:700;color:var(--rad-navy);font-size:13px;margin-bottom:4px;"><i class="fa-solid fa-circle-check" style="color:var(--rad-teal);"></i> c1: Concepts &amp; Mastery Quiz (4.0 pts)</div>
+              <p style="margin:0;font-size:12px;color:var(--rad-text-soft);">Pre-lab tube physics, Bremsstrahlung efficiency equation, and knowledge-check quizzes.</p>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+              <div style="font-weight:700;color:var(--rad-navy);font-size:13px;margin-bottom:4px;"><i class="fa-solid fa-flask" style="color:var(--rad-teal);"></i> c2: Interactive Stations &amp; Activities (6.0 pts)</div>
+              <p style="margin:0;font-size:12px;color:var(--rad-text-soft);">Hotspot identification, causal stage sequencing, receptor matching, role sorting, and ICU clinical scenario.</p>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <button type="button" class="btn btn-teal" id="btn-submit-phase1" style="padding:12px 28px;font-size:14.5px;font-weight:700;"><i class="fa-solid fa-paper-plane"></i> Submit In-Lab Activities (Phase 1)</button>
+            <span class="muted small"><i class="fa-solid fa-info-circle"></i> Once submitted, proceed to <b>Tab 2</b> to run the virtual simulation and complete your post-lab analysis.</span>
+          </div>
+        </div>
+      `;
+
+      p1Card.querySelector('#btn-submit-phase1').addEventListener('click', () => {
+        this._executeSubmission('in_lab');
+      });
+
+      const hasExperiment = !!(this.config && Array.isArray(this.config.sections) && this.config.sections.find(s => s.id === 'sec-experiment')) || !!document.querySelector('.run-toolbar');
+      const p2Card = p2Container.querySelector('.card') || p2Container;
+      p2Card.innerHTML = `
+        <div style="background:var(--rad-navy);color:#ffffff;padding:16px 20px;border-radius:10px 10px 0 0;text-align:left;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:800;">Phase 2 (10 Points)</span>
+            <span style="color:#7fe0d6;font-size:12.5px;font-weight:700;"><i class="fa-solid fa-calendar-check"></i> Post-Lab Assignment Due Date</span>
+          </div>
+          <h3 style="margin:8px 0 4px;color:#ffffff;font-size:18px;"><i class="fa-solid fa-file-excel" style="color:#7fe0d6;"></i> Post-Lab Excel Data Analysis Submission</h3>
+          <p style="margin:0;font-size:13px;opacity:0.9;">Upload your completed Excel analysis workbook (.xlsx / .csv) and submit your post-lab reflection for final 20-point grade verification.</p>
+        </div>
+
+        <div style="background:#ffffff;border:1px solid var(--rad-border);border-top:none;padding:20px;border-radius:0 0 10px 10px;text-align:left;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:16px;">
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+              <div style="font-weight:700;color:var(--rad-navy);font-size:13px;margin-bottom:4px;"><i class="fa-solid fa-calculator" style="color:var(--rad-blue);"></i> c3: Excel Calculations &amp; Plots (5.0 pts)</div>
+              <p style="margin:0;font-size:12px;color:var(--rad-text-soft);">Plot 1 (filament mA curve), Plot 2 (kVp penetration), and Table B quantitative energy conversions.</p>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+              <div style="font-weight:700;color:var(--rad-navy);font-size:13px;margin-bottom:4px;"><i class="fa-solid fa-stethoscope" style="color:var(--rad-blue);"></i> c4: Clinical ALARA Reasoning (3.0 pts)</div>
+              <p style="margin:0;font-size:12px;color:var(--rad-text-soft);">Linking filtration, filament heating, and quantum mottle to patient radiation protection.</p>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+              <div style="font-weight:700;color:var(--rad-navy);font-size:13px;margin-bottom:4px;"><i class="fa-solid fa-award" style="color:var(--rad-blue);"></i> c5: Professionalism &amp; Format (2.0 pts)</div>
+              <p style="margin:0;font-size:12px;color:var(--rad-text-soft);">Completeness of workbook file, clean formatting, and adherence to departmental guidelines.</p>
+            </div>
+          </div>
+
+          ${hasExperiment ? `
+            <div style="margin-bottom:14px;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="RadLab.downloadRunsCSV()"><i class="fa-solid fa-download"></i> Download Run Data (CSV) for Excel</button>
+            </div>
+          ` : ''}
+
+          <div class="attachment-dropzone" id="lab-attachment-dropzone" style="padding:16px;margin-bottom:12px;cursor:pointer;border:2px dashed var(--rad-border);border-radius:8px;text-align:center;background:#f8fafc;">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size:26px;color:var(--rad-teal);margin-bottom:6px;"></i>
+            <div style="font-size:13px;font-weight:700;color:var(--rad-navy);">Click or drop your completed Excel (.xlsx / .csv) analysis workbook here</div>
+            <div class="muted small" style="margin-top:2px;">Supported file formats: .xlsx, .xls, .csv, .pdf</div>
+            <input type="file" id="lab-file-input" style="display:none" accept=".xlsx,.xls,.csv,.pdf,.docx">
+          </div>
+
+          <div class="attachment-list" id="lab-attachment-list" style="margin-bottom:12px;"></div>
+
+          <div style="margin-bottom:14px;">
+            <label class="field-label" for="excel-analysis-notes" style="font-size:12.5px;">Optional: Methodology &amp; Analysis Notes for Instructor</label>
+            <textarea id="excel-analysis-notes" rows="2" placeholder="Add any notes about your curve fits, regression R², or clinical observations..." style="width:100%;font-size:12.5px;padding:8px;border:1px solid var(--rad-border);border-radius:6px;box-sizing:border-box;"></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:6px;border-top:1px solid var(--rad-border);">
+            <button type="button" class="btn btn-primary" id="btn-submit-phase2" style="padding:12px 28px;font-size:14.5px;font-weight:700;"><i class="fa-solid fa-file-arrow-up"></i> Submit Post-Lab Excel Analysis (Phase 2)</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-export-report-inline"><i class="fa-solid fa-file-pdf"></i> Generate Printable Report (PDF Backup)</button>
+          </div>
+        </div>
+      `;
+
+      const dropzone = p2Card.querySelector('#lab-attachment-dropzone');
+      const fileInput = p2Card.querySelector('#lab-file-input');
+
+      if (dropzone && fileInput) {
+        dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('dragover');
+          if (e.dataTransfer.files.length) this._uploadAttachment(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+          if (e.target.files.length) this._uploadAttachment(e.target.files[0]);
+        });
+      }
+
+      p2Card.querySelector('#btn-submit-phase2').addEventListener('click', () => {
+        const notes = p2Card.querySelector('#excel-analysis-notes')?.value || '';
+        this._executeSubmission('excel_analysis', notes);
+      });
+
+      p2Card.querySelector('#btn-export-report-inline').addEventListener('click', () => {
+        this.exportReport();
+      });
+
+      this._loadAttachments();
+    },
+
+    _executeSubmission(phase, excelNotes = '') {
+      const token = localStorage.getItem('rad321_jwt');
+      if (!token) {
+        this.toast('Please log in through the Department Portal to submit your assignment online.', 'error');
+        return;
+      }
+
+      const issues = this.submissionIssues(phase);
+      const isPhase1 = phase === 'in_lab';
+
+      if (isPhase1 && issues.length) {
+        if (!confirm(`Your in-lab submission is missing some items:\n\n- ${issues.join('\n- ')}\n\nSubmit anyway?`)) return;
+      } else {
+        const confirmMsg = isPhase1
+          ? `Submit Phase 1 (In-Lab Activities) for Lab ${this.config.weekNumber || ''} to the department server for Gemini Flash evaluation?`
+          : `Submit Phase 2 (Post-Lab Excel Data Analysis) for Lab ${this.config.weekNumber || ''} for final grading?`;
+        if (!confirm(confirmMsg)) return;
+      }
+
+      const runs = this.state.activities['experiment-log']?.runs || [];
+      const quizScore = Object.values(this.state.quiz).filter(q => q.correct).length;
+      const quizTotal = Object.keys(this.state.quiz).length || 4;
+      const prediction = this.state.fields['w-prediction'] || '';
+
+      this.toast(`Submitting ${isPhase1 ? 'Phase 1 (In-Lab)' : 'Phase 2 (Excel Analysis)'} for AI evaluation...`, 'info');
+
+      fetch(`/api/student/labs/${this.config.labId}/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          state: this.state,
+          runs,
+          quizScore,
+          quizTotal,
+          prediction,
+          rubricScores: this.state.rubric,
+          phase,
+          excelAnalysisNotes: excelNotes
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.toast(data.message, 'success');
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          this.toast(data.error || 'Submission failed.', 'error');
+        }
+      })
+      .catch(err => this.toast('Submission error: ' + err.message, 'error'));
     },
 
     /* ------------------------- Graded Status Banner ----------------------- */
@@ -1621,35 +1893,61 @@
 
       let rubricPills = '';
       if (sub.rubric_scores) {
+        const p1Score = sub.rubric_scores.part1Total !== undefined ? sub.rubric_scores.part1Total : (Number(sub.rubric_scores.c1 || 0) + Number(sub.rubric_scores.c2 || 0));
+        const p2Score = sub.rubric_scores.part2Total !== undefined ? sub.rubric_scores.part2Total : (Number(sub.rubric_scores.c3 || 0) + Number(sub.rubric_scores.c4 || 0) + Number(sub.rubric_scores.c5 || 0));
+
+        rubricPills += `
+          <div class="rubric-pill" style="border-left:3px solid var(--rad-teal);">
+            <div class="pill-label">Part I: In-Lab (Max 10)</div>
+            <div class="pill-val">${p1Score} / 10</div>
+          </div>
+          <div class="rubric-pill" style="border-left:3px solid var(--rad-blue);">
+            <div class="pill-label">Part II: Post-Lab Excel (Max 10)</div>
+            <div class="pill-val">${p2Score} / 10</div>
+          </div>
+        `;
+
         ['c1', 'c2', 'c3', 'c4', 'c5'].forEach((k, idx) => {
-          const maxes = [4, 5, 5, 3, 3];
-          const labels = ['Concepts', 'Simulation', 'Calculations', 'Clinical ALARA', 'Completeness'];
+          const maxes = [4, 6, 5, 3, 2];
+          const labels = ['c1: Concepts & Quiz', 'c2: Simulation Runs', 'c3: Excel Calculations', 'c4: Clinical ALARA', 'c5: Reporting'];
           const val = sub.rubric_scores[k] !== undefined ? sub.rubric_scores[k] : '—';
           rubricPills += `
             <div class="rubric-pill">
-              <div class="pill-label">${labels[idx]} (Max ${maxes[idx]})</div>
+              <div class="pill-label">${labels[idx]} (${maxes[idx]} pts)</div>
               <div class="pill-val">${val}</div>
             </div>
           `;
         });
       }
 
+      const statusTitle = sub.status === 'graded' 
+        ? 'FULLY GRADED &amp; VERIFIED' 
+        : (sub.status === 'in_lab_submitted' 
+            ? 'PHASE 1 (IN-LAB) EVALUATED · EXCEL ANALYSIS PENDING' 
+            : 'SUBMITTED TO INSTRUCTOR (EVALUATED)');
+
       banner.innerHTML = `
         <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
           <div>
             <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#7fe0d6;font-weight:700;">Department Evaluation Receipt</div>
-            <h2 style="margin:4px 0 0;color:#ffffff;font-size:22px;">Submission Status: ${sub.status === 'graded' ? 'GRADED &amp; VERIFIED' : 'SUBMITTED TO INSTRUCTOR'}</h2>
-            <div style="font-size:13px;opacity:0.85;margin-top:2px;">Submitted on: ${new Date(sub.submitted_at || sub.created_at).toLocaleString()}</div>
+            <h2 style="margin:4px 0 0;color:#ffffff;font-size:20px;"><i class="fa-solid fa-graduation-cap"></i> ${statusTitle}</h2>
+            <div style="font-size:13px;opacity:0.85;margin-top:2px;">
+              ${sub.in_lab_submitted_at ? `In-Lab Submitted: ${new Date(sub.in_lab_submitted_at).toLocaleDateString()} · ` : ''}
+              ${sub.excel_submitted_at ? `Excel Submitted: ${new Date(sub.excel_submitted_at).toLocaleDateString()} · ` : ''}
+              Last Updated: ${new Date(sub.submitted_at || sub.updated_at || sub.created_at).toLocaleString()}
+            </div>
           </div>
-          ${sub.status === 'graded' ? `<div class="score-badge">${sub.total_score} <span style="font-size:18px;opacity:0.8;">/ 20 pts</span></div>` : ''}
+          ${sub.total_score !== undefined ? `<div class="score-badge">${sub.total_score} <span style="font-size:18px;opacity:0.8;">/ 20 pts</span></div>` : ''}
         </div>
 
-        ${rubricPills ? `<div class="rubric-pill-grid">${rubricPills}</div>` : ''}
+        ${rubricPills ? `<div class="rubric-pill-grid" style="margin-top:14px;">${rubricPills}</div>` : ''}
 
         ${aiFeedbackObj ? `
           <div style="background:rgba(255,255,255,0.06);border-left:4px solid #38bdf8;padding:14px 18px;border-radius:8px;margin-top:14px;">
-            <div style="font-weight:800;color:#38bdf8;font-size:14px;margin-bottom:4px;"><i class="fa-solid fa-microchip"></i> Gemini Flash 3.7 AI Evaluation Feedback</div>
+            <div style="font-weight:800;color:#38bdf8;font-size:14px;margin-bottom:4px;"><i class="fa-solid fa-robot"></i> Gemini Flash AI Evaluation Breakdown</div>
             <p style="margin:0;font-size:13.5px;line-height:1.5;">${aiFeedbackObj.overallFeedback || ''}</p>
+            ${aiFeedbackObj.strengths?.length ? `<div style="font-size:12.5px;color:#86efac;margin-top:6px;"><b>Strengths:</b> ${aiFeedbackObj.strengths.join('; ')}</div>` : ''}
+            ${aiFeedbackObj.areasForImprovement?.length ? `<div style="font-size:12.5px;color:#fca5a5;margin-top:4px;"><b>Areas for Improvement:</b> ${aiFeedbackObj.areasForImprovement.join('; ')}</div>` : ''}
           </div>
         ` : ''}
 

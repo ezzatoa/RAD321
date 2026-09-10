@@ -5,108 +5,1473 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 7: Geometric Distortion Lab — RAD 321</title>
   <link rel="stylesheet" href="../../shared/lab-styles.css">
+
+  <!-- KaTeX for Infallible Offline & Online Mathematical Typography -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Two-Tab Structural Styling */
+    .lab-tabs-header {
+      display: flex;
+      gap: 12px;
+      margin: 18px 0 24px 0;
+      border-bottom: 2px solid var(--rad-border);
+      padding-bottom: 0;
+    }
+    .lab-tab-btn {
+      background: #e2e8f0;
+      border: 1px solid var(--rad-border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 13px 26px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      position: relative;
+      bottom: -2px;
+    }
+    .lab-tab-btn:hover {
+      background: #f1f5f9;
+      color: var(--rad-teal);
+    }
+    .lab-tab-btn.active {
+      background: #ffffff;
+      border-color: var(--rad-teal);
+      border-top: 3px solid var(--rad-teal);
+      color: var(--rad-navy);
+      box-shadow: 0 -3px 12px rgba(0,0,0,0.06);
+    }
+    .lab-tab-pane {
+      display: none;
+      animation: tabFadeIn 0.25s ease-in-out;
+    }
+    .lab-tab-pane.active {
+      display: block;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero & Layout Elements */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,0.96), rgba(7,26,43,0.72) 65%, rgba(7,26,43,0.2));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 780px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 30px;
+      margin: 6px 0;
+      line-height: 1.2;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: 0.94;
+      margin: 0;
+    }
+
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    /* Infallible Formula & Theory Containers */
+    .formula-callout {
+      background: #f0fdfa;
+      border-left: 4px solid var(--rad-teal);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 14px 0;
+      color: #134e4a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .formula-callout strong {
+      color: #042f2e;
+    }
+    .math-display {
+      font-family: "KaTeX_Math", "Cambria Math", "Times New Roman", serif;
+      font-size: 1.08em;
+      padding: 4px 0;
+      overflow-x: auto;
+    }
+
+    /* Interactive Station 1 Explorer Grid */
+    .triad-station-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+    .triad-card {
+      background: #ffffff;
+      border: 1px solid var(--rad-border);
+      border-top: 4px solid var(--rad-teal);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .triad-card h4 {
+      margin: 0 0 8px 0;
+      color: var(--rad-navy);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .triad-card p {
+      font-size: 13px;
+      color: var(--rad-text-soft);
+      line-height: 1.5;
+      margin: 0 0 10px 0;
+    }
+    .triad-card .triad-stat {
+      background: var(--rad-bg-soft);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+    }
+
+    /* Station 3: Beam Divergence Tool */
+    .divergence-analyzer {
+      background: #ffffff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 18px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .div-strip-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 0 6px 0;
+      scrollbar-width: thin;
+    }
+    .div-cell {
+      flex: 1;
+      min-width: 105px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+    .div-cell:hover, .div-cell.active {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      box-shadow: 0 2px 8px rgba(20,184,166,0.2);
+    }
+    .div-status-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .div-status-aligned {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .div-status-elongated {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Simulation Layout */
+    .experiment-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+      gap: 20px;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3/1.15;
+      background: #071a2b;
+      border-radius: 12px;
+      border: 1px solid #28546a;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .control-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .control-card input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 18px;
+      line-height: 1.2;
+      margin: 3px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .preset-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .preset-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .preset-btn:hover {
+      background: #e2e8f0;
+      border-color: var(--rad-teal);
+      color: var(--rad-teal);
+    }
+
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .run-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .run-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rad-blue);
+      margin-left: auto;
+    }
+    .run-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+    }
+    .run-table {
+      margin: 0;
+      min-width: 760px;
+    }
+
+    /* Clinical Scenarios & Matching */
+    .scenario-options {
+      display: grid;
+      gap: 9px;
+      margin: 14px 0;
+    }
+    .scenario-option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 12px;
+      cursor: pointer;
+      background: #fff;
+      transition: all 0.15s ease;
+    }
+    .scenario-option:hover {
+      background: var(--rad-bg-soft);
+    }
+    .scenario-option:has(input:checked) {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      box-shadow: 0 0 0 1px var(--rad-teal);
+    }
+    .feedback-box {
+      min-height: 44px;
+      border-radius: 9px;
+      padding: 12px 16px;
+      background: var(--rad-bg-soft);
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .feedback-box.correct {
+      background: #eaf8f0;
+      color: #12633f;
+      border: 1px solid #bbf7d0;
+    }
+    .feedback-box.incorrect {
+      background: #fff0ee;
+      color: #9d342d;
+      border: 1px solid #fecaca;
+    }
+
+    /* Transition CTA Card */
+    .cta-card {
+      background: linear-gradient(135deg, #071a2b 0%, #0d3654 100%);
+      color: #ffffff;
+      border-radius: var(--rad-radius);
+      padding: 28px 32px;
+      margin: 32px 0 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      box-shadow: var(--rad-shadow-lg);
+      border: 1px solid #28546a;
+    }
+    .cta-card h3 {
+      margin: 0 0 8px 0;
+      color: #7fe0d6;
+      font-size: 20px;
+    }
+    .cta-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #dceaf2;
+    }
+    .cta-card .btn {
+      white-space: nowrap;
+      padding: 12px 24px;
+      font-size: 14px;
+    }
+
+    /* Post-Lab Excel Guide Box */
+    .excel-guide-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 5px solid #16a34a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+    .excel-guide-box h4 {
+      margin: 0 0 8px 0;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+    }
+
+    /* Table Fill-in Forms */
+    .checklist-fill-table input[type="text"] {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 12.5px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .checklist-fill-table input[type="text"]:focus {
+      background: #ffffff;
+      border-color: var(--rad-teal);
+      outline: none;
+    }
+
+    @media (max-width: 980px) {
+      .experiment-layout { grid-template-columns: 1fr; }
+      .procedure-grid { grid-template-columns: repeat(2, 1fr); }
+      .lab-meta-grid { grid-template-columns: 1fr 1fr; }
+      .cta-card { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .hero-overlay { padding: 0 20px; }
+      .hero-overlay h1 { font-size: 24px; }
+      .control-grid, .metric-grid, .procedure-grid, .lab-meta-grid { grid-template-columns: 1fr; }
+      .lab-tabs-header { flex-direction: column; gap: 6px; }
+      .lab-tab-btn { border-radius: 8px; border-bottom: 1px solid var(--rad-border); }
+    }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 7 — Geometric Distortion Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 7 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 7 — Geometric Distortion Lab</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual Experiment · Offline Ready</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 7 of 15</span></div>
+  </div>
 </header>
+
 <nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
 <main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 7 · Assessed laboratory assignment</div><h1>Geometric Distortion Lab</h1><p>Diagnose elongation, foreshortening, and shape distortion from alignment errors and off-centering. Directly aligned with: Sharpness &amp; Detail II — Distortion.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Diagnostic Radiography Suite with Central Ray Alignment Laser">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 7 · Assessed Laboratory Assignment</div>
+      <h1>Geometric Distortion Lab</h1>
+      <p>Diagnose elongation, foreshortening, and shape distortion from anatomical part tilt, central ray angulation, and beam off-centering. Directly aligned with: Sharpness &amp; Detail II — Distortion.</p>
+    </div>
+  </div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Define size, shape, and positional distortion.</li><li><span class="num">2</span>Relate part lateral offset, part tilt, OID, and SID to elongation and foreshortening.</li><li><span class="num">3</span>Predict the effect of off-center lateral displacement and part tilt under a perpendicular beam.</li><li><span class="num">4</span>Use a virtual alignment check to reduce distortion.</li><li><span class="num">5</span>Explain why anatomy-specific positioning criteria matter.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Distortion is a misrepresentation of object size or shape. It occurs when the anatomical part is angled or displaced away from the perpendicular central ray. Foreshortening occurs when the anatomical part is tilted relative to the perpendicular beam. Elongation occurs when the part is displaced laterally into the divergent peripheral beam.</p><div class="formula-box"><b>Alignment goal:</b> anatomy centered over perpendicular CR and anatomy plane ∥ IR. Moving an object laterally away from the central ray exposes it to divergent oblique rays that physically elongate its recorded shadow.</div><p>Distortion is not simply “blur.” A sharp but distorted image may still fail the diagnostic criterion because anatomy is represented incorrectly.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
-
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict the image shape when the anatomy is tilted relative to the IR.</div><div class="procedure-step">Record an aligned baseline.</div><div class="procedure-step">Change only the part angle and record a second run.</div><div class="procedure-step">Change CR angle to test a projection-specific correction and record a third run.</div><div class="procedure-step">Compare shape factor and distortion index.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card"><div class="experiment-layout"><div>
-    <div class="flex items-center justify-between" style="margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-      <div class="flex gap-6">
-        <button type="button" class="btn btn-secondary btn-sm" id="btn-view-3d">3D Shadow Projector</button>
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-view-classic">Classic Alignment Mode</button>
+  <!-- Two-Phase Assignment Workflow Explanatory Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
+    </div>
+    <p>This lab is a fully <b>interactive digital simulation and assessed laboratory assignment</b> evaluated across two required phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the background theory, 4 interactive stations (Alignment Triad Explorer, Distortion Patterns Matcher, Beam Divergence Tool, Bedside Hip Scenario), 4 knowledge check MCQs, and submit via the Phase 1 Submission Hub before leaving class.
       </div>
-      <div class="flex gap-6" style="flex-wrap:wrap;">
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="0" data-part="0">Baseline (0 cm, 0°)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="0" data-part="30">Symmetrical Shortening (0 cm, 30°)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="15" data-part="0">Elongation: Off-Center Right (+15 cm)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="-15" data-part="0">Elongation: Off-Center Left (-15 cm)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="15" data-part="30">Case 1: CW + Right (+15 cm, +30° -> Shorten)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="-15" data-part="30">Case 2: CW + Left (-15 cm, +30° -> Elongate)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="-15" data-part="-30">Case 3: CCW + Left (-15 cm, -30° -> Shorten)</button>
-        <button type="button" class="btn btn-ghost btn-xs preset-btn" data-offset="15" data-part="-30">Case 4: CCW + Right (+15 cm, -30° -> Elongate)</button>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Execute the 2D ray-tracing simulation, test 3D projector vs classic modes, record trial runs, export run data via <em>"Download Run Data (CSV)"</em>, perform quantitative calculations and plotting in Excel, and submit your analysis workbook (.xlsx / .csv) for final evaluation.
       </div>
-    </div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Geometric Distortion Lab" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
-    <div class="control-card">
-      <label for="ctrl-offset"><span>Part lateral offset</span><output id="out-offset" for="ctrl-offset">0 cm</output></label>
-      <input type="range" id="ctrl-offset" min="-20" max="20" step="1" value="0" aria-describedby="sim-caption">
     </div>
-    <div class="control-card">
-      <label for="ctrl-part"><span>Part angle</span><output id="out-part" for="ctrl-part">0 °</output></label>
-      <input type="range" id="ctrl-part" min="-45" max="45" step="1" value="0" aria-describedby="sim-caption">
+    <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+      <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+      <span style="display:block;margin-top:4px;">In <b>Tab 1</b>, complete the in-lab stations and submit <b>Phase 1 (In-Lab Activities)</b> to lock in your initial 10 points. Then navigate to <b>Tab 2</b> to conduct the physics experiments, record telemetry, construct your post-lab Excel curves, and submit <b>Phase 2 (Excel Data Analysis)</b> before the post-lab deadline.</span>
     </div>
-    <div class="control-card">
-      <label for="ctrl-oid"><span>OID</span><output id="out-oid" for="ctrl-oid">15 cm</output></label>
-      <input type="range" id="ctrl-oid" min="5" max="35" step="1" value="15" aria-describedby="sim-caption">
-    </div>
-    <div class="control-card">
-      <label for="ctrl-sid"><span>SID</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
-      <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
-    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
-  </section>
+  </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Distortion patterns</h3><p>Match each pattern to the alignment error that most likely produced it.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Positioning correction</h3><p>A long bone appears foreshortened because it was not aligned with the receptor. What is the first correction?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Restore the required anatomy-IR-CR alignment</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Increase mAs</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Use a larger focal spot</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Apply stronger digital contrast</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record one elongation and one foreshortening configuration from the simulator. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Explain the alignment relationship among the anatomy, IR, and CR for a routine projection. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Distinguish distortion from unsharpness. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: give one reason a projection may intentionally use an angled CR. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+  <!-- Student Metadata Card -->
+  <div class="card card-soft">
+    <h3>Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row"><label class="field-label" for="meta-studentName">Full Name</label><input type="text" id="meta-studentName" required placeholder="Ahmed Al-Harbi"></div>
+      <div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required placeholder="441012345"></div>
+      <div class="form-row"><label class="field-label" for="meta-section">Section / Group</label><input type="text" id="meta-section" required placeholder="Section A1"></div>
+      <div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div>
+    </div>
+    <p class="form-hint">Work is automatically saved in your browser localStorage. Use the bottom action bar to export a JSON backup before changing devices.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION HEADER ===================== -->
+  <div class="lab-tabs-header" role="tablist">
+    <button class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities [10 Pts]
+    </button>
+    <button class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment">
+      <i class="fa-solid fa-microscope"></i> Tab 2: Virtual Physics Experiment &amp; Analysis [10 Pts]
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 POINTS)                   -->
+  <!-- ========================================================================= -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Geometric optics, alignment triad, and distortion diagnosis</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list">
+          <li><span class="num">1</span><b>Classify Radiographic Distortion:</b> Distinguish between size distortion (true magnification), shape distortion (elongation and foreshortening), and positional distortion.</li>
+          <li><span class="num">2</span><b>Analyze Foreshortening Mechanics:</b> Demonstrate how anatomical part tilt relative to the image receptor produces projected shortening (Lproj ≈ L0 × M × cos θ).</li>
+          <li><span class="num">3</span><b>Analyze Elongation Mechanics:</b> Demonstrate how angling the Central Ray or displacing anatomy off-center into diverging peripheral rays produces projected lengthening.</li>
+          <li><span class="num">4</span><b>Apply the Geometric Alignment Triad:</b> Enforce the clinical rule that the anatomical plane must be parallel to the receptor, and the Central Ray must be perpendicular to both and centered on the anatomy.</li>
+          <li><span class="num">5</span><b>Evaluate Intentional Tube Angulation:</b> Contrast pathological misalignment distortion with intentional clinical beam angulation designed to unmask anatomical superimposition.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–8 min demo alignment triad + foreshortening idea · 8–22 min Stations 1–3 in pairs (Triad, Matcher, Divergence) · 22–30 min hip scenario + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is 3 runs + 2 Excel plots (Angle vs Length, Offset vs Divergence). If short on time, cut Station 2 matching to 4 pairs, not the scenario.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+      1) Alignment triad: part ∥ IR, CR ⊥ part + IR, CR centered. 2) Tilt → foreshortening (× cos θ); off-center / angled CR → elongation.
+      3) Sharp ≠ diagnostic — distortion alone can hide a fracture.
+    </div>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory &amp; Mathematical Principles</h2>
+          <div class="lab-section-sub">Geometric optics of radiographic projection &amp; shape transformation</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics Primer</span>
+
+        <h3>1. Classification of Radiographic Distortion</h3>
+        <p>
+          <b>Distortion</b> is defined as the geometric misrepresentation of the true size, shape, or spatial relationship of an anatomical structure on a radiographic image. Distortion is broadly categorized into two fundamental classes:
+        </p>
+        <ul style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;">
+          <li><b>Size Distortion (Magnification):</b> Uniform enlargement of all spatial dimensions of the object, governed solely by distance geometry:
+            <div class="math-display">$$M = \frac{SID}{SOD} = \frac{SID}{SID - OID}$$</div>
+            Because all axes are scaled equally, the proportional shape is preserved.
+          </li>
+          <li><b>Shape Distortion:</b> Unequal magnification of different parts of the same object, altering the projected geometric morphology. Shape distortion manifests as either <b>foreshortening</b> or <b>elongation</b>.</li>
+          <li><b>Positional Distortion:</b> The spatial displacement or artificial superimposition of adjacent structures due to oblique beam projection.</li>
+        </ul>
+
+        <h3>2. Physical Mechanics of Foreshortening</h3>
+        <p>
+          <b>Foreshortening</b> occurs when the projected image of an anatomical structure appears <em>shorter</em> than its true dimension ($L_{\text{proj}} < L_0 \cdot M$, Shape Factor $< 1.0$).
+        </p>
+        <div class="formula-callout">
+          <strong>Physical Cause of Foreshortening:</strong>
+          <div class="math-display">
+            $$L_{\text{proj}} \approx L_0 \times M \times \cos(\theta_{\text{part}}) \quad [\text{under perpendicular Central Ray}]$$
+          </div>
+          <span class="small">Foreshortening is strictly caused when the <b>anatomical part is tilted/inclined relative to the image receptor</b> while the Central Ray remains perpendicular to the receptor. As tilt angle ($\theta_{\text{part}}$) increases from $0^\circ \to 45^\circ$, the projected shadow foreshortens proportionally to the cosine of the inclination angle.</span>
+        </div>
+
+        <h3>3. Physical Mechanics of Elongation</h3>
+        <p>
+          <b>Elongation</b> occurs when the projected image of an anatomical structure appears <em>longer</em> than its true dimension ($L_{\text{proj}} > L_0 \cdot M$, Shape Factor $> 1.0$).
+        </p>
+        <div class="formula-callout">
+          <strong>Physical Causes of Elongation:</strong>
+          <div class="math-display">
+            $$\theta_{\text{ray}} = \arctan\left(\frac{\text{Lateral Offset}}{SOD}\right)$$
+          </div>
+          <span class="small">Elongation is caused by two distinct clinical circumstances:
+          <ol style="margin:4px 0 0 16px;padding:0;">
+            <li><b>Angled Central Ray:</b> The tube is angled relative to an anatomical part that is positioned parallel to the image receptor.</li>
+            <li><b>Off-Center Lateral Displacement:</b> The Central Ray is perpendicular, but the anatomical part is positioned off-center (displaced laterally from the CR). As the part enters the diverging peripheral x-ray beam, the oblique beam rays stretch its projected shadow across the receptor.</li>
+          </ol>
+          </span>
+        </div>
+
+        <h3>4. The Geometric Alignment Triad (The Golden Rule)</h3>
+        <p>
+          To prevent unintended shape distortion and ensure true isometric anatomical projection, the radiographer must strictly establish the <b>Geometric Alignment Triad</b>:
+        </p>
+        <div class="formula-callout">
+          <strong>The Golden Rule of Radiographic Alignment:</strong>
+          <ul style="margin:4px 0;padding-left:20px;font-size:13.5px;color:#042f2e;">
+            <li><b>Rule 1:</b> The anatomical part plane must be strictly parallel to the image receptor plane ($\text{Part} \parallel \text{IR}$).</li>
+            <li><b>Rule 2:</b> The Central Ray must be strictly perpendicular to both the anatomical part and the receptor plane ($\text{CR} \perp \text{Part}$ and $\text{CR} \perp \text{IR}$).</li>
+            <li><b>Rule 3:</b> The Central Ray must be precisely centered over the anatomical region of interest (ROI).</li>
+          </ul>
+        </div>
+
+        <h3>5. Intentional Clinical Angulation vs. Unintended Distortion</h3>
+        <p>
+          While unintended distortion degrades diagnostic value, radiographers intentionally employ tube angulation to project overlying structures clear of one another:
+        </p>
+        <ul style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;">
+          <li><b>AP Axial Cervical Spine ($15–20^\circ$ Cephalad):</b> Opens curved cervical intervertebral disk spaces.</li>
+          <li><b>AP Axial Skull / Townes ($30^\circ$ Caudad):</b> Projects the dense facial bones downward, projecting the dorsum sellae cleanly inside the foramen magnum.</li>
+          <li><b>Axial Plantodorsal Calcaneus ($40^\circ$ Cephalad):</b> Unmasks the subtalar joint and calcaneal tuberosity without foreshortening from the talus.</li>
+        </ul>
+
+        <div class="formula-callout" style="background:#fffbeb;border-left-color:#d97706;color:#78350f;">
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> Critical Distinction: Distortion vs. Unsharpness:</strong>
+          <span style="display:block;margin-top:4px;"><b>Geometric unsharpness ($U_g$)</b> is boundary penumbra blur caused by finite focal spot dimensions ($F$). <b>Distortion</b> is a misrepresentation of true anatomical geometry. An image can be razor-sharp (zero blur) but completely non-diagnostic due to severe foreshortening or elongation!</span>
+        </div>
+
+        <p class="model-note"><b>Physical Model Boundary:</b> Ray tracing demonstrates geometric shadow projections from an idealized focal point. Equipment flexion, receptor buckling, and parallax artifacts are pedagogical approximations.</p>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Station 1 — Geometric Alignment Triad Explorer -->
+    <section class="lab-section" id="sec-alignment-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1: Geometric Alignment Triad Explorer</h2>
+          <div class="lab-section-sub">Examine how part tilt, off-centering, and beam angulation govern projected shape</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-compass-drafting"></i> Station 1: Alignment Geometry</span>
+        <p>Click and examine the 4 fundamental alignment conditions. Use the data to complete Table A.</p>
+
+        <div class="triad-station-grid">
+          <div class="triad-card">
+            <div>
+              <h4><i class="fa-solid fa-check-double" style="color:var(--rad-teal)"></i> 1. True Parallel Alignment ($\text{Part} \parallel \text{IR}$)</h4>
+              <p>The anatomical plane is parallel to the image receptor and centered directly under the perpendicular Central Ray ($\theta_{\text{part}} = 0^\circ, \text{Offset} = 0\text{ cm}$). Produces an isometric projection with Shape Factor $= 1.000\times$.</p>
+            </div>
+            <div class="triad-stat">Projected Length: $100.0\text{ mm} \times M$ | Shape Factor: $1.000\times$ (True)</div>
+          </div>
+
+          <div class="triad-card">
+            <div>
+              <h4><i class="fa-solid fa-compress" style="color:var(--rad-red)"></i> 2. Anatomical Tilt ($\theta_{\text{part}} > 0^\circ$)</h4>
+              <p>The anatomical part is inclined relative to the receptor plane while the CR remains perpendicular. One end of the part is elevated, causing its cast shadow to foreshorten along the axis of tilt ($L_{\text{proj}} = L_{\text{norm}} \cdot \cos\theta$).</p>
+            </div>
+            <div class="triad-stat">At $30^\circ$ Tilt: Shape Factor $\approx 0.866\times$ (Foreshortened)</div>
+          </div>
+
+          <div class="triad-card">
+            <div>
+              <h4><i class="fa-solid fa-expand" style="color:var(--rad-amber)"></i> 3. Lateral Off-Centering ($\text{Offset} \ne 0$)</h4>
+              <p>The part is parallel to the IR but displaced away from the Central Ray into the diverging peripheral x-ray beam ($\theta_{\text{ray}} = \arctan(\text{offset}/SOD)$). Oblique diverging rays stretch the projected shadow.</p>
+            </div>
+            <div class="triad-stat">At $+15\text{ cm}$ Offset: $\theta_{\text{ray}} \approx 10^\circ \implies \text{Elongated}$</div>
+          </div>
+
+          <div class="triad-card">
+            <div>
+              <h4><i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--rad-blue)"></i> 4. Intentional Tube Angulation</h4>
+              <p>The Central Ray is angled deliberately to match the anatomical inclination of a joint space or to project overlying bony structures clear of the region of interest (e.g., $15^\circ$ cephalad AP axial C-spine).</p>
+            </div>
+            <div class="triad-stat">Clinical Purpose: Unmask superimposition, open joints</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top:24px;color:var(--rad-navy);"><i class="fa-solid fa-table-list"></i> Table A: Geometric Distortion Diagnosis Check</h4>
+        <p class="small muted">Synthesize the physical causes and manifestations of radiographic distortion:</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:14px;">
+          <thead>
+            <tr><th style="width:28%">Distortion Phenomenon</th><th>Exact Alignment Condition / Physical Cause</th><th>Projected Dimension &amp; Shape Factor</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Foreshortening:</b></td>
+              <td><input type="text" id="w-foreshorten-cause" placeholder="e.g., Anatomical part is inclined/angled relative to IR under perpendicular CR"></td>
+              <td><input type="text" id="w-foreshorten-factor" placeholder="e.g., Projected length shorter than true dimension; Shape Factor < 1.0"></td>
+            </tr>
+            <tr>
+              <td><b>Elongation:</b></td>
+              <td><input type="text" id="w-elongation-cause" placeholder="e.g., Angled Central Ray, or part displaced laterally into diverging peripheral beam"></td>
+              <td><input type="text" id="w-elongation-factor" placeholder="e.g., Projected length longer than true dimension; Shape Factor > 1.0"></td>
+            </tr>
+            <tr>
+              <td><b>Size vs. Shape Distortion:</b></td>
+              <td><input type="text" id="w-size-vs-shape" placeholder="e.g., Size = equal enlargement in all axes (M); Shape = unequal magnification"></td>
+              <td><input type="text" id="w-size-shape-out" placeholder="e.g., Size preserves proportional shape; Shape alters morphology"></td>
+            </tr>
+            <tr>
+              <td><b>Alignment Triad Rule:</b></td>
+              <td><input type="text" id="w-alignment-triad" placeholder="e.g., Part || IR, CR perpendicular to Part and IR, CR centered over ROI"></td>
+              <td><input type="text" id="w-triad-outcome" placeholder="e.g., Eliminates shape distortion; yields true isometric diagnostic projection"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Station 2 — Distortion Patterns Matcher -->
+    <section class="lab-section" id="sec-distortion-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2: Distortion Patterns &amp; Alignment Errors Matcher</h2>
+          <div class="lab-section-sub">Pair positioning faults with their exact projection consequences</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-link"></i> Station 2: Pattern Pairing</span>
+        <p>Drag or click to match each positioning setup on the left with its correct geometric consequence on the right:</p>
+        <div id="distortion-match-container" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- Section 4: Interactive Station 3 — Beam Divergence & Off-Centering Calculator -->
+    <section class="lab-section" id="sec-divergence-tool">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3: Beam Divergence &amp; Off-Centering Tool</h2>
+          <div class="lab-section-sub">Inspect how off-centering into peripheral divergent rays elongates anatomy</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-arrows-left-right-to-line"></i> Station 3: Beam Divergence</span>
+        <p>
+          Select a lateral displacement offset below to observe the ray divergence angle ($\theta_{\text{ray}} = \arctan(\text{offset}/SOD)$) and how off-centering causes elongation even under a strictly perpendicular Central Ray:
+        </p>
+
+        <div class="divergence-analyzer">
+          <div class="div-strip-container" id="div-strip-container">
+            <!-- Dynamically populated via initDivergenceAnalyzer() -->
+          </div>
+
+          <div id="div-detail-card" style="margin-top:16px;background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <h4 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-bullseye"></i> Selected Lateral Offset: <span id="div-sel-offset">0 cm (Centered CR)</span></h4>
+              <span id="div-sel-status" class="div-status-badge div-status-aligned">True Isometric Alignment</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:13px;">
+              <div><b>Beam Divergence Angle ($\theta_{\text{ray}}$):</b> <span id="div-sel-angle" style="color:var(--rad-teal);font-weight:700;">0.0°</span></div>
+              <div><b>Projected Shape Factor:</b> <span id="div-sel-shape" style="color:var(--rad-blue);font-weight:700;">1.000× (Normal)</span></div>
+              <div><b>Geometric Shadow Outcome:</b> <span id="div-sel-desc" style="color:var(--rad-navy);">No elongation. Ray path is perpendicular to the receptor.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Station 4 — Clinical Positioning Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4: Clinical Positioning Scenario</h2>
+          <div class="lab-section-sub">Bedside portable hip radiograph — diagnosing and correcting femoral neck foreshortening</div>
+        </div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Station 4: Clinical Scenario</span>
+        <h3>Clinical Case: Correcting Femoral Neck Foreshortening</h3>
+        <p>
+          A radiographer performs a portable AP hip examination on a non-trauma elderly patient in the orthopedic ward. The resultant radiograph reveals that the femoral neck is markedly <b>foreshortened</b>, and the lesser trochanter is visible in profile. The orthopedic surgeon requests a repeat projection because the femoral neck cortex cannot be evaluated for non-displaced fracture lines.
+        </p>
+        <p><b>Clinical Directive:</b> What anatomical positioning fault caused this severe foreshortening, and what corrective action is required?</p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Select the correct positioning adjustment</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <div>
+                <strong>A. The patient's leg was externally rotated, causing the femoral neck to be tilted relative to the receptor. Internally rotate the entire lower extremity $15–20^\circ$ from the hip so the femoral neck is parallel to the image receptor.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Restores the anatomical part parallel to the receptor plane ($\text{Part} \parallel \text{IR}$), projecting the femoral neck in its true, un-foreshortened anatomical length and placing the greater trochanter in lateral profile.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <div>
+                <strong>B. The exposure mAs was too low. Double the mAs and use a fine-detail focal spot to improve bone sharpness.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Distortion is purely a geometric alignment issue; changing mAs or focal spot affects density and sharpness, but cannot correct shape foreshortening.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <div>
+                <strong>C. Angle the Central Ray $30^\circ$ cephalad to stretch the femoral neck shadow.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Arbitrary tube angulation introduces artificial elongation and distorts pelvic anatomy rather than restoring true anatomical geometry.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <div>
+                <strong>D. Increase the SID from $100\text{ cm}$ to $180\text{ cm}$ while leaving the patient externally rotated.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Extending SID reduces magnification slightly, but does not correct the tilt of the femoral neck relative to the receptor plane.</span>
+              </div>
+            </label>
+          </div>
+        </fieldset>
+
+        <button class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Evaluate Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:14px;">
+          Select a response and click "Evaluate Clinical Decision" to receive immediate specialist feedback.
+        </div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Formative Knowledge Check</h2>
+          <div class="lab-section-sub">4 core concept questions · First attempt and final scores recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1: In-Lab Submission Hub (10 Points)</h2>
+          <div class="lab-section-sub">Lock in your in-lab grade before leaving the laboratory session</div>
+        </div>
+      </div>
+      <!-- Injected by RadLab._wireSplitSubmitHub('phase1') -->
+    </section>
+
+    <!-- Transition CTA Card to Tab 2 -->
+    <div class="cta-card">
+      <div>
+        <h3><i class="fa-solid fa-circle-arrow-right"></i> Ready for Virtual Physics Experimentation?</h3>
+        <p>
+          You have mastered distortion physics, the geometric alignment triad, and clinical positioning scenarios. Proceed to <b>Tab 2</b> to test part tilt, off-centering divergence, and 3D shadow projections on the virtual simulator!
+        </p>
+      </div>
+      <button class="btn btn-primary" id="btn-proceed-to-sim">
+        Proceed to Virtual Experimentation <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+      </button>
+    </div>
+
+  </div><!-- /tab-pane-intro -->
+
+
+  <!-- ========================================================================= -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & ANALYSIS (10 POINTS)                  -->
+  <!-- ========================================================================= -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;background:var(--rad-bg-soft);padding:10px 16px;border-radius:8px;border:1px solid var(--rad-border);">
+      <div style="font-size:13.5px;color:var(--rad-navy);font-weight:600;">
+        <i class="fa-solid fa-flask" style="color:var(--rad-teal);margin-right:6px;"></i> Part II: Virtual Distortion Simulation, Ray Tracing &amp; Excel Analysis
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro">
+        <i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i> Return to Tab 1 (Theory &amp; Stations)
+      </button>
+    </div>
+
+    <!-- Section 8: Protocol & Step-by-Step Procedure Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol &amp; Scientific Method</h2>
+          <div class="lab-section-sub">Controlled-variable investigation of part tilt and beam ray divergence</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-clipboard-list"></i> Controlled Protocol</span>
+        <h3>Standardized Experimental Aims:</h3>
+        <ol style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;margin-bottom:16px;">
+          <li><b>Aim 1 (Aligned Baseline):</b> Establish the true isometric baseline with part parallel to IR ($0^\circ$) and centered on CR ($0\text{ cm}$). Record projected length ($L_{\text{proj}} = L_0 \cdot M$) and Shape Factor $= 1.000\times$.</li>
+          <li><b>Aim 2 (Pure Foreshortening via Tilt):</b> Keep CR centered (Offset = $0\text{ cm}$). Vary Part Angle from $0^\circ \to 15^\circ \to 30^\circ \to 45^\circ$. Verify that the projected shadow foreshortens proportionally to $\cos\theta_{\text{part}}$.</li>
+          <li><b>Aim 3 (Pure Elongation via Off-Centering):</b> Keep part flat ($0^\circ$). Displace the object laterally from $0\text{ cm} \to +10\text{ cm} \to +20\text{ cm}$. Observe the increase in ray divergence angle ($\theta_{\text{ray}}$) and resulting shadow elongation.</li>
+          <li><b>Aim 4 (Compounded Tilt + Divergence):</b> Combine tilt and off-centering to investigate asymmetric compounding distortion.</li>
+        </ol>
+
+        <h4>Procedure Workflow:</h4>
+        <div class="procedure-grid">
+          <div class="procedure-step">Formulate and write your scientific hypothesis in the Prediction field before recording trials.</div>
+          <div class="procedure-step">Load Preset 1 (Baseline Aligned) and click "Record This Run".</div>
+          <div class="procedure-step">Load Preset 2 (Pure Foreshortening Tilt, $30^\circ$) and record Run 2; observe $L_{\text{proj}}$ reduction.</div>
+          <div class="procedure-step">Load Preset 3 (Pure Elongation Off-Center, $+15\text{ cm}$) and record Run 3; observe shadow stretch.</div>
+          <div class="procedure-step">Load Preset 5 (Compounded Tilt + Divergence) and record Run 4; analyze resultant shape factor.</div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline Aligned + Record &nbsp; ☐ 3. Run 2 Tilt 30° + Record &nbsp; ☐ 4. Run 3 Off-center +15 cm + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B (Run 4 compounded = bonus/optional).<br>
+          <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider a notch.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Interactive Physics Simulation Suite</h2>
+          <div class="lab-section-sub">Ray-traced shadow projection diagram with active divergence rays</div>
+        </div>
+      </div>
+      <div class="card">
+        <!-- View Mode & Presets Bar -->
+        <div class="flex items-center justify-between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div class="flex gap-6">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-view-3d">
+              <i class="fa-solid fa-cube"></i> 3D Shadow Projector
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-view-classic">
+              <i class="fa-solid fa-ruler-horizontal"></i> Classic Alignment Mode
+            </button>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:var(--rad-navy);">
+            <i class="fa-solid fa-sliders" style="color:var(--rad-teal)"></i> Clinical Alignment Presets:
+          </span>
+        </div>
+
+        <div class="preset-toolbar">
+          <button type="button" class="preset-btn" data-offset="0" data-part="0" data-oid="15" data-sid="100">
+            <i class="fa-solid fa-check"></i> 1. Baseline Aligned ($0\text{ cm}, 0^\circ$)
+          </button>
+          <button type="button" class="preset-btn" data-offset="0" data-part="30" data-oid="15" data-sid="100">
+            <i class="fa-solid fa-compress"></i> 2. Pure Foreshortening Tilt ($0\text{ cm}, +30^\circ$)
+          </button>
+          <button type="button" class="preset-btn" data-offset="15" data-part="0" data-oid="15" data-sid="100">
+            <i class="fa-solid fa-arrow-right"></i> 3. Elongation: Off-Center Right ($+15\text{ cm}, 0^\circ$)
+          </button>
+          <button type="button" class="preset-btn" data-offset="-15" data-part="0" data-oid="15" data-sid="100">
+            <i class="fa-solid fa-arrow-left"></i> 4. Elongation: Off-Center Left ($-15\text{ cm}, 0^\circ$)
+          </button>
+          <button type="button" class="preset-btn" data-offset="15" data-part="30" data-oid="15" data-sid="100">
+            <i class="fa-solid fa-triangle-exclamation"></i> 5. Compounded Tilt + Divergence ($+15\text{ cm}, +30^\circ$)
+          </button>
+          <button type="button" class="preset-btn" data-offset="0" data-part="0" data-oid="15" data-sid="180">
+            <i class="fa-solid fa-arrows-up-down"></i> 6. Extended SID Restoration ($180\text{ cm}$)
+          </button>
+        </div>
+
+        <!-- Scientific Prediction Box -->
+        <div class="form-row" style="margin-bottom:18px;">
+          <label class="field-label" for="w-prediction">
+            Scientific Hypothesis &amp; Pre-Trial Prediction <span aria-hidden="true" style="color:var(--rad-red)">*</span>
+          </label>
+          <textarea id="w-prediction" rows="2" required placeholder="State your hypothesis: predict the exact difference in shape distortion between tilting the part vs off-centering the part into the peripheral beam, and whether foreshortening can occur without part tilt..."></textarea>
+          <p class="form-hint">Mandatory: Minimum 20 characters. Validated before recording runs; included in your submission.</p>
+        </div>
+
+        <!-- Canvas and Controls Grid -->
+        <div class="experiment-layout">
+          <div>
+            <canvas id="sim-canvas" class="sim-canvas" width="900" height="345" role="img" aria-label="Interactive visual model for Geometric Distortion Lab" aria-describedby="sim-caption"></canvas>
+            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">
+              Move one control at a time. Yellow rays show divergence from Central Ray. Magenta reticle shows projected shadow length.
+            </p>
+          </div>
+
+          <div>
+            <div class="control-grid">
+              <div class="control-card">
+                <label for="ctrl-offset"><span>Part Lateral Offset</span><output id="out-offset" for="ctrl-offset">0 cm</output></label>
+                <input type="range" id="ctrl-offset" min="-20" max="20" step="1" value="0" aria-describedby="sim-caption">
+                <span class="small muted">Range: -20 cm (left) to +20 cm (right)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-part"><span>Part Angle (Tilt)</span><output id="out-part" for="ctrl-part">0 °</output></label>
+                <input type="range" id="ctrl-part" min="-45" max="45" step="1" value="0" aria-describedby="sim-caption">
+                <span class="small muted">Range: -45° to +45° relative to receptor</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-oid"><span>Object-to-Image ($OID$)</span><output id="out-oid" for="ctrl-oid">15 cm</output></label>
+                <input type="range" id="ctrl-oid" min="5" max="35" step="1" value="15" aria-describedby="sim-caption">
+                <span class="small muted">Range: 5 cm to 35 cm elevation</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-sid"><span>Source-to-Image ($SID$)</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
+                <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
+                <span class="small muted">Range: 80 cm to 180 cm geometry</span>
+              </div>
+            </div>
+
+            <!-- Live Telemetry Metrics Grid -->
+            <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run"><i class="fa-solid fa-camera"></i> Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash-can"></i> Remove Last Run</button>
+          <button class="btn btn-secondary btn-sm" id="btn-download-runs-csv"><i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)</button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr><th>Run #</th><th>Settings (Offset, Angle, OID, SID)</th><th>Key Results (Divergence, Length, Shape Factor)</th><th>Radiological Interpretation</th></tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr><td colspan="4" class="muted">No runs recorded yet. Load a preset or adjust sliders and click "Record This Run".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 10: Post-Lab Data Analysis & Worksheet -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Required Data Analysis &amp; Post-Lab Reflection</h2>
+          <div class="lab-section-sub">Quantitative distortion calculations, Excel plotting guide, and clinical reflection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and execute the following analysis in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Part Angle vs. Projected Length &amp; Shape Factor ($\theta_{\text{part}}$ vs $L_{\text{proj}}$):</b> Plot Part Tilt Angle ($0^\circ$ to $45^\circ$) on the X-axis against Projected Length (mm) and Shape Factor on the Y-axis for centered geometry ($\text{Offset} = 0\text{ cm}$). Fit a cosine trendline demonstrating that foreshortening is proportional to $\cos\theta_{\text{part}}$.</li>
+            <li><b>Plot 2 — Lateral Offset vs. Beam Divergence &amp; Shape Factor ($\text{Offset}$ vs $\theta_{\text{ray}}$ &amp; Shape):</b> Plot Lateral Offset ($-20\text{ cm}$ to $+20\text{ cm}$) on the X-axis against Beam Divergence Angle on the primary Y-axis, and Shape Factor on the secondary Y-axis. Explain why elongation is symmetric about the Central Ray.</li>
+            <li><b>Calculated Spreadsheet Columns:</b> Add a calculated column computing the theoretical foreshortened length ($L_0 \times M \times \cos\theta_{\text{part}}$) and verify that it matches your exported telemetry.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and attach it in <b>Section 12 (Phase 2 Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact distortion parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <thead>
+            <tr><th style="width:32%">Imaging Alignment Configuration</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Distortion Classification</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Trial 1 (Aligned Baseline):</b> $\text{Offset} = 0\text{ cm}, \theta = 0^\circ, SID = 100\text{ cm}, OID = 15\text{ cm}$</td>
+              <td><input type="text" id="w-calc-d1-sub" placeholder="e.g., SOD = 85 cm; M = 100/85 = 1.176; L_norm = 100 * 1.176"></td>
+              <td><input type="text" id="w-calc-d1-out" placeholder="e.g., L_proj = 117.6 mm; Shape Factor = 1.000x (Minimal distortion)"></td>
+            </tr>
+            <tr>
+              <td><b>Trial 2 (Foreshortened Tilt):</b> $\text{Offset} = 0\text{ cm}, \theta = +30^\circ, SID = 100\text{ cm}, OID = 15\text{ cm}$</td>
+              <td><input type="text" id="w-calc-d2-sub" placeholder="e.g., L_proj = 117.6 * cos(30 deg) = 117.6 * 0.866"></td>
+              <td><input type="text" id="w-calc-d2-out" placeholder="e.g., L_proj = 101.9 mm; Shape Factor = 0.866x (Severe Foreshortening)"></td>
+            </tr>
+            <tr>
+              <td><b>Trial 3 (Off-Center Elongation):</b> $\text{Offset} = +15\text{ cm}, \theta = 0^\circ, SID = 100\text{ cm}, OID = 15\text{ cm}$</td>
+              <td><input type="text" id="w-calc-d3-sub" placeholder="e.g., theta_ray = atan(15/85) = 10.0 deg; cos(10)^2 factor"></td>
+              <td><input type="text" id="w-calc-d3-out" placeholder="e.g., L_proj = 121.3 mm; Shape Factor = 1.031x (Elongation)"></td>
+            </tr>
+            <tr>
+              <td><b>Trial 4 (Compounded Tilt + Divergence):</b> $\text{Offset} = +15\text{ cm}, \theta = +30^\circ, SID = 100\text{ cm}, OID = 15\text{ cm}$</td>
+              <td><input type="text" id="w-calc-d4-sub" placeholder="e.g., rel_angle = 30 + 10.0 = 40.0 deg; cos(40)/cos(10)^2 — model-specific pedagogical approximation (textbooks treat tilt and divergence as multiplicative, not additive angles)"></td>
+              <td><input type="text" id="w-calc-d4-out" placeholder="e.g., L_proj = 92.9 mm; Shape Factor = 0.790x (Marked Foreshortening)"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-pen-fancy"></i> C. Written Analysis &amp; Clinical Synthesis</h4>
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q1">1. Record one elongation and one foreshortening configuration from your experimental trials and calculate the shape factor for each. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="State your exact run numbers, parameters (offset, part angle, OID, SID), projected length vs baseline normal length, and explain why one configuration elongated while the other foreshortened..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q2">2. Explain the fundamental alignment relationship among the anatomy, image receptor, and Central Ray for a routine diagnostic projection. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="Define the Geometric Alignment Triad (Part || IR, CR perpendicular to Part and IR, CR centered on anatomy). Explain what happens when each leg of the triad is violated..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q3">3. Distinguish distortion from unsharpness. Explain how an image can possess excellent sharpness yet remain completely non-diagnostic. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Contrast boundary penumbra blur (Ug = F*OID/SOD) with geometric shape misrepresentation. Give a clinical example (e.g., razor-sharp foreshortened scaphoid or femur failing fracture diagnosis)..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q4">4. Critical thinking: Explain a clinical situation where an examination intentionally utilizes an angled Central Ray. Justify why this intentional distortion is beneficial. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Describe AP axial cervical spine (15-20 deg cephalad), Townes skull (30 deg caudad), or axial calcaneus (40 deg cephalad). Explain how intentional beam obliquity unmasks superimposed structures..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Grading Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized Grading Rubric (20 Points)</h2>
+          <div class="lab-section-sub">Departmental Gemini Flash model automated rubric evaluation</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto"></div>
+        <p class="form-hint" style="margin-top:12px;">Self-scores provide formative feedback. The departmental Gemini Flash grading engine evaluates your final submission against this exact rubric.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2: Post-Lab Excel Submission Hub (10 Points)</h2>
+          <div class="lab-section-sub">Upload your Excel workbook (.xlsx / .csv) and submit your final post-lab analysis</div>
+        </div>
+      </div>
+      <!-- Injected by RadLab._wireSplitSubmitHub('phase2') -->
+    </section>
+
+  </div><!-- /tab-pane-experiment -->
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 7 of 15 · assessed virtual laboratory</footer>
+
+<!-- Bottom Action Bar for JSON Backup & Reset -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span><span id="autosave-dot-label">Autosave Ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        <i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 7 of 15 · Assessed Virtual Laboratory Suite · Aligned with Saudi SCHS Radiologic Technologist Licensing Competencies
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
+
 <script>
-const LAB = {"week":7,"title":"Geometric Distortion Lab","lecture":"Sharpness & Detail II — Distortion","type":"distortion","subtitle":"Diagnose elongation, foreshortening, and shape distortion from alignment errors and off-centering.","objectives":["Define size, shape, and positional distortion.","Relate part lateral offset, part tilt, OID, and SID to elongation and foreshortening.","Predict the effect of off-center lateral displacement and part tilt under a perpendicular beam.","Use a virtual alignment check to reduce distortion.","Explain why anatomy-specific positioning criteria matter."],"theory":"<p>Distortion is a misrepresentation of object size or shape. It occurs when the anatomical part is angled or displaced away from the perpendicular central ray. Foreshortening occurs when the anatomical part is tilted relative to the perpendicular beam. Elongation occurs when the part is displaced laterally into the divergent peripheral beam.</p><div class=\"formula-box\"><b>Alignment goal:</b> anatomy centered over perpendicular CR and anatomy plane ∥ IR. Moving an object laterally away from the central ray exposes it to divergent oblique rays that physically elongate its recorded shadow.</div><p>Distortion is not simply “blur.” A sharp but distorted image may still fail the diagnostic criterion because anatomy is represented incorrectly.</p>","controls":[{"id":"offset","label":"Part lateral offset","min":-20,"max":20,"step":1,"value":0,"unit":"cm"},{"id":"part","label":"Part angle","min":-45,"max":45,"step":1,"value":0,"unit":"°"},{"id":"oid","label":"OID","min":5,"max":35,"step":1,"value":15,"unit":"cm"},{"id":"sid","label":"SID","min":80,"max":180,"step":1,"value":100,"unit":"cm"}],"stations":[{"id":"alignment","title":"Station 1 — Alignment and shape","text":"Change one angle at a time, observe the virtual anatomy, and identify whether the image is elongated, foreshortened, or acceptably aligned.","kind":"main"},{"id":"patterns","title":"Station 2 — Distortion patterns","text":"Match each pattern to the alignment error that most likely produced it.","kind":"match","left":[["elong","Object appears longer than expected"],["short","Object appears shorter than expected"],["shape","Unequal magnification across anatomy"]],"right":[["cr","Part/IR relationship with CR mismatch"],["part","Part angle produces foreshortening"],["oid","Object plane not parallel to IR"]],"pairs":{"elong":"cr","short":"part","shape":"oid"}},{"id":"case","title":"Station 3 — Positioning correction","text":"A projection shows foreshortening and the anatomy is not parallel to the receptor. Choose the best correction.","kind":"case"}],"quiz":[{"prompt":"The best general method for minimizing unintended shape distortion is to:","options":["Increase mAs","Align the anatomy and IR correctly and use the required CR relationship","Increase OID","Use a larger focal spot"],"correct":1,"explain":"Distortion is primarily a geometry/alignment problem; exposure quantity does not correct shape."},{"prompt":"Unintended shape distortion is minimized by:","options":["Correct anatomy, IR, and CR alignment","Increasing mAs","Using a higher grid ratio","Increasing processing time"],"correct":0,"explain":"Shape representation depends on alignment geometry."},{"prompt":"Foreshortening means the object appears:","options":["Longer","Shorter","Noisier","Darker only"],"correct":1,"explain":"Foreshortening represents the object as shorter than its actual projected length."},{"prompt":"A sharp image can still be unacceptable if it is:","options":["Correctly identified","Distorted","Well collimated","Properly exposed"],"correct":1,"explain":"Sharpness does not guarantee correct shape or diagnostic positioning."}],"worksheet":[{"id":"q1","label":"1. Record one elongation and one foreshortening configuration from the simulator."},{"id":"q2","label":"2. Explain the alignment relationship among the anatomy, IR, and CR for a routine projection."},{"id":"q3","label":"3. Distinguish distortion from unsharpness."},{"id":"q4","label":"4. Critical thinking: give one reason a projection may intentionally use an angled CR."}],"rubric":[{"id":"c1","name":"Distortion concepts","points":4,"levels":["Accurately explains elongation, foreshortening, and shape distortion.","Mostly accurate with minor gaps.","Major misconception."]},{"id":"c2","name":"Alignment simulation","points":5,"levels":["Systematically changes one variable and interprets the result.","Uses the simulator with limited control.","Little meaningful investigation."]},{"id":"c3","name":"Pattern diagnosis and worksheet","points":5,"levels":["Correctly links patterns to alignment causes.","Some correct links with weak explanation.","Patterns or explanations are mostly incorrect."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Chooses a correction with positioning evidence.","Plausible but shallow.","No defensible correction."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict the image shape when the anatomy is tilted relative to the IR.","Record an aligned baseline.","Change only the part angle and record a second run.","Change CR angle to test a projection-specific correction and record a third run.","Compare shape factor and distortion index."],"scenario":{"prompt":"A long bone appears foreshortened because it was not aligned with the receptor. What is the first correction?","options":["Restore the required anatomy-IR-CR alignment","Increase mAs","Use a larger focal spot","Apply stronger digital contrast"],"correct":0,"explain":"Foreshortening is an alignment problem; exposure quantity and display processing do not correct shape."},"minimumRuns":3};
-const QUIZ_IDS = ["q7-1","q7-2","q7-3","q7-4"];
-const CONCEPT = LAB.stations[1];
+/* =========================================================================
+   LAB CONFIGURATION & RUBRIC DATA
+   ========================================================================= */
+const LAB = {
+  week: 7,
+  title: "Lab 7: Geometric Distortion Lab",
+  lecture: "Sharpness & Detail II — Distortion",
+  type: "distortion",
+  subtitle: "Diagnose elongation, foreshortening, and shape distortion from alignment errors and off-centering.",
+  minimumRuns: 3,
+  controls: [
+    { id: "offset", label: "Part lateral offset", min: -20, max: 20, step: 1, value: 0, unit: "cm" },
+    { id: "part", label: "Part angle", min: -45, max: 45, step: 1, value: 0, unit: "°" },
+    { id: "oid", label: "OID", min: 5, max: 35, step: 1, value: 15, unit: "cm" },
+    { id: "sid", label: "SID", min: 80, max: 180, step: 1, value: 100, unit: "cm" }
+  ],
+  quiz: [
+    {
+      prompt: "The best general method for minimizing unintended shape distortion is to:",
+      options: [
+        "Increase mAs",
+        "Align the anatomy and IR correctly and use the required CR relationship",
+        "Increase OID",
+        "Use a larger focal spot"
+      ],
+      correct: 1,
+      explain: "Distortion is primarily a geometry/alignment problem; exposure quantity and focal spot size do not correct shape."
+    },
+    {
+      prompt: "Unintended shape distortion is minimized by which geometrical condition?",
+      options: [
+        "Correct anatomy, IR, and CR alignment (the Geometric Alignment Triad)",
+        "Increasing mAs and lowering kVp",
+        "Using a higher grid ratio",
+        "Increasing developer processing time"
+      ],
+      correct: 0,
+      explain: "Shape representation depends on alignment geometry: Part parallel to IR, CR perpendicular to Part and IR, and CR centered on anatomy."
+    },
+    {
+      prompt: "Foreshortening means the projected anatomical structure appears:",
+      options: [
+        "Longer than actual dimension",
+        "Shorter than actual projected length",
+        "Grainy and quantum mottle affected",
+        "Darker optical density only"
+      ],
+      correct: 1,
+      explain: "Foreshortening represents the object as shorter than its true projected length, caused when the part is angled relative to the receptor under a perpendicular CR."
+    },
+    {
+      prompt: "A sharp radiographic image can still be diagnostically unacceptable if it is:",
+      options: [
+        "Correctly identified",
+        "Distorted (elongated or foreshortened)",
+        "Well collimated",
+        "Properly exposed"
+      ],
+      correct: 1,
+      explain: "Sharpness (lack of blur) does not guarantee diagnostic quality; a razor-sharp image with severe foreshortening can completely obscure fractures and pathology."
+    }
+  ],
+  scenario: {
+    prompt: "A long bone appears foreshortened because it was not aligned with the receptor. What is the first correction?",
+    options: [
+      "Restore the required anatomy-IR-CR alignment (internally rotate or align the part parallel to IR)",
+      "Increase mAs",
+      "Use a larger focal spot",
+      "Apply stronger digital contrast enhancement"
+    ],
+    correct: 0,
+    explain: "Foreshortening is strictly an alignment problem; exposure quantity and digital post-processing cannot reconstruct foreshortened anatomy."
+  },
+  worksheet: [
+    { id: "q1", label: "1. Record one elongation and one foreshortening configuration from the simulator." },
+    { id: "q2", label: "2. Explain the alignment relationship among the anatomy, IR, and CR for a routine projection." },
+    { id: "q3", label: "3. Distinguish distortion from unsharpness." },
+    { id: "q4", label: "4. Critical thinking: give one reason a projection may intentionally use an angled CR." }
+  ],
+  rubric: [
+    {
+      id: "c1",
+      name: "Distortion Concepts & Alignment Triad",
+      points: 4,
+      part: "Part I: In-Lab Interactive Activities (10 Points)",
+      levels: [
+        { desc: "Accurately explains elongation, foreshortening, size vs shape distortion, and the Geometric Alignment Triad." },
+        { desc: "Mostly accurate with minor gaps in formulas or ray divergence explanations." },
+        { desc: "Major conceptual errors or confusion between distortion and unsharpness." }
+      ]
+    },
+    {
+      id: "c2",
+      name: "Alignment Simulation & Experimental Evidence",
+      points: 6,
+      part: "Part I: In-Lab Interactive Activities (10 Points)",
+      levels: [
+        { desc: "Records 3+ systematic experimental runs across clinical presets, isolates tilt vs off-centering, and interprets shape factor." },
+        { desc: "Records runs with limited parameter variation or brief observations." },
+        { desc: "Insufficient runs recorded or failure to isolate controlled variables." }
+      ]
+    },
+    {
+      id: "c3",
+      name: "Quantitative Calculations & Excel Plotting",
+      points: 5,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Accurately completes Table B calculations, provides required Excel plots (Angle vs Length and Offset vs Divergence), and validates trends." },
+        { desc: "Calculations mostly correct with minor arithmetic errors or incomplete plot formatting." },
+        { desc: "Calculations missing, incorrect formulas used, or Excel analysis omitted." }
+      ]
+    },
+    {
+      id: "c4",
+      name: "Clinical Positioning Reasoning & Synthesis",
+      points: 3,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Thoroughly analyzes femoral neck scenario, justifies internal rotation correction, and defends intentional CR angulation." },
+        { desc: "Plausible positioning reasoning but lacks technical depth or ALARA context." },
+        { desc: "Superficial or incorrect clinical reasoning." }
+      ]
+    },
+    {
+      id: "c5",
+      name: "Completeness, Organization & Professional Reporting",
+      points: 2,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Report is exceptionally organized, clear notation, thorough worksheet responses, and properly attached Excel file." },
+        { desc: "Minor formatting omissions or brief worksheet sections." },
+        { desc: "Substantially incomplete report or missing file attachments." }
+      ]
+    }
+  ]
+};
+
+const QUIZ_IDS = ["q7-1", "q7-2", "q7-3", "q7-4"];
 let currentResult = null;
 let currentViewMode = '3d-shadow';
 
+/* =========================================================================
+   TWO-TAB SWITCHER LOGIC
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (tabId === 'experiment') {
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    paneIntro.classList.remove('active');
+    paneExp.classList.add('active');
+    window.location.hash = '#tab-experiment';
+
+    // Refresh simulation on tab display
+    setTimeout(function () {
+      renderSimulation();
+    }, 50);
+
+    if (targetSectionId) {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  } else {
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    paneExp.classList.remove('active');
+    paneIntro.classList.add('active');
+    window.location.hash = '#tab-intro';
+
+    if (targetSectionId) {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+}
+
+/* =========================================================================
+   SIMULATION CONTROLS & COMPUTATIONS
+   ========================================================================= */
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    values[control.id] = el ? Number(el.value) : control.value;
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
-}
-
-function renderMetrics(result) {
-  const container = document.getElementById('sim-metrics');
-  RadLab.renderMetrics(container, result);
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + values[control.id] + ' ' + control.unit;
+  }).join('; ');
 }
 
 function renderSimulation() {
   const values = controlValues();
   values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = values[control.id] + ' ' + control.unit;
+  });
+
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
-  renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
+
+  const metricContainer = document.getElementById('sim-metrics');
+  if (metricContainer) {
+    RadLab.renderMetrics(metricContainer, currentResult);
+  }
+
+  const caption = document.getElementById('sim-caption');
+  if (caption) {
+    caption.textContent = currentResult.observation;
+  }
 }
 
+/* =========================================================================
+   RUN LOGGING & CSV EXPORT
+   ========================================================================= */
 function experimentActivity() {
   return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
 }
@@ -114,85 +1479,481 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
+
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Load a preset or adjust sliders and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) {
+    statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  }
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please write a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
+
   const values = controlValues();
+  values.viewMode = currentViewMode;
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That exact setting is already recorded. Change one parameter to record a new run.', 'error');
+    return;
+  }
+
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
+
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
-  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
-  activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns) * 2; // Up to 6 points
+  activity.maxScore = 6;
+  activity.detail = activity.runs.length + ' unique experimental runs recorded across geometric distortion alignments.';
+
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  if (RadLab.sound && RadLab.sound.playExposure) RadLab.sound.playExposure();
+
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully!', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded runs to remove.', 'info');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns) * 2;
+  activity.detail = activity.runs.length + ' unique experimental runs recorded.';
+
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
 }
 
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) {
+    RadLab.toast('No runs recorded yet. Record at least 1 trial to download CSV.', 'error');
+    return;
+  }
+
+  let csv = 'Run Number,Offset (cm),Part Angle (deg),OID (cm),SID (cm),Part Tilt (deg),Beam Divergence (deg),Projected Length (mm),Shape Factor (x),Observation\n';
+  activity.runs.forEach(function (run, index) {
+    const v = run.values;
+    const mTilt = run.metrics.find(function (m) { return m.label.includes('Part tilt'); });
+    const mDiv = run.metrics.find(function (m) { return m.label.includes('Beam divergence'); });
+    const mLen = run.metrics.find(function (m) { return m.label.includes('Projected length'); });
+    const mShape = run.metrics.find(function (m) { return m.label.includes('Shape factor'); });
+
+    const tiltVal = mTilt ? mTilt.value : '';
+    const divVal = mDiv ? mDiv.value : '';
+    const lenVal = mLen ? mLen.value : '';
+    const shapeVal = mShape ? mShape.value : '';
+
+    const obsClean = '"' + (run.observation || '').replace(/"/g, '""') + '"';
+    csv += `${index + 1},${v.offset},${v.part},${v.oid},${v.sid},${tiltVal},${divVal},${lenVal},${shapeVal},${obsClean}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab07_Geometric_Distortion_Runs_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Exported runs CSV for Excel analysis!', 'success');
 }
 
+/* =========================================================================
+   STATION 3: BEAM DIVERGENCE & OFF-CENTERING ANALYZER
+   ========================================================================= */
+const DIV_DATA = [
+  { offset: 0, angle: 0.0, shape: 1.000, status: "aligned", desc: "Central Ray perpendicular to part. Zero divergence. True isometric shape factor." },
+  { offset: 5, angle: 3.4, shape: 1.004, status: "aligned", desc: "Minimal divergence (3.4°). Negligible elongation within diagnostic tolerance." },
+  { offset: 10, angle: 6.7, shape: 1.014, status: "aligned", desc: "Moderate divergence (6.7°). Borderline elongation (+1.4% length stretch)." },
+  { offset: 15, angle: 10.0, shape: 1.031, status: "elongated", desc: "Significant divergence (10.0°). Noticeable elongation (+3.1% shadow stretch)." },
+  { offset: 20, angle: 13.2, shape: 1.055, status: "elongated", desc: "Severe divergence (13.2°). Marked peripheral elongation (+5.5% shadow stretch)." }
+];
+
+function initDivergenceAnalyzer() {
+  const container = document.getElementById('div-strip-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  DIV_DATA.forEach(function (item, idx) {
+    const cell = document.createElement('div');
+    cell.className = 'div-cell' + (idx === 0 ? ' active' : '');
+    cell.dataset.index = idx;
+
+    cell.innerHTML = `
+      <div style="font-weight:800;font-size:13px;color:var(--rad-navy);">${item.offset === 0 ? 'Centered' : (item.offset > 0 ? '+' : '') + item.offset + ' cm'}</div>
+      <div style="font-size:11px;color:var(--rad-text-soft);">θ = ${item.angle.toFixed(1)}°</div>
+      <div style="font-size:11px;font-weight:700;color:var(--rad-teal);margin-top:2px;">${item.shape.toFixed(3)}×</div>
+    `;
+
+    const badge = document.createElement('span');
+    badge.className = 'div-status-badge ' + (item.status === 'aligned' ? 'div-status-aligned' : 'div-status-elongated');
+    badge.textContent = item.status === 'aligned' ? 'Aligned' : 'Elongated';
+    cell.appendChild(badge);
+
+    cell.addEventListener('click', function () {
+      document.querySelectorAll('.div-cell').forEach(function (c) { c.classList.remove('active'); });
+      cell.classList.add('active');
+      selectDivergenceGroup(idx);
+    });
+
+    container.appendChild(cell);
+  });
+
+  selectDivergenceGroup(0); // Default to centered
+}
+
+function selectDivergenceGroup(idx) {
+  const item = DIV_DATA[idx];
+  if (!item) return;
+
+  const offsetEl = document.getElementById('div-sel-offset');
+  const angleEl = document.getElementById('div-sel-angle');
+  const shapeEl = document.getElementById('div-sel-shape');
+  const descEl = document.getElementById('div-sel-desc');
+  const statusEl = document.getElementById('div-sel-status');
+
+  if (offsetEl) offsetEl.textContent = item.offset === 0 ? '0 cm (Centered Central Ray)' : (item.offset > 0 ? '+' : '') + item.offset + ' cm Lateral Displacement';
+  if (angleEl) angleEl.textContent = item.angle.toFixed(1) + '° Divergence';
+  if (shapeEl) shapeEl.textContent = item.shape.toFixed(3) + '× (' + (item.shape > 1.015 ? 'Elongated' : 'Normal') + ')';
+  if (descEl) descEl.textContent = item.desc;
+
+  if (statusEl) {
+    if (item.status === 'aligned') {
+      statusEl.className = 'div-status-badge div-status-aligned';
+      statusEl.textContent = 'True Isometric Alignment';
+    } else {
+      statusEl.className = 'div-status-badge div-status-elongated';
+      statusEl.textContent = 'Peripheral Ray Elongation Warning';
+    }
+  }
+
+  // Update simulator slider in Tab 2 to match
+  const offsetSlider = document.getElementById('ctrl-offset');
+  if (offsetSlider) {
+    offsetSlider.value = item.offset;
+    const outOffset = document.getElementById('out-offset');
+    if (outOffset) outOffset.textContent = item.offset + ' cm';
+    if (currentResult) renderSimulation();
+  }
+}
+
+/* =========================================================================
+   CLINICAL SCENARIO EVALUATION
+   ========================================================================= */
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please select a clinical response option before checking.';
+    return;
+  }
+
+  const choice = Number(selected.value);
+  const correct = choice === 0;
+
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: choice === 0 ? "Correctly recognized external rotation causing foreshortening and internally rotated leg 15-20°." : "Reconsidered positioning."
+  };
+
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  if (correct) {
+    feedback.innerHTML = '<strong><i class="fa-solid fa-circle-check"></i> Exceptional Radiographic Competency!</strong> Option A is the definitive standard protocol. In standard anatomical resting position, the femoral necks are anteverted $15–20^\circ$, causing an external-rotation foreshortening artifact under a perpendicular beam. By internally rotating the entire lower extremity $15–20^\circ$ from the hip, the femoral neck is brought strictly parallel to the image receptor ($\text{Part} \parallel \text{IR}$), fully un-foreshortening the neck and displaying the greater trochanter in true lateral profile.';
+  } else {
+    feedback.innerHTML = '<strong><i class="fa-solid fa-circle-xmark"></i> Suboptimal Positioning Strategy:</strong> Option ' + String.fromCharCode(65 + choice) + ' will not resolve the diagnostic deficiency. Distortion is strictly a geometric positioning defect. Modifying mAs, focal spot, or arbitrary beam angles cannot reconstruct anatomy that is tilted relative to the detector. Re-evaluate Option A!';
+  }
+
+  RadLab.save();
+  RadLab.progress.update();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-07', labTitle: "Lab 7 — Geometric Distortion Lab", weekNumber: 7, rubric: { title: "Lab 7 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Distortion concepts","points":4},{"id":"c2","name":"Alignment simulation","points":5},{"id":"c3","name":"Pattern diagnosis and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab7-rubric',title:"Lab 7 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Distortion concepts","points":4,"levels":[{"desc":"Accurately explains elongation, foreshortening, and shape distortion."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Alignment simulation","points":5,"levels":[{"desc":"Systematically changes one variable and interprets the result."},{"desc":"Uses the simulator with limited control."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Pattern diagnosis and worksheet","points":5,"levels":[{"desc":"Correctly links patterns to alignment causes."},{"desc":"Some correct links with weak explanation."},{"desc":"Patterns or explanations are mostly incorrect."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Chooses a correction with positioning evidence."},{"desc":"Plausible but shallow."},{"desc":"No defensible correction."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+/* =========================================================================
+   INFALLIBLE MATHEMATICAL TYPOGRAPHY HELPER
+   ========================================================================= */
+function formatMathTex(expr) {
+  let s = expr;
+  s = s.replace(/\$/g, '');
+  s = s.replace(/\\approx/g, '≈');
+  s = s.replace(/\\times/g, '×');
+  s = s.replace(/\\cdot/g, '·');
+  s = s.replace(/\\le/g, '≤');
+  s = s.replace(/\\ge/g, '≥');
+  s = s.replace(/\\Delta/g, 'Δ');
+  s = s.replace(/\\theta/g, 'θ');
+  s = s.replace(/\\mu/g, 'μ');
+  s = s.replace(/\\parallel/g, '∥');
+  s = s.replace(/\\perp/g, '⊥');
+  s = s.replace(/\\ne/g, '≠');
+  s = s.replace(/\\arctan/g, 'arctan');
+  s = s.replace(/\\cos/g, 'cos');
+  s = s.replace(/\\sin/g, 'sin');
+  s = s.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+  s = s.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)');
+  s = s.replace(/\\text\{([^}]+)\}/g, '$1');
+  s = s.replace(/\\quad/g, ' ');
+  s = s.replace(/\\,/g, ' ');
+  s = s.replace(/\\([a-zA-Z]+)/g, '$1');
+  s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>');
+  s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>');
+  s = s.replace(/_([a-zA-Z0-9])/g, '<sub>$1</sub>');
+  s = s.replace(/\^([a-zA-Z0-9])/g, '<sup>$1</sup>');
+  return s;
+}
+
+function renderAllMath() {
+  if (typeof renderMathInElement === 'function') {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (e) {
+      console.warn('KaTeX auto-render failed; applying semantic HTML fallback.', e);
+    }
   }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+
+  document.querySelectorAll('.math-tex, .math-display').forEach(function (el) {
+    const raw = el.textContent || '';
+    el.innerHTML = formatMathTex(raw);
+  });
+}
+
+/* =========================================================================
+   INITIALIZATION ON DOM LOAD
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. Initialize RadLab Platform Core
+  RadLab.init({
+    labId: 'lab-07',
+    labTitle: LAB.title,
+    weekNumber: LAB.week,
+    rubric: {
+      title: "Lab 7 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    },
+    sections: [
+      {
+        id: 'sec-alignment-explorer',
+        label: '1 · Alignment & Stations',
+        checkComplete: function (s) {
+          const act = s.activities['distortion-match'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-scenario',
+        label: '2 · Clinical Decision',
+        checkComplete: function (s) {
+          const act = s.activities['clinical-scenario'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-quiz',
+        label: '3 · Knowledge Check',
+        checkComplete: function (s) {
+          return QUIZ_IDS.every(function (id) {
+            return !!(s.quiz[id] && s.quiz[id].correct);
+          });
+        }
+      },
+      {
+        id: 'sec-experiment',
+        label: '4 · Simulation Suite',
+        checkComplete: function (s) {
+          const act = s.activities['experiment-log'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-worksheet',
+        label: '5 · Post-Lab Excel Analysis',
+        checkComplete: function (s) {
+          return !!(s.fields && s.fields['q1'] && s.fields['q1'].length > 20);
+        }
+      }
+    ]
+  });
+
+  // 2. Register Interactive Worksheet & Table Fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment hypothesis' });
+  RadLab.registerField('w-foreshorten-cause', { sectionId: 'sec-alignment-explorer', label: 'Table A: Foreshortening cause' });
+  RadLab.registerField('w-foreshorten-factor', { sectionId: 'sec-alignment-explorer', label: 'Table A: Foreshortening shape factor' });
+  RadLab.registerField('w-elongation-cause', { sectionId: 'sec-alignment-explorer', label: 'Table A: Elongation cause' });
+  RadLab.registerField('w-elongation-factor', { sectionId: 'sec-alignment-explorer', label: 'Table A: Elongation shape factor' });
+  RadLab.registerField('w-size-vs-shape', { sectionId: 'sec-alignment-explorer', label: 'Table A: Size vs Shape distortion' });
+  RadLab.registerField('w-size-shape-out', { sectionId: 'sec-alignment-explorer', label: 'Table A: Size vs Shape outcome' });
+  RadLab.registerField('w-alignment-triad', { sectionId: 'sec-alignment-explorer', label: 'Table A: Alignment Triad' });
+  RadLab.registerField('w-triad-outcome', { sectionId: 'sec-alignment-explorer', label: 'Table A: Triad outcome' });
+
+  RadLab.registerField('w-calc-d1-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 1 substitution' });
+  RadLab.registerField('w-calc-d1-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 1 result' });
+  RadLab.registerField('w-calc-d2-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 2 substitution' });
+  RadLab.registerField('w-calc-d2-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 2 result' });
+  RadLab.registerField('w-calc-d3-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 3 substitution' });
+  RadLab.registerField('w-calc-d3-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 3 result' });
+  RadLab.registerField('w-calc-d4-sub', { sectionId: 'sec-worksheet', label: 'Table B: Trial 4 substitution' });
+  RadLab.registerField('w-calc-d4-out', { sectionId: 'sec-worksheet', label: 'Table B: Trial 4 result' });
+
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // 3. Build Formative Knowledge Check MCQs
+  const quizWrap = document.getElementById('quiz-wrap');
+  if (quizWrap) {
+    LAB.quiz.forEach(function (question, index) {
+      RadLab.mcq(quizWrap, {
+        id: QUIZ_IDS[index],
+        prompt: question.prompt,
+        options: question.options,
+        correctIndex: question.correct,
+        explain: question.explain,
+        allowRetry: true
+      });
+    });
+  }
+
+  // 4. Build Standardized 20-Point Grading Rubric
+  const rubricContainer = document.getElementById('rubric-container');
+  if (rubricContainer) {
+    RadLab.buildRubric(rubricContainer, {
+      id: 'lab7-rubric',
+      title: "Lab 7 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    });
+  }
+
+  // 5. Station 2: Distortion Patterns & Alignment Errors Matcher
+  const matchLeft = [
+    { id: "tilt", label: "Part tilted relative to IR (CR perpendicular)" },
+    { id: "offcenter", label: "Object displaced laterally into diverging peripheral beam" },
+    { id: "cr_angle", label: "Central Ray angled relative to part parallel to IR" },
+    { id: "oid_only", label: "Elevated OID with part parallel to IR and centered CR" },
+    { id: "townes", label: "Intentional 30° caudad CR angle (Townes skull projection)" },
+    { id: "rotation", label: "Patient pelvis rotated 15° off true coronal plane" }
+  ];
+  const matchRight = [
+    { id: "f_tilt", label: "Foreshortening (projected length is shorter than true dimension)" },
+    { id: "f_offcenter", label: "Elongation (divergent oblique rays stretch projected shadow)" },
+    { id: "f_cr_angle", label: "Elongation along the axis of beam tube angulation" },
+    { id: "f_oid_only", label: "Pure size distortion / magnification (proportional shape preserved)" },
+    { id: "f_townes", label: "Beneficial projection: unmasks dorsum sellae into foramen magnum" },
+    { id: "f_rotation", label: "Asymmetric foreshortening of obturator foramen and iliac wing" }
+  ];
+  const matchPairs = {
+    "tilt": "f_tilt",
+    "offcenter": "f_offcenter",
+    "cr_angle": "f_cr_angle",
+    "oid_only": "f_oid_only",
+    "townes": "f_townes",
+    "rotation": "f_rotation"
+  };
+  RadLab.matchPairs(document.getElementById('distortion-match-container'), {
+    id: 'distortion-match',
+    left: matchLeft,
+    right: matchRight,
+    pairs: matchPairs,
+    leftTitle: 'Positioning Fault or Setup',
+    rightTitle: 'Geometric Outcome / Clinical Effect'
+  });
+
+  // 6. Station 3: Beam Divergence Tool
+  initDivergenceAnalyzer();
+
+  // 7. Math Helper in Worksheet
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, 'w-calc-d1-sub');
+  }
+
+  // 8. Event Listeners for Simulation Sliders
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // 9. Event Listeners for Simulation & Run Logging Buttons
   document.getElementById('record-run').addEventListener('click', recordRun);
   document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-download-runs-csv').addEventListener('click', downloadRunsCSV);
   document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
+  // 10. Tab Switcher Navigation Buttons
+  const tabBtnIntro = document.getElementById('tab-btn-intro');
+  const tabBtnExp = document.getElementById('tab-btn-experiment');
+  if (tabBtnIntro) tabBtnIntro.addEventListener('click', function () { switchTab('intro'); });
+  if (tabBtnExp) tabBtnExp.addEventListener('click', function () { switchTab('experiment'); });
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', function () {
+      switchTab('experiment', 'sec-exp-guide');
+    });
+  }
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) {
+    btnBack.addEventListener('click', function () {
+      switchTab('intro');
+    });
+  }
+
+  // 11. View Mode Buttons
   const btn3d = document.getElementById('btn-view-3d');
   const btnClassic = document.getElementById('btn-view-classic');
   if (btn3d && btnClassic) {
@@ -201,29 +1962,54 @@ document.addEventListener('DOMContentLoaded', function () {
       btn3d.className = 'btn btn-secondary btn-sm';
       btnClassic.className = 'btn btn-ghost btn-sm';
       renderSimulation();
+      RadLab.toast('Switched to 3D Shadow Projector view', 'info');
     });
     btnClassic.addEventListener('click', function () {
       currentViewMode = 'classic';
       btnClassic.className = 'btn btn-secondary btn-sm';
       btn3d.className = 'btn btn-ghost btn-sm';
       renderSimulation();
+      RadLab.toast('Switched to Classic Alignment Mode', 'info');
     });
   }
+
+  // 12. Clinical Operating Preset Buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
-      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
-      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
-      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
-      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
+      const offset = btn.dataset.offset;
+      const part = btn.dataset.part;
+      const oid = btn.dataset.oid;
+      const sid = btn.dataset.sid;
+
+      if (offset !== undefined && document.getElementById('ctrl-offset')) document.getElementById('ctrl-offset').value = offset;
+      if (part !== undefined && document.getElementById('ctrl-part')) document.getElementById('ctrl-part').value = part;
+      if (oid !== undefined && document.getElementById('ctrl-oid')) document.getElementById('ctrl-oid').value = oid;
+      if (sid !== undefined && document.getElementById('ctrl-sid')) document.getElementById('ctrl-sid').value = sid;
+
       renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+      RadLab.toast('Loaded preset: ' + btn.textContent.trim(), 'info');
     });
   });
 
+  // 13. Restore Saved Scenario Choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // 14. URL Hash Handling for Direct Tab Navigation
+  if (window.location.hash === '#tab-experiment') {
+    switchTab('experiment');
+  }
+
+  // 15. Render KaTeX & Semantic Math Fallback
+  renderAllMath();
+
+  // 16. Initial Simulation & Run Log Render
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

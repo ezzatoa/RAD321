@@ -4,131 +4,1533 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 11: Digital Receptors &amp; Digital Resolution Lab — RAD 321</title>
+
+  <!-- KaTeX Infallible Mathematical Typography Engine (CDN + Fallback) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <link rel="stylesheet" href="../../shared/lab-styles.css">
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}
-  .experiment-layout{display:flex;flex-direction:column;gap:16px}
-  .sim-canvas-wrap{position:relative;width:100%}
-  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/380;background:#071a2b;border-radius:14px;border:1px solid #28546a;box-shadow:0 4px 18px rgba(0,0,0,.25)}
-  .preset-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
-  .preset-toolbar .preset-title{font-size:12px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:2px}
-  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
-  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
-  .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-  .control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:12px}
-  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
-  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:12.5px}
-  .control-card input{width:100%;margin-top:8px}
-  .field-hint{display:block;font-size:11px;color:var(--rad-text-faint);margin-top:4px;line-height:1.3}
-  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:2px}
-  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px}
-  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
-  .metric strong{display:block;color:var(--rad-teal);font-size:18px;line-height:1.2;margin:3px 0}
-  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:11.5px}
-  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.control-grid,.metric-grid{grid-template-columns:repeat(2,1fr)}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Two-Tab Navigation Styling */
+    .lab-tab-nav {
+      display: flex;
+      gap: 4px;
+      margin: 18px 0 24px;
+      border-bottom: 2px solid var(--rad-border);
+      background: var(--rad-bg-soft);
+      padding: 6px 6px 0;
+      border-radius: 12px 12px 0 0;
+    }
+    .tab-btn {
+      padding: 12px 22px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--rad-text-soft);
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover {
+      color: var(--rad-blue);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: var(--rad-teal);
+      border-color: var(--rad-border);
+      border-bottom: 2px solid #fff;
+      margin-bottom: -2px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero & Structure */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,.96), rgba(7,26,43,.64) 62%, rgba(7,26,43,.12));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 760px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 28px;
+      margin: 8px 0;
+      line-height: 1.25;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: .94;
+      margin: 0;
+    }
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    /* Cards & Layout */
+    .experiment-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1000/380;
+      background: #071a2b;
+      border-radius: 14px;
+      border: 1px solid #28546a;
+      box-shadow: 0 4px 18px rgba(0,0,0,.25);
+    }
+    .preset-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--rad-bg-soft);
+      padding: 11px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--rad-border);
+    }
+    .preset-toolbar .preset-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-right: 4px;
+    }
+    .preset-btn {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 6px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .preset-btn:hover {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      color: var(--rad-teal);
+      transform: translateY(-1px);
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .control-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      white-space: nowrap;
+      font-weight: 800;
+      font-size: 12.5px;
+    }
+    .control-card input {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .control-card .field-hint {
+      font-size: 11px;
+      color: var(--rad-text-faint);
+      margin-top: 4px;
+      display: block;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 2px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 17px;
+      line-height: 1.2;
+      margin: 3px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      line-height: 1.35;
+      font-size: 11px;
+    }
+
+    /* In-Lab Stations Grid */
+    .station-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .station-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s ease;
+    }
+    .station-card:hover {
+      border-color: var(--rad-teal);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .station-card h4 {
+      margin: 0 0 8px;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .station-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 6px;
+      background: #eef8f7;
+      color: var(--rad-teal);
+      text-transform: uppercase;
+    }
+
+    /* Calculator Box */
+    .calc-box {
+      background: #f8fafc;
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+    .calc-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .calc-row label {
+      font-weight: 700;
+      font-size: 13px;
+      min-width: 170px;
+      color: var(--rad-navy);
+    }
+    .calc-result-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--rad-border);
+    }
+    .calc-result-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .calc-result-card .c-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--rad-text-faint);
+    }
+    .calc-result-card .c-val {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--rad-teal);
+      margin: 4px 0 2px;
+    }
+
+    /* Procedure Steps */
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    /* Tables & Inputs */
+    .table-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      border: 1px solid var(--rad-border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .table-input:focus {
+      border-color: var(--rad-teal);
+      outline: none;
+      background: #f0fdfc;
+    }
+    .run-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .run-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rad-blue);
+    }
+    .run-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+    }
+    .run-table {
+      margin: 0;
+      min-width: 760px;
+    }
+    .run-table td, .run-table th {
+      font-size: 12px;
+    }
+
+    /* Challenges & Scenarios */
+    .challenge-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .scenario-options {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .scenario-option {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .scenario-option:has(input:checked) {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+    }
+    .feedback-box {
+      min-height: 44px;
+      border-radius: 9px;
+      padding: 10px 12px;
+      background: var(--rad-bg-soft);
+      font-size: 13px;
+    }
+    .feedback-box.correct {
+      background: #eaf8f0;
+      color: #12633f;
+    }
+    .feedback-box.incorrect {
+      background: #fff0ee;
+      color: #9d342d;
+    }
+
+    /* CTA Card */
+    .cta-card {
+      background: linear-gradient(135deg, #07253b, #0d3856);
+      color: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin: 24px 0;
+      box-shadow: 0 4px 16px rgba(7,37,59,0.18);
+    }
+    .cta-card h3 {
+      margin: 0 0 6px;
+      color: #7fe0d6;
+      font-size: 18px;
+    }
+    .cta-card p {
+      margin: 0;
+      font-size: 13.5px;
+      opacity: 0.9;
+    }
+
+    /* Instructions Box */
+    .excel-guide-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .excel-guide-box h4 {
+      color: #166534;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Math Formula Block */
+    .formula-box {
+      background: #eef8f7;
+      border-left: 4px solid var(--rad-teal);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 14px 0;
+      color: #164b53;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .model-note {
+      font-size: 12px;
+      color: var(--rad-text-faint);
+      margin: 8px 0 0;
+    }
+
+    @media(max-width: 980px) {
+      .control-grid, .metric-grid, .procedure-grid, .calc-result-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .lab-meta-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media(max-width: 560px) {
+      .hero-overlay { padding: 0 20px; }
+      .hero-overlay h1 { font-size: 23px; }
+      .control-grid, .metric-grid, .procedure-grid, .calc-result-grid, .lab-meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .cta-card { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
+<!-- Header & Topbar -->
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 11 — Digital Receptors &amp; Digital Resolution Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 11 of 15</span></div></div>
-</header>
-<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
-<main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 11 · Assessed laboratory assignment</div><h1>Digital Receptors &amp; Digital Resolution Lab</h1><p>Compare CR and DR signal paths, active matrix sampling, and connect pixel pitch to spatial resolution limits. Directly aligned with: Digital Image Recording.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
-
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Describe the physical differences between CR, Indirect DR, and Direct DR image recording and readout.</li><li><span class="num">2</span>Distinguish direct and indirect digital conversion pathways in flat-panel active matrix arrays (AMA).</li><li><span class="num">3</span>Relate DEL pitch, matrix size, and field of view to sampling frequency and Nyquist resolution limits.</li><li><span class="num">4</span>Use a virtual line-pair test phantom to identify resolution limits and observe Moiré aliasing artifacts.</li><li><span class="num">5</span>Select an optimal digital receptor strategy and matrix configuration for specific clinical tasks.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span>
-    <p>Digital radiography uses three distinct physical capture technologies:</p>
-    <ul>
-      <li><b>Computed Radiography (CR):</b> Uses a reusable photostimulable phosphor (PSP, BaFBr:Eu²⁺) cassette plate. X-ray absorption traps electrons in metastable energy states. A red helium-neon laser scans the plate, stimulating blue-violet photostimulated luminescence (PSL) collected by a photomultiplier tube (PMT). Turbid crystal light scatter reduces high-frequency MTF.</li>
-      <li><b>Indirect Conversion DR:</b> Uses a needle-structured Cesium Iodide (CsI:Tl) scintillator that converts X-rays into visible light, which is subsequently converted into charge by an amorphous silicon (a-Si) photodiode array and stored in TFT capacitor elements. Structured needles channel light, mitigating but not eliminating lateral light spread.</li>
-      <li><b>Direct Conversion DR:</b> Uses an amorphous Selenium (a-Se) photoconductor under high-voltage electrostatic bias (+5 kV). Incident X-rays generate electron-hole pairs collected vertically with <i>zero lateral light scatter</i>, providing the highest inherent MTF and spatial sharpness.</li>
-    </ul>
-    <div class="formula-box">
-      <b>Matrix Pixel Size:</b> <i>Pixel Size (mm)</i> = <sup>FOV (mm)</sup>&frasl;<sub>Matrix Size</sub> = <sup>(FOV (cm) &times; 10)</sup>&frasl;<sub>Matrix Size</sub>.<br>
-      <b>Effective Sampling Pitch:</b> <i>p<sub>eff</sub></i> = max(<i>p<sub>DEL</sub></i>, <i>p<sub>matrix</sub></i>). The limiting aperture defines the sampling interval.<br>
-      <b>Sampling Frequency:</b> <i>f<sub>s</sub></i> = <sup>1</sup>&frasl;<sub><i>p<sub>eff</sub></i></sub> (samples/mm).<br>
-      <b>Nyquist Frequency Limit (<i>f<sub>N</sub></i>):</b> <i>f<sub>N</sub></i> = <sup><i>f<sub>s</sub></i></sup>&frasl;<sub>2</sub> = <sup>1</sup>&frasl;<sub>(2 &times; <i>p<sub>eff</sub></i>)</sub> in line pairs per mm (lp/mm).<br>
-      <b>Shannon-Nyquist Theorem &amp; Aliasing:</b> To faithfully record an anatomical structure with spatial frequency <i>f</i>, the receptor must sample at &ge; 2 points per cycle (<i>f<sub>s</sub> &ge; 2f</i> &rArr; <i>f &le; f<sub>N</sub></i>). Spatial frequencies exceeding <i>f<sub>N</sub></i> fold back as false, lower-frequency <b>Moiré / Aliasing patterns</b> (<i>f<sub>alias</sub> = |f<sub>s</sub> &minus; f|</i>).<br>
-      <b>DEL Fill Factor:</b> <sup>Active Sensing Area</sup>&frasl;<sub>DEL Area</sub> &times; 100%. Smaller DELs have lower fill factors due to fixed TFT electronics.<br>
-      <b>Limiting Spatial Resolution (10% MTF):</b> <i>R<sub>10%</sub></i> &approx; <i>f<sub>N</sub> &times; MTF<sub>material</sub></i>. Minimum resolvable object width &Delta;x = <sup>1</sup>&frasl;<sub>(2 &times; <i>R<sub>10%</sub></i>)</sub>.
-    </div>
-    <p><b>Matrix-Limited vs. Detector-Limited:</b> When <i>Pixel Size &gt; DEL Pitch</i>, image resolution is bottlenecked by the matrix (increasing matrix improves detail). When <i>DEL Pitch &gt; Pixel Size</i>, image detail is constrained by physical detector elements, and larger matrices provide empty magnification without new diagnostic signal.</p>
-    <p class="model-note"><b>Model boundary:</b> Results are mathematically and physical-conceptually accurate for teaching digital sampling, Nyquist limits, and detector architectures. They do not substitute for manufacturer calibration charts.</p></div></section>
-
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict how reducing pixel pitch changes sampling resolution.</div><div class="procedure-step">Record a baseline receptor setup.</div><div class="procedure-step">Change only pixel pitch or matrix and record a second run.</div><div class="procedure-step">Switch CR/DR pathway and record a third run.</div><div class="procedure-step">Compare matrix-derived pitch, effective pitch, and effective resolution.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card">
-      <div class="experiment-layout">
-        <div class="preset-toolbar">
-          <span class="preset-title">Clinical Presets:</span>
-          <button type="button" class="preset-btn" data-receptor="1" data-pitch="0.15" data-matrix="2048" data-fov="35">General Diagnostic DR (Indirect CsI, 150 µm DEL, 2048 Mat, 35 cm)</button>
-          <button type="button" class="preset-btn" data-receptor="2" data-pitch="0.08" data-matrix="4096" data-fov="24">High-Resolution Direct DR (a-Se, 80 µm DEL, 4096 Mat, 24 cm)</button>
-          <button type="button" class="preset-btn" data-receptor="0" data-pitch="0.20" data-matrix="1750" data-fov="35">Standard CR Cassette (PSP, 200 µm DEL, 1750 Mat, 35 cm)</button>
-          <button type="button" class="preset-btn" data-receptor="2" data-pitch="0.10" data-matrix="512" data-fov="43">Matrix Undersampled (512 Mat, 43 cm — Heavy Pixelation)</button>
-          <button type="button" class="preset-btn" data-receptor="1" data-pitch="0.35" data-matrix="4096" data-fov="15">Detector DEL-Limited (350 µm DEL, 4096 Mat, 15 cm FOV)</button>
-          <button type="button" class="preset-btn" data-receptor="0" data-pitch="0.30" data-matrix="1024" data-fov="40">Moiré / Aliasing Critical (CR Plate, 300 µm DEL, 1024 Mat, 40 cm)</button>
-        </div>
-        <div class="sim-canvas-wrap">
-          <canvas id="sim-canvas" class="sim-canvas" width="1000" height="380" role="img" aria-label="Interactive visual model for Digital Receptors &amp; Digital Resolution Lab" aria-describedby="sim-caption"></canvas>
-          <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results and MTF curves update in real time.</p>
-        </div>
-        <div class="control-grid">
-          <div class="control-card">
-            <label for="ctrl-receptor"><span>Receptor type</span><output id="out-receptor" for="ctrl-receptor">Indirect DR (CsI:Tl)</output></label>
-            <input type="range" id="ctrl-receptor" min="0" max="2" step="1" value="1" aria-describedby="sim-caption">
-            <span class="field-hint">0=CR (PSP Plate), 1=Indirect DR (CsI), 2=Direct DR (a-Se)</span>
-          </div>
-          <div class="control-card">
-            <label for="ctrl-pitch"><span>Pixel pitch</span><output id="out-pitch" for="ctrl-pitch">0.15 mm (150 µm)</output></label>
-            <input type="range" id="ctrl-pitch" min="0.05" max="0.40" step="0.01" value="0.15" aria-describedby="sim-caption">
-            <span class="field-hint">Detector element (DEL) center-to-center spacing</span>
-          </div>
-          <div class="control-card">
-            <label for="ctrl-matrix"><span>Matrix width</span><output id="out-matrix" for="ctrl-matrix">2048 × 2048 px</output></label>
-            <input type="range" id="ctrl-matrix" min="512" max="4096" step="128" value="2048" aria-describedby="sim-caption">
-            <span class="field-hint">Number of acquisition/display matrix columns</span>
-          </div>
-          <div class="control-card">
-            <label for="ctrl-fov"><span>Field of view</span><output id="out-fov" for="ctrl-fov">35 cm (350 mm)</output></label>
-            <input type="range" id="ctrl-fov" min="10" max="45" step="1" value="35" aria-describedby="sim-caption">
-            <span class="field-hint">Active anatomical imaging field width</span>
-          </div>
-        </div>
-        <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 11 — Digital Receptors &amp; Digital Resolution Lab</div>
       </div>
-      <div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div>
-      <div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div>
     </div>
-  </section>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 11 of 15</span>
+    </div>
+  </div>
+</header>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Digital receptor pathways</h3><p>Match the receptor pathway to CR, indirect DR, or direct DR.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Receptor selection</h3><p>A department needs immediate bedside images without cassette scanning. Which receptor best fits the workflow?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Wireless DR flat panel</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Screen-film cassette</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>CR plate requiring laser readout</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Image intensifier only</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Compare CR and DR in terms of recording, readout, and workflow. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Calculate the pixel size for a 35 cm field and 2048-pixel matrix. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain why sampling resolution is not identical to total image sharpness. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: describe one reason to choose CR and one reason to choose DR. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+<!-- Two-Tab Switcher Navigation -->
+<nav class="lab-tab-nav" aria-label="Laboratory Phases">
+  <button class="tab-btn active" id="tab-btn-intro" data-tab="tab-pane-intro" type="button">
+    <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities (10 Pts)
+  </button>
+  <button class="tab-btn" id="tab-btn-experiment" data-tab="tab-pane-experiment" type="button">
+    <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis (10 Pts)
+  </button>
+</nav>
+
+<main class="lab-container" id="main-content">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 11 · Assessed Laboratory Suite</div>
+      <h1>Digital Receptors &amp; Digital Resolution Lab</h1>
+      <p>Compare Computed Radiography (CR), Indirect DR, and Direct DR conversion pathways. Master detector element (DEL) pitch, matrix sampling, Nyquist limits, and Moiré aliasing.</p>
+    </div>
+  </div>
+
+  <!-- Student Meta Information Card -->
+  <div class="card card-soft">
+    <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <h3 style="margin:0;">Student &amp; Course Credentials</h3>
+      <span class="badge badge-primary">Course: RAD 321 · Week 11 of 15</span>
+    </div>
+    <div class="lab-meta-grid">
+      <div class="form-row">
+        <label class="field-label" for="meta-studentName">Full Name</label>
+        <input type="text" id="meta-studentName" placeholder="e.g. Ahmed Al-Harbi" required>
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-studentId">Student ID</label>
+        <input type="text" id="meta-studentId" placeholder="e.g. 431001234" required>
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-section">Section / Group</label>
+        <input type="text" id="meta-section" placeholder="e.g. A1 / Male Cohort" required>
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-date">Date of Session</label>
+        <input type="text" id="meta-date" required>
+      </div>
+    </div>
+    <p class="form-hint" style="margin-top:8px;">All progress, simulator runs, and worksheets automatically save to your local browser storage.</p>
+  </div>
+
+  <!-- Two-Phase Overview Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-graduation-cap" style="color:var(--rad-teal);font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Structured Two-Phase Laboratory Assessment (20 Points Total)</h3>
+    </div>
+    <p>This laboratory module evaluates your scientific competencies across two distinct assessment phases:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i>
+        <b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the 4 interactive learning stations, Table A verification check, concept matching, calibrated calculator, clinical scenario, and 4 knowledge-check MCQs on Tab 1. Submit before leaving the in-person lab session.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i>
+        <b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Conduct virtual experimental trials on Tab 2, export run data via CSV, construct Excel regression charts (Pixel Pitch vs. Nyquist Resolution; FOV vs. Matrix Pixel Size), complete Table B quantitative calculations, and submit with your completed workbook.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================================= -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 PTS)                                       -->
+  <!-- ========================================================================================= -->
+  <div class="tab-pane active" id="tab-pane-intro">
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Digital receptor architecture, spatial sampling theory, and aliasing physics</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list" style="margin-top:12px;">
+          <li><span class="num">1</span><b>Deconstruct Receptor Architectures:</b> Compare physical conversion mechanisms across Computed Radiography (CR: BaFBr:Eu²⁺ PSP), Indirect Conversion Flat-Panel DR (CsI:Tl needle scintillator + a-Si TFT), and Direct Conversion Flat-Panel DR (a-Se photoconductor + TFT).</li>
+          <li><span class="num">2</span><b>Calculate Spatial Sampling Limits:</b> Quantify Matrix-Derived Pixel Size (p = FOV/Matrix), Effective Sampling Pitch (peff = max(pDEL, pmatrix)), and Sampling Frequency (fs = 1/peff).</li>
+          <li><span class="num">3</span><b>Apply Shannon-Nyquist Theorem:</b> Calculate the theoretical Nyquist spatial frequency cutoff (fN = 1/(2·peff)) and predict Moiré aliasing patterns (falias = |fs − f|) when input detail exceeds fN.</li>
+          <li><span class="num">4</span><b>Evaluate DEL Fill Factor Trade-offs:</b> Analyze how active radiation-sensing area ratios affect Detective Quantum Efficiency (DQE) and dose efficiency as detector elements shrink.</li>
+          <li><span class="num">5</span><b>Synthesize Clinical Receptor Selection:</b> Select optimal digital receptor configurations (DEL pitch, matrix size, and scintillator type) matching clinical diagnostic requirements under ALARA.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–5 min receptor-path demo (CR vs CsI vs a-Se) · 5–18 min Stations 1–3 in pairs (architecture cards + matcher + Nyquist calculator at 150 vs 80 µm) · 18–25 min Station 4 trauma scenario + Table A check · 25–30 min 4 MCQs + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is prediction + 3 runs (general DR baseline, high-res direct DR, standard CR) + CSV + 2 Excel plots (pitch-vs-Nyquist, FOV-vs-pixel) + Table B. If short on time, cut Station 2 to 3 pairs and keep the calculator + scenario, not the quiz.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+      1) Sampling bottleneck is peff = max(pDEL, pmatrix) — fN = 1/(2·peff). 2) Direct a-Se has zero light spread so highest MTF; CR laser scatter costs sharpness. 3) Detail beyond fN folds back as Moiré — general form |f − n·fs| into ±fN.
+    </div>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory Primer</h2>
+          <div class="lab-section-sub">Physical conversion pathways, active matrix arrays, and spatial sampling mathematics</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics Primer</span>
+
+        <h3>1.1 Digital Receptor Classifications &amp; Conversion Pathways</h3>
+        <p>Digital radiography has replaced analog film-screen systems by converting incident X-ray photon patterns into discrete digital matrices. Modern clinical radiology utilizes three distinct receptor architectures:</p>
+        <ol style="font-size:13.5px;line-height:1.6;padding-left:20px;">
+          <li><b>Computed Radiography (CR / Photostimulable Phosphor):</b> Uses a flexible cassette containing barium fluorohalide doped with europium ($\text{BaFBr:Eu}^{2+}$). X-ray photons ionize europium atoms, trapping photoelectrons in metastable crystal lattice energy bands (F-centers). In the CR reader, a focused red helium-neon laser ($633\text{ nm}$; modern readers use 660–690 nm diodes) stimulates the trapped electrons to release blue-violet photostimulated luminescence ($\text{PSL}, 390\text{ nm}$), which is collected by a light guide and amplified by a photomultiplier tube (PMT). Turbid crystal scattering during laser readout creates optical diffusion blur that degrades high-frequency Modulation Transfer Function (MTF).</li>
+          <li><b>Indirect Conversion Flat-Panel DR (Scintillator + Photodiode TFT):</b> Uses a structured needle-like Cesium Iodide ($\text{CsI:Tl}$) scintillator screen optically coupled to an active matrix array (AMA) of amorphous silicon ($\text{a-Si}$) photodiodes. Incident X-rays generate visible light photons that channel along the needle crystals to minimize lateral light spread, which the photodiodes convert into proportional electric charge stored in thin-film transistor (TFT) capacitors.</li>
+          <li><b>Direct Conversion Flat-Panel DR (Photoconductor + High-Voltage TFT):</b> Eliminates the optical intermediate completely by using an amorphous Selenium ($\text{a-Se}$) photoconductor layer under a high-voltage electrostatic bias field ($5–10\text{ kV/mm}$, i.e. field strength ~10 V/µm). Absorbed X-rays directly produce electron-hole pairs that travel strictly parallel to the vertical electric field lines. With <i>zero lateral light scatter</i>, direct DR provides the highest Modulation Transfer Function (MTF) and sharpness, making it the gold standard for microcalcification detection in digital mammography.</li>
+        </ol>
+
+        <h3>1.2 Matrix Sampling Mathematics &amp; Effective Pixel Pitch</h3>
+        <p>In digital imaging, spatial fidelity is governed by two physical sampling apertures: the physical detector element (DEL) spacing on the flat panel and the digital matrix dimensions across the active Field of View (FOV):</p>
+        <div class="formula-box">
+          $$\text{Matrix Pixel Size: } p_{\text{matrix}} = \frac{\text{FOV (mm)}}{\text{Matrix Size}} = \frac{\text{FOV (cm)} \times 10}{\text{Matrix Size}}$$
+          $$\text{Effective Sampling Pitch: } p_{\text{eff}} = \max(p_{\text{DEL}}, p_{\text{matrix}})$$
+          $$\text{Sampling Frequency: } f_s = \frac{1}{p_{\text{eff}}}\text{ (samples/mm)}$$
+        </div>
+        <p><b>Sampling Bottlenecks:</b> If $p_{\text{matrix}} > p_{\text{DEL}}$, the system is <i>Matrix-Limited</i> (pixelation blurs detector detail; increasing matrix size restores resolution). If $p_{\text{DEL}} > p_{\text{matrix}}$, the system is <i>Detector-Limited</i> (physical DEL spacing bottlenecks detail; increasing matrix provides empty digital magnification without new anatomical data).</p>
+
+        <h3>1.3 The Shannon-Nyquist Sampling Theorem &amp; Moiré Aliasing</h3>
+        <p>To faithfully record a high-frequency anatomical line-pair without distortion, the imaging system must acquire at least two sample points per cycle. The maximum spatial frequency that a digital system can record without artifact is the <b>Nyquist Limiting Frequency ($f_N$)</b>:</p>
+        <div class="formula-box">
+          $$\text{Nyquist Limiting Frequency: } f_N = \frac{f_s}{2} = \frac{1}{2 \cdot p_{\text{eff}}}\text{ (lp/mm)}$$
+          $$\text{Moiré Aliasing Frequency: } f_{\text{alias}} = |f_s - f_{\text{input}}| \quad (\text{when } f_{\text{input}} > f_N)$$
+        </div>
+        <p class="model-note">Simulator form shown; general form is |f − n·fs| folded into ±fN.</p>
+        <p><b>Aliasing Mechanics:</b> When fine anatomical structures or anti-scatter grid lead strips possess a spatial frequency exceeding $f_N$, the detector cannot capture the peaks and troughs correctly. The unresolvable high-frequency signal wraps back (folds) across the Nyquist threshold, manifesting as a false, low-frequency wave pattern known as a <b>Moiré artifact</b> or aliasing.</p>
+
+        <h3>1.4 DEL Fill Factor &amp; Limiting Spatial Resolution</h3>
+        <p>Each square detector element (DEL) on an active matrix array contains an active radiation-sensitive sensing area, plus dead space occupied by the TFT switch, storage capacitor, and row/column gate lines:</p>
+        <div class="formula-box">
+          $$\text{DEL Fill Factor} = \frac{\text{Active Sensing Area}}{\text{Total DEL Area}} \times 100\%$$
+          $$\text{Limiting Spatial Resolution (10\% MTF): } R_{10\%} \approx f_N \times \text{MTF}_{\text{material}}$$
+          $$\text{Minimum Resolvable Feature Width: } \Delta x = \frac{1}{2 \cdot R_{10\%}}\text{ (mm)}$$
+        </div>
+        <p class="model-note">Simulator proxy: true R10% is the frequency where MTF = 10% on a measured curve; Δx = 1/(2·R10%) is model-specific.</p>
+        <p><b>The Fill Factor Penalty:</b> Because TFT readout electronics have fixed physical dimensions, reducing DEL pitch (e.g., from $200\text{ \mu m}$ down to $80\text{ \mu m}$) causes the fill factor to drop (from $\sim 85\%$ down to $\sim 55\%$). A lower fill factor reduces overall detector quantum efficiency, requiring higher patient radiation dose to maintain equivalent signal-to-noise ratio (SNR)!</p>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Station 1 — Explorer -->
+    <section class="lab-section" id="sec-receptor-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1: Digital Receptor Technologies &amp; Conversion Pathways Explorer</h2>
+          <div class="lab-section-sub">Inspect microscopic conversion pathways across CR, Indirect DR, and Direct DR architectures</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim">Station 1: Architecture Explorer</span>
+        <p>Review the four core receptor technologies below, then complete the <b>Table A Verification Check</b>.</p>
+
+        <div class="station-grid">
+          <div class="station-card">
+            <h4><span class="station-badge">Technology 1</span> Computed Radiography (CR / PSP)</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Barium fluorohalide crystals ($\text{BaFBr:Eu}^{2+}$) trap ionized electrons in crystal vacancies. Reading requires mechanical feeding into a scanner where a red laser stimulates blue-violet luminescence. Turbid crystal scattering during laser transit degrades MTF to $\sim 70\%$ at Nyquist (illustrative; clinical ~0.1–0.3).</p>
+            <div style="font-size:11.5px;background:#fef3c7;border:1px solid #fde68a;padding:6px 10px;border-radius:6px;color:#92400e;">
+              <strong>Conversion:</strong> X-ray $\to$ trapped electron energy $\to$ laser stimulated light $\to$ PMT analog voltage.
+            </div>
+          </div>
+
+          <div class="station-card">
+            <h4><span class="station-badge">Technology 2</span> Indirect Conversion Flat-Panel DR</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Structured needle-like Cesium Iodide ($\text{CsI:Tl}$) crystals channel emitted scintillation light directly down to an active matrix array of amorphous silicon ($\text{a-Si}$) photodiodes. Light channeling minimizes lateral diffusion, maintaining $\sim 85\%$ MTF at Nyquist (illustrative; clinical ~0.1–0.3) with high absorption efficiency.</p>
+            <div style="font-size:11.5px;background:#eff6ff;border:1px solid #bfdbfe;padding:6px 10px;border-radius:6px;color:#1e40af;">
+              <strong>Conversion:</strong> X-ray $\to$ channeled visible light $\to$ photodiode electric charge $\to$ TFT readout.
+            </div>
+          </div>
+
+          <div class="station-card">
+            <h4><span class="station-badge">Technology 3</span> Direct Conversion Flat-Panel DR</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Amorphous Selenium ($\text{a-Se}$) photoconductor under $+5\text{ kV}$ bias field. X-rays create electron-hole pairs collected along vertical electric field lines. With zero lateral light spread, direct DR achieves $\sim 95\%$ MTF (illustrative; clinical ~0.1–0.3), maximizing micro-calcification sharpness.</p>
+            <div style="font-size:11.5px;background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:6px;color:#166534;">
+              <strong>Conversion:</strong> X-ray $\to$ direct electron-hole pairs $\to$ vertical electrostatic collection $\to$ TFT readout.
+            </div>
+          </div>
+
+          <div class="station-card">
+            <h4><span class="station-badge">Technology 4</span> Active Matrix Array (AMA) &amp; Fill Factor</h4>
+            <p style="font-size:12.5px;color:var(--rad-text-soft);">Grid of detector elements (DELs) etched on glass substrates. Each DEL contains a sensing area, TFT switch, and capacitor. The ratio of active sensing area to total area defines the Fill Factor. Smaller DELs increase Nyquist resolution but sacrifice fill factor and dose efficiency.</p>
+            <div style="font-size:11.5px;background:#fdf2f8;border:1px solid #fbcfe8;padding:6px 10px;border-radius:6px;color:#9d174d;">
+              <strong>Trade-off:</strong> Smaller DEL pitch ($80\text{ \mu m}$) improves lp/mm but drops fill factor to $55\%$, raising dose.
+            </div>
+          </div>
+        </div>
+
+        <!-- Table A: Verification Check -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-table-check" style="color:var(--rad-teal)"></i> Table A: In-Lab Digital Receptor &amp; Sampling Verification Check</h4>
+        <p style="font-size:12.5px;color:var(--rad-text-soft);">Provide concise technical entries for each physical receptor component and mathematical sampling law.</p>
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="font-size:12.5px;">
+            <thead>
+              <tr style="background:var(--rad-bg-soft);">
+                <th style="width:28%;">Parameter / Architecture</th>
+                <th style="width:36%;">Material Composition / Formula</th>
+                <th style="width:36%;">Spatial Resolution &amp; Clinical ALARA Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. CR Phosphor &amp; Readout</b></td>
+                <td><input type="text" class="table-input" id="w-dig-cr-mat" placeholder="e.g., BaFBr:Eu2+; Red laser scan, blue PSL, PMT"></td>
+                <td><input type="text" class="table-input" id="w-dig-cr-read" placeholder="e.g., Turbid crystal light scatter causes optical diffusion blur"></td>
+              </tr>
+              <tr>
+                <td><b>2. Indirect vs. Direct DR</b></td>
+                <td><input type="text" class="table-input" id="w-dig-ind-conv" placeholder="e.g., Indirect: CsI:Tl + a-Si; Direct: a-Se photoconductor"></td>
+                <td><input type="text" class="table-input" id="w-dig-dir-conv" placeholder="e.g., Direct has zero light spread, yielding superior MTF and detail"></td>
+              </tr>
+              <tr>
+                <td><b>3. Nyquist Frequency ($f_N$)</b></td>
+                <td><input type="text" class="table-input" id="w-dig-nyquist-form" placeholder="e.g., f_N = 1 / (2 * p_eff) in lp/mm"></td>
+                <td><input type="text" class="table-input" id="w-dig-pixel-form" placeholder="e.g., Theoretical cutoff; higher sampling frequency resolves finer line pairs"></td>
+              </tr>
+              <tr>
+                <td><b>4. Aliasing &amp; Fill Factor</b></td>
+                <td><input type="text" class="table-input" id="w-dig-aliasing" placeholder="e.g., f_alias = |f_s - f|; Fill Factor = Active Area / DEL Area"></td>
+                <td><input type="text" class="table-input" id="w-dig-fill-factor" placeholder="e.g., Spatial frequencies > f_N alias as Moiré; small DELs lose fill factor"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Station 2 — Matcher -->
+    <section class="lab-section" id="sec-digital-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2: Digital Imaging Physics &amp; Sampling Matcher</h2>
+          <div class="lab-section-sub">Pair digital receptor technical terms with their corresponding physical or clinical definitions</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-sim">Station 2: Concept Challenge</span>
+        <h3>Digital Sampling &amp; Architecture Matching Activity</h3>
+        <p>Match each technical imaging parameter on the left with its corresponding physical conversion mechanism or sampling rule on the right. Completed matches lock automatically.</p>
+        <div id="concept-activity" style="margin-top:14px;"></div>
+      </article>
+    </section>
+
+    <!-- Section 4: Interactive Station 3 — Calibrated Calculator -->
+    <section class="lab-section" id="sec-digital-calc">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3: Calibrated Nyquist Frequency &amp; Resolving Power Calculator</h2>
+          <div class="lab-section-sub">Real-time model of DEL pitch, matrix sampling, Nyquist cutoff, and MTF limiting resolution</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-tool">Station 3: Analytical Tool</span>
+        <p>Select the receptor technology, DEL pitch, matrix width, and active FOV to compute matrix pixel pitch, effective sampling pitch, Nyquist cutoff ($f_N$), limiting resolution ($R_{10\%}$), and minimum resolvable object size.</p>
+
+        <div class="calc-box">
+          <div class="calc-row">
+            <label for="calc-receptor">Receptor Technology:</label>
+            <select id="calc-receptor" style="padding:6px 12px;border-radius:6px;border:1px solid var(--rad-border);font-weight:700;color:var(--rad-navy);flex:1;">
+              <option value="1">Indirect DR (CsI:Tl Needle Scintillator + a-Si TFT)</option>
+              <option value="2">Direct DR (a-Se Photoconductor + TFT Bias Field)</option>
+              <option value="0">Computed Radiography (CR BaFBr:Eu²⁺ PSP Plate)</option>
+            </select>
+          </div>
+          <div class="calc-row">
+            <label for="calc-pitch">Physical DEL Pitch ($p_{\text{DEL}}$):</label>
+            <input type="range" id="calc-pitch" min="0.05" max="0.40" step="0.01" value="0.15" style="flex:1;">
+            <span id="calc-pitch-val" style="font-weight:800;color:var(--rad-teal);min-width:70px;">150 µm</span>
+          </div>
+          <div class="calc-row">
+            <label for="calc-matrix">Acquisition Matrix Width:</label>
+            <input type="range" id="calc-matrix" min="512" max="4096" step="128" value="2048" style="flex:1;">
+            <span id="calc-matrix-val" style="font-weight:800;color:var(--rad-teal);min-width:70px;">2048 px</span>
+          </div>
+          <div class="calc-row">
+            <label for="calc-fov">Active Field of View (FOV):</label>
+            <input type="range" id="calc-fov" min="10" max="45" step="1" value="35" style="flex:1;">
+            <span id="calc-fov-val" style="font-weight:800;color:var(--rad-teal);min-width:70px;">35 cm</span>
+          </div>
+
+          <div class="calc-result-grid">
+            <div class="calc-result-card">
+              <div class="c-label">Matrix Pixel Size</div>
+              <div class="c-val" id="res-mat-pixel">171 µm</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$\text{FOV} / \text{Matrix}$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Effective Pitch ($p_{\text{eff}}$)</div>
+              <div class="c-val" id="res-eff-pitch">171 µm</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$\max(p_{\text{DEL}}, p_{\text{mat}})$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Nyquist Cutoff ($f_N$)</div>
+              <div class="c-val" id="res-nyquist">2.93 lp/mm</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$1 / (2 \cdot p_{\text{eff}})$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Limiting Resolution</div>
+              <div class="c-val" id="res-lim-res">2.49 lp/mm</div>
+              <small style="font-size:10px;color:var(--rad-text-faint);">$f_N \cdot \text{MTF}$</small>
+            </div>
+            <div class="calc-result-card">
+              <div class="c-label">Min Resolvable ($\Delta x$)</div>
+              <div class="c-val" id="res-min-feat">201 µm</div>
+              <small id="res-bottleneck-badge" style="font-size:10px;font-weight:800;color:#d97706;">MATRIX-LIMITED</small>
+            </div>
+          </div>
+          <div id="calc-status-box" style="margin-top:12px;font-size:12.5px;padding:8px 12px;border-radius:6px;background:#eef8f7;color:#164b53;">
+            <strong>Sampling Status:</strong> Matrix-Limited ($p_{\text{matrix}} = 171\text{ \mu m} > p_{\text{DEL}} = 150\text{ \mu m}$). Digital display matrix is constraining detector resolution. Increasing matrix size will unlock finer physical detail.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Station 4 — Clinical Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4: Emergency Trauma Receptor Workflow Scenario</h2>
+          <div class="lab-section-sub">High-acuity resuscitation suite, immediate tube placement, and wireless flat-panel DR</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-check">Station 4: Clinical Decision</span>
+        <h3>Level 1 Trauma Center Bedside Radiography Case</h3>
+        <p>A severely injured polytrauma patient arrives in the Emergency Resuscitation Bay with respiratory compromise. The trauma surgery team demands an immediate bedside portable chest and pelvis radiograph to verify endotracheal tube placement, rule out tension pneumothorax, and assess pelvic ring disruption. The department is deciding between portable CR cassettes and wireless flat-panel DR detectors.</p>
+        <p><b>Which digital receptor configuration best serves this critical trauma workflow under ALARA and diagnostic guidelines?</b></p>
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Choose the best clinical response</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Option A:</b> Deploy a wireless CsI flat-panel DR detector ($150\text{ \mu m}$ DEL pitch, high DQE), which provides immediate preview on the mobile console in &lt;5 seconds, avoids moving the unstable patient for physical cassette exchanges, and offers superior low-contrast pneumothorax conspicuity.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Option B:</b> Expose multiple conventional screen-film cassettes and transport them to the central darkroom for 90-second chemical processing.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Option C:</b> Utilize CR photostimulable phosphor plates, requiring the technologist to leave the resuscitation bay after each exposure to manually feed plates into a centralized laser scanner down the hall.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Option D:</b> Position a fluoroscopic C-arm image intensifier over the patient and run continuous fluoroscopy at 30 fps without recording digital radiographs.</span>
+            </label>
+          </div>
+        </fieldset>
+        <button class="btn btn-secondary" id="check-scenario" type="button" style="margin-top:10px;">Check Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">
+          Select an option and click "Check Decision" to review evidence-based clinical reasoning.
+        </div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Quizzes</h2>
+          <div class="lab-section-sub">4 formative assessment questions · first attempt and final mastery recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1 Submission Hub — In-Lab Activities</h2>
+          <div class="lab-section-sub">Submit your in-lab concept activities, Table A verification, and quiz scores (10 Points)</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-teal);padding:24px;">
+        <div style="max-width:700px;margin:0 auto;text-align:center;">
+          <div style="font-size:36px;color:var(--rad-teal);margin-bottom:10px;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <h3 style="margin:0 0 8px;color:var(--rad-navy);">Submit Phase 1: In-Lab Activities</h3>
+          <p style="font-size:13.5px;color:var(--rad-text-soft);margin:0 0 16px;">
+            This submission records your <b>Part I In-Lab Score (10 Points)</b> evaluated under Criterion <b>c1</b> (4 pts: Concepts, Quizzes, Table A) and Criterion <b>c2</b> (6 pts: Interactive Stations, Calculator, Clinical Scenario). Submit before leaving the in-person lab session.
+          </p>
+          <div class="submission-check" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:18px;">
+            <div style="background:var(--rad-bg-soft);padding:10px;border-radius:8px;font-size:12px;">
+              <b>Table A &amp; Calculator</b><br><span class="muted">Verified Entries</span>
+            </div>
+            <div style="background:var(--rad-bg-soft);padding:10px;border-radius:8px;font-size:12px;">
+              <b>Matching &amp; Scenario</b><br><span class="muted">Decision Recorded</span>
+            </div>
+            <div style="background:var(--rad-bg-soft);padding:10px;border-radius:8px;font-size:12px;">
+              <b>Knowledge Check</b><br><span class="muted">4 MCQs Complete</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btn-submit-phase1" type="button" style="padding:10px 24px;font-size:14px;">
+            <i class="fa-solid fa-paper-plane" style="margin-right:6px;"></i> Submit In-Lab Activities (Phase 1)
+          </button>
+          <div id="submit-phase1-status" role="status" aria-live="polite" style="margin-top:12px;font-size:13px;font-weight:700;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- High-Contrast Transition Card -->
+    <div class="cta-card">
+      <div>
+        <h3>Ready for the Virtual Physics Experiment?</h3>
+        <p>Proceed to Tab 2 to operate the 3-panel digital receptor simulator across 6 clinical presets, record line-pair and MTF trial runs, and perform post-lab Excel data plotting.</p>
+      </div>
+      <button class="btn btn-teal" id="btn-proceed-to-sim" type="button" style="background:#7fe0d6;color:#07253b;font-weight:800;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;white-space:nowrap;">
+        Proceed to Tab 2: Virtual Experiment →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================================= -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & ANALYSIS (10 PTS)                                      -->
+  <!-- ========================================================================================= -->
+  <div class="tab-pane" id="tab-pane-experiment">
+
+    <!-- Quick Navigation Return Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:10px 16px;margin-bottom:20px;">
+      <span style="font-size:13px;font-weight:700;color:var(--rad-navy);"><i class="fa-solid fa-arrow-left" style="color:var(--rad-teal);margin-right:6px;"></i> Phase 2: Experimental Simulation &amp; Excel Analysis</span>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro" type="button">← Return to Tab 1 (Intro &amp; In-Lab)</button>
+    </div>
+
+    <!-- Step-by-Step Procedure Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol &amp; Scientific Methodology</h2>
+          <div class="lab-section-sub">Controlled investigation of receptor conversion pathways, sampling pitch, and Nyquist limits</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim">Protocol Guide</span>
+        <div class="procedure-grid" style="margin-top:14px;">
+          <div class="procedure-step">
+            <b>Scientific Hypothesis:</b> Formulate a quantitative prediction before altering controls ($\ge 20$ characters).
+          </div>
+          <div class="procedure-step">
+            <b>Diagnostic Baseline:</b> Record Run 1 with General Diagnostic DR ($150\text{ \mu m}$ DEL, $2048$ matrix, $35\text{ cm}$).
+          </div>
+          <div class="procedure-step">
+            <b>High-Res Direct DR:</b> Switch to Direct DR ($80\text{ \mu m}$, $4096$ matrix, $24\text{ cm}$). Record Run 2 and note lp/mm.
+          </div>
+          <div class="procedure-step">
+            <b>Standard CR Cassette:</b> Switch to CR ($200\text{ \mu m}$, $1750$ matrix, $35\text{ cm}$). Record Run 3 to observe MTF drop.
+          </div>
+          <div class="procedure-step">
+            <b>Matrix Undersampling:</b> Drop matrix to $512$ at $43\text{ cm}$ FOV. Record Run 4 to observe matrix bottleneck and pixelation.
+          </div>
+          <div class="procedure-step">
+            <b>Data Export &amp; Excel:</b> Download CSV, construct regression charts, and calculate Table B values.
+          </div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction (≥20 chars) &nbsp; ☐ 2. Run 1 General DR baseline + Record &nbsp; ☐ 3. Run 2 High-res direct DR + Record &nbsp; ☐ 4. Run 3 Standard CR + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B.<br>
+          Bonus/optional after required 3: Run 4 Matrix Undersampled (512, 43 cm) and DEL-limited / Moiré presets.<br>
+          <b>Stuck?</b> Record blocked → write the prediction first; change ONE slider per run.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Virtual Experiment Simulator Suite</h2>
+          <div class="lab-section-sub">Live 3-panel display: receptor microstructure, line-pair resolution phantom with Moiré aliasing, and MTF curves</div>
+        </div>
+      </div>
+      <div class="card">
+
+        <!-- Pre-Trial Scientific Prediction -->
+        <div class="form-row" style="margin-bottom:18px;">
+          <label class="field-label" for="w-prediction">
+            Pre-Trial Scientific Prediction <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="w-prediction" rows="3" required placeholder="State precisely how reducing physical DEL pitch from 200 µm to 80 µm and switching from CR to Direct DR will alter the Nyquist frequency cutoff (f_N) and Modulation Transfer Function (MTF)..."></textarea>
+          <p class="form-hint">Minimum 20 characters required before logging trial runs. Saved into your final laboratory report.</p>
+        </div>
+
+        <div class="experiment-layout">
+          <!-- Preset Toolbar -->
+          <div class="preset-toolbar">
+            <span class="preset-title"><i class="fa-solid fa-sliders"></i> Clinical Presets:</span>
+            <button type="button" class="preset-btn" data-receptor="1" data-pitch="0.15" data-matrix="2048" data-fov="35">1. General DR (CsI, 150 µm DEL, 2048 Mat)</button>
+            <button type="button" class="preset-btn" data-receptor="2" data-pitch="0.08" data-matrix="4096" data-fov="24">2. High-Res Direct DR (a-Se, 80 µm, 4096 Mat)</button>
+            <button type="button" class="preset-btn" data-receptor="0" data-pitch="0.20" data-matrix="1750" data-fov="35">3. Standard CR Cassette (200 µm, 1750 Mat)</button>
+            <button type="button" class="preset-btn" data-receptor="2" data-pitch="0.10" data-matrix="512" data-fov="43">4. Matrix Undersampled (512 Mat, 43 cm FOV)</button>
+            <button type="button" class="preset-btn" data-receptor="1" data-pitch="0.35" data-matrix="4096" data-fov="15">5. Detector DEL-Limited (350 µm DEL, 15 cm)</button>
+            <button type="button" class="preset-btn" data-receptor="0" data-pitch="0.30" data-matrix="1024" data-fov="40">6. Moiré / Aliasing Critical (CR, 300 µm)</button>
+          </div>
+
+          <!-- 2D Canvas Display -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" class="sim-canvas" width="1000" height="380" role="img" aria-label="Interactive procedural model for Digital Receptors and Digital Resolution" aria-describedby="sim-caption"></canvas>
+            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Microstructure conversion, line-pair phantom, and MTF curves update in real time.</p>
+          </div>
+
+          <!-- Sliders Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-receptor"><span>Receptor Technology</span><output id="out-receptor" for="ctrl-receptor">Indirect DR (CsI:Tl)</output></label>
+              <input type="range" id="ctrl-receptor" min="0" max="2" step="1" value="1" aria-describedby="sim-caption">
+              <span class="field-hint">0=CR (PSP Plate), 1=Indirect DR (CsI), 2=Direct DR (a-Se)</span>
+            </div>
+            <div class="control-card">
+              <label for="ctrl-pitch"><span>Pixel / DEL Pitch</span><output id="out-pitch" for="ctrl-pitch">0.15 mm (150 µm)</output></label>
+              <input type="range" id="ctrl-pitch" min="0.05" max="0.40" step="0.01" value="0.15" aria-describedby="sim-caption">
+              <span class="field-hint">Physical detector element center-to-center spacing</span>
+            </div>
+            <div class="control-card">
+              <label for="ctrl-matrix"><span>Matrix Width</span><output id="out-matrix" for="ctrl-matrix">2048 × 2048 px</output></label>
+              <input type="range" id="ctrl-matrix" min="512" max="4096" step="128" value="2048" aria-describedby="sim-caption">
+              <span class="field-hint">Acquisition &amp; display matrix columns</span>
+            </div>
+            <div class="control-card">
+              <label for="ctrl-fov"><span>Field of View (FOV)</span><output id="out-fov" for="ctrl-fov">35 cm (350 mm)</output></label>
+              <input type="range" id="ctrl-fov" min="10" max="45" step="1" value="35" aria-describedby="sim-caption">
+              <span class="field-hint">Active anatomical imaging field width</span>
+            </div>
+          </div>
+
+          <!-- Telemetry Grid -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+        </div>
+
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run" type="button"><i class="fa-solid fa-floppy-disk" style="margin-right:6px;"></i> Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run" type="button">Remove Last Run</button>
+          <button class="btn btn-ghost btn-sm" id="btn-export-csv" type="button"><i class="fa-solid fa-file-csv" style="margin-right:4px;"></i> Download Run Data (CSV)</button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr>
+                <th style="width:6%;">Run</th>
+                <th style="width:30%;">Settings</th>
+                <th style="width:34%;">Telemetry Results</th>
+                <th style="width:30%;">Clinical Interpretation</th>
+              </tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr><td colspan="4" class="muted">No runs recorded yet. Select presets or adjust sliders, then click "Record This Run".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 10: Worksheet & Post-Lab Excel Analysis -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Worksheet &amp; Post-Lab Excel Data Analysis</h2>
+          <div class="lab-section-sub">Spreadsheet charting, quantitative calculations, and clinical ALARA synthesis</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet">Assessed Synthesis</span>
+
+        <!-- Math Helper Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:16px;"></div>
+
+        <!-- Excel Data Analysis Guidance Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Post-Lab Excel Graphing &amp; Regression Guide</h4>
+          <p style="font-size:13px;color:#166534;margin:0 0 10px;">
+            Export your trial data using <b>"Download Run Data (CSV)"</b> above, open it in Microsoft Excel, and generate the following two required scientific charts:
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:12px;font-size:12.5px;color:#14532d;">
+            <div style="background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:12px;">
+              <b>Plot 1: Effective Pixel Pitch ($p_{\text{eff}}$) vs. Nyquist Cutoff ($f_N$) &amp; Limiting Resolution</b>
+              <ul style="margin:6px 0 0;padding-left:18px;line-height:1.45;">
+                <li>X-axis: Effective Sampling Pitch ($mm$, $0.05$ to $0.40$).</li>
+                <li>Primary Y-axis: Nyquist Limiting Spatial Frequency ($f_N$ in $lp/mm$).</li>
+                <li>Secondary Y-axis: Limiting Spatial Resolution ($R_{10\%}$ in $lp/mm$).</li>
+                <li>Trendline: Fit an Inverse Power regression curve ($y = 0.5 \cdot x^{-1}$) confirming the theoretical Nyquist sampling relationship.</li>
+              </ul>
+            </div>
+            <div style="background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:12px;">
+              <b>Plot 2: Field of View (FOV) vs. Matrix-Derived Pixel Size Across Matrix Dimensions</b>
+              <ul style="margin:6px 0 0;padding-left:18px;line-height:1.45;">
+                <li>X-axis: Active Field of View ($cm$, $10$ to $45$).</li>
+                <li>Y-axis: Matrix-Derived Pixel Size ($mm$).</li>
+                <li>Series: Plot 4 separate lines for Matrix Sizes: $512$, $1024$, $2048$, and $4096$.</li>
+                <li>Highlight the intersection where matrix pixel size equals physical DEL pitch ($150\text{ \mu m}$), defining the transition between matrix-limited and detector-limited sampling.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table B: Quantitative Calculations -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-calculator" style="color:var(--rad-teal)"></i> Table B: Post-Lab Quantitative Digital Receptor &amp; Resolution Calculations</h4>
+        <p style="font-size:12.5px;color:var(--rad-text-soft);">
+          Perform the exact calculations for the four clinical configurations below using the formulas: $p_{\text{matrix}} = (\text{FOV}\times 10)/\text{Matrix}$, $p_{\text{eff}} = \max(p_{\text{DEL}}, p_{\text{matrix}})$, $f_N = 1 / (2\cdot p_{\text{eff}})$, $R_{10\%} = f_N \cdot \text{MTF}$, and $\Delta x = 1 / (2\cdot R_{10\%})$.
+        </p>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="font-size:12px;min-width:780px;">
+            <thead>
+              <tr style="background:var(--rad-bg-soft);">
+                <th>Configuration / Receptor</th>
+                <th>DEL Pitch</th>
+                <th>Matrix</th>
+                <th>FOV</th>
+                <th>Matrix Pixel</th>
+                <th>Effective Pitch</th>
+                <th>Nyquist ($f_N$)</th>
+                <th>Limiting Res</th>
+                <th>Min Size ($\Delta x$)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. General Diagnostic DR</b></td>
+                <td>0.15 mm</td>
+                <td>2048</td>
+                <td>35 cm</td>
+                <td><input type="text" class="table-input" id="w-t2-c1-matpx" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-effp" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-nyq" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-lim" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c1-min" placeholder="calc"></td>
+              </tr>
+              <tr>
+                <td><b>2. High-Res Direct DR</b></td>
+                <td>0.08 mm</td>
+                <td>4096</td>
+                <td>24 cm</td>
+                <td><input type="text" class="table-input" id="w-t2-c2-matpx" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-effp" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-nyq" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-lim" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c2-min" placeholder="calc"></td>
+              </tr>
+              <tr>
+                <td><b>3. Standard CR Cassette</b></td>
+                <td>0.20 mm</td>
+                <td>1750</td>
+                <td>35 cm</td>
+                <td><input type="text" class="table-input" id="w-t2-c3-matpx" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-effp" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-nyq" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-lim" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c3-min" placeholder="calc"></td>
+              </tr>
+              <tr>
+                <td><b>4. Undersampled Matrix</b></td>
+                <td>0.10 mm</td>
+                <td>512</td>
+                <td>43 cm</td>
+                <td><input type="text" class="table-input" id="w-t2-c4-matpx" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-effp" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-nyq" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-lim" placeholder="calc"></td>
+                <td><input type="text" class="table-input" id="w-t2-c4-min" placeholder="calc"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Written Reflection Questions -->
+        <h4 style="margin-top:24px;color:var(--rad-navy);"><i class="fa-solid fa-pen-to-square" style="color:var(--rad-teal)"></i> Written Analytical Questions</h4>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label class="field-label" for="q1">
+            1. Compare Computed Radiography (CR) and Digital Radiography (DR) in terms of physical image recording, readout mechanism, and clinical departmental workflow. <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q1" rows="4" required placeholder="Detail the physical differences: BaFBr:Eu2+ PSP plate vs CsI/a-Se flat panel, laser scan and PSL emission vs direct TFT electronic readout, and physical cassette handling vs immediate bedside image display..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q2">
+            2. Calculate the matrix-derived pixel size for a 35 cm Field of View acquired on a 2048 × 2048 pixel matrix. If the physical detector element (DEL) pitch is 150 µm, determine the effective sampling pitch and Nyquist frequency limit (f_N). <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q2" rows="4" required placeholder="Show all mathematical work: convert 35 cm to 350 mm, divide 350 / 2048 to find pixel size in mm and µm, compare with 150 µm DEL pitch to identify the effective pitch, and calculate f_N = 1 / (2 * p_eff)..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q3">
+            3. Explain why theoretical sampling resolution (Nyquist limit) is not identical to total clinical image sharpness. What physical factors degrade Modulation Transfer Function (MTF) below the Nyquist threshold? <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q3" rows="4" required placeholder="Discuss scintillation light spread in CsI needles, turbid crystal scatter in CR plates, focal spot penumbra geometric blur, and patient motion. Explain why Direct DR achieves higher MTF at Nyquist than Indirect DR or CR..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q4">
+            4. Critical Thinking &amp; Receptor Selection: Describe one clinical scenario where Computed Radiography (CR) remains practical/economical, and one clinical scenario where Direct DR (a-Se) is strictly mandatory. <span aria-hidden="true" style="color:var(--rad-red);">*</span>
+          </label>
+          <textarea id="q4" rows="4" required placeholder="Synthesize clinical rationale: e.g., low-volume rural clinics or non-standard oblique views for CR vs digital mammography requiring ultra-high microcalcification MTF (a-Se Direct DR)..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Standardized Grading Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized Grading Rubric</h2>
+          <div class="lab-section-sub">20 points total · evaluated by departmental Gemini Flash AI model</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:8px;">Self-evaluation scores allow you to verify completeness prior to final submission.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2 Submission Hub — Post-Lab Excel Analysis</h2>
+          <div class="lab-section-sub">Upload completed Excel workbook (.xlsx / .csv) and submit final analysis (10 Points)</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-blue);padding:24px;">
+        <div style="max-width:700px;margin:0 auto;text-align:center;">
+          <div style="font-size:36px;color:var(--rad-blue);margin-bottom:10px;"><i class="fa-solid fa-file-arrow-up"></i></div>
+          <h3 style="margin:0 0 8px;color:var(--rad-navy);">Submit Phase 2: Post-Lab Excel Analysis</h3>
+          <p style="font-size:13.5px;color:var(--rad-text-soft);margin:0 0 16px;">
+            This submission finalizes your laboratory assessment across Criterion <b>c3</b> (5 pts: Quantitative Worksheet &amp; Table B), Criterion <b>c4</b> (3 pts: Clinical Reasoning &amp; ALARA Synthesis), and Criterion <b>c5</b> (2 pts: Professionalism &amp; Completeness).
+          </p>
+
+          <div style="background:var(--rad-bg-soft);border:1px dashed var(--rad-border);border-radius:10px;padding:16px;margin-bottom:18px;text-align:left;">
+            <label class="field-label" for="file-upload-phase2" style="margin-bottom:6px;">
+              <i class="fa-solid fa-paperclip" style="color:var(--rad-teal);margin-right:6px;"></i> Attach Completed Excel Workbook (.xlsx, .xls, .csv):
+            </label>
+            <input type="file" id="file-upload-phase2" accept=".xlsx,.xls,.csv" style="display:block;width:100%;font-size:13px;">
+            <span class="field-hint">Upload your saved spreadsheet with Plot 1 (Pixel Pitch vs. Nyquist Resolution) and Plot 2 (FOV vs. Matrix Pixel Size).</span>
+          </div>
+
+          <button class="btn btn-primary" id="btn-submit-phase2" type="button" style="padding:10px 24px;font-size:14px;background:var(--rad-blue);">
+            <i class="fa-solid fa-check-double" style="margin-right:6px;"></i> Submit Post-Lab Excel Analysis (Phase 2)
+          </button>
+          <div id="submit-phase2-status" role="status" aria-live="polite" style="margin-top:12px;font-size:13px;font-weight:700;"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 11 of 15 · assessed virtual laboratory</footer>
+
+<!-- Bottom Action Bar -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span>
+      <span id="autosave-dot-label">Autosave ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json" type="button">Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">
+        Import JSON <input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset" type="button">Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar" type="button">Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 11 of 15 · Assessed Virtual Laboratory Suite · Gold Standard Architecture
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
-const LAB = {"week":11,"title":"Digital Receptors & Digital Resolution Lab","lecture":"Digital Image Recording","type":"digital","subtitle":"Compare CR and DR signal paths and connect pixel pitch to spatial resolution.","objectives":["Describe the difference between CR and DR image recording.","Distinguish direct and indirect digital conversion pathways.","Relate pixel pitch, matrix size, and field of view to sampling resolution.","Use a virtual test pattern to identify resolution limits.","Select a digital receptor strategy for a clinical task."],"theory":"<p>CR uses a photostimulable phosphor plate that is read by a laser; DR uses a flat-panel detector that converts the exposure into electronic data. Indirect DR uses a scintillator to convert X-rays to light before charge collection; direct DR converts X-rays to charge.</p><div class=\"formula-box\"><b>Sampling frequency:</b> approximately 1 / (2 × pixel pitch) in cycles per unit distance (Nyquist limit). Smaller pixels can support higher sampling resolution, but detector construction, focal spot blur, motion, and dose also matter.</div><p>Matrix size and field of view work together: for a fixed field, a larger matrix means smaller pixels. Resolution is not guaranteed by a high matrix alone if the rest of the imaging chain is limiting.</p>","controls":[{"id":"receptor","label":"Receptor type","min":0,"max":2,"step":1,"value":1,"unit":"0=CR, 1=Indirect DR, 2=Direct DR"},{"id":"pitch","label":"Pixel pitch","min":0.05,"max":0.4,"step":0.01,"value":0.15,"unit":"mm"},{"id":"matrix","label":"Matrix width","min":512,"max":4096,"step":128,"value":2048,"unit":"pixels"},{"id":"fov","label":"Field of view","min":10,"max":45,"step":1,"value":35,"unit":"cm"}],"stations":[{"id":"resolution","title":"Station 1 — Digital resolution test pattern","text":"Compare CR/DR and alter pixel pitch, matrix, and field of view. Find the smallest line pair that remains separated.","kind":"main"},{"id":"pathways","title":"Station 2 — Digital receptor pathways","text":"Match the receptor pathway to CR, indirect DR, or direct DR.","kind":"match","left":[["cr","Reusable plate read by laser"],["indirect","Scintillator converts X-rays to light"],["direct","Photoconductor converts X-rays to charge"]],"right":[["plate","CR"],["light","Indirect DR"],["charge","Direct DR"]],"pairs":{"cr":"plate","indirect":"light","direct":"charge"}},{"id":"case","title":"Station 3 — Receptor selection","text":"A department needs rapid bedside images without cassette scanning. Choose the most direct receptor choice.","kind":"case"}],"quiz":[{"prompt":"For a fixed field of view, increasing matrix size generally:","options":["Makes pixels larger","Makes pixels smaller and increases sampling frequency","Removes the need for adequate exposure","Always eliminates focal-spot blur"],"correct":1,"explain":"A larger matrix over the same field produces smaller pixels and a higher sampling frequency, although other limits remain."},{"prompt":"CR uses:","options":["A photostimulable phosphor plate and laser reader","Wet chemistry only","An image intensifier","A direct selenium panel only"],"correct":0,"explain":"CR stores the image on a PSP plate that is scanned by a laser."},{"prompt":"For fixed FOV, increasing matrix size makes pixels:","options":["Smaller","Larger","Unchanged always","Non-digital"],"correct":0,"explain":"More samples across the same field produce smaller matrix-derived pixels."},{"prompt":"The Nyquist frequency is approximately:","options":["1/(2 × pixel pitch)","2 × pixel pitch","SID/SOD","mAs²"],"correct":0,"explain":"Nyquist sampling limit equals one over twice the sampling interval."}],"worksheet":[{"id":"q1","label":"1. Compare CR and DR in terms of recording, readout, and workflow."},{"id":"q2","label":"2. Calculate the pixel size for a 35 cm field and 2048-pixel matrix."},{"id":"q3","label":"3. Explain why sampling resolution is not identical to total image sharpness."},{"id":"q4","label":"4. Critical thinking: describe one reason to choose CR and one reason to choose DR."}],"rubric":[{"id":"c1","name":"Digital receptor concepts","points":4,"levels":["Correctly explains CR/DR pathways, sampling, pitch, and matrix.","Mostly accurate with minor gaps.","Major misconception."]},{"id":"c2","name":"Resolution simulation","points":5,"levels":["Tests multiple receptor/pixel/FOV conditions and interprets the pattern.","Uses the tool with limited interpretation.","Little meaningful investigation."]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":["Pixel/resolution calculations are correct and explained.","Mostly correct with limited explanation.","Missing or incorrect."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Receptor choice is linked to workflow and image quality.","Plausible but brief.","No defensible choice."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict how reducing pixel pitch changes sampling resolution.","Record a baseline receptor setup.","Change only pixel pitch or matrix and record a second run.","Switch CR/DR pathway and record a third run.","Compare matrix-derived pitch, effective pitch, and effective resolution."],"scenario":{"prompt":"A department needs immediate bedside images without cassette scanning. Which receptor best fits the workflow?","options":["Wireless DR flat panel","Screen-film cassette","CR plate requiring laser readout","Image intensifier only"],"correct":0,"explain":"A wireless DR panel provides direct electronic readout without a separate cassette scanner."},"minimumRuns":3};
-const QUIZ_IDS = ["q11-1","q11-2","q11-3","q11-4"];
-const CONCEPT = LAB.stations[1];
+const LAB = {
+  "week": 11,
+  "title": "Digital Receptors & Digital Resolution Lab",
+  "lecture": "Digital Image Recording",
+  "type": "digital",
+  "subtitle": "Compare CR and DR signal paths, active matrix sampling, and connect pixel pitch to spatial resolution limits.",
+  "objectives": [
+    "Describe the physical differences between CR, Indirect DR, and Direct DR image recording and readout.",
+    "Distinguish direct and indirect digital conversion pathways in flat-panel active matrix arrays (AMA).",
+    "Relate DEL pitch, matrix size, and field of view to sampling frequency and Nyquist resolution limits.",
+    "Use a virtual line-pair test phantom to identify resolution limits and observe Moiré aliasing artifacts.",
+    "Select an optimal digital receptor strategy and matrix configuration for specific clinical tasks."
+  ],
+  "controls": [
+    { "id": "receptor", "label": "Receptor type", "min": 0, "max": 2, "step": 1, "value": 1, "unit": "0=CR, 1=Indirect DR, 2=Direct DR" },
+    { "id": "pitch", "label": "Pixel pitch", "min": 0.05, "max": 0.40, "step": 0.01, "value": 0.15, "unit": "mm" },
+    { "id": "matrix", "label": "Matrix width", "min": 512, "max": 4096, "step": 128, "value": 2048, "unit": "pixels" },
+    { "id": "fov", "label": "Field of view", "min": 10, "max": 45, "step": 1, "value": 35, "unit": "cm" }
+  ],
+  "stations": [
+    { "id": "resolution", "title": "Station 1 — Digital Receptor Architecture Explorer", "kind": "main" },
+    {
+      "id": "concept-match",
+      "title": "Station 2 — Digital Physics & Sampling Matcher",
+      "kind": "match",
+      "left": [
+        ["cr", "Computed Radiography (BaFBr:Eu²⁺)"],
+        ["indirect", "Indirect Conversion Flat Panel (CsI)"],
+        ["direct", "Direct Conversion Flat Panel (a-Se)"],
+        ["nyquist", "Nyquist Limiting Frequency (f_N)"],
+        ["aliasing", "Moiré Aliasing Artifact"],
+        ["fill_factor", "DEL Fill Factor Percentage"]
+      ],
+      "right": [
+        ["psl", "Laser stimulates blue PSL; optical crystal light scatter degrades MTF"],
+        ["needle", "Needle scintillator channels light to a-Si photodiodes and TFT array"],
+        ["efield", "X-rays convert to charge along vertical E-field with zero light spread"],
+        ["cutoff", "Theoretical sampling limit: f_N = 1 / (2 * p_eff) in line pairs per mm"],
+        ["wrap", "False low-frequency pattern when input detail exceeds the Nyquist cutoff"],
+        ["area_ratio", "Active sensing area divided by total DEL area; drops in smaller DELs"]
+      ],
+      "pairs": {
+        "cr": "psl",
+        "indirect": "needle",
+        "direct": "efield",
+        "nyquist": "cutoff",
+        "aliasing": "wrap",
+        "fill_factor": "area_ratio"
+      }
+    },
+    { "id": "case", "title": "Station 4 — Emergency Trauma Receptor Case", "kind": "case" }
+  ],
+  "quiz": [
+    {
+      "prompt": "For a fixed field of view, increasing matrix size generally:",
+      "options": [
+        "Makes pixels larger",
+        "Makes pixels smaller and increases sampling frequency",
+        "Removes the need for adequate exposure",
+        "Always eliminates focal-spot blur"
+      ],
+      "correct": 1,
+      "explain": "A larger matrix over the same field produces smaller pixels and a higher sampling frequency, although other physical limits like focal spot blur remain."
+    },
+    {
+      "prompt": "Computed Radiography (CR) utilizes:",
+      "options": [
+        "A photostimulable phosphor plate (PSP) and red laser readout scanner",
+        "Wet chemical photographic processing only",
+        "An evacuated glass image intensifier tube",
+        "A direct selenium panel under high-voltage bias"
+      ],
+      "correct": 0,
+      "explain": "CR stores latent X-ray energy in metastable electron traps within a BaFBr:Eu²⁺ plate that is scanned by a red laser to emit photostimulated luminescence."
+    },
+    {
+      "prompt": "For a fixed Field of View (FOV), increasing matrix size makes digital pixels:",
+      "options": [
+        "Smaller",
+        "Larger",
+        "Unchanged always",
+        "Non-digital"
+      ],
+      "correct": 0,
+      "explain": "More digital pixel divisions across the same physical field width results in smaller individual pixel dimensions (Pixel Size = FOV / Matrix)."
+    },
+    {
+      "prompt": "The Nyquist spatial frequency limit is mathematically defined as:",
+      "options": [
+        "1 / (2 × pixel pitch)",
+        "2 × pixel pitch",
+        "SID / SOD",
+        "mAs²"
+      ],
+      "correct": 0,
+      "explain": "The Nyquist sampling theorem states that the maximum resolvable spatial frequency without aliasing is f_N = 1 / (2 × p_eff) in cycles/mm or lp/mm."
+    }
+  ],
+  "worksheet": [
+    { "id": "q1", "label": "1. Compare CR and DR in terms of recording, readout, and workflow." },
+    { "id": "q2", "label": "2. Calculate the pixel size for a 35 cm field and 2048-pixel matrix." },
+    { "id": "q3", "label": "3. Explain why sampling resolution is not identical to total image sharpness." },
+    { "id": "q4", "label": "4. Critical thinking: describe one reason to choose CR and one reason to choose DR." }
+  ],
+  "rubric": [
+    { "id": "c1", "name": "Digital receptor concepts", "points": 4, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": ["Correctly explains CR/DR pathways, sampling, pitch, and matrix.", "Mostly accurate with minor gaps.", "Major misconception."] },
+    { "id": "c2", "name": "Resolution simulation & in-lab stations", "points": 6, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": ["Tests multiple receptor/pixel/FOV conditions and interprets the pattern.", "Uses the tool with limited interpretation.", "Little meaningful investigation."] },
+    { "id": "c3", "name": "Calculations and worksheet", "points": 5, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": ["Pixel/resolution calculations are correct and explained.", "Mostly correct with limited explanation.", "Missing or incorrect."] },
+    { "id": "c4", "name": "Clinical reasoning & ALARA", "points": 3, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": ["Receptor choice is linked to workflow and image quality.", "Plausible but brief.", "No defensible choice."] },
+    { "id": "c5", "name": "Completeness and professionalism", "points": 2, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."] }
+  ],
+  "scenario": {
+    "prompt": "A severely injured trauma patient in the resuscitation bay requires immediate chest and pelvis radiographs to verify endotracheal tube placement and rule out tension pneumothorax. Which receptor best serves this critical clinical workflow?",
+    "options": [
+      "Deploy a wireless CsI flat-panel DR detector (150 µm DEL pitch, high DQE), which provides immediate preview on the mobile console in <5 seconds, avoids moving the unstable patient for physical cassette exchanges, and offers superior low-contrast pneumothorax conspicuity.",
+      "Expose multiple conventional screen-film cassettes and transport them to the central darkroom for 90-second chemical processing.",
+      "Utilize CR photostimulable phosphor plates, requiring the technologist to leave the resuscitation bay after each exposure to manually feed plates into a centralized laser scanner down the hall.",
+      "Position a fluoroscopic C-arm image intensifier over the patient and run continuous fluoroscopy at 30 fps without recording digital radiographs."
+    ],
+    "correct": 0,
+    "explain": "In acute resuscitation, a wireless DR flat-panel detector delivers instantaneous image display (<5 s) on the bedside cart, eliminating cassette handling and reader transit, while high-DQE CsI provides optimal pneumothorax visualization at minimized dose."
+  },
+  "minimumRuns": 3
+};
+
+const QUIZ_IDS = ["q11-1", "q11-2", "q11-3", "q11-4"];
 let currentResult = null;
+
+// Tab Switcher with URL Hash Synchronization
+function initTabs() {
+  const tabIntroBtn = document.getElementById('tab-btn-intro');
+  const tabExpBtn = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+  const proceedBtn = document.getElementById('btn-proceed-to-sim');
+  const backBtn = document.getElementById('btn-back-to-intro');
+
+  function switchTab(target) {
+    if (target === 'experiment') {
+      tabIntroBtn.classList.remove('active');
+      tabExpBtn.classList.add('active');
+      paneIntro.classList.remove('active');
+      paneExp.classList.add('active');
+      window.location.hash = 'tab-experiment';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderSimulation();
+    } else {
+      tabExpBtn.classList.remove('active');
+      tabIntroBtn.classList.add('active');
+      paneExp.classList.remove('active');
+      paneIntro.classList.add('active');
+      window.location.hash = 'tab-intro';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  tabIntroBtn.addEventListener('click', () => switchTab('intro'));
+  tabExpBtn.addEventListener('click', () => switchTab('experiment'));
+  if (proceedBtn) proceedBtn.addEventListener('click', () => switchTab('experiment'));
+  if (backBtn) backBtn.addEventListener('click', () => switchTab('intro'));
+
+  if (window.location.hash === '#tab-experiment') {
+    switchTab('experiment');
+  }
+}
+
+function renderAllMath() {
+  var targets = document.querySelectorAll('.math-tex, .math-display');
+  if (typeof renderMathInElement === 'function') {
+    try {
+      targets.forEach(function (el) {
+        renderMathInElement(el, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('KaTeX auto-render failed:', e);
+    }
+  }
+}
 
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    values[control.id] = Number(document.getElementById('ctrl-' + control.id).value);
+  });
   return values;
 }
 
@@ -136,8 +1538,8 @@ function formatOutput(id, value) {
   if (id === 'receptor') {
     const v = Math.round(value);
     if (v === 0) return 'CR (PSP BaFBr:Eu²⁺)';
-    if (v >= 2) return 'Direct DR (a-Se)';
-    return 'Indirect DR (CsI:Tl)';
+    if (v >= 2) return 'Direct DR (a-Se Photoconductor)';
+    return 'Indirect DR (CsI:Tl + a-Si)';
   }
   if (id === 'pitch') {
     return value.toFixed(2) + ' mm (' + Math.round(value * 1000) + ' µm)';
@@ -152,7 +1554,9 @@ function formatOutput(id, value) {
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + formatOutput(control.id, values[control.id]); }).join('; ');
+  return LAB.controls.map(function (c) {
+    return c.label + ': ' + formatOutput(c.id, values[c.id]);
+  }).join('; ');
 }
 
 function renderMetrics(result) {
@@ -163,12 +1567,19 @@ function renderMetrics(result) {
 function renderSimulation() {
   const values = controlValues();
   LAB.controls.forEach(function (control) {
-    document.getElementById('out-' + control.id).textContent = formatOutput(control.id, values[control.id]);
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = formatOutput(control.id, values[control.id]);
   });
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas && canvas.getContext) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
   renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const cap = document.getElementById('sim-caption');
+  if (cap && currentResult.observation) {
+    cap.textContent = currentResult.observation;
+  }
 }
 
 function experimentActivity() {
@@ -180,13 +1591,19 @@ function renderRunLog() {
   const body = document.getElementById('run-log-body');
   body.innerHTML = '';
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Select presets or adjust sliders, then click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
@@ -194,13 +1611,28 @@ function renderRunLog() {
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please enter a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  if (activity.runs.some(function (r) { return r.signature === signature; })) {
+    RadLab.toast('This exact setting combination has already been recorded. Modify a parameter and test again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
   activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
@@ -208,70 +1640,297 @@ function recordRun() {
   activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
   RadLab.state.activities['experiment-log'] = activity;
   RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' successfully recorded!', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded runs to remove.');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
 }
 
+function exportRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs || !activity.runs.length) {
+    RadLab.toast('No trial runs recorded to export. Complete simulation runs first.', 'error');
+    return;
+  }
+  let csv = 'Run,Receptor_Type,DEL_Pitch_mm,Matrix_Width,FOV_cm,Matrix_Pixel_mm,Effective_Pitch_mm,Nyquist_lp_mm,Limiting_Res_lp_mm,Min_Size_um,Fill_Factor,Observation\n';
+  activity.runs.forEach((r, idx) => {
+    const v = r.values;
+    const m = r.metrics;
+    const recType = formatOutput('receptor', v.receptor);
+    const matPx = m[1] ? m[1].value : '';
+    const effP = m[2] ? m[2].value : '';
+    const nyq = m[3] ? m[3].value : '';
+    const limRes = m[4] ? m[4].value : '';
+    const minSz = m[5] ? m[5].value : '';
+    const fill = m[6] ? m[6].value : '';
+    const obs = (r.observation || '').replace(/"/g, '""');
+    csv += `${idx + 1},"${recType}",${v.pitch},${v.matrix},${v.fov},${matPx},${effP},${nyq},${limRes},${minSz},"${fill}","${obs}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab11_Digital_Receptor_Runs_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('CSV dataset downloaded successfully!', 'success');
+}
+
+// Station 2 Matcher
 function setupConcept() {
   const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+  const matchDef = LAB.stations[1];
+  RadLab.matchPairs(container, {
+    id: matchDef.id,
+    left: matchDef.left.map(x => ({ id: x[0], label: x[1] })),
+    right: matchDef.right.map(x => ({ id: x[0], label: x[1] })),
+    pairs: matchDef.pairs,
+    leftTitle: 'Digital Receptor Term / Law',
+    rightTitle: 'Physical Mechanism / Principle'
+  });
 }
 
+// Station 3 Calibrated Nyquist Calculator
+function initDigitalCalculator() {
+  const recEl = document.getElementById('calc-receptor');
+  const pitchEl = document.getElementById('calc-pitch');
+  const matrixEl = document.getElementById('calc-matrix');
+  const fovEl = document.getElementById('calc-fov');
+
+  const pitchVal = document.getElementById('calc-pitch-val');
+  const matrixVal = document.getElementById('calc-matrix-val');
+  const fovVal = document.getElementById('calc-fov-val');
+
+  const matPixelRes = document.getElementById('res-mat-pixel');
+  const effPitchRes = document.getElementById('res-eff-pitch');
+  const nyquistRes = document.getElementById('res-nyquist');
+  const limResRes = document.getElementById('res-lim-res');
+  const minFeatRes = document.getElementById('res-min-feat');
+  const bottleneckBadge = document.getElementById('res-bottleneck-badge');
+  const statusBox = document.getElementById('calc-status-box');
+
+  function updateCalc() {
+    const recMode = Number(recEl.value);
+    const delPitch = Number(pitchEl.value);
+    const matrix = Number(matrixEl.value);
+    const fovCm = Number(fovEl.value);
+
+    pitchVal.textContent = Math.round(delPitch * 1000) + ' µm';
+    matrixVal.textContent = matrix + ' px';
+    fovVal.textContent = fovCm + ' cm';
+
+    const fovMm = fovCm * 10;
+    const matPitchMm = fovMm / matrix;
+    const effPitchMm = Math.max(delPitch, matPitchMm);
+    const nyquist = 1 / (2 * effPitchMm);
+
+    const mtfFactor = recMode === 0 ? 0.70 : (recMode >= 2 ? 0.95 : 0.85);
+    const limRes = nyquist * mtfFactor;
+    const minSizeUm = Math.round((1 / (2 * Math.max(0.01, limRes))) * 1000);
+
+    matPixelRes.textContent = Math.round(matPitchMm * 1000) + ' µm';
+    effPitchRes.textContent = Math.round(effPitchMm * 1000) + ' µm';
+    nyquistRes.textContent = nyquist.toFixed(2) + ' lp/mm';
+    limResRes.textContent = limRes.toFixed(2) + ' lp/mm';
+    minFeatRes.textContent = minSizeUm + ' µm';
+
+    const isMatrixLimited = matPitchMm > delPitch * 1.15;
+    const isDetectorLimited = delPitch > matPitchMm * 1.15;
+
+    if (isMatrixLimited) {
+      bottleneckBadge.textContent = 'MATRIX-LIMITED';
+      bottleneckBadge.style.color = '#dc2626';
+      statusBox.style.background = '#fef2f2';
+      statusBox.style.color = '#991b1b';
+      statusBox.innerHTML = `<strong>Sampling Status: Matrix-Limited.</strong> Pixel size (${Math.round(matPitchMm * 1000)} µm) exceeds DEL pitch (${Math.round(delPitch * 1000)} µm). The acquisition matrix is bottlenecking spatial resolution. Increase matrix width to resolve finer detector detail.`;
+    } else if (isDetectorLimited) {
+      bottleneckBadge.textContent = 'DETECTOR-LIMITED';
+      bottleneckBadge.style.color = '#d97706';
+      statusBox.style.background = '#fef3c7';
+      statusBox.style.color = '#92400e';
+      statusBox.innerHTML = `<strong>Sampling Status: Detector-Limited.</strong> Physical DEL pitch (${Math.round(delPitch * 1000)} µm) is larger than matrix pixel size (${Math.round(matPitchMm * 1000)} µm). The physical receptor element spacing is the resolution limit. Increasing matrix further yields empty magnification.`;
+    } else {
+      bottleneckBadge.textContent = 'MATCHED NYQUIST';
+      bottleneckBadge.style.color = '#166534';
+      statusBox.style.background = '#eef8f7';
+      statusBox.style.color = '#164b53';
+      statusBox.innerHTML = `<strong>Sampling Status: Matched Nyquist Sampling.</strong> Matrix pixel size (${Math.round(matPitchMm * 1000)} µm) and DEL pitch (${Math.round(delPitch * 1000)} µm) are well-balanced, maximizing spatial resolution without empty digital storage waste.`;
+    }
+  }
+
+  [recEl, pitchEl, matrixEl, fovEl].forEach(el => el.addEventListener('input', updateCalc));
+  updateCalc();
+}
+
+// Station 4 Scenario
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please choose a clinical option before checking your decision.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  feedback.textContent = (correct ? 'Correct! ' : 'Clinical reconsideration needed. ') + LAB.scenario.explain;
+  RadLab.save();
+  RadLab.progress.update();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-11', labTitle: "Lab 11 — Digital Receptors & Digital Resolution Lab", weekNumber: 11, rubric: { title: "Lab 11 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Digital receptor concepts","points":4},{"id":"c2","name":"Resolution simulation","points":5},{"id":"c3","name":"Calculations and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab11-rubric',title:"Lab 11 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Digital receptor concepts","points":4,"levels":[{"desc":"Correctly explains CR/DR pathways, sampling, pitch, and matrix."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Resolution simulation","points":5,"levels":[{"desc":"Tests multiple receptor/pixel/FOV conditions and interprets the pattern."},{"desc":"Uses the tool with limited interpretation."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":[{"desc":"Pixel/resolution calculations are correct and explained."},{"desc":"Mostly correct with limited explanation."},{"desc":"Missing or incorrect."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Receptor choice is linked to workflow and image quality."},{"desc":"Plausible but brief."},{"desc":"No defensible choice."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
+  RadLab.init({
+    labId: 'lab-11',
+    labTitle: "Lab 11 — Digital Receptors & Digital Resolution Lab",
+    weekNumber: 11,
+    rubric: {
+      title: "Lab 11 Grading Rubric (20 points)",
+      criteria: [
+        { "id": "c1", "name": "Digital receptor concepts", "points": 4, "part": "Part I: In-Lab Interactive Activities (10 Points)" },
+        { "id": "c2", "name": "Resolution simulation & in-lab stations", "points": 6, "part": "Part I: In-Lab Interactive Activities (10 Points)" },
+        { "id": "c3", "name": "Calculations and worksheet", "points": 5, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" },
+        { "id": "c4", "name": "Clinical reasoning & ALARA", "points": 3, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" },
+        { "id": "c5", "name": "Completeness and professionalism", "points": 2, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)" }
+      ]
+    },
+    sections: [
+      { id: 'sec-experiment', label: '1 · Simulation', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-digital-match', label: '2 · Concept matcher', checkComplete: function (s) { return !!(s.activities['concept-match'] && s.activities['concept-match'].done); } },
+      { id: 'sec-scenario', label: '3 · Clinical decision', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '4 · Knowledge check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-worksheet', label: '5 · Post-lab worksheet' }
+    ]
+  });
+
+  initTabs();
+
+  // Register Form Fields for Autosave
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment prediction' });
+
+  // Table A inputs
+  const tableAIds = [
+    'w-dig-cr-mat', 'w-dig-cr-read', 'w-dig-ind-conv', 'w-dig-dir-conv',
+    'w-dig-nyquist-form', 'w-dig-pixel-form', 'w-dig-aliasing', 'w-dig-fill-factor'
+  ];
+  tableAIds.forEach(id => RadLab.registerField(id, { sectionId: 'sec-receptor-explorer', label: 'Table A: ' + id }));
+
+  // Table B inputs
+  const tableBIds = [
+    'w-t2-c1-matpx', 'w-t2-c1-effp', 'w-t2-c1-nyq', 'w-t2-c1-lim', 'w-t2-c1-min',
+    'w-t2-c2-matpx', 'w-t2-c2-effp', 'w-t2-c2-nyq', 'w-t2-c2-lim', 'w-t2-c2-min',
+    'w-t2-c3-matpx', 'w-t2-c3-effp', 'w-t2-c3-nyq', 'w-t2-c3-lim', 'w-t2-c3-min',
+    'w-t2-c4-matpx', 'w-t2-c4-effp', 'w-t2-c4-nyq', 'w-t2-c4-lim', 'w-t2-c4-min'
+  ];
+  tableBIds.forEach(id => RadLab.registerField(id, { sectionId: 'sec-worksheet', label: 'Table B: ' + id }));
+
+  // Worksheet Reflection inputs
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // Render Quizzes
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
+    });
+  });
+
+  // Build Rubric Table
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab11-rubric',
+    title: "Lab 11 Grading Rubric (20 points)",
+    criteria: [
+      { "id": "c1", "name": "Digital receptor concepts", "points": 4, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": [{ "desc": "Correctly explains CR/DR pathways, sampling, pitch, and matrix." }, { "desc": "Mostly accurate with minor gaps." }, { "desc": "Major misconception." }] },
+      { "id": "c2", "name": "Resolution simulation & in-lab stations", "points": 6, "part": "Part I: In-Lab Interactive Activities (10 Points)", "levels": [{ "desc": "Tests multiple receptor/pixel/FOV conditions and interprets the pattern." }, { "desc": "Uses the tool with limited interpretation." }, { "desc": "Little meaningful investigation." }] },
+      { "id": "c3", "name": "Calculations and worksheet", "points": 5, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": [{ "desc": "Pixel/resolution calculations are correct and explained." }, { "desc": "Mostly correct with limited explanation." }, { "desc": "Missing or incorrect." }] },
+      { "id": "c4", "name": "Clinical reasoning & ALARA", "points": 3, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": [{ "desc": "Receptor choice is linked to workflow and image quality." }, { "desc": "Plausible but brief." }, { "desc": "No defensible choice." }] },
+      { "id": "c5", "name": "Completeness and professionalism", "points": 2, "part": "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", "levels": [{ "desc": "Complete, organized, and ready for submission." }, { "desc": "Minor omissions." }, { "desc": "Substantially incomplete." }] }
+    ]
+  });
+
   setupConcept();
+  initDigitalCalculator();
+
   if (LAB.worksheet && LAB.worksheet.length) {
     RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
   }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+
+  // Bind Simulation Controls
+  LAB.controls.forEach(function (control) {
+    document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation);
+  });
   document.getElementById('record-run').addEventListener('click', recordRun);
   document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-export-csv').addEventListener('click', exportRunsCSV);
   document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
+  // Preset Buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const receptor = btn.dataset.receptor, pitch = btn.dataset.pitch, matrix = btn.dataset.matrix, fov = btn.dataset.fov;
-      if (document.getElementById('ctrl-receptor') && receptor !== undefined) document.getElementById('ctrl-receptor').value = receptor;
-      if (document.getElementById('ctrl-pitch') && pitch !== undefined) document.getElementById('ctrl-pitch').value = pitch;
-      if (document.getElementById('ctrl-matrix') && matrix !== undefined) document.getElementById('ctrl-matrix').value = matrix;
-      if (document.getElementById('ctrl-fov') && fov !== undefined) document.getElementById('ctrl-fov').value = fov;
+      const receptor = btn.dataset.receptor;
+      const pitch = btn.dataset.pitch;
+      const matrix = btn.dataset.matrix;
+      const fov = btn.dataset.fov;
+
+      if (receptor !== undefined && document.getElementById('ctrl-receptor')) document.getElementById('ctrl-receptor').value = receptor;
+      if (pitch !== undefined && document.getElementById('ctrl-pitch')) document.getElementById('ctrl-pitch').value = pitch;
+      if (matrix !== undefined && document.getElementById('ctrl-matrix')) document.getElementById('ctrl-matrix').value = matrix;
+      if (fov !== undefined && document.getElementById('ctrl-fov')) document.getElementById('ctrl-fov').value = fov;
+
       renderSimulation();
       RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
     });
   });
 
+  // Restore Saved Scenario Selection
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // Wire Split Submission Hubs
+  if (typeof RadLab._wireSplitSubmitHub === 'function') {
+    RadLab._wireSplitSubmitHub();
+  }
+
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

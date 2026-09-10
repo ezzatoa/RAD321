@@ -5,75 +5,1195 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 4: Optical Density &amp; the Characteristic Curve — RAD 321</title>
   <link rel="stylesheet" href="../../shared/lab-styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- KaTeX for crisp, mathematically accurate equation rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Hero banner */
+    .hero-banner { position: relative; border-radius: var(--rad-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--rad-shadow-lg); }
+    .hero-banner img { width: 100%; height: 260px; object-fit: cover; }
+    .hero-banner .hero-overlay {
+      position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,37,69,0.92) 0%, rgba(11,37,69,0.6) 60%, rgba(11,37,69,0.1) 100%);
+      display: flex; flex-direction: column; justify-content: center; padding: 0 40px; color: #fff; max-width: 680px;
+    }
+    .hero-overlay .eyebrow { font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: #7fe0d6; font-weight: 700; }
+    .hero-overlay h1 { font-size: 28px; margin: 8px 0 10px; line-height: 1.25; }
+    .hero-overlay p { font-size: 14px; opacity: 0.92; margin: 0; }
+
+    /* Two-Tab Navigation System */
+    .lab-tabs-nav {
+      display: flex;
+      gap: 12px;
+      background: var(--rad-bg-soft, #f1f5f9);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--rad-border, #cbd5e1);
+      margin: 20px 0 24px 0;
+      box-shadow: var(--rad-shadow-sm);
+    }
+    .lab-tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--rad-text-muted, #475569);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .lab-tab-btn:hover {
+      color: var(--rad-navy, #0b2545);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    .lab-tab-btn.active {
+      background: #ffffff;
+      color: var(--rad-navy, #0b2545);
+      box-shadow: 0 4px 12px rgba(11, 37, 69, 0.1);
+      border-bottom: 3px solid var(--rad-teal, #0e7c86);
+    }
+    .lab-tab-btn .tab-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: rgba(14, 124, 134, 0.12);
+      color: var(--rad-teal, #0e7c86);
+      font-weight: 700;
+    }
+    .lab-tab-btn.active .tab-badge {
+      background: var(--rad-teal, #0e7c86);
+      color: #ffffff;
+    }
+    .lab-tab-pane {
+      display: none;
+      animation: fadeInPane 0.25s ease-in-out;
+    }
+    .lab-tab-pane.active {
+      display: block;
+    }
+    @keyframes fadeInPane {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mathematical Equation Typography & Styling */
+    .formula-box {
+      margin: 16px 0;
+      background: #f0fdfa;
+      border-left: 4px solid var(--rad-teal);
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      box-shadow: var(--rad-shadow-sm);
+    }
+    .formula-title {
+      font-weight: 700;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .math-display {
+      display: block;
+      text-align: center;
+      margin: 12px 0;
+      font-size: 18px;
+      color: var(--rad-navy);
+    }
+    .math-fallback-display {
+      display: block;
+      text-align: center;
+      margin: 10px 0;
+      font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      color: var(--rad-navy);
+      font-weight: 600;
+    }
+    .math-fallback-inline {
+      font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+      font-style: normal;
+      letter-spacing: 0.3px;
+      padding: 0 2px;
+      font-weight: 600;
+    }
+
+    /* Station diagrams and figures */
+    .checklist-fill-table input[type=text] { font-size: 13px; padding: 7px 9px; width: 100%; box-sizing: border-box; }
+    .lab-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 880px) { .lab-meta-grid { grid-template-columns: 1fr 1fr; } }
+    .why-sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 880px) { .why-sim-grid { grid-template-columns: 1fr; } }
+    .why-sim-card { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 16px; }
+    .why-sim-card .fa { color: var(--rad-teal); margin-right: 8px; }
+
+    /* Simulation Layout & Controls */
+    .sim-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .sim-canvas-wrap { position: relative; width: 100%; border-radius: var(--rad-radius-sm); overflow: hidden; background: #071a2b; border: 1px solid var(--rad-border); box-shadow: var(--rad-shadow-sm); }
+    .sim-canvas-wrap canvas { display: block; width: 100%; height: auto; }
+    .sim-presets-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+    .control-card { background: var(--rad-bg-soft); border: 1px solid var(--rad-border); border-radius: var(--rad-radius-sm); padding: 12px 14px; }
+    .control-card label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--rad-navy); margin-bottom: 6px; }
+    .control-card input[type=range] { width: 100%; cursor: pointer; }
+    
+    /* Clinical Scenario Options */
+    .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+    .scenario-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--rad-border); border-radius: 8px; background: #fff; cursor: pointer; transition: background 0.15s ease; }
+    .scenario-option:hover { background: var(--rad-bg-soft); }
+    .scenario-option input[type=radio] { margin-top: 3px; cursor: pointer; }
+    .feedback-box { min-height: 44px; border-radius: 8px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; background: var(--rad-bg-soft); border-left: 4px solid var(--rad-border); }
+    .feedback-box.correct { background: #eaf8f0; color: #12633f; border-left-color: #10b981; }
+    .feedback-box.incorrect { background: #fff0ee; color: #9d342d; border-left-color: #ef4444; }
+
+    /* Interactive Region Cards */
+    .curve-regions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+    .curve-region-card { background: #fff; border: 1px solid var(--rad-border); border-radius: 10px; padding: 14px; box-shadow: var(--rad-shadow-sm); transition: transform 0.15s ease, border-color 0.15s ease; }
+    .curve-region-card:hover { transform: translateY(-2px); border-color: var(--rad-teal); }
+    .curve-region-card .region-badge { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--rad-teal); margin-bottom: 4px; display: block; }
+    .curve-region-card h4 { margin: 0 0 6px 0; font-size: 14.5px; color: var(--rad-navy); }
+    .curve-region-card p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--rad-text-muted, #64748b); }
+
+    /* 21-Step Wedge Interactive Strip */
+    .step-wedge-wrap { overflow-x: auto; padding: 10px 0; margin: 16px 0; }
+    .step-wedge-strip { display: flex; min-width: 780px; height: 75px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rad-navy); box-shadow: var(--rad-shadow-sm); }
+    .wedge-step { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; cursor: pointer; transition: opacity 0.15s ease; border-right: 1px solid rgba(255,255,255,0.15); }
+    .wedge-step:hover { outline: 2px solid #f59e0b; outline-offset: -2px; }
+    .wedge-step.active { outline: 3px solid #10b981; outline-offset: -3px; }
+    .wedge-step .step-label { font-size: 10px; font-weight: 800; }
+
+    /* Protocol Steps Grid */
+    .protocol-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+    .protocol-step-card { background: #fff; border: 1px solid var(--rad-border); border-radius: 10px; padding: 14px; box-shadow: var(--rad-shadow-sm); }
+    .protocol-step-card .step-num { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--rad-teal); background: rgba(14,124,134,0.1); padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+    .protocol-step-card h4 { margin: 0 0 6px 0; font-size: 14px; color: var(--rad-navy); }
+    .protocol-step-card p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--rad-text-soft, #475569); }
+
+    /* Excel Instructions Box */
+    .excel-guide-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 16px 18px; margin: 16px 0; }
+    .excel-guide-box h4 { margin: 0 0 8px 0; color: #166534; font-size: 15px; display: flex; align-items: center; gap: 8px; }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
+<!-- ===================== TOPBAR ===================== -->
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 4 — Optical Density &amp; the Characteristic Curve</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 4 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 4 — Optical Density &amp; the Characteristic Curve</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline Ready</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 4 of 15 · Sensitometry</span>
+    </div>
+  </div>
 </header>
+
+<!-- ===================== IN-PAGE NAVIGATION ===================== -->
 <nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
+<!-- ===================== MAIN CONTAINER ===================== -->
 <main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 4 · Assessed laboratory assignment</div><h1>Optical Density &amp; the Characteristic Curve</h1><p>Use virtual sensitometry to relate exposure to optical density, speed, latitude, and gamma. Directly aligned with: Visibility Factors I — Density &amp; Sensitometry.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Define optical density and explain why it is logarithmic.</li><li><span class="num">2</span>Construct and interpret a simplified H&amp;D characteristic curve.</li><li><span class="num">3</span>Identify toe, straight-line, and shoulder regions.</li><li><span class="num">4</span>Compare film speed, latitude, and contrast using curve parameters.</li><li><span class="num">5</span>Use a sensitometer/densitometer simulation to support an exposure decision.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Optical density (OD) describes film blackening: <b>OD = log₁₀(I₀ / Iₜ)</b>, where I₀ is incident light and Iₜ is transmitted light. Higher OD means less light passes through the processed film. A characteristic curve plots OD against the logarithm of exposure.</p><div class="formula-box"><b>Toe:</b> low-density region with limited separation · <b>Straight line:</b> useful exposure range · <b>Shoulder:</b> saturation region · <b>Gamma:</b> slope of the straight-line portion.</div><p>Film speed is the exposure needed to reach a reference density; latitude is the useful exposure range. A steeper curve has higher contrast but narrower latitude.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
+  <!-- Hero banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiographic sensitometry and optical density measurement environment">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 4 · Assessed Laboratory Assignment</div>
+      <h1>Optical Density &amp; the Characteristic Curve</h1>
+      <p>Use virtual sensitometry to relate radiation exposure to optical density. Construct Hurter &amp; Driffield (H&amp;D) curves, analyze speed, latitude, and gamma, and master daily darkroom quality control.</p>
+    </div>
+  </div>
 
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict how increasing gamma changes the H&amp;D curve.</div><div class="procedure-step">Record a baseline point in the straight-line region.</div><div class="procedure-step">Move exposure into the toe and record a second run.</div><div class="procedure-step">Move exposure into the shoulder or change gamma and record a third run.</div><div class="procedure-step">Compare OD, transmitted light, region, and latitude.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card"><div class="experiment-layout"><div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Optical Density &amp; the Characteristic Curve" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
-    <div class="control-card">
-      <label for="ctrl-exposure"><span>Log exposure</span><output id="out-exposure" for="ctrl-exposure">0 log E</output></label>
-      <input type="range" id="ctrl-exposure" min="-2" max="2" step="0.1" value="0" aria-describedby="sim-caption">
+  <!-- Two-Phase Assignment Guidance Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
     </div>
-    <div class="control-card">
-      <label for="ctrl-speed"><span>Film speed</span><output id="out-speed" for="ctrl-speed">100 speed</output></label>
-      <input type="range" id="ctrl-speed" min="60" max="220" step="5" value="100" aria-describedby="sim-caption">
+    <p>This laboratory is an <b>interactive digital simulation and assessed laboratory module</b> evaluated across two required submission phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the background theory, inspect the 4 characteristic curve regions, complete the sensitometric parameter matcher, explore the 21-step sensitometer wedge, and solve the knowledge check quizzes during your scheduled lab session.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Export your experimental run data via <em>"Download Run Data (CSV)"</em>, plot the full H&amp;D characteristic curve and light transmission decay curve in Excel, perform quantitative sensitometric calculations, and submit your analysis workbook for final evaluation.
+      </div>
     </div>
-    <div class="control-card">
-      <label for="ctrl-gamma"><span>Gamma</span><output id="out-gamma" for="ctrl-gamma">1.8 slope</output></label>
-      <input type="range" id="ctrl-gamma" min="0.8" max="3" step="0.1" value="1.8" aria-describedby="sim-caption">
+    <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+      <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+      <span style="display:block;margin-top:4px;">In <b>Section 7 (Tab 1)</b>, submit <b>Phase 1 (In-Lab Activities)</b> before leaving the lab session to lock in your foundation score. Then in <b>Section 11 (Tab 2)</b>, upload and submit your completed <b>Phase 2 (Excel Data Analysis)</b> workbook before the post-lab deadline.</span>
     </div>
-    <div class="control-card">
-      <label for="ctrl-base"><span>Base + fog</span><output id="out-base" for="ctrl-base">0.12 OD</output></label>
-      <input type="range" id="ctrl-base" min="0.05" max="0.35" step="0.01" value="0.12" aria-describedby="sim-caption">
-    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
-  </section>
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–6 min OD/log demo + Rule of 0.3 · 6–14 min Stations 1–2 (curve regions + matcher) · 14–22 min Station 3 wedge steps · 22–30 min Station 4 latitude case + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is 3 runs (baseline → toe → shoulder) + 2 plots (H&amp;D + transmission decay) + Table B. If short on time, cut Run 4 high-gamma to homework, not the scenario.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+      1) OD is logarithmic: +0.3 OD halves transmitted light. 2) Straight line = diagnostic zone; toe/shoulder = low contrast. 3) High gamma = high contrast but narrow latitude (Latitude ∝ 1/γ).
+    </div>
+  </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Compare film curves</h3><p>Match each curve behavior to the correct term: speed, latitude, or gamma.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Exposure latitude decision</h3><p>Two films require different exposures to reach the same reference OD. Film A reaches it with less exposure. Which statement is correct?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Film A is faster</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Film A has lower speed</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Film A must have more OID</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Film speed cannot affect curve position</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record two OD readings and use the logarithmic definition to explain what the values mean. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Identify the toe, straight-line, and shoulder on your curve and describe each. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Compare the effects of increasing gamma and increasing latitude. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: recommend a faster or slower film for a dose-sensitive exam and justify the trade-off. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+  <!-- Student information card -->
+  <div class="card card-soft">
+    <h3>Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row">
+        <label class="field-label" for="meta-studentName">Full Name</label>
+        <input type="text" id="meta-studentName" required placeholder="e.g. Tariq Al-Ghamdi">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-studentId">Student ID</label>
+        <input type="text" id="meta-studentId" required placeholder="e.g. 441012345">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-section">Section / Group</label>
+        <input type="text" id="meta-section" required placeholder="e.g. A1 / Group 2">
+      </div>
+      <div class="form-row">
+        <label class="field-label" for="meta-date">Date</label>
+        <input type="text" id="meta-date" required>
+      </div>
+    </div>
+    <p class="form-hint">Your work auto-saves locally in your browser session. Export a JSON backup before changing workstations.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION SYSTEM ===================== -->
+  <div class="lab-tabs-nav" role="tablist" aria-label="Laboratory Workspaces">
+    <button type="button" class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro" onclick="switchTab('intro')">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Introduction &amp; In-Lab Activities
+      <span class="tab-badge">Phase 1 · 10 Pts</span>
+    </button>
+    <button type="button" class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment" onclick="switchTab('experiment')">
+      <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis
+      <span class="tab-badge">Phase 2 · 10 Pts</span>
+    </button>
+  </div>
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 1: FOUNDATIONS & IN-LAB ACTIVITIES ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- ===================== OBJECTIVES ===================== -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives &amp; Curricular Alignment</h2>
+          <div class="lab-section-sub">Diagnostic Radiology Technology Program · Accreditation Standards Alignment</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list" style="margin-top:14px;">
+          <li><span class="num">1</span><b>Logarithmic Optical Density:</b> Define optical density (OD = log₁₀(I₀/It) = −log₁₀(T)) and explain the biological necessity of logarithmic scaling to match human visual perception across 4 orders of light magnitude.</li>
+          <li><span class="num">2</span><b>H&amp;D Characteristic Curve Anatomy:</b> Construct and interpret a Hurter &amp; Driffield (H&amp;D) curve, identifying the physical origin of Base+Fog (Dmin), Toe, Straight-Line Portion, and Shoulder/Solarization (Dmax).</li>
+          <li><span class="num">3</span><b>Quantitative Sensitometric Parameters:</b> Measure and calculate film speed (speed point at Dmin + 1.00), film gamma (γ = ΔOD / ΔlogE), average gradient, and exposure latitude.</li>
+          <li><span class="num">4</span><b>Contrast vs Latitude Trade-Off:</b> Analyze the reciprocal relationship between radiographic contrast (gamma) and exposure latitude (Latitude ∝ 1/γ), selecting appropriate receptor characteristics for specific clinical examinations.</li>
+          <li><span class="num">5</span><b>Sensitometric Quality Control:</b> Interpret a 21-step optical density tablet sensitometer strip, using electronic densitometry to evaluate darkroom processor reproducibility within diagnostic QA tolerance limits.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== THEORY PRIMER ===================== -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory &amp; Physical Foundations</h2>
+          <div class="lab-section-sub">Read thoroughly before beginning the interactive laboratory stations</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Sensitometry &amp; Physics Primer</span>
+
+        <h3 style="color:var(--rad-navy);margin-top:18px;">1.1 The Definition &amp; Physics of Optical Density (OD)</h3>
+        <p>
+          <b>Optical Density (OD)</b> is a quantitative measure of the degree of blackening of processed radiographic film. When a viewbox illuminates a radiograph, incident light intensity (<span class="math-tex">$I_0$</span>) strikes the film, and a fraction is transmitted through (<span class="math-tex">$I_t$</span>). Transmittance (<span class="math-tex">$T$</span>) is the ratio of transmitted to incident light: <span class="math-tex">$T = I_t / I_0$</span>. Optical density is mathematically defined as the base-10 logarithm of the reciprocal of transmittance:
+        </p>
+        <span class="math-display">$$OD = \log_{10}\left(\frac{I_0}{I_t}\right) = \log_{10}\left(\frac{1}{T}\right) = -\log_{10}(T)$$</span>
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-eye"></i> Why is Optical Density Logarithmic?</div>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;">
+            <li><b>Biological Perception (Weber-Fechner Law):</b> The human eye perceives brightness changes logarithmically rather than linearly. A doubling of optical density corresponds to a perceived constant step in visual sensation.</li>
+            <li><b>Massive Dynamic Range Compression:</b> Diagnostic radiographs span light transmissions from 100% down to 0.01% (a factor of 10,000:1). A logarithmic scale compresses this into a manageable numerical scale from <span class="math-tex">$0.0$</span> to <span class="math-tex">$4.0\text{ OD}$</span>:
+              <br>• <span class="math-tex">$OD = 0.0 \implies T = 1.0$</span> (100% light transmission — perfectly clear)
+              <br>• <span class="math-tex">$OD = 1.0 \implies T = 0.1$</span> (10% light transmission — light gray)
+              <br>• <span class="math-tex">$OD = 2.0 \implies T = 0.01$</span> (1% light transmission — medium-dark gray, upper diagnostic range)
+              <br>• <span class="math-tex">$OD = 3.0 \implies T = 0.001$</span> (0.1% light transmission — very dark background)
+            </li>
+            <li><b style="color:var(--rad-teal);">The "Rule of 0.3 OD":</b> Because <span class="math-tex">$\log_{10}(2) \approx 0.301$</span>, an increase of <b>0.30 OD</b> always represents a <b>50% reduction (halving)</b> of transmitted light!</li>
+          </ul>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.2 The Hurter &amp; Driffield (H&amp;D) Characteristic Curve</h3>
+        <p>
+          In 1890, Ferdinand Hurter and Vero Driffield established the method of plotting a photographic emulsion's response by graphing <b>Optical Density (OD)</b> on the Y-axis against the <b>Logarithm of Relative Exposure (<span class="math-tex">$\log E$</span>)</b> on the X-axis. This sigmoidal (S-shaped) curve reveals 4 distinct functional zones:
+        </p>
+        <div class="curve-regions-grid">
+          <div class="curve-region-card" style="border-top:3px solid #ef4444;">
+            <span class="region-badge">Inherent Density</span>
+            <h4>1. Base + Fog (<span class="math-tex">$D_{\min}$</span>)</h4>
+            <p>The inherent optical density of unexposed, fully processed film. Base density (~0.05–0.10 OD) stems from blue tinting; chemical fog (~0.05–0.10 OD) stems from spontaneous AgBr reduction. Legally must remain <b>&lt; 0.20–0.22 OD</b>.</p>
+          </div>
+          <div class="curve-region-card" style="border-top:3px solid #f59e0b;">
+            <span class="region-badge">Threshold Zone</span>
+            <h4>2. The Toe Region</h4>
+            <p>Low-density zone (<span class="math-tex">$OD \approx 0.2–0.5$</span>). Initial photon absorption occurs, but density increases very slowly with exposure. Produces low contrast; corresponds to thick, highly attenuating anatomical regions.</p>
+          </div>
+          <div class="curve-region-card" style="border-top:3px solid #10b981;">
+            <span class="region-badge">Diagnostic Zone</span>
+            <h4>3. Straight-Line Portion</h4>
+            <p>The linear diagnostic range (<span class="math-tex">$OD \approx 0.5–2.2$</span>). Proportional increase in density with log exposure. Constant slope yields predictable, maximum radiographic contrast for diagnostic pathology.</p>
+          </div>
+          <div class="curve-region-card" style="border-top:3px solid #6366f1;">
+            <span class="region-badge">Saturation Zone</span>
+            <h4>4. Shoulder &amp; <span class="math-tex">$D_{\max}$</span></h4>
+            <p>High-density saturation zone (<span class="math-tex">$OD > 2.5$</span>). Nearly all available silver halide crystals are fully reduced. Further exposure yields zero contrast. Extreme exposure can induce solarization (density reversal).</p>
+          </div>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.3 Quantitative Sensitometric Parameters</h3>
+        <p>
+          Three vital parameters define the performance and clinical utility of an image receptor system:
+        </p>
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-chart-line"></i> Speed, Gamma, and Latitude Equations:</div>
+          <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
+            <li><b>Film Speed (Sensitivity):</b> Quantified by the exposure required to produce a net optical density of <b>1.0 above Base + Fog</b>:
+              <span class="math-display">$$\text{Speed Point} = D_{\min} + 1.00\text{ OD}$$</span>
+              A faster receptor system reaches this point with less radiation exposure, shifting the H&amp;D curve to the <b>left</b> (reducing patient dose under ALARA).
+            </li>
+            <li><b>Film Gamma (<span class="math-tex">$\gamma$</span>) &amp; Average Gradient (Contrast):</b> The slope of the straight-line portion of the curve:
+              <span class="math-display">$$\gamma = \frac{OD_2 - OD_1}{\log E_2 - \log E_1}$$</span>
+              Average gradient is evaluated between net densities of <span class="math-tex">$0.25$</span> and <span class="math-tex">$2.00$</span> above Base + Fog:
+              <span class="math-display">$$\text{Average Gradient} = \frac{(2.00 + D_{\min}) - (0.25 + D_{\min})}{\log E_2 - \log E_1} = \frac{1.75}{\log E_2 - \log E_1}$$</span>
+              Steeper slope (<span class="math-tex">$\gamma > 2.0$</span>) indicates <b>high contrast</b> (short gray scale).
+            </li>
+            <li><b>Exposure Latitude:</b> The useful range of log exposures that produce diagnostic densities along the straight-line portion.
+              <br><b style="color:#b91c1c;">The Invariable Reciprocal Trade-Off:</b> Contrast and latitude are <b>inversely related</b>:
+              <span class="math-display">$$\text{Latitude} \propto \frac{1}{\text{Gamma}}$$</span>
+              A steep, high-contrast film has <b>narrow latitude</b> (very sensitive to small exposure errors), whereas a low-contrast film offers <b>wide latitude</b> (forgiving of technique variations, ideal for chest imaging).
+            </li>
+          </ol>
+        </div>
+
+        <h3 style="color:var(--rad-navy);margin-top:22px;">1.4 Darkroom Sensitometric Quality Control</h3>
+        <p>
+          In clinical departments, radiographers perform daily quality assurance on automatic processors using two precision instruments:
+        </p>
+        <ul style="margin:0;padding-left:20px;font-size:13.5px;line-height:1.65;color:var(--rad-navy);">
+          <li><b>Sensitometer:</b> An optical device containing a calibrated 21-step optical density tablet (step wedge). Each successive step transmits <span class="math-tex">$\sqrt{2} \approx 1.414\times$</span> more light than the previous step, establishing a uniform constant increase of exactly <b>0.15 log E</b> per step.</li>
+          <li><b>Densitometer:</b> An electronic photometer measuring the exact transmitted light fraction through each step and displaying direct digital optical density.</li>
+          <li><b>Daily QA Tolerance Standards:</b>
+            <br>• <b>Base + Fog (<span class="math-tex">$D_{\min}$</span>):</b> Must not vary by more than <span class="math-tex">$\pm 0.03\text{ OD}$</span> from departmental control baseline (and never exceed 0.20 OD).
+            <br>• <b>Speed Index (Mid-Density Step):</b> The step closest to <span class="math-tex">$1.0\text{ OD} + D_{\min}$</span> must remain within <span class="math-tex">$\pm 0.15\text{ OD}$</span>.
+            <br>• <b>Contrast Index (Density Difference):</b> The difference between step near 2.0 OD and step near 0.4 OD must remain within <span class="math-tex">$\pm 0.15\text{ OD}$</span>.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 1: CURVE REGIONS ===================== -->
+    <section class="lab-section" id="sec-curve">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1 — H&amp;D Characteristic Curve Anatomy Explorer</h2>
+          <div class="lab-section-sub">Inspect the 4 anatomical curve zones and complete the sensitometric parameter verification check</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-chart-area"></i> Curve Anatomy Explorer</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Review the 4 characteristic regions of the sensitometric S-curve below, then complete Table A with exact diagnostic definitions and QA threshold specifications.
+        </p>
+
+        <div class="curve-regions-grid">
+          <div class="curve-region-card" style="border-top:3px solid #ef4444;">
+            <span class="region-badge">Inherent Density</span>
+            <h4>Base + Fog (<span class="math-tex">$D_{\min}$</span>)</h4>
+            <p>Minimum optical density (~0.10–0.20 OD). Unexposed film processed through darkroom chemicals. Legal QA limit: <span class="math-tex">$\le 0.20\text{ OD}$</span>.</p>
+          </div>
+          <div class="curve-region-card" style="border-top:3px solid #f59e0b;">
+            <span class="region-badge">Threshold Zone</span>
+            <h4>Toe Region</h4>
+            <p>Initial response zone (<span class="math-tex">$OD \approx 0.2–0.5$</span>). Sluggish slope, low contrast. Represents thick anatomy and sub-threshold exposures.</p>
+          </div>
+          <div class="curve-region-card" style="border-top:3px solid #10b981;">
+            <span class="region-badge">Diagnostic Zone</span>
+            <h4>Straight-Line Portion</h4>
+            <p>Linear diagnostic range (<span class="math-tex">$OD \approx 0.5–2.2$</span>). Slope defines film gamma (<span class="math-tex">$\gamma$</span>). Maximum, predictable radiographic contrast.</p>
+          </div>
+          <div class="curve-region-card" style="border-top:3px solid #6366f1;">
+            <span class="region-badge">Saturation Zone</span>
+            <h4>Shoulder &amp; <span class="math-tex">$D_{\max}$</span></h4>
+            <p>Maximum optical density (<span class="math-tex">$OD > 2.5$</span>). Emulsion fully exposed; slope flattens to zero. Overexposure produces total saturation.</p>
+          </div>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-list-check"></i> Table A: Sensitometric Parameter Verification Check</h4>
+        <p class="small muted">Synthesize your understanding by entering the exact sensitometric definitions and tolerance limits below:</p>
+        <table class="data-table checklist-fill-table">
+          <thead>
+            <tr>
+              <th style="width:28%">Sensitometric Concept</th>
+              <th style="width:36%">Mathematical / Physical Definition</th>
+              <th>Clinical Significance &amp; QA Tolerance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Base + Fog (<span class="math-tex">$D_{\min}$</span>):</b></td>
+              <td><input type="text" id="w-base-fog-spec" placeholder="e.g., Inherent density of unexposed processed film (base dye + chemical fog)"></td>
+              <td>QA tolerance: ±0.03 OD from baseline; must not exceed 0.20 OD (prevents contrast loss).</td>
+            </tr>
+            <tr>
+              <td><b>Speed Point:</b></td>
+              <td><input type="text" id="w-speed-point-def" placeholder="e.g., Exposure required to produce net optical density of 1.0 above Base + Fog"></td>
+              <td>Defines receptor sensitivity; faster film shifts curve left, reducing patient dose under ALARA.</td>
+            </tr>
+            <tr>
+              <td><b>Film Gamma (<span class="math-tex">$\gamma$</span>):</b></td>
+              <td><input type="text" id="w-gamma-def" placeholder="e.g., Maximum slope of straight-line portion: γ = (OD2 - OD1) / (log E2 - log E1)"></td>
+              <td>Determines film contrast; γ > 2.0 yields steep short-scale contrast; γ < 1.5 yields long scale.</td>
+            </tr>
+            <tr>
+              <td><b>Exposure Latitude:</b></td>
+              <td><input type="text" id="w-latitude-tradeoff" placeholder="e.g., Useful range of log exposures along straight line (Latitude ∝ 1 / Gamma)"></td>
+              <td>Wider latitude is more forgiving of exposure error but delivers lower overall contrast.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 2: PARAMETER MATCHER ===================== -->
+    <section class="lab-section" id="sec-sens-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2 — Sensitometric Parameter &amp; Curve Matcher</h2>
+          <div class="lab-section-sub">Pair curve behaviors and optical density values with their physical definitions</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-vial-circle-check"></i> Parameter Matcher Challenge</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Match each sensitometric curve behavior or optical density property to its exact physical meaning:
+        </p>
+        <div id="sens-match-container" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 3: 21-STEP SENSITOMETER STRIP ===================== -->
+    <section class="lab-section" id="sec-step-wedge">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3 — Calibrated 21-Step Sensitometer Strip Densitometer</h2>
+          <div class="lab-section-sub">Virtual optical tablet simulation: Click steps to measure Log E, Optical Density, and Transmittance</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-barcode"></i> Virtual Sensitometer Tablet</span>
+        <p style="margin-top:10px;font-size:13.5px;">
+          Below is a calibrated 21-step optical density tablet (step wedge), incremented in standard <b>0.15 log E steps</b> (<span class="math-tex">$\sqrt{2}\times$</span> exposure per step). Click on any step to measure its exact Optical Density (<span class="math-tex">$OD$</span>), light transmittance (<span class="math-tex">$T\%$</span>), and H&amp;D curve region.
+        </p>
+
+        <div class="step-wedge-wrap">
+          <div class="step-wedge-strip" id="sensitometer-strip"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px;">
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Selected Step</span>
+            <h4 id="wedge-step-num" style="margin:4px 0 0;color:var(--rad-navy);font-size:18px;">Step 11 (Mid-scale)</h4>
+          </div>
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Relative Log Exposure</span>
+            <h4 id="wedge-step-loge" style="margin:4px 0 0;color:var(--rad-teal);font-size:18px;">0.00 log E</h4>
+          </div>
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Densitometer Optical Density</span>
+            <h4 id="wedge-step-od" style="margin:4px 0 0;color:#f59e0b;font-size:18px;">1.57 OD</h4>
+          </div>
+          <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+            <span class="small muted" style="font-weight:700;text-transform:uppercase;">Transmitted Viewbox Light</span>
+            <h4 id="wedge-step-trans" style="margin:4px 0 0;color:#10b981;font-size:18px;">2.69%</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 4: CLINICAL SCENARIO ===================== -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4 — Clinical Decision &amp; Exposure Latitude Scenario</h2>
+          <div class="lab-section-sub">Receptor Selection Dilemma: Speed vs Contrast vs Exposure Latitude under ALARA</div>
+        </div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Clinical Receptor Selection</span>
+        <h3 style="color:var(--rad-navy);margin-top:12px;">Case Scenario: Selecting a Film-Screen System for Pediatric Chest vs Extremity</h3>
+        <p style="font-size:13.5px;line-height:1.55;">
+          A radiographer is evaluating two diagnostic film-screen receptor combinations:
+          <br>• <b>Film-Screen System A:</b> Fast speed (400 speed class), high gamma (<span class="math-tex">$\gamma = 2.8$</span>), very narrow exposure latitude.
+          <br>• <b>Film-Screen System B:</b> Moderate speed (100 speed class), moderate gamma (<span class="math-tex">$\gamma = 1.3$</span>), wide exposure latitude.
+          <br>When performing an uncooperative pediatric mobile chest examination with wide variations in thoracic tissue density and high risk of motion/technique error, which receptor characteristic is most critical, and how is the clinical trade-off justified?
+        </p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Choose the optimal clinical receptor trade-off</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Prioritize System B's Wide Latitude &amp; Moderate Contrast:</b> Wide exposure latitude accommodates the extreme anatomical density difference between aerated lung parenchyma and dense mediastinum, providing forgiving exposure tolerance to avoid retakes while maintaining diagnostic visibility across the entire thorax.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Prioritize System A's High Gamma (γ = 2.8):</b> Extreme gamma ensures high black-and-white contrast across lung fields, completely saturating mediastinal anatomy to eliminate gray tones.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Receptor speed and latitude have no impact on diagnostic retake rates:</b> Only focal spot size and SID govern image density and clinical acceptability.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Always select the system with the highest Base + Fog:</b> A higher Base + Fog (>0.35 OD) pre-exposes the film to reduce the required patient exposure dose.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="button" class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Check Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">Select an option above and check your clinical decision.</div>
+      </article>
+    </section>
+
+    <!-- ===================== KNOWLEDGE CHECK ===================== -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Mastery Quizzes</h2>
+          <div class="lab-section-sub">Formative assessment of optical density definition, H&amp;D curve regions, gamma, and shoulder saturation</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-circle-check"></i> Formative Mastery Assessment</span>
+        <div id="quiz-wrap" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 1 SUBMISSION HUB ===================== -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-paper-plane"></i></div>
+        <div>
+          <h2>Phase 1 Submission — In-Lab Interactive Activities</h2>
+          <div class="lab-section-sub">Submit and lock in your in-lab activities score (10 points) before leaving the laboratory session</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- ===================== CTA TRANSITION TO TAB 2 ===================== -->
+    <div class="card" style="background:linear-gradient(135deg, #071a2b 0%, #134e6f 100%);color:#fff;border-radius:12px;padding:26px;margin-top:24px;box-shadow:var(--rad-shadow-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div style="max-width:620px;">
+          <span style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7fe0d6;font-weight:700;">Foundations Complete · Ready for Experimentation</span>
+          <h3 style="color:#ffffff;margin:8px 0 10px;font-size:22px;">Proceed to Tab 2: Virtual Sensitometry Simulator</h3>
+          <p style="margin:0;font-size:14px;opacity:0.92;line-height:1.5;">Now that you have completed the conceptual primer and interactive stations, enter the digital laboratory to simulate dynamic H&amp;D characteristic curves, measure optical density and gamma, export your dataset, and complete your quantitative analysis.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-teal" id="btn-proceed-to-sim" style="padding:14px 28px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.25);">
+            <i class="fa-solid fa-flask"></i> Proceed to Tab 2: Virtual Experiment &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#tab-pane-intro -->
+
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 2: VIRTUAL SIMULATION & WORKBOOK ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:12.5px;"><i class="fa-solid fa-microscope"></i> Tab 2: Virtual Laboratory &amp; Analysis Workspace</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-intro" style="font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Return to Tab 1 (Theory &amp; Foundations)</button>
+    </div>
+
+    <!-- ===================== EXPERIMENT PROTOCOL & OBJECTIVES ===================== -->
+    <section class="card" id="sec-exp-guide" style="border-left:4px solid var(--rad-teal);margin-bottom:24px;">
+      <div class="flex items-center gap-12" style="margin-bottom:8px;">
+        <i class="fa-solid fa-list-check" style="color:var(--rad-teal);font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Virtual Physics Experiment: Protocol, Objectives &amp; Step-by-Step Procedure</h3>
+      </div>
+      <p style="margin:6px 0 14px 0;font-size:14px;line-height:1.5;">Follow the standardized experimental protocol below to record at least <b>3 unique controlled trials</b> into your run logger for post-lab Excel curve fitting and quantitative evaluation.</p>
+
+      <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+        <h4 style="margin:0 0 8px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-bullseye" style="color:var(--rad-teal);"></i> Specific Experimental Objectives:</h4>
+        <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;color:var(--rad-navy);">
+          <li><b>H&amp;D Curve Sigmoidal Construction:</b> Map the full optical density response from low log exposure (<span class="math-tex">$-2.0\text{ log }E$</span>) through saturation (<span class="math-tex">$+2.0\text{ log }E$</span>).</li>
+          <li><b>Film Speed Lateral Shift:</b> Quantify how modifying receptor speed class (60 to 220) laterally shifts the H&amp;D curve along the log exposure axis.</li>
+          <li><b>Gamma Slope &amp; Contrast Gradient:</b> Measure how adjusting film gamma (<span class="math-tex">$\gamma = 0.8$</span> to <span class="math-tex">$3.0$</span>) alters the tangent slope line and diagnostic contrast scale.</li>
+          <li><b>Base + Fog Inherent Density:</b> Demonstrate how elevated gross fog (<span class="math-tex">$D_{\min} > 0.20\text{ OD}$</span>) degrades diagnostic contrast across all exposure zones.</li>
+        </ol>
+      </div>
+
+      <h4 style="margin:0 0 10px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-clipboard-list" style="color:var(--rad-teal);"></i> Step-by-Step Laboratory Procedure:</h4>
+      <div class="protocol-steps-grid">
+        <div class="protocol-step-card">
+          <div class="step-num">Step 1 · Scientific Hypothesis</div>
+          <h4>Formulate Prediction</h4>
+          <p>Before moving any sliders, enter a clear hypothesis in the <b>Pre-Trial Scientific Prediction</b> field predicting how altering film gamma or log exposure will impact optical density and contrast.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 2 · Baseline Trial (Run 1)</div>
+          <h4>Standard Diagnostic Baseline</h4>
+          <p>Click preset <b>Standard Baseline (Log E: 0.0, Speed: 100, Gamma: 1.8, Base: 0.12)</b>. Notice operating point centered in the straight-line region. Record Run 1.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 3 · Toe Underexposure (Run 2)</div>
+          <h4>Toe Region Threshold</h4>
+          <p>Reduce Log Exposure to <span class="math-tex">$-1.2\text{ log }E$</span>. Observe how the probe reticle drops into the toe region (<span class="math-tex">$OD \approx 0.25$</span>) with high light transmission. Record Run 2.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 4 · Shoulder Saturation (Run 3)</div>
+          <h4>Shoulder Saturation (<span class="math-tex">$D_{\max}$</span>)</h4>
+          <p>Increase Log Exposure to <span class="math-tex">$+1.5\text{ log }E$</span>. Observe the reticle in the shoulder region (<span class="math-tex">$OD > 2.8$</span>) where light transmission drops below 0.2%. Record Run 3.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 5 · High Gamma Trial (Run 4)</div>
+          <h4>High Contrast Steep Slope</h4>
+          <p>Click preset <b>High Contrast (Gamma: 2.8)</b>. Notice the steep tangent slope line and narrowed relative exposure latitude. Record Run 4.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 6 · Export Dataset</div>
+          <h4>Download Run Data (CSV)</h4>
+          <p>Click <b>Download Run Data (CSV)</b> in the toolbar to save your recorded sensitometric trials for post-lab Excel plotting and submission requirements.</p>
+        </div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+        <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+        ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline (Log E 0.0 / γ 1.8) + Record &nbsp; ☐ 3. Run 2 Toe (−1.2 log E) + Record &nbsp; ☐ 4. Run 3 Shoulder (+1.5 log E) + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B.<br>
+        Run 4 High-gamma (γ 2.8) is bonus/optional — only after the required 3.<br>
+        <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider per run.
+      </div>
+    </section>
+
+    <!-- ===================== VIRTUAL EXPERIMENT SIMULATOR SUITE ===================== -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Virtual Simulation Suite — Sensitometer &amp; Characteristic Curve Simulator</h2>
+          <div class="lab-section-sub">Interactive Hurter &amp; Driffield (H&amp;D) curve generator with dynamic gamma tangent and densitometer probe</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Digital Simulator</span>
+        <p style="margin-top:10px;font-size:13.5px;">Adjust relative log exposure, receptor speed class, film gamma, and base+fog below. Observe the dynamic S-curve, tangent slope line, and reticle probe readout. <b>Record at least 3 unique runs</b> with scientific hypotheses.</p>
+
+        <!-- Presets bar -->
+        <div class="sim-presets-bar">
+          <span class="small muted" style="font-weight:700;margin-right:6px;"><i class="fa-solid fa-sliders"></i> Operating Presets:</span>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-exposure="0" data-speed="100" data-gamma="1.8" data-base="0.12">Standard Baseline (Log E: 0.0, Speed: 100, γ: 1.8)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-exposure="0" data-speed="100" data-gamma="2.8" data-base="0.10">High Contrast / Narrow Latitude (γ: 2.8)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-exposure="0" data-speed="100" data-gamma="1.0" data-base="0.12">Wide Latitude / Low Contrast (γ: 1.0)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-exposure="-0.5" data-speed="200" data-gamma="1.8" data-base="0.14">High Speed Receptor (Speed: 200 / Low Dose)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-exposure="0" data-speed="100" data-gamma="1.8" data-base="0.32">Elevated Base + Fog QA Failure (0.32 OD)</button>
+        </div>
+
+        <!-- Simulation Layout -->
+        <div class="sim-layout">
+          <!-- Interactive Canvas -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" width="900" height="300" aria-label="Interactive digital simulation of Hurter &amp; Driffield characteristic curve and optical density"></canvas>
+          </div>
+
+          <!-- Controls Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-exposure"><span>Relative Log Exposure (<span class="math-tex">$\log E$</span>)</span><output id="out-exposure" for="ctrl-exposure">0.0 log E</output></label>
+              <input type="range" id="ctrl-exposure" min="-2" max="2" step="0.1" value="0">
+              <span class="small muted" style="display:block;margin-top:4px;">Diagnostic straight line: -0.5 to +0.8 log E</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-speed"><span>Film Speed Class</span><output id="out-speed" for="ctrl-speed">100 speed</output></label>
+              <input type="range" id="ctrl-speed" min="60" max="220" step="5" value="100">
+              <span class="small muted" style="display:block;margin-top:4px;">Standard par speed: 100 class</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-gamma"><span>Film Gamma (<span class="math-tex">$\gamma$</span> / Slope)</span><output id="out-gamma" for="ctrl-gamma">1.80 slope</output></label>
+              <input type="range" id="ctrl-gamma" min="0.8" max="3.0" step="0.1" value="1.8">
+              <span class="small muted" style="display:block;margin-top:4px;">Diagnostic contrast slope: 1.5 to 2.5</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-base"><span>Base + Fog (<span class="math-tex">$D_{\min}$</span>)</span><output id="out-base" for="ctrl-base">0.12 OD</output></label>
+              <input type="range" id="ctrl-base" min="0.05" max="0.35" step="0.01" value="0.12">
+              <span class="small muted" style="display:block;margin-top:4px;">QA legal limit: &lt; 0.20 OD</span>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Display -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+
+          <!-- Observation Box -->
+          <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:12px 16px;margin-top:10px;">
+            <strong style="color:var(--rad-navy);"><i class="fa-solid fa-microscope" style="color:var(--rad-teal);"></i> Sensitometric Response Critique:</strong>
+            <p id="sim-caption" style="margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--rad-text-soft);">Adjust controls above to evaluate optical density, gamma slope, and exposure latitude.</p>
+          </div>
+
+          <!-- Pre-Trial Prediction Field -->
+          <div class="form-row" style="margin-top:18px;">
+            <label class="field-label" for="w-prediction">
+              <i class="fa-solid fa-pen-to-square" style="color:var(--rad-teal);"></i> Pre-Trial Scientific Prediction <span aria-hidden="true">*</span>
+            </label>
+            <textarea id="w-prediction" rows="3" required placeholder="State the variable you plan to change (e.g. log exposure, film speed, or gamma) and explain your predicted outcome on optical density, curve region, and transmitted light percentage..."></textarea>
+            <p class="form-hint">Minimum 20 characters required before recording runs. Your prediction is locked into your exported dataset.</p>
+          </div>
+
+          <!-- Run Logging Toolbar -->
+          <div style="margin-top:18px;border-top:1px solid var(--rad-border);padding-top:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary" id="record-run"><i class="fa-solid fa-camera"></i> Record This Run</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash-can"></i> Remove Last Run</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-download-runs-csv"><i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)</button>
+              </div>
+              <span class="run-status" id="run-status" role="status" aria-live="polite" style="font-weight:700;color:var(--rad-navy);">0 / 3 unique runs recorded</span>
+            </div>
+
+            <!-- Run Log Table -->
+            <div class="table-responsive">
+              <table class="data-table run-table">
+                <thead>
+                  <tr>
+                    <th style="width:6%">Run</th>
+                    <th style="width:32%">Operating Parameters</th>
+                    <th style="width:32%">Sensitometric Metrics</th>
+                    <th>Curve Region &amp; Diagnostic Critique</th>
+                  </tr>
+                </thead>
+                <tbody id="run-log-body">
+                  <tr><td colspan="4" class="muted">No runs recorded yet. Adjust controls above and click "Record This Run".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POST-LAB DATA ANALYSIS & WORKSHEET ===================== -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Required Data Analysis &amp; Post-Lab Reflection</h2>
+          <div class="lab-section-sub">Quantitative sensitometric calculations, Excel plotting instructions, and clinical reflection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and perform the following analytical steps in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Full H&amp;D Characteristic Curve (Log Exposure vs Optical Density):</b> Plot Relative Log Exposure (<span class="math-tex">$\log E$</span>) on the X-axis against Optical Density (<span class="math-tex">$OD$</span>) on the Y-axis. Fit a smooth sigmoidal curve and clearly label the Toe, Straight-Line Portion, and Shoulder regions.</li>
+            <li><b>Plot 2 — Transmitted Light Decay Curve (Optical Density vs Transmittance %):</b> Plot Optical Density (<span class="math-tex">$OD$</span>) on the X-axis against Transmitted Light Percentage (<span class="math-tex">$T\%$</span>) on the Y-axis. Fit an exponential trendline (<span class="math-tex">$y = 100 \cdot 10^{-x}$</span>) demonstrating the inverse logarithmic decay where every 0.3 increase in OD halves viewbox illumination.</li>
+            <li><b>Calculated Spreadsheets Columns:</b> Add a column calculating theoretical transmittance using the formula <span class="math-tex">$T = 10^{-OD} \times 100\%$</span> and verify that it matches your exported simulation telemetry.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and upload it in <b>Section 10 (Phase 2 Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact sensitometric parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <thead>
+            <tr><th style="width:32%">Sensitometric Parameter</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Interpretation</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Transmitted Light at OD = 1.00:</b> Theoretical viewbox light penetration</td>
+              <td><input type="text" id="w-calc-od1-check" placeholder="e.g., T = 10^(-OD) * 100% = 10^(-1.0) * 100%"></td>
+              <td><input type="text" id="w-calc-od1-out" placeholder="e.g., 10.0% of incident viewbox illumination"></td>
+            </tr>
+            <tr>
+              <td><b>Transmitted Light at OD = 2.00:</b> High density diagnostic bone cortex</td>
+              <td><input type="text" id="w-calc-od2-check" placeholder="e.g., T = 10^(-OD) * 100% = 10^(-2.0) * 100%"></td>
+              <td><input type="text" id="w-calc-od2-out" placeholder="e.g., 1.0% of incident viewbox illumination"></td>
+            </tr>
+            <tr>
+              <td><b>Gamma Slope (<span class="math-tex">$\gamma$</span>):</b> Between (0.0 log E, 0.8 OD) and (0.5 log E, 1.8 OD)</td>
+              <td><input type="text" id="w-calc-gamma-check" placeholder="e.g., γ = (1.8 - 0.8) / (0.5 - 0.0) = 1.0 / 0.5"></td>
+              <td><input type="text" id="w-calc-gamma-out" placeholder="e.g., γ = 2.00 (Steep slope, high contrast scale)"></td>
+            </tr>
+            <tr>
+              <td><b>Relative Latitude (simulator estimate) at <span class="math-tex">$\gamma = 1.8$</span>:</b> Useful exposure range calculation</td>
+              <td><input type="text" id="w-calc-latitude-check" placeholder="e.g., Latitude (simulator estimate) = 2.4 / gamma = 2.4 / 1.8"></td>
+              <td><input type="text" id="w-calc-latitude-out" placeholder="e.g., 1.33 log E (Moderate dynamic range)"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-comment-dots"></i> C. Post-Lab Reflection &amp; Clinical Analysis Questions</h4>
+
+        <div class="form-row">
+          <label class="field-label" for="q1">1. Record two OD readings and use the logarithmic definition to explain what the values mean in terms of light transmission. <span aria-hidden="true">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="Contrast two optical densities from your runs (e.g. OD 1.0 vs OD 2.0), showing the 10:1 ratio in transmitted light and explaining the Rule of 0.3 OD..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q2">2. Identify the toe, straight-line, and shoulder on your curve and describe the physical emulsion behavior in each. <span aria-hidden="true">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="Detail what occurs in the silver halide crystals in the toe (threshold activation), straight-line (proportional reduction), and shoulder (crystal exhaustion/saturation)..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q3">3. Compare the effects of increasing gamma and increasing latitude. Cite specific run numbers and telemetry data from your trials. <span aria-hidden="true">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Contrast your baseline trial (γ = 1.8) with your high-gamma run (γ = 2.8) and low-gamma run (γ = 1.0), explaining the reciprocal trade-off between contrast and exposure latitude..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q4">4. Critical thinking: Recommend a faster or slower film for a dose-sensitive pediatric examination and justify the clinical trade-off. <span aria-hidden="true">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Evaluate receptor speed class under ALARA principles, contrasting patient entrance skin dose reduction with potential quantum mottle or noise penalties..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RUBRIC ===================== -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Standardized Grading Rubric</h2>
+          <div class="lab-section-sub">Total: 20 points — Departmental standardized evaluation criteria across Phase 1 and Phase 2</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-rubric"><i class="fa-solid fa-clipboard-list"></i> Standardized Department Rubric</span>
+        <div id="rubric-container" style="margin-top:14px; overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:10px;">Students: score yourself to evaluate your readiness. Official grades and Gemini Flash AI feedback are assigned via the department portal.</p>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 2 SUBMISSION HUB ===================== -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-file-excel"></i></div>
+        <div>
+          <h2>Phase 2 Submission — Post-Lab Excel Data Analysis</h2>
+          <div class="lab-section-sub">Upload your completed Excel analysis workbook and submit your post-lab reflection (10 points)</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div><!-- /#tab-pane-experiment -->
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 4 of 15 · assessed virtual laboratory</footer>
+
+<!-- ===================== STICKY ACTION BAR ===================== -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none;"></label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar"><i class="fa-solid fa-file-pdf"></i> Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 4 of 15 · Interactive Simulation Lab Platform
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
-const LAB = {"week":4,"title":"Optical Density & the Characteristic Curve","lecture":"Visibility Factors I — Density & Sensitometry","type":"density","subtitle":"Use virtual sensitometry to relate exposure to optical density, speed, latitude, and gamma.","objectives":["Define optical density and explain why it is logarithmic.","Construct and interpret a simplified H&D characteristic curve.","Identify toe, straight-line, and shoulder regions.","Compare film speed, latitude, and contrast using curve parameters.","Use a sensitometer/densitometer simulation to support an exposure decision."],"theory":"<p>Optical density (OD) describes film blackening: <b>OD = log₁₀(I₀ / Iₜ)</b>, where I₀ is incident light and Iₜ is transmitted light. Higher OD means less light passes through the processed film. A characteristic curve plots OD against the logarithm of exposure.</p><div class=\"formula-box\"><b>Toe:</b> low-density region with limited separation · <b>Straight line:</b> useful exposure range · <b>Shoulder:</b> saturation region · <b>Gamma:</b> slope of the straight-line portion.</div><p>Film speed is the exposure needed to reach a reference density; latitude is the useful exposure range. A steeper curve has higher contrast but narrower latitude.</p>","controls":[{"id":"exposure","label":"Log exposure","min":-2,"max":2,"step":0.1,"value":0,"unit":"log E"},{"id":"speed","label":"Film speed","min":60,"max":220,"step":5,"value":100,"unit":"speed"},{"id":"gamma","label":"Gamma","min":0.8,"max":3,"step":0.1,"value":1.8,"unit":"slope"},{"id":"base","label":"Base + fog","min":0.05,"max":0.35,"step":0.01,"value":0.12,"unit":"OD"}],"stations":[{"id":"curve","title":"Station 1 — Sensitometer and densitometer","text":"Move through the exposure steps, read the virtual OD, and identify the toe, straight-line, and shoulder regions on the curve.","kind":"main"},{"id":"compare","title":"Station 2 — Compare film curves","text":"Match each curve behavior to the correct term: speed, latitude, or gamma.","kind":"match","left":[["steep","Steep straight-line slope"],["wide","Wide useful exposure range"],["left","Curve shifted left"]],"right":[["contrast","Higher contrast / higher gamma"],["latitude","Greater latitude"],["speed","Faster film / higher speed"]],"pairs":{"steep":"contrast","wide":"latitude","left":"speed"}},{"id":"case","title":"Station 3 — Exposure latitude decision","text":"A patient exam has wide tissue-density variation and repeat exposures should be minimized. Choose the film characteristic you would prioritize.","kind":"case"}],"quiz":[{"prompt":"On a characteristic curve, the straight-line portion primarily represents:","options":["The useful exposure range where contrast is most predictable","Only base-plus-fog density","Complete saturation with no further density change","The darkroom light leak region"],"correct":0,"explain":"The straight-line region is the useful range in which exposure differences produce predictable density differences."},{"prompt":"Optical density is defined as:","options":["It/I0","log10(I0/It)","SID/SOD","mAs × time"],"correct":1,"explain":"OD is the base-10 logarithm of incident to transmitted light."},{"prompt":"A steeper straight-line portion indicates:","options":["Lower contrast and wider latitude","Higher contrast and usually narrower latitude","No base fog","Lower film speed only"],"correct":1,"explain":"Steeper slope (higher gamma) produces greater film contrast and narrower latitude."},{"prompt":"The shoulder represents:","options":["Low-exposure response","The useful linear range only","High-exposure saturation","Unprocessed film"],"correct":2,"explain":"At the shoulder, further exposure produces little additional density."}],"worksheet":[{"id":"q1","label":"1. Record two OD readings and use the logarithmic definition to explain what the values mean."},{"id":"q2","label":"2. Identify the toe, straight-line, and shoulder on your curve and describe each."},{"id":"q3","label":"3. Compare the effects of increasing gamma and increasing latitude."},{"id":"q4","label":"4. Critical thinking: recommend a faster or slower film for a dose-sensitive exam and justify the trade-off."}],"rubric":[{"id":"c1","name":"Density and curve concepts","points":4,"levels":["Correctly explains OD, curve regions, speed, latitude, and gamma.","Mostly correct with minor gaps.","Major conceptual errors."]},{"id":"c2","name":"Sensitometry investigation","points":5,"levels":["Builds and interprets the curve using multiple readings.","Uses the tool with limited interpretation.","Little evidence of investigation."]},{"id":"c3","name":"Data interpretation and worksheet","points":5,"levels":["Uses quantitative evidence and clear comparisons.","Some evidence but incomplete explanation.","Unsupported or missing analysis."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Explains a defensible speed/latitude/contrast trade-off.","Reasoning is plausible but brief.","No defensible recommendation."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict how increasing gamma changes the H&D curve.","Record a baseline point in the straight-line region.","Move exposure into the toe and record a second run.","Move exposure into the shoulder or change gamma and record a third run.","Compare OD, transmitted light, region, and latitude."],"scenario":{"prompt":"Two films require different exposures to reach the same reference OD. Film A reaches it with less exposure. Which statement is correct?","options":["Film A is faster","Film A has lower speed","Film A must have more OID","Film speed cannot affect curve position"],"correct":0,"explain":"A faster film requires less exposure to reach a reference density and its curve is shifted left."},"minimumRuns":3};
-const QUIZ_IDS = ["q4-1","q4-2","q4-3","q4-4"];
-const CONCEPT = LAB.stations[1];
+/* =========================================================================
+   Tab Switching & Infallible LaTeX Mathematical Rendering
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (!btnIntro || !btnExp || !paneIntro || !paneExp) return;
+
+  if (tabId === 'intro') {
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    paneIntro.classList.add('active');
+    paneExp.classList.remove('active');
+  } else if (tabId === 'experiment') {
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    paneExp.classList.add('active');
+    paneIntro.classList.remove('active');
+
+    setTimeout(function () {
+      if (typeof renderSimulation === 'function') {
+        renderSimulation();
+      }
+    }, 60);
+  }
+
+  if (targetSectionId) {
+    setTimeout(function () {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function formatMathTex(tex, isDisplay) {
+  let clean = tex.trim();
+  clean = clean.replace(/\\text\{([^}]+)\}/g, '$1');
+  clean = clean.replace(/\\approx/g, '≈');
+  clean = clean.replace(/\\times/g, '×');
+  clean = clean.replace(/\\longrightarrow/g, '→');
+  clean = clean.replace(/\\ge/g, '≥');
+  clean = clean.replace(/\\le/g, '≤');
+  clean = clean.replace(/\\cdot/g, '·');
+  clean = clean.replace(/\\gamma/g, 'γ');
+  clean = clean.replace(/\\Delta/g, 'Δ');
+  clean = clean.replace(/\\log_\{10\}/g, 'log₁₀');
+  clean = clean.replace(/\\log/g, 'log');
+  clean = clean.replace(/\\implies/g, '⇒');
+  clean = clean.replace(/\\propto/g, '∝');
+  clean = clean.replace(/\^2/g, '²');
+  clean = clean.replace(/\^0/g, '⁰');
+  clean = clean.replace(/\^([0-9a-zA-Z+-]+)/g, '<sup>$1</sup>');
+  clean = clean.replace(/_([0-9a-zA-Z+-]+)/g, '<sub>$1</sub>');
+
+  const fracMatch = clean.match(/\\frac\{([^}]+)\}\{([^}]+)\}/);
+  if (fracMatch) {
+    clean = clean.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/, `($1 / $2)`);
+  }
+
+  if (isDisplay) {
+    return `<span class="math-fallback-display">${clean}</span>`;
+  } else {
+    return `<span class="math-fallback-inline">${clean}</span>`;
+  }
+}
+
+function renderAllMath() {
+  const mathElements = document.querySelectorAll('.math-tex, .math-display');
+  mathElements.forEach(function (el) {
+    const raw = el.textContent.trim();
+    const isDisplay = raw.startsWith('$$') || raw.startsWith('\\[') || el.classList.contains('math-display');
+    let tex = raw;
+    if (tex.startsWith('$$') && tex.endsWith('$$')) tex = tex.slice(2, -2);
+    else if (tex.startsWith('$') && tex.endsWith('$')) tex = tex.slice(1, -1);
+    else if (tex.startsWith('\\[') && tex.endsWith('\\]')) tex = tex.slice(2, -2);
+    else if (tex.startsWith('\\(') && tex.endsWith('\\)')) tex = tex.slice(2, -2);
+
+    if (window.katex) {
+      try {
+        katex.render(tex, el, { displayMode: isDisplay, throwOnError: false });
+        return;
+      } catch (err) {
+        console.warn('KaTeX render error:', err);
+      }
+    }
+    el.innerHTML = formatMathTex(tex, isDisplay);
+  });
+
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('KaTeX auto-render error:', e);
+    }
+  }
+}
+
+/* =========================================================================
+   Laboratory Configuration & Physics Data
+   ========================================================================= */
+const LAB = {
+  week: 4,
+  title: "Lab 4 — Optical Density & the Characteristic Curve",
+  lecture: "Visibility Factors I — Density & Sensitometry",
+  type: "density",
+  minimumRuns: 3,
+  controls: [
+    { id: "exposure", label: "Log exposure", min: -2, max: 2, step: 0.1, value: 0, unit: "log E" },
+    { id: "speed", label: "Film speed", min: 60, max: 220, step: 5, value: 100, unit: "speed" },
+    { id: "gamma", label: "Gamma", min: 0.8, max: 3, step: 0.1, value: 1.8, unit: "slope" },
+    { id: "base", label: "Base + fog", min: 0.05, max: 0.35, step: 0.01, value: 0.12, unit: "OD" }
+  ],
+  quiz: [
+    {
+      prompt: "On an H&D characteristic curve, the straight-line portion primarily represents:",
+      options: [
+        "The useful diagnostic exposure range where contrast is linear and predictable",
+        "Only the inherent base-plus-fog optical density of the polyester film support",
+        "Complete crystal exhaustion and saturation with zero additional density gain",
+        "The darkroom post-exposure safelight fog artifact region"
+      ],
+      correct: 0,
+      explain: "The straight-line portion is the diagnostic range in which equal increases in log exposure produce proportional optical density increases, delivering optimal contrast."
+    },
+    {
+      prompt: "Optical density (OD) is mathematically defined as:",
+      options: [
+        "Transmitted light divided by incident light: It / I0",
+        "The base-10 logarithm of incident to transmitted light: log10(I0 / It)",
+        "Source-to-Image Distance divided by Source-to-Object Distance: SID / SOD",
+        "Tube current multiplied by exposure time: mA × s"
+      ],
+      correct: 1,
+      explain: "Optical density is the base-10 logarithm of the opacity: OD = log10(I0 / It) = -log10(T)."
+    },
+    {
+      prompt: "A steeper straight-line portion (higher gamma γ) indicates that the film-screen receptor possesses:",
+      options: [
+        "Lower radiographic contrast and wider exposure latitude",
+        "Higher radiographic contrast and narrower exposure latitude",
+        "Zero base+fog density",
+        "Significantly slower receptor speed only"
+      ],
+      correct: 1,
+      explain: "Gamma is the slope of the straight line. A steeper slope (γ > 2.0) produces greater optical density differences (higher contrast), but restricts the range of acceptable exposures (narrow latitude)."
+    },
+    {
+      prompt: "The shoulder region of the H&D characteristic curve represents:",
+      options: [
+        "The sub-threshold toe exposure response",
+        "The linear diagnostic region",
+        "High-exposure crystal saturation (D-max) where contrast drops to zero",
+        "Unprocessed film emulsion prior to developer immersion"
+      ],
+      correct: 2,
+      explain: "At the shoulder (D-max), almost all silver halide crystals have been reduced to metallic silver; further exposure produces no additional density."
+    }
+  ],
+  scenario: {
+    prompt: "Two films require different exposures to reach the same reference OD. Film A reaches it with less exposure. Which statement is correct?",
+    options: [
+      "Film A is faster (higher speed class; shifted left on the log E axis)",
+      "Film A has lower speed and requires more patient radiation dose",
+      "Film A must have been exposed with greater Object-to-Image Distance (OID)",
+      "Receptor speed cannot affect the lateral position of the H&D curve"
+    ],
+    correct: 0,
+    explain: "Receptor speed is inversely proportional to the exposure needed for reference density (Speed Point = D-min + 1.00 OD). A faster film requires less exposure and its curve is shifted to the left."
+  },
+  worksheet: [
+    { id: "w-base-fog-spec", label: "Table A: Base + Fog Definition & QA Limit" },
+    { id: "w-speed-point-def", label: "Table A: Speed Point Specification" },
+    { id: "w-gamma-def", label: "Table A: Film Gamma & Average Gradient" },
+    { id: "w-latitude-tradeoff", label: "Table A: Exposure Latitude Reciprocal Trade-Off" },
+    { id: "w-calc-od1-check", label: "Table B: Transmittance at OD 1.00 Formula Check" },
+    { id: "w-calc-od1-out", label: "Table B: Transmittance at OD 1.00 Result" },
+    { id: "w-calc-od2-check", label: "Table B: Transmittance at OD 2.00 Formula Check" },
+    { id: "w-calc-od2-out", label: "Table B: Transmittance at OD 2.00 Result" },
+    { id: "w-calc-gamma-check", label: "Table B: Gamma Slope Calculation Check" },
+    { id: "w-calc-gamma-out", label: "Table B: Gamma Slope Result" },
+    { id: "w-calc-latitude-check", label: "Table B: Latitude Calculation Check" },
+    { id: "w-calc-latitude-out", label: "Table B: Latitude Result" },
+    { id: "q1", label: "1. Record two OD readings and explain logarithmic meaning in light transmission" },
+    { id: "q2", label: "2. Describe physical emulsion behavior in toe, straight-line, and shoulder" },
+    { id: "q3", label: "3. Compare effects of increasing gamma and latitude citing run numbers" },
+    { id: "q4", label: "4. Recommend faster vs slower film for dose-sensitive pediatric exam" }
+  ],
+  rubric: [
+    { id: "c1", name: "Density and curve concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Correctly explains OD, curve regions, speed, latitude, and gamma.", "Mostly correct with minor gaps.", "Major conceptual errors."] },
+    { id: "c2", name: "Sensitometry investigation", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: ["Builds and interprets the curve using multiple readings.", "Uses the tool with limited interpretation.", "Little evidence of investigation."] },
+    { id: "c3", name: "Data interpretation and worksheet", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Uses quantitative evidence and clear comparisons.", "Some evidence but incomplete explanation.", "Unsupported or missing analysis."] },
+    { id: "c4", name: "Clinical reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Explains a defensible speed/latitude/contrast trade-off.", "Reasoning is plausible but brief.", "No defensible recommendation."] },
+    { id: "c5", name: "Completeness and professionalism", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."] }
+  ]
+};
+
+const QUIZ_IDS = ["q4-1", "q4-2", "q4-3", "q4-4"];
 let currentResult = null;
-let currentViewMode = '3d-shadow';
 
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    values[control.id] = Number(document.getElementById('ctrl-' + control.id).value);
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + values[control.id] + ' ' + control.unit;
+  }).join('; ');
 }
 
 function renderMetrics(result) {
@@ -83,12 +1203,19 @@ function renderMetrics(result) {
 
 function renderSimulation() {
   const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) out.textContent = values[control.id] + ' ' + control.unit;
+  });
+
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas && canvas.getContext) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
   renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const caption = document.getElementById('sim-caption');
+  if (caption) caption.textContent = currentResult.observation;
 }
 
 function experimentActivity() {
@@ -98,116 +1225,335 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Adjust controls above and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) {
+    statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  }
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please formulate a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That exact operating setting has already been recorded. Modify a parameter and try again.', 'error');
+    return;
+  }
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
   activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
   activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  activity.detail = activity.runs.length + ' unique runs recorded; latest diagnostic index ' + run.modelScore + '/100.';
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  if (RadLab.sound && RadLab.sound.playExposure) RadLab.sound.playExposure();
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully.', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded trials to remove.', 'warning');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
+  activity.detail = activity.runs.length + ' unique runs recorded.';
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last recorded run removed.', 'info');
 }
 
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs || !activity.runs.length) {
+    RadLab.toast('No runs recorded yet. Record at least one run before downloading.', 'warning');
+    return;
+  }
+
+  let csv = 'Run Number,Log Exposure (log E),Film Speed,Gamma (Slope),Base+Fog (OD),Optical Density (OD),Curve Region,Relative Latitude (log E),Transmitted Light (%),Diagnostic Observation\n';
+
+  activity.runs.forEach(function (r, idx) {
+    const v = r.values;
+    const m = r.metrics;
+    const od = m[0] ? m[0].value : '';
+    const reg = m[1] ? m[1].value : '';
+    const lat = m[2] ? m[2].value : '';
+    const trans = m[3] ? m[3].value : '';
+    const cleanObs = '"' + (r.observation || '').replace(/"/g, '""') + '"';
+
+    csv += `${idx + 1},${v.exposure},${v.speed},${v.gamma},${v.base},${od},${reg},${lat},${trans},${cleanObs}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab04_Sensitometry_Runs_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Sensitometric run data exported successfully as CSV.', 'success');
 }
 
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please choose a clinical decision before checking.';
+    return;
+  }
+  const choice = Number(selected.value);
+  const correct = choice === LAB.scenario.correct;
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: LAB.scenario.options[choice]
+  };
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  feedback.innerHTML = (correct ? '<strong><i class="fa-solid fa-circle-check"></i> Correct Clinical Decision!</strong> ' : '<strong><i class="fa-solid fa-triangle-exclamation"></i> Reconsider Case Evidence:</strong> ') + LAB.scenario.explain;
+  RadLab.save();
+  RadLab.progress.update();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-04', labTitle: "Lab 4 — Optical Density & the Characteristic Curve", weekNumber: 4, rubric: { title: "Lab 4 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Density and curve concepts","points":4},{"id":"c2","name":"Sensitometry investigation","points":5},{"id":"c3","name":"Data interpretation and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab4-rubric',title:"Lab 4 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Density and curve concepts","points":4,"levels":[{"desc":"Correctly explains OD, curve regions, speed, latitude, and gamma."},{"desc":"Mostly correct with minor gaps."},{"desc":"Major conceptual errors."}]},{"id":"c2","name":"Sensitometry investigation","points":5,"levels":[{"desc":"Builds and interprets the curve using multiple readings."},{"desc":"Uses the tool with limited interpretation."},{"desc":"Little evidence of investigation."}]},{"id":"c3","name":"Data interpretation and worksheet","points":5,"levels":[{"desc":"Uses quantitative evidence and clear comparisons."},{"desc":"Some evidence but incomplete explanation."},{"desc":"Unsupported or missing analysis."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Explains a defensible speed/latitude/contrast trade-off."},{"desc":"Reasoning is plausible but brief."},{"desc":"No defensible recommendation."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
-  }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
-  document.getElementById('record-run').addEventListener('click', recordRun);
-  document.getElementById('remove-run').addEventListener('click', removeLastRun);
-  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+/* 21-Step Sensitometer Tablet Strip Generator */
+function initStepWedge() {
+  const strip = document.getElementById('sensitometer-strip');
+  if (!strip) return;
+  strip.innerHTML = '';
 
-  const btn3d = document.getElementById('btn-view-3d');
-  const btnClassic = document.getElementById('btn-view-classic');
-  if (btn3d && btnClassic) {
-    btn3d.addEventListener('click', function () {
-      currentViewMode = '3d-shadow';
-      btn3d.className = 'btn btn-secondary btn-sm';
-      btnClassic.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
+  for (let step = 1; step <= 21; step++) {
+    const logE = -1.50 + (step - 1) * 0.15;
+    const curve = 1 / (1 + Math.exp(-1.8 * 2.4 * logE));
+    const od = 0.12 + 2.9 * curve;
+    const trans = Math.pow(10, -od) * 100;
+    const grayLevel = Math.round(255 * (trans / 100));
+
+    const stepEl = document.createElement('div');
+    stepEl.className = 'wedge-step' + (step === 11 ? ' active' : '');
+    stepEl.style.backgroundColor = `rgb(${grayLevel}, ${grayLevel}, ${grayLevel})`;
+    stepEl.style.color = grayLevel > 130 ? '#071a2b' : '#ffffff';
+    stepEl.dataset.step = step;
+    stepEl.dataset.loge = logE.toFixed(2);
+    stepEl.dataset.od = od.toFixed(2);
+    stepEl.dataset.trans = trans.toFixed(2);
+
+    stepEl.innerHTML = `<span class="step-label">${step}</span>`;
+
+    stepEl.addEventListener('click', function () {
+      document.querySelectorAll('.wedge-step').forEach(s => s.classList.remove('active'));
+      stepEl.classList.add('active');
+
+      document.getElementById('wedge-step-num').textContent = `Step ${step} (${od < 0.5 ? 'Toe' : od > 2.4 ? 'Shoulder' : 'Straight-Line'})`;
+      document.getElementById('wedge-step-loge').textContent = `${logE >= 0 ? '+' : ''}${logE.toFixed(2)} log E`;
+      document.getElementById('wedge-step-od').textContent = `${od.toFixed(2)} OD`;
+      document.getElementById('wedge-step-trans').textContent = `${trans.toFixed(2)}%`;
+
+      // Sync with simulator slider
+      const expSlider = document.getElementById('ctrl-exposure');
+      if (expSlider) {
+        expSlider.value = Math.max(-2, Math.min(2, logE)).toFixed(1);
+        renderSimulation();
+      }
     });
-    btnClassic.addEventListener('click', function () {
-      currentViewMode = 'classic';
-      btnClassic.className = 'btn btn-secondary btn-sm';
-      btn3d.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
-    });
+
+    strip.appendChild(stepEl);
   }
-  document.querySelectorAll('.preset-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
-      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
-      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
-      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
-      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
-      renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+}
+
+/* =========================================================================
+   Application Initialization
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', function () {
+  RadLab.init({
+    labId: 'lab-04',
+    labTitle: "Lab 4 — Optical Density & the Characteristic Curve",
+    weekNumber: 4,
+    rubric: {
+      title: "Lab 4 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    },
+    sections: [
+      { id: 'sec-curve', label: '1 · Curve Anatomy', checkComplete: function (s) { return !!(s.activities['curve-check'] && s.activities['curve-check'].done); } },
+      { id: 'sec-sens-match', label: '2 · Parameter Matcher', checkComplete: function (s) { return !!(s.activities['sens-match'] && s.activities['sens-match'].done); } },
+      { id: 'sec-step-wedge', label: '3 · 21-Step Wedge', checkComplete: function (s) { return !!(s.activities['wedge-check'] && s.activities['wedge-check'].done); } },
+      { id: 'sec-scenario', label: '4 · Clinical Latitude Decision', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '5 · Knowledge Check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-experiment', label: '6 · Virtual Experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-worksheet', label: '7 · Post-Lab Worksheet' }
+    ]
+  });
+
+  // Register Fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment scientific prediction' });
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // Render Knowledge Check MCQs
+  LAB.quiz.forEach(function (question, index) {
+    RadLab.mcq(document.getElementById('quiz-wrap'), {
+      id: QUIZ_IDS[index],
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex: question.correct,
+      explain: question.explain,
+      allowRetry: true
     });
   });
 
+  // Build Rubric Self-Assessment
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab4-rubric',
+    title: "Lab 4 Grading Rubric (20 points)",
+    criteria: LAB.rubric
+  });
+
+  // Station 2: Sensitometric Parameter Matcher
+  const sensLeft = [
+    { id: "steep", label: "Steep Straight-Line Slope (γ > 2.0)" },
+    { id: "speed", label: "Curve Shifted Laterally Left" },
+    { id: "base", label: "Base + Fog Region (< 0.20 OD)" },
+    { id: "shoulder", label: "Shoulder Region Leveling Off" },
+    { id: "latitude", label: "Wide Useful Log Exposure Range" },
+    { id: "od2", label: "Transmitted Viewbox Light = 1%" }
+  ];
+  const sensRight = [
+    { id: "f_steep", label: "High contrast / narrow latitude (short gray scale)" },
+    { id: "f_speed", label: "Fast receptor speed class / lower patient exposure dose" },
+    { id: "f_base", label: "Inherent polyester base tint and minimal chemical fog" },
+    { id: "f_shoulder", label: "Silver crystal exhaustion and saturation (D-max limit)" },
+    { id: "f_latitude", label: "Forgiving exposure latitude / long gray scale contrast" },
+    { id: "f_od2", label: "Optical Density OD = 2.00 (log10(100/1) = 2)" }
+  ];
+  const sensPairs = {
+    "steep": "f_steep",
+    "speed": "f_speed",
+    "base": "f_base",
+    "shoulder": "f_shoulder",
+    "latitude": "f_latitude",
+    "od2": "f_od2"
+  };
+  RadLab.matchPairs(document.getElementById('sens-match-container'), {
+    id: 'sens-match',
+    left: sensLeft,
+    right: sensRight,
+    pairs: sensPairs,
+    leftTitle: 'Sensitometric Feature or Property',
+    rightTitle: 'Physical & Clinical Definition'
+  });
+
+  // Initialize 21-Step Wedge
+  initStepWedge();
+
+  // Math Helper in Worksheet
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, 'w-calc-od1-check');
+  }
+
+  // Simulation Sliders Event Listeners
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // Buttons Event Listeners
+  document.getElementById('record-run').addEventListener('click', recordRun);
+  document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-download-runs-csv').addEventListener('click', downloadRunsCSV);
+  document.getElementById('check-scenario').addEventListener('click', checkScenario);
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', function () {
+      switchTab('experiment', 'sec-exp-guide');
+    });
+  }
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) {
+    btnBack.addEventListener('click', function () {
+      switchTab('intro');
+    });
+  }
+
+  // Preset Buttons
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const exp = btn.dataset.exposure;
+      const spd = btn.dataset.speed;
+      const gam = btn.dataset.gamma;
+      const bse = btn.dataset.base;
+
+      if (exp !== undefined && document.getElementById('ctrl-exposure')) document.getElementById('ctrl-exposure').value = exp;
+      if (spd !== undefined && document.getElementById('ctrl-speed')) document.getElementById('ctrl-speed').value = spd;
+      if (gam !== undefined && document.getElementById('ctrl-gamma')) document.getElementById('ctrl-gamma').value = gam;
+      if (bse !== undefined && document.getElementById('ctrl-base')) document.getElementById('ctrl-base').value = bse;
+
+      renderSimulation();
+      RadLab.toast('Loaded preset: ' + btn.textContent.trim(), 'info');
+    });
+  });
+
+  // Restore saved scenario choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // Render Math & LaTeX
+  renderAllMath();
+
+  // Initial Simulation & Log Render
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

@@ -5,19 +5,134 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lab 1: The Imaging Chain &amp; the Radiographer's Role — RAD 321</title>
 <link rel="stylesheet" href="../../shared/lab-styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- KaTeX for crisp, mathematically accurate equation rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
 <style>
+  /* Hero banner */
   .hero-banner { position: relative; border-radius: var(--rad-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--rad-shadow-lg); }
-  .hero-banner img { width: 100%; height: 280px; object-fit: cover; }
+  .hero-banner img { width: 100%; height: 260px; object-fit: cover; }
   .hero-banner .hero-overlay {
     position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,37,69,0.92) 0%, rgba(11,37,69,0.55) 55%, rgba(11,37,69,0.05) 100%);
     display: flex; flex-direction: column; justify-content: center; padding: 0 40px; color: #fff; max-width: 640px;
   }
   .hero-overlay .eyebrow { font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: #7fe0d6; font-weight: 700; }
-  .hero-overlay h1 { font-size: 30px; margin: 8px 0 10px; line-height: 1.25; }
-  .hero-overlay p { font-size: 14.5px; opacity: 0.92; margin: 0; }
+  .hero-overlay h1 { font-size: 28px; margin: 8px 0 10px; line-height: 1.25; }
+  .hero-overlay p { font-size: 14px; opacity: 0.92; margin: 0; }
+
+  /* Two-Tab Navigation System */
+  .lab-tabs-nav {
+    display: flex;
+    gap: 12px;
+    background: var(--rad-bg-soft, #f1f5f9);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--rad-border, #cbd5e1);
+    margin: 20px 0 24px 0;
+    box-shadow: var(--rad-shadow-sm);
+  }
+  .lab-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 20px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--rad-text-muted, #475569);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lab-tab-btn:hover {
+    color: var(--rad-navy, #0b2545);
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .lab-tab-btn.active {
+    background: #ffffff;
+    color: var(--rad-navy, #0b2545);
+    box-shadow: 0 4px 12px rgba(11, 37, 69, 0.1);
+    border-bottom: 3px solid var(--rad-teal, #0e7c86);
+  }
+  .lab-tab-btn .tab-badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    background: rgba(14, 124, 134, 0.12);
+    color: var(--rad-teal, #0e7c86);
+    font-weight: 700;
+  }
+  .lab-tab-btn.active .tab-badge {
+    background: var(--rad-teal, #0e7c86);
+    color: #ffffff;
+  }
+  .lab-tab-pane {
+    display: none;
+    animation: fadeInPane 0.25s ease-in-out;
+  }
+  .lab-tab-pane.active {
+    display: block;
+  }
+  @keyframes fadeInPane {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mathematical Equation Typography & Styling */
+  .formula-box {
+    margin: 16px 0;
+    background: #f0fdfa;
+    border-left: 4px solid var(--rad-teal);
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    box-shadow: var(--rad-shadow-sm);
+  }
+  .formula-title {
+    font-weight: 700;
+    color: var(--rad-navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .math-display {
+    display: block;
+    text-align: center;
+    margin: 12px 0;
+    font-size: 18px;
+    color: var(--rad-navy);
+  }
+  .math-fallback-display {
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+    font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+    color: var(--rad-navy);
+    font-weight: 600;
+  }
+  .math-fallback-inline {
+    font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+    font-style: normal;
+    letter-spacing: 0.3px;
+    padding: 0 2px;
+    font-weight: 600;
+  }
+
+  /* Station diagrams and figures */
   .station-diagram-figure { text-align: center; }
   .station-diagram-figure figcaption { font-size: 12.5px; color: var(--rad-text-faint); margin-top: 8px; }
-  .checklist-fill-table input[type=text] { font-size: 13px; padding: 7px 9px; }
+  .checklist-fill-table input[type=text] { font-size: 13px; padding: 7px 9px; width: 100%; box-sizing: border-box; }
   .obj-cross-table td, .obj-cross-table th { font-size: 12.5px; }
   .lab-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
   @media (max-width: 880px) { .lab-meta-grid { grid-template-columns: 1fr 1fr; } }
@@ -26,7 +141,34 @@
   .why-sim-card { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 16px; }
   .why-sim-card .fa { color: var(--rad-teal); margin-right: 8px; }
   .stage-flow-img { border-radius: var(--rad-radius-sm); border: 1px solid var(--rad-border); }
-  .cross-check-table th, .cross-check-table td { font-size: 13px; }
+
+  /* Simulation Layout & Controls */
+  .sim-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .sim-canvas-wrap { position: relative; width: 100%; border-radius: var(--rad-radius-sm); overflow: hidden; background: #061524; border: 1px solid var(--rad-border); box-shadow: var(--rad-shadow-sm); }
+  .sim-canvas-wrap canvas { display: block; width: 100%; height: auto; }
+  .sim-presets-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+  .control-card { background: var(--rad-bg-soft); border: 1px solid var(--rad-border); border-radius: var(--rad-radius-sm); padding: 12px 14px; }
+  .control-card label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--rad-navy); margin-bottom: 6px; }
+  .control-card input[type=range] { width: 100%; cursor: pointer; }
+  .control-card select { width: 100%; padding: 6px 10px; font-size: 13px; border-radius: 6px; border: 1px solid var(--rad-border); background: #fff; font-weight: 600; }
+  
+  /* Clinical Scenario Options */
+  .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+  .scenario-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--rad-border); border-radius: 8px; background: #fff; cursor: pointer; transition: background 0.15s ease; }
+  .scenario-option:hover { background: var(--rad-bg-soft); }
+  .scenario-option input[type=radio] { margin-top: 3px; cursor: pointer; }
+
+  /* Protocol Step Cards */
+  .protocol-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .protocol-step-card { background: #ffffff; border: 1px solid var(--rad-border); border-radius: 8px; padding: 14px 16px; box-shadow: var(--rad-shadow-sm); border-top: 3px solid var(--rad-teal); }
+  .protocol-step-card .step-num { font-weight: 800; color: var(--rad-teal); font-size: 13px; text-transform: uppercase; margin-bottom: 4px; }
+  .protocol-step-card h4 { margin: 0 0 6px 0; color: var(--rad-navy); font-size: 14px; }
+  .protocol-step-card p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--rad-text-soft); }
+
+  /* Excel Instructions Guide Box */
+  .excel-guide-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  .excel-guide-box h4 { margin: 0 0 8px 0; color: #166534; display: flex; align-items: center; gap: 8px; }
 </style>
 </head>
 <body>
@@ -46,13 +188,13 @@
     <div class="lab-topbar-actions">
       <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
       <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
-      <span class="mode-pill"><i class="fa-solid fa-desktop"></i> Virtual Lab · Simulation Mode</span>
+      <span class="mode-pill"><i class="fa-solid fa-desktop"></i> Virtual Lab · Two-Tab Layout</span>
       <a href="../../index.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left"></i> All Labs</a>
     </div>
   </div>
   <div class="lab-progress-wrap">
     <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
-    <div class="lab-progress-label"><span id="lab-progress-label-text">0 / 6 sections complete (0%)</span><span>Week 1 of 15</span></div>
+    <div class="lab-progress-label"><span id="lab-progress-label-text">0 / 8 sections complete (0%)</span><span>Week 1 of 15</span></div>
   </div>
 </header>
 
@@ -61,282 +203,614 @@
 
 <div class="lab-container" id="main-content" role="main">
 
-  <!-- ===================== WELCOME / LAB FORMAT NOTICE ===================== -->
+  <!-- ===================== WELCOME / LAB HERO BANNER ===================== -->
   <div class="hero-banner">
     <img src="../../shared/assets/img/hero-banner.jpg" alt="Radiography imaging suite illustration">
     <div class="hero-overlay">
       <div class="eyebrow">Week 1 · Laboratory Session</div>
       <h1>The Imaging Chain &amp; the Radiographer's Role</h1>
-      <p>An interactive, simulation-based introduction to how a radiographic image is produced — and the professional role you will play in recording and analyzing it.</p>
-    </div>
-  </div>
-
-  <div class="card" style="border-left:4px solid var(--rad-teal);">
-    <div class="flex items-center gap-12" style="margin-bottom:10px;">
-      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
-      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab</h3>
-    </div>
-    <p>This lab is a fully <b>interactive digital simulation</b> designed to build your conceptual mastery of the imaging chain before you work with real equipment. Every activity below uses a clickable interactive diagram, a drag-and-drop ordering activity, or a matching exercise to walk you through the X-ray tube, cassettes, and receptors step by step — so no prior familiarity with the equipment is assumed, and you can repeat any activity as many times as you like until the concept clicks.</p>
-    <div class="why-sim-grid">
-      <div class="why-sim-card"><i class="fa-solid fa-desktop"></i><b>How you'll learn:</b> Clickable interactive diagrams, drag-and-drop ordering activities, and matching exercises let you explore the X-ray tube, cassettes, and receptors safely and repeatedly.</div>
-      <div class="why-sim-card"><i class="fa-solid fa-graduation-cap"></i><b>What you'll achieve:</b> All 7 learning objectives of this lab, full CLO coverage (K1, K3), and a gradable, submittable deliverable identical in rigor to a traditional lab report.</div>
+      <p>An interactive, simulation-based introduction to how a radiographic image is produced — from thermionic electron emission to receptor conversion — and the radiographer's dual role in recording and analysis.</p>
     </div>
   </div>
 
   <!-- Student info -->
-  <div class="card card-soft">
+  <div class="card card-soft" style="margin-bottom:20px;">
     <h3><i class="fa-solid fa-id-card"></i> Student Information</h3>
     <div class="lab-meta-grid">
-      <div class="form-row"><label class="field-label">Full Name</label><input type="text" id="meta-studentName" placeholder="e.g., Sara Al-Ahmadi"></div>
-      <div class="form-row"><label class="field-label">Student ID</label><input type="text" id="meta-studentId" placeholder="e.g., 442xxxxxx"></div>
-      <div class="form-row"><label class="field-label">Section / Group</label><input type="text" id="meta-section" placeholder="e.g., Male Section A"></div>
-      <div class="form-row"><label class="field-label">Date</label><input type="text" id="meta-date"></div>
+      <div class="form-row"><label class="field-label" for="meta-studentName">Full Name</label><input type="text" id="meta-studentName" placeholder="e.g., Sara Al-Ahmadi"></div>
+      <div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" placeholder="e.g., 442xxxxxx"></div>
+      <div class="form-row"><label class="field-label" for="meta-section">Section / Group</label><input type="text" id="meta-section" placeholder="e.g., Male Section A"></div>
+      <div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date"></div>
     </div>
-    <p class="form-hint"><i class="fa-solid fa-floppy-disk"></i> Your progress auto-saves in this browser as you work. Use "Export JSON Backup" in the footer bar if you switch devices.</p>
+    <p class="form-hint"><i class="fa-solid fa-floppy-disk"></i> Your progress auto-saves continuously. Switch tabs below at any time without losing answers or recorded trial data.</p>
   </div>
 
-  <!-- ===================== LEARNING OBJECTIVES ===================== -->
-  <section class="lab-section" id="sec-objectives">
-    <div class="lab-section-head">
-      <div class="lab-section-num">0</div>
-      <div><h2>Learning Objectives</h2><div class="lab-section-sub">By the end of this lab, you will be able to...</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-objective"><i class="fa-solid fa-bullseye"></i> CLOs K1, K3</span>
-      <ul class="objectives-list" style="margin-top:14px;">
-        <li><span class="num">1</span>Describe how X-rays are produced inside an X-ray tube and identify its main components.</li>
-        <li><span class="num">2</span>Explain the four stages of radiographic image intensity formation, from beam production to the final image.</li>
-        <li><span class="num">3</span>Identify and compare the major image receptor types used in radiography and fluoroscopy: film, CR, DR, and image intensifiers.</li>
-        <li><span class="num">4</span>Distinguish between the radiographer's <em>image recording</em> role and <em>image analysis</em> role.</li>
-        <li><span class="num">5</span>Recognize the basic geometric concepts (SID, SOD, OID) that govern how the beam travels from tube to receptor.</li>
-        <li><span class="num">6</span>Relate each stage of image formation to the image quality factors that will be studied in later labs.</li>
-        <li><span class="num">7</span>Apply this conceptual model to a simulated clinical scenario and submit a complete, professional lab report.</li>
-      </ul>
-    </div>
-  </section>
+  <!-- ===================== TWO-TAB NAVIGATION BAR ===================== -->
+  <div class="lab-tabs-nav" role="tablist" aria-label="Laboratory Workspaces">
+    <button type="button" class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro">
+      <i class="fa-solid fa-book-open"></i>
+      <span>Tab 1: Introduction &amp; Interactive Foundations</span>
+      <span class="tab-badge">Instructor Guided</span>
+    </button>
+    <button type="button" class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment">
+      <i class="fa-solid fa-flask"></i>
+      <span>Tab 2: Virtual Physics Experiment &amp; Data Analysis</span>
+      <span class="tab-badge">Simulation &amp; Workbook</span>
+    </button>
+  </div>
 
-  <!-- ===================== BACKGROUND THEORY ===================== -->
-  <section class="lab-section" id="sec-theory">
-    <div class="lab-section-head">
-      <div class="lab-section-num">1</div>
-      <div><h2>Background: How Is a Radiographic Image Made?</h2><div class="lab-section-sub">Read this primer before starting the stations below — no prior knowledge assumed</div></div>
-    </div>
+  <!-- #################################################################### -->
+  <!-- #################### TAB 1: INTRODUCTION & FOUNDATIONS ############# -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
 
-    <div class="card">
-      <span class="badge badge-theory"><i class="fa-solid fa-book-open"></i> Theory Primer</span>
-      <h3>1.1 What Is a Radiograph?</h3>
-      <p>A <b>radiograph</b> is a two-dimensional image created when X-rays pass through a patient's body and are captured by an <b>image receptor</b>. Different tissues absorb (attenuate) the X-ray beam by different amounts — dense structures like bone absorb more, so less radiation reaches the receptor beneath them, producing a lighter area; soft tissue and air-filled spaces absorb less, letting more radiation through and producing a darker area. This pattern of varying beam intensity is what forms the diagnostic image.</p>
-
-      <h3>1.2 The X-ray Tube: Where the Beam Begins</h3>
-      <p>Every radiographic exposure begins inside an evacuated glass/metal <b>X-ray tube</b> housed in a protective, oil-filled shell. Two key electrodes face each other inside the tube:</p>
-      <ul>
-        <li><b>Cathode (–):</b> Contains a coiled tungsten filament. When heated by an electric current, it releases a cloud of electrons through <i>thermionic emission</i>.</li>
-        <li><b>Anode (+):</b> A rotating disc target (usually a tungsten-rhenium focal track) struck by the accelerated electrons. Roughly 1% of their kinetic energy becomes X-rays in a diagnostic tube; nearly all the remainder becomes heat.</li>
-      </ul>
-      <p>The X-rays produced travel in many directions from the focal spot, but only the useful beam exits through the low-attenuation <b>tube window</b>. Inherent filtration from the tube assembly and specified added aluminum or copper <b>filtration</b> remove low-energy photons. Downstream, the <b>collimator</b> uses two pairs of adjustable lead shutters to restrict the field to the anatomy of clinical interest, reducing unnecessary patient exposure and scatter.</p>
-
-      <h3>1.3 The Geometry of the Beam Path</h3>
-      <p>Once the beam leaves the tube, its path is described using three key distances, which you will explore quantitatively next week in Lab 2:</p>
-      <div class="three-col" style="margin-top:10px;">
-        <div class="card card-soft" style="margin-bottom:0;"><b>SID</b> — Source-to-Image Distance<br><span class="small muted">Tube target to the image receptor</span></div>
-        <div class="card card-soft" style="margin-bottom:0;"><b>SOD</b> — Source-to-Object Distance<br><span class="small muted">Tube target to the patient/part being imaged</span></div>
-        <div class="card card-soft" style="margin-bottom:0;"><b>OID</b> — Object-to-Image Distance<br><span class="small muted">Patient/part to the image receptor</span></div>
+    <!-- About Tab 1 Card -->
+    <div class="card" style="border-left:4px solid var(--rad-teal);">
+      <div class="flex items-center gap-12" style="margin-bottom:10px;">
+        <i class="fa-solid fa-chalkboard-user" style="color:var(--rad-teal); font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Tab 1 Overview: Theory, Tube Cutaway &amp; Foundational Activities</h3>
       </div>
-      <p class="form-hint" style="margin-top:10px;">A quick preview of this geometry is shown below — you will manipulate these distances live with sliders in Lab 2.</p>
-      <div class="text-center" style="margin-top:14px;">
-        <img src="../../shared/assets/img/geometry-sid-sod-oid.jpg" alt="Diagram showing the X-ray beam cone geometry from tube to object plane to detector plane, illustrating SID, SOD, and OID" style="max-width:280px; border-radius:10px; border:1px solid var(--rad-border);">
+      <p>This workspace contains the <b>instructional core</b> used by the instructor to teach the physical principles of X-ray production and the imaging chain. Work through the background theory, interact with the cutaway tube anatomy hotspots, sequence the formation stages, classify image receptors, sort radiographer roles, resolve the authentic ICU clinical scenario, and test your mastery.</p>
+      <div class="why-sim-grid" style="margin-top:12px;">
+        <div class="why-sim-card"><i class="fa-solid fa-circle-check"></i><b>Interactive Stations (1–4):</b> Hands-on cutaway diagram hotspots, drag-and-drop causal sequencing, receptor technology matching, and clinical task sorting.</div>
+        <div class="why-sim-card"><i class="fa-solid fa-user-doctor"></i><b>Clinical Decision Case:</b> Diagnose and resolve severe ICU bedside quantum mottle caused by deficient thermionic emission under ALARA standards.</div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+        <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+        0–8 min demo tube + efficiency idea · 8–22 min Stations 1–4 in pairs · 22–30 min ICU scenario + Phase 1 submit.
+        Tell students: Tab 2 (≈60 min) is 3 runs + 2 Excel plots. If short on time, cut Station 4 sorting to 4 tasks, not the scenario.
+      </div>
+      <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+        <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+        1) &lt;1% of electron energy becomes X-rays, &gt;99% becomes heat — that is why the anode spins.
+        2) ≥2.5 mm Al filtration removes skin-only soft photons. 3) Image chain order: beam → patient → receptor → display.
+      </div>
+    </div>
+
+    <!-- ===================== LEARNING OBJECTIVES ===================== -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div><h2>Learning Objectives</h2><div class="lab-section-sub">Course Learning Outcomes (CLOs K1, K3) &amp; Laboratory Competencies</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective"><i class="fa-solid fa-bullseye"></i> CLOs K1, K3</span>
+        <ul class="objectives-list" style="margin-top:14px;">
+          <li><span class="num">1</span><b>Describe X-ray production inside the tube:</b> Identify the cathode tungsten filament, focusing cup, vacuum envelope, rotating anode target, window, filtration, and light-beam collimator.</li>
+          <li><span class="num">2</span><b>Quantitatively evaluate conversion efficiency:</b> Apply the Bremsstrahlung efficiency equation (η ≈ 10⁻⁹·Z·V), verifying that ~99% of kinetic energy is dissipated as heat and only ~1% yields useful X-rays.</li>
+          <li><span class="num">3</span><b>Explain beam filtration &amp; beam hardening:</b> Analyze how inherent and added filtration elevates Half-Value Layer (HVL) and spares patient skin dose under NCRP Report 102 ALARA standards.</li>
+          <li><span class="num">4</span><b>Sequence the four stages of radiographic image formation:</b> Detail primary beam propagation, patient tissue differential attenuation, image capture, and computerized image display.</li>
+          <li><span class="num">5</span><b>Compare major receptor families:</b> Differentiate Screen-Film cassettes, CR (BaFBr:Eu²⁺ PSP plates), DR flat-panel detectors (direct/indirect a-Si), and Fluoroscopy Image Intensifiers.</li>
+          <li><span class="num">6</span><b>Distinguish the radiographer's dual roles:</b> Differentiate pre-exposure <em>Image Recording</em> (technique selection, positioning, collimation) from post-exposure <em>Image Analysis</em> (critique, exposure index evaluation, artifact detection).</li>
+          <li><span class="num">7</span><b>Synthesize clinical problem-solving:</b> Formulate corrective actions for quantum mottle in bedside ICU imaging and complete a professional two-phase lab report.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== BACKGROUND THEORY ===================== -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div><h2>Background: How Is a Radiographic Image Made?</h2><div class="lab-section-sub">Physical foundation of X-ray production, tube thermodynamics, and the imaging chain</div></div>
       </div>
 
-      <h3>1.4 The Four Stages of Image Intensity Formation</h3>
-      <p>Every radiograph passes through four distinct stages before you see the final image. Understanding this chain is essential because <i>every image quality problem you will study in this course traces back to one (or more) of these four stages</i>:</p>
-      <ol>
-        <li><b>Primary Beam Propagation</b> — X-rays travel from the tube target to the patient's skin surface. Intensity here depends on kVp, mAs, filtration, focal spot size, and distance from the source (inverse square law).</li>
-        <li><b>Patient Interaction</b> — The beam is attenuated as it passes through tissue via photoelectric absorption and Compton scattering, producing the "remnant" or exit beam. This depends on patient thickness, tissue density, and atomic number.</li>
-        <li><b>Image Capture</b> — The remnant beam strikes the image receptor. The captured signal depends on receptor sensitivity, dynamic range, and intrinsic noise/resolution.</li>
-        <li><b>Image Processing</b> — The captured data is converted into a viewable image: chemical development for film (producing optical densities), or computer processing for digital receptors (producing numeric pixel values).</li>
-      </ol>
-      <figure class="station-diagram-figure">
-        <img class="stage-flow-img" src="../../shared/assets/img/image-formation-4stage.jpg" alt="Illustration of the four stages of X-ray image formation: propagation, patient interaction, capture, and processing">
-        <figcaption>The four-stage image intensity formation chain (stations below let you interact with this in detail).</figcaption>
-      </figure>
+      <div class="card">
+        <span class="badge badge-theory"><i class="fa-solid fa-book-open"></i> Theory Primer</span>
+        <h3>1.1 What Is a Radiograph?</h3>
+        <p>A <b>radiograph</b> is a two-dimensional shadowgram created when an X-ray beam traverses a patient's body and is intercepted by an <b>image receptor</b>. Different biological tissues absorb and scatter (attenuate) the beam in varying proportions. Dense, high-atomic-number structures (such as cortical bone, $Z \approx 13.8$) undergo high photoelectric absorption, allowing few photons to reach the receptor beneath them, producing a light (radiopaque) area. Conversely, low-density tissues (such as air-filled lung parenchyma) attenuate few photons, allowing a high photon fluence to expose the detector, producing a dark (radiolucent) area. This differential pattern of exit intensities constitutes the diagnostic image.</p>
 
-      <h3>1.5 The Radiographer's Two Roles</h3>
-      <p>As the radiographer (RT), your job spans two connected responsibilities:</p>
-      <div class="two-col">
-        <div class="card card-soft" style="margin-bottom:0;">
-          <h4><i class="fa-solid fa-camera"></i> Image Recording</h4>
-          <p class="small">Choosing/setting up the correct receptor, preparing and positioning the patient, selecting technical/exposure factors, and properly processing the image.</p>
+        <h3>1.2 The X-ray Tube: Where the Beam Begins</h3>
+        <p>Every radiographic exposure begins inside an evacuated glass or metal <b>X-ray tube envelope</b> immersed in insulating transformer oil within a protective lead housing. Two primary electrodes establish the high-voltage circuit:</p>
+        <ul>
+          <li><b>Cathode (–):</b> Contains a coiled tungsten filament ($W$, atomic number $Z=74$, melting point $3422^\circ\text{C}$). When heated by a dedicated low-voltage filament current (3.8–4.8 A), it emits a cloud of free electrons via <i>thermionic emission</i>. The negatively charged nickel focusing cup electrostatically repels the electrons, focusing them into a narrow stream toward the focal track.</li>
+          <li><b>Anode (+):</b> A rotating molybdenum-graphite disc with a tungsten-rhenium focal track ($Z=74$). Accelerated by the high tube potential (kVp), electrons bombard the focal track at relativistic speeds. Rotation (3,000–10,000 RPM) spreads the intense focal heat over an expanded circular track area.</li>
+        </ul>
+
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-square-root-variable"></i> Bremsstrahlung Production Efficiency Equation:</div>
+          <div class="math-display">$$\eta \approx 10^{-9} \times Z \times V$$</div>
+          <div style="font-size:13px;color:var(--rad-text-soft);">
+            Where <span class="math-tex">$Z$</span> represents the anode target atomic number (Tungsten = 74, Molybdenum = 42) and <span class="math-tex">$V$</span> represents the accelerating potential in Volts (<span class="math-tex">$kVp \times 1000$</span>).<br>
+            <b>Diagnostic Example at 80 kVp with Tungsten:</b><br>
+            <div class="math-display">$$\eta \approx 10^{-9} \times 74 \times 80,000 = 0.00592 \approx 0.59\%$$</div>
+            <span class="text-danger" style="font-weight:700;"><i class="fa-solid fa-fire"></i> Thermodynamic Reality:</i> Over 99.4% of electron kinetic energy converts directly into thermal heat via outer-shell coulombic collisions; less than 0.6% yields Bremsstrahlung X-ray photons!</span><br>
+            <span style="font-size:12.5px;">Teaching simplification (Bushong/Carlton use $\eta \approx 1.1 \times 10^{-9} \cdot Z \cdot V$, max ≈1% in diagnosis). Heat comes mostly from excitation/ionization of outer-shell electrons; &lt;1% leaves as Bremsstrahlung + characteristic X-rays.</span>
+          </div>
         </div>
-        <div class="card card-soft" style="margin-bottom:0;">
-          <h4><i class="fa-solid fa-magnifying-glass-chart"></i> Image Analysis</h4>
-          <p class="small">Confirming correct anatomy was recorded, judging overall image quality, evaluating image display, and deciding whether additional images are needed.</p>
+
+        <p>The useful X-ray beam exits through a thin <b>tube window</b>. Inherent filtration from the envelope and oil, combined with specified aluminum <b>added filtration</b>, removes low-energy ("soft") photons that lack the penetration to reach the receptor and would only deposit useless radiation dose in the patient's skin. NCRP Report 102 mandates a minimum of <b>2.5 mm Al equivalent total filtration</b> for systems operating above 70 kVp (still the US federal requirement under 21 CFR; see also NCRP 147 and local regulations). Downstream, the <b>light-beam collimator</b> uses adjustable lead shutters to restrict the field size strictly to the anatomical region of interest, significantly reducing both patient dose and Compton scatter.</p>
+
+        <h3>1.3 The Four Stages of Image Intensity Formation</h3>
+        <p>Every radiographic image undergoes four sequential stages from exposure initiation to clinical interpretation:</p>
+        <ol>
+          <li><b>Primary Beam Propagation:</b> X-rays travel from the target through filtration and collimator shutters to the patient's skin surface. Intensity is governed by kVp, mA, exposure time, filtration, and source-to-image distance (SID).</li>
+          <li><b>Patient Interaction:</b> The beam is differentially attenuated as it traverses tissue through photoelectric absorption and Compton scattering, emerging as the modulated remnant (exit) beam.</li>
+          <li><b>Image Capture:</b> The remnant beam strikes the active layer of the image receptor (Screen-Film phosphor, CR photostimulable phosphor, DR flat-panel scintillator/photodiode array, or Fluoroscopy input phosphor).</li>
+          <li><b>Image Processing &amp; Display:</b> The latent energy pattern is converted into a visible radiograph — through chemical processing for film, or computerized ADC sampling, histogram rescaling, and Look-Up Table (LUT) mapping for digital systems.</li>
+        </ol>
+
+        <figure class="station-diagram-figure" style="margin:16px 0;">
+          <img class="stage-flow-img" src="../../shared/assets/img/image-formation-4stage.jpg" alt="Four stages of radiographic image formation" style="max-width:760px;width:100%;">
+          <figcaption>The four sequential stages of radiographic image intensity formation.</figcaption>
+        </figure>
+
+        <h3>1.4 The Radiographer's Two Interconnected Roles</h3>
+        <div class="two-col" style="margin-top:12px;">
+          <div class="card card-soft" style="margin-bottom:0;">
+            <h4 style="color:var(--rad-navy);margin-top:0;"><i class="fa-solid fa-camera" style="color:var(--rad-teal)"></i> Optimal Image Recording</h4>
+            <p class="small" style="margin-bottom:0;">Pre-exposure responsibilities: patient positioning, SID alignment, radiation shielding, collimation to anatomy of interest, receptor selection, and technical factor optimization (kVp, mA, time, filtration) to achieve diagnostic photon statistics while honoring ALARA.</p>
+          </div>
+          <div class="card card-soft" style="margin-bottom:0;">
+            <h4 style="color:var(--rad-navy);margin-top:0;"><i class="fa-solid fa-magnifying-glass-chart" style="color:var(--rad-teal)"></i> Optimal Image Analysis</h4>
+            <p class="small" style="margin-bottom:0;">Post-exposure responsibilities: rigorous image critique, verifying anatomical inclusion without cutoff, assessing exposure index (EI/S-number), evaluating spatial resolution, detecting quantum mottle or noise, and determining whether repeat imaging is clinically necessary.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ===================== STATION 1: X-RAY TUBE HOTSPOT ===================== -->
-  <section class="lab-section" id="sec-tube">
-    <div class="lab-section-head">
-      <div class="lab-section-num">2</div>
-      <div><h2>Station 1 — X-ray Tube &amp; Beam Production</h2><div class="lab-section-sub">Build a clear mental model of the anode/cathode and beam path</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Simulation</span>
-      <p style="margin-top:12px;">Click each numbered marker on the scientific tube cutaway below to identify the component and reveal its function. Identify all 6 markers to complete this station.</p>
-      <div class="two-col">
-        <div id="tube-hotspot-container"></div>
+    <!-- ===================== STATION 1: X-RAY TUBE HOTSPOT ===================== -->
+    <section class="lab-section" id="sec-tube">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div><h2>Station 1 — X-ray Tube Anatomy &amp; Beam Production</h2><div class="lab-section-sub">Build an exact anatomical mental model of the cathode, anode, and beam extraction path</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-crosshairs"></i> Interactive Hotspot Station</span>
+        <p style="margin-top:12px;">Click each numbered marker on the cutaway X-ray tube below to identify the component and study its diagnostic function. Click all 6 markers to complete this station.</p>
+        <div class="two-col">
+          <div id="tube-hotspot-container"></div>
+          <div>
+            <div class="info-note"><i class="fa-solid fa-lightbulb"></i> <b>Tip:</b> Trace the electron trajectory: from thermionic emission at the heated cathode, across the high-voltage vacuum gap, into the rotating focal track, and out through the filtration window and collimator.</div>
+            <table class="data-table" style="margin-top:14px;">
+              <tr><th>#</th><th>Component Name</th></tr>
+              <tr><td>1</td><td>Cathode assembly &amp; tungsten filament</td></tr>
+              <tr><td>2</td><td>Accelerated electron stream (vacuum gap)</td></tr>
+              <tr><td>3</td><td>Rotating anode target disc &amp; focal spot</td></tr>
+              <tr><td>4</td><td>Rotor and induction stator motor</td></tr>
+              <tr><td>5</td><td>Tube window &amp; aluminum filtration plate</td></tr>
+              <tr><td>6</td><td>Light-beam collimator shutters</td></tr>
+            </table>
+          </div>
+        </div>
+        <hr class="divider">
+        <div id="quiz-tube"></div>
+
+        <!-- Station 1 Synthesis: Component Functions Worksheet Table A -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-pen-to-square"></i> Synthesis Check: Tube Component Diagnostic Functions (Worksheet Part A)</h4>
+        <p class="small muted">State the exact physical and radiation safety function of each component in your own words (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:8px;">
+          <tr><th style="width:26%">Component</th><th>Physical &amp; Diagnostic Function</th></tr>
+          <tr><td>Cathode &amp; Filament</td><td><input type="text" id="w-cathode-fn" placeholder="Explain thermionic emission, filament heating current, and focusing cup..."></td></tr>
+          <tr><td>Rotating Anode Target</td><td><input type="text" id="w-anode-fn" placeholder="Explain target interaction, Bremsstrahlung efficiency, and heat dissipation..."></td></tr>
+          <tr><td>Tube Window &amp; Filtration</td><td><input type="text" id="w-window-fn" placeholder="Explain beam hardening, HVL elevation, and skin dose reduction..."></td></tr>
+          <tr><td>Light-Beam Collimator</td><td><input type="text" id="w-collimator-fn" placeholder="Explain field size restriction and scatter reduction..."></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 2: DRAG ORDER 4 STAGES ===================== -->
+    <section class="lab-section" id="sec-stages">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div><h2>Station 2 — Order the Image Formation Stages</h2><div class="lab-section-sub">Reinforce the causal sequence of the radiographic imaging chain</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-arrow-down-1-9"></i> Interactive Sequencing Station</span>
+        <p style="margin-top:12px;">The four stages of image intensity formation below are shuffled. Drag them into the correct causal order — from primary beam emergence to the final displayed radiograph — then click <b>Check Order</b>.</p>
+        <div id="stages-drag-container"></div>
+        <hr class="divider">
+        <div id="quiz-stages"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 3: RECEPTOR FAMILY MATCH ===================== -->
+    <section class="lab-section" id="sec-receptors">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div><h2>Station 3 — Image Receptor Family Explorer</h2><div class="lab-section-sub">Compare Screen-Film, CR, DR flat-panel detectors, and Fluoroscopic Image Intensifiers</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-link"></i> Interactive Matching Station</span>
+        <figure class="station-diagram-figure" style="margin:12px 0 20px;">
+          <img src="../../shared/assets/img/receptor-family-scientific.svg" alt="Comparison of screen-film, CR, DR, and fluoroscopy receptors" style="border-radius:10px; border:1px solid var(--rad-border); max-width:900px; margin:0 auto; width:100%;">
+          <figcaption>Scientific receptor comparison illustrating external structure, active recording layers, and readout mechanism.</figcaption>
+        </figure>
+        <p>Click a description on the left, then click the matching receptor modality on the right. Match all 4 pairs to complete this station.</p>
+        <div id="receptor-match-container"></div>
+        <hr class="divider">
+        <div id="quiz-receptors"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 4: RT ROLE SORT ===================== -->
+    <section class="lab-section" id="sec-role">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div><h2>Station 4 — Sort the Radiographer's Tasks</h2><div class="lab-section-sub">Distinguish pre-exposure image recording tasks from post-exposure image analysis tasks</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-shuffle"></i> Interactive Sorting Station</span>
+        <p style="margin-top:12px;">Click a task on the left, then click the corresponding role category on the right: <b>Optimal Image Recording</b> or <b>Optimal Image Analysis</b>. Sort all 8 clinical tasks correctly to complete this station.</p>
+        <div id="role-match-container"></div>
+        <hr class="divider">
+        <div id="quiz-role"></div>
+      </div>
+    </section>
+
+    <!-- ===================== CLINICAL DECISION SCENARIO ===================== -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div><h2>Clinical Decision Scenario</h2><div class="lab-section-sub">Apply tube physics and ALARA principles to diagnose and resolve an authentic bedside imaging defect</div></div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Clinical Scenario Case</span>
+        <h3 style="margin-top:12px;">ICU Bedside Portable Chest: Severe Quantum Mottle</h3>
+        <p>You are called to the Intensive Care Unit to perform an urgent bedside AP chest radiograph on an intubated patient to verify endotracheal tube tip positioning. The previous technologist selected <b>3.9 A filament current (approx. 25 mA)</b> and <b>70 kVp</b> on a wireless DR flat-panel detector with <b>2.5 mm Al filtration</b>.</p>
+        <p>The resulting radiograph exhibits severe, distracting <b>quantum mottle (graininess)</b> across the retrocardiac space and lung bases, rendering delicate vascular markings and the carina landmark non-diagnostic. The ICU physician requests an immediate repeat.</p>
+        
+        <div style="background:#f8fafc;border-left:4px solid var(--rad-blue);padding:12px 16px;border-radius:6px;margin:16px 0;">
+          <strong style="color:var(--rad-navy);">Clinical Diagnostic Question:</strong>
+          <p style="margin:6px 0 0;font-size:13.5px;">What is the primary physical root cause of the quantum mottle, and what is the most appropriate corrective action under ALARA principles?</p>
+        </div>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Select the best clinical response</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Filament current was set too low (3.9 A)</b>, yielding an inadequate thermionic electron stream (~25 mA) and severe photon starvation at the receptor; increase filament heating / mA (to ~4.3 A / 100 mA) to deliver diagnostic photon fluence to the flat panel.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Remove the 2.5 mm Al filtration plate</b> from the tube port to let all low-energy soft X-ray photons strike the patient and reach the receptor.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Switch the anode target from Tungsten to Molybdenum (Z=42)</b> to increase the Bremsstrahlung conversion efficiency.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Apply extreme digital smoothing / edge-enhancement filtering</b> on the PACS workstation console without repeating the exposure.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="button" class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Check Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">Select an option above and check your clinical decision.</div>
+      </article>
+    </section>
+
+    <!-- ===================== KNOWLEDGE CHECK ===================== -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div><h2>Knowledge Check Mastery Quizzes</h2><div class="lab-section-sub">Formative assessment of tube physics, filtration, and receptor principles</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-circle-check"></i> Formative Mastery Assessment</span>
+        <div id="quiz-final" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 1 SUBMISSION HUB (IN-LAB ACTIVITIES) ===================== -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-paper-plane"></i></div>
+        <div><h2>Phase 1 Submission — In-Lab Interactive Activities</h2><div class="lab-section-sub">Submit and lock in your in-lab activities score (10 points) before leaving the laboratory session</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- ===================== CTA TRANSITION TO TAB 2 ===================== -->
+    <div class="card" style="background:linear-gradient(135deg, #0b2545 0%, #134e6f 100%);color:#fff;border-radius:12px;padding:26px;margin-top:24px;box-shadow:var(--rad-shadow-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div style="max-width:620px;">
+          <span style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7fe0d6;font-weight:700;">Foundations Complete · Ready for Experimentation</span>
+          <h3 style="color:#ffffff;margin:8px 0 10px;font-size:22px;">Proceed to Tab 2: Virtual Physics Experiment</h3>
+          <p style="margin:0;font-size:14px;opacity:0.92;line-height:1.5;">Now that you have completed the conceptual primer and interactive stations, enter the dedicated digital physics laboratory to conduct your 3 experimental trials, export your dataset, and complete your data analysis.</p>
+        </div>
         <div>
-          <div class="info-note"><i class="fa-solid fa-lightbulb"></i> <b>Tip:</b> Think about the electron path — where are electrons released, and where do they crash to produce X-rays?</div>
-          <table class="data-table" style="margin-top:14px;">
-            <tr><th>#</th><th>Component</th></tr>
-            <tr><td>1</td><td>Cathode assembly</td></tr>
-            <tr><td>2</td><td>Electron stream</td></tr>
-            <tr><td>3</td><td>Rotating anode and focal spot</td></tr>
-            <tr><td>4</td><td>Rotor and stator</td></tr>
-            <tr><td>5</td><td>Tube window and filtration</td></tr>
-            <tr><td>6</td><td>Collimator</td></tr>
-          </table>
+          <button type="button" class="btn btn-teal" id="btn-proceed-to-sim" style="padding:14px 28px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.25);">
+            <i class="fa-solid fa-flask"></i> Proceed to Tab 2: Virtual Experiment &rarr;
+          </button>
         </div>
       </div>
-      <hr class="divider">
-      <div id="quiz-tube"></div>
     </div>
-  </section>
 
-  <!-- ===================== STATION 2: DRAG ORDER 4 STAGES ===================== -->
-  <section class="lab-section" id="sec-stages">
-    <div class="lab-section-head">
-      <div class="lab-section-num">3</div>
-      <div><h2>Station 2 — Order the Image Formation Stages</h2><div class="lab-section-sub">Reinforce the sequence of the imaging chain, from beam production to final image</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Simulation</span>
-      <p style="margin-top:12px;">The four stages below have been shuffled. Drag them into the correct order — from the moment the beam is produced to the moment the final image appears — then click <b>Check Order</b>.</p>
-      <div id="stages-drag-container"></div>
-      <hr class="divider">
-      <div id="quiz-stages"></div>
-    </div>
-  </section>
+  </div><!-- /#tab-pane-intro -->
 
-  <!-- ===================== STATION 3: RECEPTOR FAMILY MATCH ===================== -->
-  <section class="lab-section" id="sec-receptors">
-    <div class="lab-section-head">
-      <div class="lab-section-num">4</div>
-      <div><h2>Station 3 — Image Receptor Family Explorer</h2><div class="lab-section-sub">Compare the film cassette, CR cassette, DR panel, and image intensifier</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Simulation</span>
-      <figure class="station-diagram-figure" style="margin:12px 0 20px;">
-        <img src="../../shared/assets/img/receptor-family-scientific.svg" alt="Scientific comparison of a screen-film cassette, CR cassette with PSP plate and reader, DR flat panel, and fluoroscopic image intensifier" style="border-radius:10px; border:1px solid var(--rad-border); max-width:900px; margin:0 auto;">
-        <figcaption>Scientific receptor comparison showing external form, active recording layers, and readout pathway. Components are schematic and not to scale.</figcaption>
-      </figure>
-      <p>Click a description on the left, then click the matching receptor name on the right. All four must be matched correctly to complete this station.</p>
-      <div id="receptor-match-container"></div>
-      <hr class="divider">
-      <div id="quiz-receptors"></div>
-    </div>
-  </section>
 
-  <!-- ===================== STATION 4: RT ROLE SORT ===================== -->
-  <section class="lab-section" id="sec-role">
-    <div class="lab-section-head">
-      <div class="lab-section-num">5</div>
-      <div><h2>Station 4 — Sort the Radiographer's Tasks</h2><div class="lab-section-sub">Distinguish image recording tasks from image analysis tasks</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Simulation</span>
-      <p style="margin-top:12px;">Click a task on the left, then click the role category on the right it belongs to: <b>Optimal Image Recording</b> or <b>Optimal Image Analysis</b>. Sort all 8 tasks correctly to complete this station.</p>
-      <div id="role-match-container"></div>
-      <hr class="divider">
-      <div id="quiz-role"></div>
-    </div>
-  </section>
+  <!-- #################################################################### -->
+  <!-- #################### TAB 2: VIRTUAL SIMULATION & WORKBOOK ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
 
-  <!-- ===================== KNOWLEDGE CHECK ===================== -->
-  <section class="lab-section" id="sec-quiz">
-    <div class="lab-section-head">
-      <div class="lab-section-num">6</div>
-      <div><h2>Knowledge Check</h2><div class="lab-section-sub">Two more questions covering the full lab</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-check"><i class="fa-solid fa-circle-check"></i> Formative Assessment</span>
-      <div id="quiz-final" style="margin-top:14px;"></div>
-    </div>
-  </section>
-
-  <!-- ===================== WORKSHEET ===================== -->
-  <section class="lab-section" id="sec-worksheet">
-    <div class="lab-section-head">
-      <div class="lab-section-num">7</div>
-      <div><h2>Lab Worksheet — Reflection &amp; Analysis</h2><div class="lab-section-sub">Answer in complete sentences; this is part of your graded submission</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-worksheet"><i class="fa-solid fa-pen"></i> Worksheet</span>
-
-      <h4 style="margin-top:16px;">A. Component Function Recap (from Station 1)</h4>
-      <p class="small muted">Fill in the function of each X-ray tube component in your own words.</p>
-      <table class="data-table checklist-fill-table" style="margin-bottom:18px;">
-        <tr><th style="width:22%">Component</th><th>Function (in your own words)</th></tr>
-        <tr><td>Cathode</td><td><input type="text" id="w-cathode-fn" placeholder="Type your answer..."></td></tr>
-        <tr><td>Anode</td><td><input type="text" id="w-anode-fn" placeholder="Type your answer..."></td></tr>
-        <tr><td>Tube Window</td><td><input type="text" id="w-window-fn" placeholder="Type your answer..."></td></tr>
-        <tr><td>Collimator</td><td><input type="text" id="w-collimator-fn" placeholder="Type your answer..."></td></tr>
-      </table>
-
-      <div class="form-row">
-        <label class="field-label">1. In your own words, describe how completing this lab as an interactive simulation helped you achieve this week's learning objectives. Which activity helped you understand a concept best, and why?</label>
-        <textarea id="w-q1" rows="3"></textarea>
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:12.5px;"><i class="fa-solid fa-microscope"></i> Tab 2: Virtual Laboratory &amp; Analysis Workspace</span>
       </div>
-      <div class="form-row">
-        <label class="field-label">2. List the four stages of image intensity formation in order, and name ONE factor that affects the intensity at each stage.</label>
-        <textarea id="w-q2" rows="4"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="field-label">3. Explain the difference between the radiographer's "image recording" role and "image analysis" role, using one example task for each.</label>
-        <textarea id="w-q3" rows="3"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="field-label">4. Choose ONE image receptor type (film, CR, DR, or image intensifier) and describe a clinical situation where it would be the most appropriate choice. Justify your answer.</label>
-        <textarea id="w-q4" rows="3"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="field-label">5. Name the two X-ray tube components responsible for (a) releasing the electron cloud and (b) producing the X-ray photons when struck by that cloud.</label>
-        <textarea id="w-q5" rows="2"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="field-label">6. Critical thinking: If a radiograph appears too pale (underexposed), at which of the four stages could the root cause originate? List at least two possible stages and explain your reasoning.</label>
-        <textarea id="w-q6" rows="3"></textarea>
-      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-intro" style="font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Return to Tab 1 (Theory &amp; Foundations)</button>
     </div>
-  </section>
 
-  <!-- ===================== RUBRIC ===================== -->
-  <section class="lab-section" id="sec-rubric">
-    <div class="lab-section-head">
-      <div class="lab-section-num">8</div>
-      <div><h2>Grading Rubric</h2><div class="lab-section-sub">Total: 20 points — visible to you for self-assessment before submission</div></div>
-    </div>
-    <div class="card">
-      <span class="badge badge-rubric"><i class="fa-solid fa-clipboard-list"></i> Rubric</span>
-      <div id="rubric-container" style="margin-top:14px; overflow-x:auto;"></div>
-      <p class="form-hint">Instructors: enter final scores in the right-most column during grading. Students: use this to self-assess before submitting.</p>
-    </div>
-  </section>
+    <!-- ===================== EXPERIMENT PROTOCOL & OBJECTIVES ===================== -->
+    <section class="card" id="sec-exp-guide" style="border-left:4px solid var(--rad-teal);margin-bottom:24px;">
+      <div class="flex items-center gap-12" style="margin-bottom:8px;">
+        <i class="fa-solid fa-list-check" style="color:var(--rad-teal);font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Virtual Physics Experiment: Protocol, Objectives &amp; Step-by-Step Procedure</h3>
+      </div>
+      <p style="margin:6px 0 14px 0;font-size:14px;line-height:1.5;">Welcome to the dedicated simulation laboratory. Before adjusting any physical parameters, review the specific experimental objectives and follow the standardized procedure below to record at least <b>3 unique runs</b> for your post-lab Excel workbook.</p>
 
-  <!-- ===================== SUBMISSION ===================== -->
-  <section class="lab-section" id="sec-submit">
-    <div class="lab-section-head">
-      <div class="lab-section-num">9</div>
-      <div><h2>Generate Your Submission</h2><div class="lab-section-sub">Export a complete report to submit as your Lab 1 assignment</div></div>
-    </div>
-    <div class="card text-center" style="padding:36px;">
-      <i class="fa-solid fa-file-export" style="font-size:34px; color:var(--rad-teal); margin-bottom:14px;"></i>
-      <h3>Ready to Submit?</h3>
-      <p class="muted">This generates a printable report containing your student info, all worksheet responses, simulation results, knowledge-check scores, and the rubric — ready to print/save as PDF and upload to the LMS.</p>
-      <button class="btn btn-primary" id="btn-export-report-inline" style="font-size:15px; padding:12px 26px;"><i class="fa-solid fa-file-pdf"></i> Generate Submission Report</button>
-    </div>
-  </section>
+      <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+        <h4 style="margin:0 0 8px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-bullseye" style="color:var(--rad-teal);"></i> Specific Experimental Objectives:</h4>
+        <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;color:var(--rad-navy);">
+          <li><b>Filament Thermionic Emission:</b> Quantify how fine adjustments to filament heating current (3.8 A to 4.8 A) cause exponential shifts in tube current (mA).</li>
+          <li><b>Target Thermodynamics &amp; Bremsstrahlung Efficiency:</b> Measure electron acceleration kinetic energy and verify that Bremsstrahlung conversion efficiency <span class="math-tex">$\eta \approx 10^{-9} \times Z \times V$</span> yields ~99% heat and &lt;1% X-rays across Tungsten (<span class="math-tex">$Z=74$</span>) and Molybdenum (<span class="math-tex">$Z=42$</span>).</li>
+          <li><b>Beam Hardening &amp; Filtration:</b> Evaluate how aluminum filtration (0.5 to 3.5 mm Al) alters Half-Value Layer (HVL), removes low-energy soft photons, and protects patient skin entrance dose.</li>
+          <li><b>Receptor Conversion Dynamics:</b> Contrast signal capture and quantum mottle sensitivity across Screen-Film, CR (PSP), DR flat panel, and Fluoroscopy Image Intensifiers.</li>
+        </ol>
+      </div>
+
+      <h4 style="margin:0 0 10px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-clipboard-list" style="color:var(--rad-teal);"></i> Step-by-Step Laboratory Procedure:</h4>
+      <div class="protocol-steps-grid">
+        <div class="protocol-step-card">
+          <div class="step-num">Step 1 · Scientific Hypothesis</div>
+          <h4>Formulate Prediction</h4>
+          <p>Before each trial, write a scientific hypothesis in the <b>Pre-Trial Scientific Prediction</b> field stating how the planned change will affect mA, heat, or detector signal.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 2 · Baseline Trial (Run 1)</div>
+          <h4>Standard Diagnostic Baseline</h4>
+          <p>Click preset <b>Standard Diagnostic (80 kVp, DR)</b>. Observe the filament glow, electron stream, rotating anode heat, and DR signal. Click <b>Record This Run</b>.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 3 · Mottle Trial (Run 2)</div>
+          <h4>Low Emission &amp; Photon Starvation</h4>
+          <p>Click preset <b>Low Emission (Mottle Risk)</b> or reduce filament current to 3.9 A. Note the sharp drop in mA and receptor signal with severe quantum mottle warning. Record Run 2.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 4 · Dose Trial (Run 3)</div>
+          <h4>Under-filtered Skin Exposure</h4>
+          <p>Click preset <b>Under-filtered (High Skin Dose)</b> (filtration = 0.5 mm Al). Note the surge in non-penetrating soft X-rays, reduced HVL, and high skin dose warning. Record Run 3.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 5 · Modality Exploration</div>
+          <h4>Target &amp; Modality Trials</h4>
+          <p>Optionally explore <b>Molybdenum (Z=42) at 50 kVp — mammography-track comparison only</b> (clinical mammography uses Mo at 25–35 kVp with Mo filtration; this 50 kVp run is a classroom contrast, not a clinical protocol), <b>Chest High-kVp (115 kVp)</b>, or <b>Fluoroscopy Intensifier</b> mode to compare dynamic response and efficiency.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 6 · Export Dataset</div>
+          <h4>Download Run Data (CSV)</h4>
+          <p>Click <b>Download Run Data (CSV)</b> in the toolbar to save your experimental dataset for your post-lab Excel data analysis and plotting requirements.</p>
+        </div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+        <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+        ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline preset + Record &nbsp; ☐ 3. Run 2 Low-emission + Record &nbsp; ☐ 4. Run 3 Under-filtered + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B.<br>
+        <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → move ONE slider a notch. Mottle warning = success for Run 2, not failure.
+      </div>
+    </section>
+
+    <!-- ===================== VIRTUAL EXPERIMENT SIMULATOR SUITE ===================== -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div><h2>Virtual Simulation Suite — Inside the Tube &amp; Imaging Chain Physics</h2><div class="lab-section-sub">Simulate thermionic emission, target thermodynamics, filtration hardening, and receptor conversion</div></div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Digital Simulator</span>
+        <p style="margin-top:10px;font-size:13.5px;">Adjust physical parameters below to observe real-time thermionic heating, electron acceleration, anode target heat generation, beam filtration, and receptor capture. <b>Record at least 3 unique runs</b> with scientific predictions.</p>
+
+        <!-- Presets bar -->
+        <div class="sim-presets-bar">
+          <span class="small muted" style="font-weight:700;margin-right:6px;"><i class="fa-solid fa-sliders"></i> Clinical Presets:</span>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-filament="4.2" data-kvp="80" data-target="1" data-filtration="2.5" data-receptor="2" data-role="0">Standard Diagnostic (80 kVp, DR)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-filament="3.9" data-kvp="65" data-target="1" data-filtration="2.5" data-receptor="2" data-role="0">Low Emission (Mottle Risk)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-filament="4.2" data-kvp="80" data-target="1" data-filtration="0.5" data-receptor="2" data-role="0">Under-filtered (High Skin Dose)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-filament="4.4" data-kvp="115" data-target="1" data-filtration="3.0" data-receptor="1" data-role="1">Chest High-kVp (CR Mode)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-filament="4.1" data-kvp="75" data-target="1" data-filtration="2.5" data-receptor="3" data-role="1">Fluoroscopy Intensifier</button>
+        </div>
+
+        <!-- Simulation Layout -->
+        <div class="sim-layout">
+          <!-- Interactive Canvas -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" width="800" height="400" aria-label="Interactive digital simulation of X-ray tube and imaging chain"></canvas>
+          </div>
+
+          <!-- Controls Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-filament"><span>Filament Heating Current</span><output id="out-filament" for="ctrl-filament">4.2 A</output></label>
+              <input type="range" id="ctrl-filament" min="3.8" max="4.8" step="0.1" value="4.2">
+              <span class="small muted">Governs filament temperature &amp; thermionic electron emission (mA)</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-kvp"><span>Tube Accelerating Potential</span><output id="out-kvp" for="ctrl-kvp">80 kVp</output></label>
+              <input type="range" id="ctrl-kvp" min="50" max="125" step="5" value="80">
+              <span class="small muted">Accelerates electron stream; establishes maximum photon energy</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-target"><span>Target Anode Material</span><span id="out-target" class="small muted">Tungsten (Z=74)</span></label>
+              <select id="ctrl-target">
+                <option value="1" selected>Tungsten (W, Z=74) — Standard Diagnostic</option>
+                <option value="0">Molybdenum (Mo, Z=42) — Mammographic Track</option>
+              </select>
+              <span class="small muted">Determines Bremsstrahlung conversion efficiency and heat load</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-filtration"><span>Total Beam Filtration</span><output id="out-filtration" for="ctrl-filtration">2.5 mm Al</output></label>
+              <input type="range" id="ctrl-filtration" min="0.5" max="3.5" step="0.5" value="2.5">
+              <span class="small muted">Absorbs soft X-rays; legal minimum &ge; 2.5 mm Al eq for &gt; 70 kVp</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-receptor"><span>Image Receptor Modality</span><span id="out-receptor" class="small muted">DR Flat Panel</span></label>
+              <select id="ctrl-receptor">
+                <option value="0">Screen-Film (400 Speed Cassette)</option>
+                <option value="1">CR (BaFBr:Eu²⁺ PSP Plate)</option>
+                <option value="2" selected>DR (CsI / a-Si Flat Panel)</option>
+                <option value="3">Fluoroscopy (Image Intensifier)</option>
+              </select>
+              <span class="small muted">Modality capture efficiency, dynamic range, and readout mechanism</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-role"><span>Radiographer Active Role</span><span id="out-role" class="small muted">Image Recording</span></label>
+              <select id="ctrl-role">
+                <option value="0" selected>📸 Image Recording (Exposure &amp; Setup)</option>
+                <option value="1">🔍 Image Analysis (Quality Critique)</option>
+              </select>
+              <span class="small muted">Select role perspective to highlight pertinent technical responsibilities</span>
+            </div>
+          </div>
+
+          <!-- Real-time metrics grid -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite" style="margin-top:14px;"></div>
+
+          <!-- Live Observation Caption -->
+          <div class="feedback-box" id="sim-caption" style="margin-top:10px;background:#f8fafc;border-left:4px solid var(--rad-teal);color:var(--rad-navy);font-size:13px;line-height:1.5;"></div>
+
+          <!-- Scientific Prediction & Run Logging Toolbar -->
+          <div class="card card-soft" style="margin-top:16px;border:1px solid var(--rad-border);">
+            <div class="form-row" style="margin-bottom:12px;">
+              <label class="field-label" for="w-prediction">Pre-Trial Scientific Prediction <span aria-hidden="true">*</span></label>
+              <input type="text" id="w-prediction" placeholder="e.g., Increasing filament current from 3.9A to 4.3A will drastically elevate tube mA and receptor signal while target efficiency remains constant..." style="width:100%;">
+              <span class="small muted">Required before logging each trial. Formulate a hypothesis regarding the physical parameter you are about to adjust.</span>
+            </div>
+
+            <div class="run-toolbar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" id="record-run"><i class="fa-solid fa-circle-dot"></i> Record This Run</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash"></i> Remove Last Run</button>
+              <span class="run-status" id="run-status" role="status" aria-live="polite" style="font-weight:700;color:var(--rad-navy);font-size:13px;">0 / 3 unique runs recorded</span>
+            </div>
+
+            <div class="run-table-wrap" style="margin-top:14px;overflow-x:auto;">
+              <table class="data-table run-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px;">Run</th>
+                    <th>Settings &amp; Technique</th>
+                    <th>Physical Conversion Metrics</th>
+                    <th>Clinical Model Interpretation</th>
+                  </tr>
+                </thead>
+                <tbody id="run-log-body">
+                  <tr><td colspan="4" class="muted">No runs recorded yet. Adjust controls above and click "Record This Run".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POST-LAB DATA ANALYSIS & WORKSHEET ===================== -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div><h2>Required Data Analysis &amp; Post-Lab Reflection</h2><div class="lab-section-sub">Quantitative energy conversion calculations, Excel data plotting instructions, and clinical reflection</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your simulation trials using <b>"Download Run Data (CSV)"</b> and perform the following analytical steps in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Filament Heating Current vs Tube Current (mA):</b> Plot Filament Heating Current (A) on the X-axis against Tube Current (mA) on the Y-axis. Fit an exponential trendline and calculate the $R^2$ goodness-of-fit to illustrate the steep thermionic emission threshold.</li>
+            <li><b>Plot 2 — Accelerating Potential (kVp) vs Receptor Signal / HVL:</b> Chart Tube Potential (kVp) against Detector Signal under standard 2.5 mm Al filtration vs under-filtered (0.5 mm Al) conditions.</li>
+            <li><b>Thermodynamic Heat Dissipation Column:</b> Add a calculated column verifying the target heat load percentage (<span class="math-tex">$100\% - \eta$</span>) across your trials.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and upload it in <b>Section 11 (Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Energy Conversion Calculations</h4>
+        <p class="small muted">Using the Bremsstrahlung efficiency formula <span class="math-tex">$\eta \approx 10^{-9} \times Z \times V$</span>, calculate the energy conversion yield and heat load for two targets from your simulation runs:</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <tr><th style="width:30%">Target Material &amp; Technique</th><th>Calculation &amp; Efficiency % ($\eta$)</th><th>Thermal Heat Percentage ($100 - \eta$)</th></tr>
+          <tr>
+            <td><b>Tungsten</b> ($Z=74$) at 80 kVp ($80,000\text{ V}$)</td>
+            <td><input type="text" id="w-calc-w" placeholder="e.g., 10^-9 * 74 * 80,000 * 100 = 0.59% X-rays"></td>
+            <td><input type="text" id="w-calc-w-heat" placeholder="e.g., 99.41% Heat dissipation"></td>
+          </tr>
+          <tr>
+            <td><b>Molybdenum</b> ($Z=42$) at 50 kVp ($50,000\text{ V}$) — classroom comparison (clinical Mo mammography is 25–35 kVp)</td>
+            <td><input type="text" id="w-calc-mo" placeholder="e.g., 10^-9 * 42 * 50,000 * 100 = 0.21% X-rays"></td>
+            <td><input type="text" id="w-calc-mo-heat" placeholder="e.g., 99.79% Heat dissipation"></td>
+          </tr>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-comment-dots"></i> C. Post-Lab Reflection &amp; Clinical Analysis Questions</h4>
+
+        <div class="form-row">
+          <label class="field-label" for="w-q1">1. How does a small adjustment in filament heating current (e.g. 3.9 A to 4.3 A) affect thermionic emission and tube current (mA)? Cite specific values from your simulation runs.</label>
+          <textarea id="w-q1" rows="3" placeholder="Explain the exponential thermionic emission curve and how tube mA responded..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="w-q2">2. Why does over 99% of electron kinetic energy convert to thermal heat at the anode target rather than X-rays? How does modern tube engineering prevent catastrophic target melting?</label>
+          <textarea id="w-q2" rows="4" placeholder="Discuss coulombic electron-nuclear interactions vs outer-shell electron collisions, anode disc rotation, and oil bath conduction..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="w-q3">3. List the four stages of radiographic image intensity formation in order, and state ONE physical or technical parameter that governs beam intensity at each stage.</label>
+          <textarea id="w-q3" rows="4" placeholder="Stage 1: ... ; Stage 2: ... ; Stage 3: ... ; Stage 4: ..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="w-q4">4. Compare Screen-Film and Digital Flat-Panel (DR) receptors in terms of dynamic range (latitude), readout speed, and potential for image underexposure vs overexposure.</label>
+          <textarea id="w-q4" rows="3" placeholder="Contrast narrow optical density curve vs wide linear digital latitude and dose creep..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="w-q5">5. Explain the distinction between the radiographer's "image recording" role and "image analysis" role. How does mastery of both roles protect the patient under ALARA?</label>
+          <textarea id="w-q5" rows="3" placeholder="Describe pre-exposure technique setup vs post-exposure image critique and repeat prevention..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="w-q6">6. Critical Thinking: If a digital radiograph exhibits severe quantum mottle, at which specific stage of the imaging chain did this defect originate, and why is digital post-processing unable to fix it?</label>
+          <textarea id="w-q6" rows="3" placeholder="Explain photon starvation, detective quantum efficiency, and why contrast smoothing cannot create missing anatomical data..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RUBRIC ===================== -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div><h2>Standardized Grading Rubric</h2><div class="lab-section-sub">Total: 20 points — Departmental standardized evaluation criteria across Phase 1 and Phase 2</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-rubric"><i class="fa-solid fa-clipboard-list"></i> Standardized Department Rubric</span>
+        <div id="rubric-container" style="margin-top:14px; overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:10px;">Students: score yourself to evaluate your readiness. Official grades and Gemini Flash AI feedback are assigned via the portal.</p>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 2 SUBMISSION HUB (POST-LAB EXCEL ANALYSIS) ===================== -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-file-excel"></i></div>
+        <div><h2>Phase 2 Submission — Post-Lab Excel Data Analysis</h2><div class="lab-section-sub">Upload your completed Excel analysis workbook and submit your post-lab reflection (10 points)</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div><!-- /#tab-pane-experiment -->
 
 </div><!-- /.lab-container -->
 
@@ -359,8 +833,297 @@
 </footer>
 
 <script src="../../shared/lab-common.js"></script>
+<script src="../../shared/lab-models.js"></script>
 <script>
+/* =========================================================================
+   Tab Switching & Infallible LaTeX Mathematical Rendering
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (!btnIntro || !btnExp || !paneIntro || !paneExp) return;
+
+  if (tabId === 'intro') {
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    paneIntro.classList.add('active');
+    paneExp.classList.remove('active');
+  } else {
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    paneExp.classList.add('active');
+    paneIntro.classList.remove('active');
+
+    // Force re-render of simulation canvas so pixel dimensions and 2D context are crisp
+    if (typeof renderSimulation === 'function') {
+      setTimeout(renderSimulation, 40);
+    }
+  }
+
+  // Trigger math formatting on tab switch
+  renderAllMath();
+
+  if (targetSectionId) {
+    const targetEl = document.getElementById(targetSectionId);
+    if (targetEl) {
+      setTimeout(() => {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
+  }
+}
+
+/* Infallible LaTeX Math Renderer (KaTeX with semantic fallback) */
+function renderAllMath() {
+  if (window.renderMathInElement && typeof window.renderMathInElement === 'function') {
+    try {
+      window.renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (err) {
+      console.warn('KaTeX auto-render failed; executing semantic fallback:', err);
+    }
+  }
+
+  // Robust semantic HTML fallback for offline or restricted environments
+  const targets = document.querySelectorAll('.math-tex, .math-display, .formula-box, .objectives-list li, .card p, .card li, table td, table th, figcaption, .control-card span');
+  targets.forEach(function (el) {
+    if (!el.innerHTML.includes('$')) return;
+
+    // Display formulas $$ ... $$
+    el.innerHTML = el.innerHTML.replace(/\$\$([^$]+)\$\$/g, function (match, tex) {
+      return '<div class="math-fallback-display">' + formatMathTex(tex) + '</div>';
+    });
+
+    // Inline formulas $ ... $
+    el.innerHTML = el.innerHTML.replace(/\$([^$]+)\$/g, function (match, tex) {
+      return '<span class="math-fallback-inline">' + formatMathTex(tex) + '</span>';
+    });
+  });
+}
+
+function formatMathTex(tex) {
+  let s = tex.trim();
+  s = s.replace(/\\eta/g, '&eta;');
+  s = s.replace(/\\approx/g, '&asymp;');
+  s = s.replace(/\\times/g, '&times;');
+  s = s.replace(/\\cdot/g, '&sdot;');
+  s = s.replace(/10\^\{?-9\}?/g, '10<sup>&minus;9</sup>');
+  s = s.replace(/10\^\{?([0-9\-]+)\}?/g, '10<sup>$1</sup>');
+  s = s.replace(/\\%/g, '%');
+  s = s.replace(/\bZ\b/g, '<i>Z</i>');
+  s = s.replace(/\bV\b/g, '<i>V</i>');
+  s = s.replace(/\bkVp\b/g, 'kVp');
+  return s;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+
+  // Wire Tab Buttons
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  if (btnIntro) btnIntro.addEventListener('click', () => switchTab('intro'));
+  if (btnExp) btnExp.addEventListener('click', () => switchTab('experiment'));
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) btnProceed.addEventListener('click', () => switchTab('experiment', 'sec-experiment'));
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) btnBack.addEventListener('click', () => switchTab('intro', 'sec-objectives'));
+
+  // Wire Sticky Nav to Auto-Switch Tabs
+  const navEl = document.getElementById('lab-nav');
+  if (navEl) {
+    navEl.addEventListener('click', function (e) {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href || !href.startsWith('#')) return;
+      const targetId = href.substring(1);
+      const targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+
+      const paneIntro = document.getElementById('tab-pane-intro');
+      const paneExp = document.getElementById('tab-pane-experiment');
+
+      if (paneIntro && paneIntro.contains(targetEl)) {
+        switchTab('intro', targetId);
+        e.preventDefault();
+      } else if (paneExp && paneExp.contains(targetEl)) {
+        switchTab('experiment', targetId);
+        e.preventDefault();
+      }
+    });
+  }
+
+  /* ---------------- Virtual Experiment: Inside the Tube & Chain Physics ---------------- */
+  let currentResult = null;
+
+  function controlValues() {
+    return {
+      filament: parseFloat(document.getElementById('ctrl-filament').value),
+      kvp: parseFloat(document.getElementById('ctrl-kvp').value),
+      target: parseInt(document.getElementById('ctrl-target').value, 10),
+      filtration: parseFloat(document.getElementById('ctrl-filtration').value),
+      receptor: parseInt(document.getElementById('ctrl-receptor').value, 10),
+      role: parseInt(document.getElementById('ctrl-role').value, 10)
+    };
+  }
+
+  function settingSummary(v) {
+    const targetLabel = v.target === 0 ? 'Moly (Z=42)' : 'Tungsten (Z=74)';
+    const recLabels = ['Film (400 spd)', 'CR (PSP)', 'DR (Flat Panel)', 'Fluoro (II)'];
+    const roleLabels = ['Recording', 'Analysis'];
+    return `Filament: ${v.filament.toFixed(1)} A; Potential: ${v.kvp} kVp; Target: ${targetLabel}; Filter: ${v.filtration.toFixed(1)} mm Al; Receptor: ${recLabels[v.receptor] || 'DR'}; Role: ${roleLabels[v.role] || 'Recording'}`;
+  }
+
+  window.renderSimulation = function renderSimulation() {
+    const v = controlValues();
+    document.getElementById('out-filament').textContent = v.filament.toFixed(1) + ' A';
+    document.getElementById('out-kvp').textContent = v.kvp + ' kVp';
+    document.getElementById('out-target').textContent = v.target === 0 ? 'Molybdenum (Z=42)' : 'Tungsten (Z=74)';
+    document.getElementById('out-filtration').textContent = v.filtration.toFixed(1) + ' mm Al';
+    
+    const recLabels = ['Screen-Film', 'CR (PSP)', 'DR Flat Panel', 'Fluoroscopy (II)'];
+    document.getElementById('out-receptor').textContent = recLabels[v.receptor] || 'DR Flat Panel';
+
+    const roleLabels = ['Image Recording', 'Image Analysis'];
+    document.getElementById('out-role').textContent = roleLabels[v.role] || 'Image Recording';
+
+    currentResult = RadModels.compute('chain', v);
+    const canvas = document.getElementById('sim-canvas');
+    if (canvas && canvas.getContext) {
+      RadModels.draw('chain', canvas.getContext('2d'), v, currentResult, 'The Radiographic Imaging Chain & Tube Physics');
+    }
+    const metricsContainer = document.getElementById('sim-metrics');
+    if (metricsContainer) {
+      RadLab.renderMetrics(metricsContainer, currentResult);
+    }
+    const captionEl = document.getElementById('sim-caption');
+    if (captionEl) {
+      captionEl.textContent = currentResult.observation;
+    }
+  };
+
+  function experimentActivity() {
+    return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: 3 };
+  }
+
+  function renderRunLog() {
+    const activity = experimentActivity();
+    const body = document.getElementById('run-log-body');
+    if (!body) return;
+    body.innerHTML = '';
+    if (!activity.runs.length) {
+      const row = body.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 4;
+      cell.className = 'muted';
+      cell.textContent = 'No runs recorded yet. Adjust controls above and click "Record This Run".';
+    } else {
+      activity.runs.forEach(function (run, index) {
+        const row = body.insertRow();
+        row.insertCell().textContent = String(index + 1);
+        row.insertCell().textContent = run.settings;
+        row.insertCell().textContent = (run.metrics || []).slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+        row.insertCell().textContent = run.observation;
+      });
+    }
+    const statusEl = document.getElementById('run-status');
+    if (statusEl) statusEl.textContent = `${activity.runs.length} / 3 unique runs recorded`;
+  }
+
+  function recordRun() {
+    const predEl = document.getElementById('w-prediction');
+    const prediction = predEl ? predEl.value.trim() : '';
+    if (!prediction) {
+      RadLab.toast('Please enter a brief scientific prediction before recording this trial.', 'error');
+      if (predEl) predEl.focus();
+      return;
+    }
+    const values = controlValues();
+    const signature = JSON.stringify(values);
+    const activity = experimentActivity();
+    if (activity.runs.some(function (r) { return r.signature === signature; })) {
+      RadLab.toast('That exact setting has already been recorded. Adjust a variable and record again.', 'error');
+      return;
+    }
+    const run = {
+      signature: signature,
+      settings: settingSummary(values),
+      values: values,
+      metrics: currentResult.metrics,
+      observation: currentResult.observation,
+      modelScore: Number(currentResult.score.toFixed(1))
+    };
+    activity.runs.push(run);
+    activity.done = activity.runs.length >= 3;
+    activity.score = Math.min(activity.runs.length, 3);
+    activity.maxScore = 3;
+    activity.detail = `${activity.runs.length} unique runs recorded; latest model index ${run.modelScore}/100.`;
+    RadLab.state.activities['experiment-log'] = activity;
+    if (RadLab.sound && typeof RadLab.sound.playExposure === 'function') RadLab.sound.playExposure();
+    RadLab.save();
+    renderRunLog();
+    RadLab.progress.update();
+    RadLab.toast(`Run ${activity.runs.length} recorded successfully.`, 'success');
+  }
+
+  function removeLastRun() {
+    const activity = experimentActivity();
+    if (!activity.runs.length) {
+      RadLab.toast('There are no recorded runs to remove.');
+      return;
+    }
+    activity.runs.pop();
+    activity.done = activity.runs.length >= 3;
+    activity.score = Math.min(activity.runs.length, 3);
+    activity.detail = `${activity.runs.length} unique runs recorded.`;
+    RadLab.state.activities['experiment-log'] = activity;
+    RadLab.save();
+    renderRunLog();
+    RadLab.progress.update();
+  }
+
+  // Wire simulation controls
+  ['ctrl-filament', 'ctrl-kvp', 'ctrl-target', 'ctrl-filtration', 'ctrl-receptor', 'ctrl-role'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', window.renderSimulation);
+  });
+
+  const btnRecord = document.getElementById('record-run');
+  if (btnRecord) btnRecord.addEventListener('click', recordRun);
+
+  const btnRemove = document.getElementById('remove-run');
+  if (btnRemove) btnRemove.addEventListener('click', removeLastRun);
+
+  // Preset buttons
+  document.querySelectorAll('.preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.dataset.filament != null) document.getElementById('ctrl-filament').value = btn.dataset.filament;
+      if (btn.dataset.kvp != null) document.getElementById('ctrl-kvp').value = btn.dataset.kvp;
+      if (btn.dataset.target != null) document.getElementById('ctrl-target').value = btn.dataset.target;
+      if (btn.dataset.filtration != null) document.getElementById('ctrl-filtration').value = btn.dataset.filtration;
+      if (btn.dataset.receptor != null) document.getElementById('ctrl-receptor').value = btn.dataset.receptor;
+      if (btn.dataset.role != null) document.getElementById('ctrl-role').value = btn.dataset.role;
+      window.renderSimulation();
+      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+    });
+  });
 
   /* ---------------- Station 1: X-ray tube hotspots ---------------- */
   RadLab.hotspots(document.getElementById('tube-hotspot-container'), {
@@ -368,84 +1131,84 @@ document.addEventListener('DOMContentLoaded', function () {
     imageSrc: '../../shared/assets/img/xray-tube-scientific.svg',
     imageAlt: 'Scientific cutaway of a diagnostic rotating-anode X-ray tube, protective housing, filtration, and collimator',
     points: [
-      { x: 24, y: 43, label: 'Cathode Assembly', detail: 'One of the tungsten filaments is heated to release electrons by thermionic emission. The negatively charged focusing cup narrows the electron cloud toward the selected focal spot.' },
-      { x: 41, y: 43, label: 'Accelerated Electron Stream', detail: 'The tube potential accelerates electrons across the evacuated envelope from the negative cathode toward the positive anode. Tube current reflects the rate of electron flow.' },
-      { x: 59, y: 43, label: 'Rotating Anode and Focal Spot', detail: 'Electrons strike the tungsten-rhenium focal track at the focal spot. Roughly 1% of their kinetic energy becomes X-rays and nearly all the rest becomes heat; rotation spreads heat over a larger track.' },
-      { x: 73, y: 44, label: 'Rotor and Stator', detail: 'The rotor is inside the evacuated envelope and is mechanically connected to the anode. Stator coils outside the envelope create the rotating magnetic field that drives it.' },
-      { x: 55, y: 72, label: 'Tube Window and Filtration', detail: 'The useful beam leaves through a low-attenuation window. Inherent filtration from the tube assembly plus specified added aluminum or copper filters remove low-energy photons before collimation.' },
-      { x: 55, y: 87, label: 'Light-beam Collimator', detail: 'Two perpendicular pairs of adjustable lead shutters define the X-ray field. A lamp and mirror provide a visible field aligned with the radiation field for positioning.' }
+      { x: 24, y: 43, label: 'Cathode Assembly', detail: 'The tungsten filament is heated to 2200–2600°C to release electrons by thermionic emission. The negatively charged focusing cup electrostatically narrows the electron cloud toward the focal spot.' },
+      { x: 41, y: 43, label: 'Accelerated Electron Stream', detail: 'Tube potential (kVp) accelerates electrons across the vacuum envelope from negative cathode to positive anode. Tube current (mA) reflects the rate of electron flow.' },
+      { x: 59, y: 43, label: 'Rotating Anode and Focal Spot', detail: 'Electrons strike the tungsten-rhenium target focal track. Approximately 1% of kinetic energy becomes X-rays; over 99% becomes heat. High-speed disc rotation spreads thermal load over a wide focal track.' },
+      { x: 73, y: 44, label: 'Rotor and Stator', detail: 'The copper rotor sits inside the vacuum envelope and drives the anode shaft. External electromagnetic stator coils induce rotation without breaking vacuum seal.' },
+      { x: 55, y: 72, label: 'Tube Window and Filtration', detail: 'The useful beam exits through a thin beryllium/glass window. Inherent and added aluminum filtration absorbs low-energy soft photons, raising the Half-Value Layer (HVL) and sparing skin dose.' },
+      { x: 55, y: 87, label: 'Light-beam Collimator', detail: 'Two perpendicular pairs of lead shutters define field borders. A mirror and positioning lamp project a visible light field corresponding to the radiation field.' }
     ]
   });
 
   RadLab.mcq(document.getElementById('quiz-tube'), {
     id: 'q-tube-collimator',
-    prompt: 'What is the primary function of the collimator?',
+    prompt: 'What is the primary function of the collimator in the radiographic imaging chain?',
     options: [
       'To convert electrons into X-ray photons',
-      'To restrict and shape the size of the useful X-ray beam reaching the patient',
-      'To cool the rotating anode target',
-      'To chemically develop the latent image'
+      'To restrict and shape the size of the useful X-ray beam, reducing patient dose and scatter',
+      'To cool the rotating anode target disc',
+      'To amplify the remnant beam before reaching the detector'
     ],
     correctIndex: 1,
-    explain: 'The collimator uses adjustable lead shutters to restrict the beam to the area of clinical interest, reducing patient dose and scatter radiation.'
+    explain: 'The collimator uses adjustable lead shutters to restrict the beam strictly to the anatomical region of clinical interest, significantly reducing both patient dose and scatter radiation.'
   });
 
   /* ---------------- Station 2: Drag-order the 4 stages ---------------- */
   RadLab.dragOrder(document.getElementById('stages-drag-container'), {
     id: 'station-stages-order',
     items: [
-      { id: 'propagation', label: 'Primary Beam Propagation — X-rays travel from the tube target to the patient\'s skin surface' },
-      { id: 'interaction', label: 'Patient Interaction — the beam is attenuated as it passes through the patient\'s tissue' },
-      { id: 'capture', label: 'Image Capture — the remnant (exit) beam is captured by the image receptor' },
-      { id: 'processing', label: 'Image Processing — the captured data is turned into the final viewable radiograph' }
+      { id: 'propagation', label: '1. Primary Beam Propagation — X-rays travel from the tube target through filtration and collimator to the patient' },
+      { id: 'interaction', label: '2. Patient Interaction — the beam undergoes differential attenuation (absorption & scatter) through tissue' },
+      { id: 'capture', label: '3. Image Capture — the remnant beam is intercepted and absorbed by the image receptor' },
+      { id: 'processing', label: '4. Image Processing & Display — captured signal is converted into a visible radiograph for clinical review' }
     ],
     correctOrder: ['propagation', 'interaction', 'capture', 'processing']
   });
 
   RadLab.mcq(document.getElementById('quiz-stages'), {
     id: 'q-stages-attenuation',
-    prompt: 'Which stage is most directly affected by the patient\'s tissue thickness and density?',
+    prompt: 'Which stage of the imaging chain is most directly affected by patient body habitus, tissue composition, and pathology?',
     options: [
       'Primary Beam Propagation',
-      'Patient Interaction',
+      'Patient Interaction (Attenuation)',
       'Image Capture',
       'Image Processing'
     ],
     correctIndex: 1,
-    explain: 'Patient Interaction (attenuation) depends heavily on the thickness, density, and atomic number of the tissues the beam passes through.'
+    explain: 'Patient Interaction (attenuation) depends directly on tissue thickness, mass density, and atomic number (photoelectric absorption and Compton scatter).'
   });
 
   /* ---------------- Station 3: Receptor family match ---------------- */
   RadLab.matchPairs(document.getElementById('receptor-match-container'), {
     id: 'station-receptors-match',
-    leftTitle: 'Description',
-    rightTitle: 'Receptor Type',
+    leftTitle: 'Description / Readout Mechanism',
+    rightTitle: 'Image Receptor Modality',
     left: [
-      { id: 'd1', label: 'Captures a hidden "latent" image on light-sensitive emulsion; requires wet chemical processing in a darkroom.' },
-      { id: 'd2', label: 'Uses a reusable photostimulable phosphor plate that is read by a laser scanner to produce a digital image.' },
-      { id: 'd3', label: 'An electronic flat panel that converts incident X-rays to electrical charge, either indirectly through a scintillator or directly through a photoconductor — no cassette scanning.' },
-      { id: 'd4', label: 'Converts the X-ray beam into visible light and electronically amplifies it for real-time, continuous viewing during a procedure.' }
+      { id: 'd1', label: 'Captures a chemical latent image on silver halide emulsion; requires wet chemical processing in a darkroom.' },
+      { id: 'd2', label: 'Uses a reusable photostimulable phosphor (PSP) plate; read by a red laser in a dedicated cassette scanner.' },
+      { id: 'd3', label: 'Solid-state active matrix flat panel converting X-rays to digital charge for immediate image display in ~3 seconds.' },
+      { id: 'd4', label: 'Vacuum tube with input phosphor and photocathode that electronically amplifies light for dynamic, real-time fluoroscopy.' }
     ],
     right: [
       { id: 'film', label: 'Screen-Film Cassette' },
-      { id: 'cr', label: 'Computed Radiography (CR) Cassette' },
-      { id: 'dr', label: 'Digital Radiography (DR) Flat Panel' },
-      { id: 'ii', label: 'Image Intensifier (Fluoroscopy)' }
+      { id: 'cr', label: 'Computed Radiography (CR)' },
+      { id: 'dr', label: 'Digital Radiography (DR Panel)' },
+      { id: 'ii', label: 'Image Intensifier (Fluoro)' }
     ],
     pairs: { d1: 'film', d2: 'cr', d3: 'dr', d4: 'ii' }
   });
 
   RadLab.mcq(document.getElementById('quiz-receptors'), {
     id: 'q-receptors-darkroom',
-    prompt: 'Which image receptor requires wet chemical processing in a darkroom before the image can be viewed?',
+    prompt: 'Which image receptor modality requires darkroom wet chemical processing to convert a latent image into visible optical densities?',
     options: [
       'DR flat panel',
       'Image intensifier',
       'Screen-film cassette',
-      'CR cassette'
+      'CR photostimulable phosphor plate'
     ],
     correctIndex: 2,
-    explain: 'Only conventional screen-film receptors form a hidden "latent image" that must be chemically developed before it becomes visible.'
+    explain: 'Conventional screen-film receptors rely on chemical development, fixing, washing, and drying of silver halide crystals.'
   });
 
   /* ---------------- Station 4: RT role sort ---------------- */
@@ -454,103 +1217,247 @@ document.addEventListener('DOMContentLoaded', function () {
     leftTitle: 'Radiographer Task',
     rightTitle: 'Role Category',
     left: [
-      { id: 'r1', label: 'Choosing and setting up the correct image receptor for the exam' },
-      { id: 'r2', label: 'Preparing and positioning the patient correctly' },
-      { id: 'r3', label: 'Selecting appropriate technical and exposure factors (kVp, mAs)' },
-      { id: 'r4', label: 'Properly processing the captured image' },
-      { id: 'a1', label: 'Confirming the anatomy of interest was correctly recorded' },
-      { id: 'a2', label: 'Judging whether image quality (density, contrast, sharpness, noise) is diagnostic' },
-      { id: 'a3', label: 'Evaluating whether the image display supports an accurate diagnosis' },
-      { id: 'a4', label: 'Deciding if additional images are needed to improve diagnostic value' }
+      { id: 'r1', label: 'Selecting appropriate technical exposure factors (kVp, mA, time, filtration)' },
+      { id: 'r2', label: 'Accurately positioning the patient and collimating the primary beam' },
+      { id: 'r3', label: 'Setting up and aligning the correct image receptor' },
+      { id: 'r4', label: 'Applying radiation shielding to protect radiosensitive organs' },
+      { id: 'a1', label: 'Confirming the anatomical region of interest is fully demonstrated without cutoff' },
+      { id: 'a2', label: 'Assessing exposure index, contrast-to-noise ratio, and quantum mottle' },
+      { id: 'a3', label: 'Identifying radiographic artifacts and determining their equipment root cause' },
+      { id: 'a4', label: 'Determining whether repeat imaging is clinically warranted under ALARA' }
     ],
     right: [
       { id: 'recording', label: 'Optimal Image Recording' },
       { id: 'analysis', label: 'Optimal Image Analysis' }
     ],
-    pairs: { r1: 'recording', r2: 'recording', r3: 'recording', r4: 'recording', a1: 'analysis', a2: 'analysis', a3: 'analysis', a4: 'analysis' }
+    pairs: {
+      r1: 'recording', r2: 'recording', r3: 'recording', r4: 'recording',
+      a1: 'analysis', a2: 'analysis', a3: 'analysis', a4: 'analysis'
+    }
   });
 
   RadLab.mcq(document.getElementById('quiz-role'), {
     id: 'q-role-quality',
-    prompt: 'Judging whether a radiograph shows adequate contrast and sharpness for diagnosis is part of which radiographer role?',
+    prompt: 'Judging whether a radiograph shows diagnostic contrast, acceptable spatial resolution, and freedom from quantum mottle is part of which radiographer role?',
     options: ['Image Recording', 'Image Analysis', 'Equipment Maintenance', 'Patient Scheduling'],
     correctIndex: 1,
-    explain: 'Assessing image quality factors like density, contrast, sharpness, and noise is a core part of the radiographer\'s image analysis role.'
+    explain: 'Systematic critique of image quality indicators (contrast, noise, resolution, artifacts) is the hallmark of the radiographer\'s image analysis role.'
   });
 
-  /* ---------------- Final knowledge check ---------------- */
+  /* ---------------- Clinical Decision Scenario Check ---------------- */
+  const SCENARIO = {
+    correct: 0,
+    explain: 'Quantum mottle is caused by photon starvation — too few photons reaching the detector to form a statistically uniform image. Because filament heating current (3.9 A) yielded only ~25 mA, the primary beam fluence was severely deficient. Increasing filament heating/mA directly restores photon fluence without violating ALARA or unnecessarily changing beam penetration (kVp).'
+  };
+
+  function checkScenario() {
+    const selected = document.querySelector('input[name="scenario-choice"]:checked');
+    const feedback = document.getElementById('scenario-feedback');
+    if (!selected) {
+      feedback.className = 'feedback-box incorrect';
+      feedback.textContent = 'Select an option above before checking.';
+      return;
+    }
+    const choice = Number(selected.value);
+    const correct = choice === SCENARIO.correct;
+    const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
+    RadLab.state.activities['clinical-scenario'] = {
+      done: correct,
+      score: correct ? 1 : 0,
+      maxScore: 1,
+      attempts: (previous.attempts || 0) + 1,
+      selected: choice,
+      detail: document.querySelectorAll('.scenario-option span')[choice].textContent.trim()
+    };
+    feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
+    feedback.textContent = (correct ? 'Correct! ' : 'Reconsider. ') + SCENARIO.explain;
+    RadLab.save();
+    RadLab.progress.update();
+  }
+
+  const btnCheckScenario = document.getElementById('check-scenario');
+  if (btnCheckScenario) btnCheckScenario.addEventListener('click', checkScenario);
+
+  /* ---------------- Knowledge check mastery quizzes ---------------- */
   const finalQuizEl = document.getElementById('quiz-final');
   RadLab.mcq(finalQuizEl, {
     id: 'q-final-inverse-square',
-    prompt: 'According to the inverse square law, what happens to X-ray beam intensity as distance from the source increases?',
-    options: ['It increases proportionally', 'It stays constant', 'It decreases with the square of the distance', 'It decreases linearly'],
-    correctIndex: 2,
-    explain: 'Beam intensity is inversely proportional to the square of the distance from the source — doubling the distance reduces intensity to one-quarter.'
+    prompt: 'According to the inverse square law, what happens to X-ray beam intensity as distance from the source doubles?',
+    options: ['It doubles', 'It stays constant', 'It drops to one-half', 'It drops to one-quarter (25%)'],
+    correctIndex: 3,
+    explain: 'Beam intensity is inversely proportional to the square of the distance: (1/2)² = 1/4 (25%).'
   });
+
   RadLab.mcq(finalQuizEl, {
     id: 'q-final-attenuation-def',
-    prompt: 'Which of the following best describes "attenuation"?',
-    options: ['The amplification of the X-ray beam by the image intensifier', 'The reduction in X-ray beam intensity as it passes through matter', 'The chemical development of exposed film', 'The electronic noise generated by a digital receptor'],
+    prompt: 'Which of the following best defines radiographic "attenuation"?',
+    options: [
+      'The conversion of electrons into X-ray photons at the anode',
+      'The reduction in X-ray beam intensity through absorption and scatter as it traverses matter',
+      'The digital amplification of the image signal by the flat panel detector',
+      'The darkroom chemical development of exposed film'
+    ],
     correctIndex: 1,
-    explain: 'Attenuation is the reduction in the intensity of the X-ray beam as it is absorbed and scattered while passing through the patient\'s tissue.'
+    explain: 'Attenuation encompasses both photoelectric absorption and Compton scattering, which together remove photons from the primary beam.'
+  });
+
+  RadLab.mcq(finalQuizEl, {
+    id: 'q-chain-heat',
+    prompt: 'In a diagnostic X-ray tube operating at 80 kVp with a Tungsten target, what percentage of the electron stream\'s kinetic energy is converted into heat versus useful X-rays?',
+    options: [
+      '50% heat, 50% X-rays',
+      '75% heat, 25% X-rays',
+      '~99% heat, ~1% X-rays',
+      '10% heat, 90% X-rays'
+    ],
+    correctIndex: 2,
+    explain: 'At diagnostic voltages, over 99% of electron kinetic energy is dissipated as thermal heat through coulombic collisions with outer target electrons; less than 1% yields bremsstrahlung X-rays.'
+  });
+
+  RadLab.mcq(finalQuizEl, {
+    id: 'q-chain-filtration',
+    prompt: 'What is the primary radiological rationale for requiring a minimum of 2.5 mm Al equivalent filtration on tubes operating above 70 kVp?',
+    options: [
+      'To increase the quantity of low-energy photons reaching the receptor',
+      'To selectively absorb low-energy photons that only contribute to patient skin dose without penetrating to the receptor',
+      'To cool the anode disc',
+      'To magnify the anatomical image'
+    ],
+    correctIndex: 1,
+    explain: 'Filtration absorbs soft, non-penetrating photons that would otherwise deposit useless radiation dose in the patient\'s skin, hardening the beam and raising its Half-Value Layer.'
   });
 
   /* ---------------- Rubric ---------------- */
   RadLab.buildRubric(document.getElementById('rubric-container'), {
     id: 'lab1-rubric',
-    title: 'Lab 1 Grading Rubric (20 points)',
+    title: 'Lab 1 Standardized Rubric (20 points)',
     criteria: [
-      { id: 'c1', name: 'Pre-Lab Conceptual Understanding', points: 4,
-        levels: [ { desc: 'Clearly and accurately explains X-ray production and the imaging chain (4 pts)' }, { desc: 'Mostly accurate with minor gaps (2.5–3 pts)' }, { desc: 'Significant misconceptions present (0–2 pts)' } ] },
-      { id: 'c2', name: 'Simulation Execution & Interactive Activities', points: 4,
-        levels: [ { desc: 'All 4 stations completed correctly (4 pts)' }, { desc: 'Most stations completed correctly (2.5–3 pts)' }, { desc: 'Few stations attempted/completed (0–2 pts)' } ] },
-      { id: 'c3', name: 'Worksheet Responses & Results Interpretation', points: 5,
-        levels: [ { desc: 'Thorough, accurate, well-reasoned answers (4.5–5 pts)' }, { desc: 'Mostly correct, some depth missing (3–4 pts)' }, { desc: 'Incomplete or inaccurate (0–2.5 pts)' } ] },
-      { id: 'c4', name: 'Critical-Thinking / Analysis Question', points: 4,
-        levels: [ { desc: 'Identifies multiple plausible stages with sound reasoning (3.5–4 pts)' }, { desc: 'Identifies at least one stage with reasoning (2–3 pts)' }, { desc: 'No clear reasoning provided (0–1.5 pts)' } ] },
-      { id: 'c5', name: 'Completeness, Organization & Professionalism', points: 3,
-        levels: [ { desc: 'Complete, organized, submitted on time (3 pts)' }, { desc: 'Minor omissions or lateness (1.5–2.5 pts)' }, { desc: 'Substantially incomplete (0–1 pt)' } ] }
+      {
+        id: 'c1',
+        name: 'Pre-Lab Concepts & Knowledge Check',
+        points: 4,
+        part: 'Part I: In-Lab Interactive Activities (10 Points)',
+        levels: [
+          { desc: 'Accurately explains tube physics, Bremsstrahlung efficiency, and imaging chain; achieves mastery on all quizzes (4 pts)' },
+          { desc: 'Mostly accurate explanation with minor omissions (2.5–3 pts)' },
+          { desc: 'Significant misconceptions in tube physics or imaging chain (0–2 pts)' }
+        ]
+      },
+      {
+        id: 'c2',
+        name: 'Simulation Execution & Interactive Stations',
+        points: 6,
+        part: 'Part I: In-Lab Interactive Activities (10 Points)',
+        levels: [
+          { desc: 'Logs at least 3 unique controlled simulation runs with systematic parameter shifts; completes all 4 stations and clinical scenario (6 pts)' },
+          { desc: 'Logs 1–2 runs or leaves 1 station incomplete (4–5 pts)' },
+          { desc: 'No controlled runs logged or minimal station interaction (0–3.5 pts)' }
+        ]
+      },
+      {
+        id: 'c3',
+        name: 'Post-Lab Analysis Workbook & Worksheet Calculations',
+        points: 5,
+        part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)',
+        levels: [
+          { desc: 'Thorough, accurate mathematical conversion calculations (efficiency formula, heat percentage) with rigorous Excel data analysis (4.5–5 pts)' },
+          { desc: 'Calculations mostly correct with minor rounding or formula gaps (3–4 pts)' },
+          { desc: 'Incomplete or missing calculations / workbook (0–2.5 pts)' }
+        ]
+      },
+      {
+        id: 'c4',
+        name: 'Clinical Reasoning & ALARA Synthesis',
+        points: 3,
+        part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)',
+        levels: [
+          { desc: 'Links physical factors (filtration, mA, kVp) to patient entrance dose and quantum mottle under ALARA principles (3 pts)' },
+          { desc: 'Identifies clinical trade-offs with brief rationale (2 pts)' },
+          { desc: 'Fails to link physical causes to clinical radiation safety (0–1.5 pts)' }
+        ]
+      },
+      {
+        id: 'c5',
+        name: 'Completeness, Organization & Professional Reporting',
+        points: 2,
+        part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)',
+        levels: [
+          { desc: 'Complete, highly organized, professional submission format (2 pts)' },
+          { desc: 'Minor formatting omissions (1–1.5 pts)' },
+          { desc: 'Substantially incomplete report (0–0.5 pt)' }
+        ]
+      }
     ]
   });
 
   /* ---------------- Init engine ---------------- */
   RadLab.init({
     labId: 'lab-01',
-    labTitle: 'Lab 1 — The Imaging Chain & the Radiographer\'s Role',
+    labTitle: "Lab 1 — The Imaging Chain & the Radiographer's Role",
     weekNumber: 1,
     rubric: {
-      title: 'Lab 1 Grading Rubric (20 points)',
+      title: 'Lab 1 Standardized Rubric (20 points)',
       criteria: [
-        { id: 'c1', name: 'Pre-Lab Conceptual Understanding', points: 4 },
-        { id: 'c2', name: 'Simulation Execution & Interactive Activities', points: 4 },
-        { id: 'c3', name: 'Worksheet Responses & Results Interpretation', points: 5 },
-        { id: 'c4', name: 'Critical-Thinking / Analysis Question', points: 4 },
-        { id: 'c5', name: 'Completeness, Organization & Professionalism', points: 3 }
+        { id: 'c1', name: 'Pre-Lab Concepts & Knowledge Check', points: 4, part: 'Part I: In-Lab Interactive Activities (10 Points)' },
+        { id: 'c2', name: 'Simulation Execution & Interactive Stations', points: 6, part: 'Part I: In-Lab Interactive Activities (10 Points)' },
+        { id: 'c3', name: 'Post-Lab Analysis Workbook & Worksheet Calculations', points: 5, part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)' },
+        { id: 'c4', name: 'Clinical Reasoning & ALARA Synthesis', points: 3, part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)' },
+        { id: 'c5', name: 'Completeness, Organization & Professional Reporting', points: 2, part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)' }
       ]
     },
     sections: [
-      { id: 'sec-tube', label: '1 · X-ray Tube', checkComplete: (s) => s.activities['station-tube-hotspots'] && s.activities['station-tube-hotspots'].done },
-      { id: 'sec-stages', label: '2 · Formation Stages', checkComplete: (s) => s.activities['station-stages-order'] && s.activities['station-stages-order'].done },
-      { id: 'sec-receptors', label: '3 · Receptors', checkComplete: (s) => s.activities['station-receptors-match'] && s.activities['station-receptors-match'].done },
-      { id: 'sec-role', label: '4 · RT Role Sort', checkComplete: (s) => s.activities['station-role-sort'] && s.activities['station-role-sort'].done },
-      { id: 'sec-quiz', label: '5 · Knowledge Check', checkComplete: (s) => ['q-tube-collimator','q-stages-attenuation','q-receptors-darkroom','q-role-quality','q-final-inverse-square','q-final-attenuation-def'].every(id => s.quiz[id] && s.quiz[id].correct) },
-      { id: 'sec-worksheet', label: '6 · Worksheet' }
+      { id: 'sec-tube', label: '1 · Tube Cutaway', tab: 'intro', checkComplete: function (s) { return !!(s.activities['station-tube-hotspots'] && s.activities['station-tube-hotspots'].done); } },
+      { id: 'sec-stages', label: '2 · Formation Stages', tab: 'intro', checkComplete: function (s) { return !!(s.activities['station-stages-order'] && s.activities['station-stages-order'].done); } },
+      { id: 'sec-receptors', label: '3 · Receptors Match', tab: 'intro', checkComplete: function (s) { return !!(s.activities['station-receptors-match'] && s.activities['station-receptors-match'].done); } },
+      { id: 'sec-role', label: '4 · RT Role Sort', tab: 'intro', checkComplete: function (s) { return !!(s.activities['station-role-sort'] && s.activities['station-role-sort'].done); } },
+      { id: 'sec-scenario', label: '5 · Clinical Scenario', tab: 'intro', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '6 · Knowledge Check', tab: 'intro', checkComplete: function (s) { return ['q-tube-collimator', 'q-stages-attenuation', 'q-receptors-darkroom', 'q-role-quality', 'q-final-inverse-square', 'q-final-attenuation-def', 'q-chain-heat', 'q-chain-filtration'].every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-experiment', label: '7 · Virtual Simulator', tab: 'experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-worksheet', label: '8 · Analysis & Worksheet', tab: 'experiment' }
     ]
   });
 
-  // Register worksheet fields AFTER init so registry/state exist
-  RadLab.registerField('w-cathode-fn', { sectionId: 'sec-worksheet', label: 'Cathode function' });
-  RadLab.registerField('w-anode-fn', { sectionId: 'sec-worksheet', label: 'Anode function' });
-  RadLab.registerField('w-window-fn', { sectionId: 'sec-worksheet', label: 'Tube window function' });
-  RadLab.registerField('w-collimator-fn', { sectionId: 'sec-worksheet', label: 'Collimator function' });
-  RadLab.registerField('w-q1', { sectionId: 'sec-worksheet', label: 'Q1. Why simulation still meets lab objectives' });
-  RadLab.registerField('w-q2', { sectionId: 'sec-worksheet', label: 'Q2. Four stages + one factor each' });
-  RadLab.registerField('w-q3', { sectionId: 'sec-worksheet', label: 'Q3. Recording role vs analysis role' });
-  RadLab.registerField('w-q4', { sectionId: 'sec-worksheet', label: 'Q4. Best-fit receptor scenario' });
-  RadLab.registerField('w-q5', { sectionId: 'sec-worksheet', label: 'Q5. Electron source vs photon source components' });
-  RadLab.registerField('w-q6', { sectionId: 'sec-worksheet', label: 'Q6. Critical thinking: underexposed image root cause' });
+  // Register worksheet fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment scientific prediction' });
+  RadLab.registerField('w-cathode-fn', { sectionId: 'sec-worksheet', label: 'Cathode diagnostic function' });
+  RadLab.registerField('w-anode-fn', { sectionId: 'sec-worksheet', label: 'Anode diagnostic function' });
+  RadLab.registerField('w-window-fn', { sectionId: 'sec-worksheet', label: 'Tube window diagnostic function' });
+  RadLab.registerField('w-collimator-fn', { sectionId: 'sec-worksheet', label: 'Collimator diagnostic function' });
+  RadLab.registerField('w-calc-w', { sectionId: 'sec-worksheet', label: 'Tungsten 80 kVp efficiency calc' });
+  RadLab.registerField('w-calc-w-heat', { sectionId: 'sec-worksheet', label: 'Tungsten 80 kVp heat %' });
+  RadLab.registerField('w-calc-mo', { sectionId: 'sec-worksheet', label: 'Molybdenum 50 kVp efficiency calc' });
+  RadLab.registerField('w-calc-mo-heat', { sectionId: 'sec-worksheet', label: 'Molybdenum 50 kVp heat %' });
+  RadLab.registerField('w-q1', { sectionId: 'sec-worksheet', label: 'Q1. Filament heating vs tube mA' });
+  RadLab.registerField('w-q2', { sectionId: 'sec-worksheet', label: 'Q2. Target thermodynamic reality & heat dissipation' });
+  RadLab.registerField('w-q3', { sectionId: 'sec-worksheet', label: 'Q3. Four stages + one factor each' });
+  RadLab.registerField('w-q4', { sectionId: 'sec-worksheet', label: 'Q4. Screen-film vs digital flat panel' });
+  RadLab.registerField('w-q5', { sectionId: 'sec-worksheet', label: 'Q5. Recording role vs analysis role under ALARA' });
+  RadLab.registerField('w-q6', { sectionId: 'sec-worksheet', label: 'Q6. Critical thinking: quantum mottle root cause' });
 
+  // Restore saved scenario state
+  const savedScenario = RadLab.state.activities['clinical-scenario'];
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) {
+      radio.checked = true;
+      const feedback = document.getElementById('scenario-feedback');
+      if (feedback) {
+        feedback.className = 'feedback-box ' + (savedScenario.done ? 'correct' : 'incorrect');
+        feedback.textContent = (savedScenario.done ? 'Correct! ' : 'Reconsider. ') + SCENARIO.explain;
+      }
+    }
+  }
+
+  // Initial rendering
+  window.renderSimulation();
+  renderRunLog();
   RadLab.progress.update();
+  renderAllMath();
+});
+
+// Render math after external resources load
+window.addEventListener('load', function () {
+  renderAllMath();
 });
 </script>
 </body>

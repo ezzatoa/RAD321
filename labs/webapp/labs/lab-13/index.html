@@ -4,365 +4,1809 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 13: The IMAGE Process, Part 1 — Recording Stages — RAD 321</title>
+
+  <!-- KaTeX Infallible Mathematical Typography Engine (CDN + Fallback) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <link rel="stylesheet" href="../../shared/lab-styles.css">
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}
+    /* Two-Tab Navigation Styling */
+    .lab-tab-nav {
+      display: flex;
+      gap: 4px;
+      margin: 18px 0 24px;
+      border-bottom: 2px solid var(--rad-border);
+      background: var(--rad-bg-soft);
+      padding: 6px 6px 0;
+      border-radius: 12px 12px 0 0;
+    }
+    .tab-btn {
+      padding: 12px 22px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--rad-text-soft);
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover {
+      color: var(--rad-blue);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: var(--rad-teal);
+      border-color: var(--rad-border);
+      border-bottom: 2px solid #fff;
+      margin-bottom: -2px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  /* Side-by-Side Simulation Workbench */
-  .sim-workbench{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,0.85fr);gap:18px;align-items:start}
-  .sim-visual-column{display:flex;flex-direction:column;gap:12px}
-  .sim-canvas-wrap{position:relative;width:100%}
-  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/420;background:#061320;border-radius:12px;border:1px solid #28546a;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+    /* Hero & Structure */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,.96), rgba(7,26,43,.64) 62%, rgba(7,26,43,.12));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 760px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 28px;
+      margin: 8px 0;
+      line-height: 1.25;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: .94;
+      margin: 0;
+    }
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
 
-  .preset-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
-  .preset-toolbar .preset-title{font-size:12.5px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:2px}
-  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
-  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
+    /* Side-by-Side Simulation Workbench */
+    .sim-workbench {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .sim-visual-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1000/420;
+      background: #061320;
+      border-radius: 12px;
+      border: 1px solid #28546a;
+      box-shadow: 0 4px 18px rgba(0,0,0,.25);
+    }
+    .preset-toolbar {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--rad-bg-soft);
+      padding: 11px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--rad-border);
+    }
+    .preset-toolbar .preset-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-right: 2px;
+    }
+    .preset-btn {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .preset-btn:hover {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      color: var(--rad-teal);
+      transform: translateY(-1px);
+    }
 
-  /* Stage Control Sidebar & Tabs */
-  .sim-controls-column{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:12px;padding:15px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.03)}
-  .stage-tabs-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#0f273d;padding:6px;border-radius:10px}
-  .stage-tab-btn{background:transparent;border:1px solid transparent;border-radius:8px;padding:9px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#94a3b8;transition:all .15s ease;font-family:inherit}
-  .stage-tab-btn:hover{background:rgba(255,255,255,0.08);color:#f1f5f9}
-  .stage-tab-btn.active{background:#ffffff;border-color:var(--rad-border);color:var(--rad-navy);box-shadow:0 2px 6px rgba(0,0,0,0.15)}
-  .tab-badge{font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px}
-  .badge-stage-i{background:#e0f2fe;color:#0369a1}
-  .badge-stage-m{background:#fef3c7;color:#b45309}
-  .badge-stage-a{background:#ede9fe;color:#6d28d9}
-  .badge-stage-g{background:#dcfce7;color:#15803d}
-  .stage-tab-btn .tab-name{font-size:11.5px;font-weight:800;white-space:nowrap}
-  .stage-tab-btn .tab-score{font-size:10.5px;font-weight:800;padding:1.5px 6px;border-radius:8px;background:rgba(0,0,0,0.08)}
-  .stage-tab-btn.active .tab-score{background:#0284c7;color:#fff}
+    /* Stage Control Sidebar & Tabs */
+    .sim-controls-column {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .stage-tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: #0f273d;
+      padding: 6px;
+      border-radius: 10px;
+    }
+    .stage-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 9px 4px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #94a3b8;
+      transition: all .15s ease;
+      font-family: inherit;
+    }
+    .stage-tab-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #f1f5f9;
+    }
+    .stage-tab-btn.active {
+      background: #ffffff;
+      border-color: var(--rad-border);
+      color: var(--rad-navy);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .tab-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .badge-stage-i { background: #e0f2fe; color: #0369a1; }
+    .badge-stage-m { background: #fef3c7; color: #b45309; }
+    .badge-stage-a { background: #ede9fe; color: #6d28d9; }
+    .badge-stage-g { background: #dcfce7; color: #15803d; }
+    .stage-tab-btn .tab-name {
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .stage-tab-btn .tab-score {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 1.5px 6px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.08);
+    }
+    .stage-tab-btn.active .tab-score {
+      background: #0284c7;
+      color: #fff;
+    }
 
-  .stage-tab-pane{display:none;flex-direction:column;gap:11px}
-  .stage-tab-pane.active{display:flex}
-  .pane-header{border-bottom:1.5px solid var(--rad-border);padding-bottom:7px;margin-bottom:2px}
-  .pane-header h4{margin:0 0 3px 0;font-size:14px;font-weight:800;color:var(--rad-navy)}
-  .pane-desc{font-size:12px;color:var(--rad-text-soft);line-height:1.4;display:block}
+    .stage-tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .stage-tab-pane.active {
+      display: flex;
+    }
+    .pane-header {
+      border-bottom: 1.5px solid var(--rad-border);
+      padding-bottom: 7px;
+      margin-bottom: 2px;
+    }
+    .pane-header h4 {
+      margin: 0 0 3px 0;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--rad-navy);
+    }
+    .pane-desc {
+      font-size: 11.5px;
+      color: var(--rad-text-soft);
+      line-height: 1.4;
+      display: block;
+    }
+    .control-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 11px 13px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      white-space: nowrap;
+      font-weight: 800;
+      font-size: 12.5px;
+    }
+    .control-card input {
+      width: 100%;
+      margin-top: 6px;
+    }
+    .field-hint {
+      display: block;
+      font-size: 11px;
+      color: var(--rad-text-soft);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+    .pane-nav-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      padding-top: 10px;
+      border-top: 1px solid var(--rad-border);
+    }
 
-  .control-card{background:#fff;border:1px solid var(--rad-border);border-radius:9px;padding:11px 13px}
-  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
-  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:12.5px}
-  .control-card input{width:100%;margin-top:6px}
-  .field-hint{display:block;font-size:11px;color:var(--rad-text-soft);margin-top:4px;line-height:1.35}
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 17px;
+      line-height: 1.2;
+      margin: 3px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      line-height: 1.35;
+      font-size: 11px;
+    }
 
-  .pane-nav-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:10px;border-top:1px solid var(--rad-border)}
+    /* Procedure Steps */
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
 
-  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:2px}
-  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}
-  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
-  .metric strong{display:block;color:var(--rad-teal);font-size:17px;line-height:1.2;margin:3px 0}
-  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:11.5px}
+    /* Explorer & Calculator */
+    .explorer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .explorer-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .explorer-card:hover {
+      border-color: var(--rad-teal);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .explorer-card h4 {
+      margin: 0 0 8px;
+      font-size: 13.5px;
+      color: var(--rad-navy);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .explorer-card p {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--rad-text-soft);
+      margin: 0 0 10px;
+    }
+    .explorer-card .tag-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #e0f2fe;
+      color: #0369a1;
+      align-self: flex-start;
+    }
 
-  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
+    .calc-workbench {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 14px 0;
+    }
+    .calc-results-panel {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .calc-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+    .calc-stat-row:last-child {
+      border-bottom: none;
+    }
+    .calc-stat-val {
+      font-weight: 800;
+      color: var(--rad-teal);
+    }
 
-  @media(max-width:1060px){.sim-workbench{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.procedure-grid,.submission-check,.lab-meta-grid,.metric-grid{grid-template-columns:1fr}}
+    /* Challenge & Feedback */
+    .challenge-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .challenge-card {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .challenge-card h3 {
+      margin-top: 0;
+    }
+    .scenario-options {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .scenario-option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .scenario-option:hover {
+      background: var(--rad-bg-soft);
+    }
+    .scenario-option:has(input:checked) {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+    }
+    .feedback-box {
+      min-height: 44px;
+      border-radius: 9px;
+      padding: 11px 14px;
+      background: var(--rad-bg-soft);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .feedback-box.correct {
+      background: #eaf8f0;
+      color: #12633f;
+      border: 1px solid #a7f3d0;
+    }
+    .feedback-box.incorrect {
+      background: #fff0ee;
+      color: #9d342d;
+      border: 1px solid #fecaca;
+    }
+
+    /* Table A */
+    .table-a-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 14px 0;
+    }
+    .table-a-item {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .table-a-item label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      margin-bottom: 4px;
+    }
+    .table-a-item input {
+      width: 100%;
+      font-size: 12.5px;
+      padding: 6px 8px;
+      border: 1px solid var(--rad-border);
+      border-radius: 6px;
+    }
+
+    /* Transition Card */
+    .transition-card {
+      background: linear-gradient(135deg, #071a2b, #123e59);
+      border-radius: 14px;
+      padding: 24px 32px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 28px 0;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .transition-card h3 {
+      margin: 0 0 6px;
+      color: #fff;
+      font-size: 20px;
+    }
+    .transition-card p {
+      margin: 0;
+      font-size: 13.5px;
+      opacity: 0.9;
+      max-width: 600px;
+    }
+    .transition-card .btn {
+      font-size: 14px;
+      font-weight: 800;
+      padding: 12px 24px;
+      background: var(--rad-teal);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 14px rgba(26, 155, 142, 0.4);
+    }
+    .transition-card .btn:hover {
+      background: #147a70;
+      transform: translateY(-2px);
+    }
+
+    /* Formulas & Toolbar */
+    .formula-box {
+      background: #eef8f7;
+      border-left: 4px solid var(--rad-teal);
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 14px 0;
+      color: #164b53;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .run-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .run-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rad-blue);
+    }
+    .run-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+    }
+    .run-table {
+      margin: 0;
+      min-width: 760px;
+    }
+    .run-table td, .run-table th {
+      font-size: 12px;
+    }
+
+    @media(max-width:1060px) {
+      .sim-workbench { grid-template-columns: 1fr; }
+      .metric-grid, .explorer-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width:768px) {
+      .procedure-grid { grid-template-columns: repeat(2, 1fr); }
+      .calc-workbench, .table-a-grid, .challenge-grid { grid-template-columns: 1fr; }
+      .lab-meta-grid { grid-template-columns: 1fr 1fr; }
+      .transition-card { flex-direction: column; gap: 14px; text-align: center; }
+    }
+    @media(max-width:560px) {
+      .hero-overlay { padding: 0 20px; }
+      .hero-overlay h1 { font-size: 22px; }
+      .metric-grid, .explorer-grid, .lab-meta-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 13 — The IMAGE Process, Part 1 — Recording Stages</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 13 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 13 — The IMAGE Process, Part 1 — Recording Stages</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual experiment · Offline</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track">
+      <div class="lab-progress-fill" id="lab-progress-fill"></div>
+    </div>
+    <div class="lab-progress-label">
+      <span id="lab-progress-label-text">0 / 5 assessed sections complete</span>
+      <span>Week 13 of 15</span>
+    </div>
+  </div>
 </header>
-<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
 <main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 13 · Assessed laboratory assignment</div><h1>The IMAGE Process, Part 1 — Recording Stages</h1><p>Master the 4 pre-exposure recording stages (I, M, A, G) for an AP Knee examination on an interactive digital X-ray console. Directly aligned with: Image Analysis I — IMAGE Recording Stages.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Recall all five stages of the IMAGE process (Initial setup, Manual factors, Anatomy positioning/prep, Guide beam/patient, Evaluate).</li><li><span class="num">2</span>Execute pre-exposure verification: patient identification (2 identifiers), clinical request, receptor type, and standard SID (100 cm).</li><li><span class="num">3</span>Select manual exposure factors (kVp for penetration, mAs for receptor exposure, focal spot size) appropriate to the clinical task.</li><li><span class="num">4</span>Prepare and position anatomy (True AP alignment, removal of external radiopaque artifacts, sandbag immobilization).</li><li><span class="num">5</span>Guide the beam and patient: accurate Central Ray joint centering, 4-sided beam collimation, anatomical lead side marker placement, and motion suspension.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span>
-    <p>The <b>IMAGE</b> mnemonic organizes radiographic recording and analysis into a rigorous, systematic clinical pathway:</p>
-    <ul>
-      <li><b>I — Initial Patient &amp; System Setup:</b> Confirm two unique patient identifiers (Name &amp; DOB/MRN), check requisition/indication, choose the receptor format (Tabletop DR flat-panel for knee &lt;10 cm vs. Table Bucky 8:1 Grid for thicker parts), and set standard 100 cm (40 in) SID.</li>
-      <li><b>M — Manual Selection of Exposure Factors:</b> Set kVp to control X-ray beam penetration and subject contrast (68–72 kVp baseline for knee). Set mAs for adequate photon fluence without quantum mottle (target 200 EI). Choose Small Focal Spot (0.6 mm) for high-detail bone trabeculae.</li>
-      <li><b>A — Anatomy Positioning and Preparation:</b> Position the knee in True AP (femoral epicondyles parallel to IR, tibial plateau open, proximal fibula ⅓ superimposed). Eliminate radiopaque external artifacts (zippers, snaps, knee braces). Support limb with sponges/sandbags to prevent involuntary motion.</li>
-      <li><b>G — Guide the Beam and Patient:</b> Center Central Ray (CR) 1.25 cm (0.5 in) distal to patellar apex through the joint space. Tightly collimate to anatomical margins (~18×24 cm) to reduce scatter and protect patient gonads. Place lead side marker ('R') laterally within the primary beam outside the VOI. Give clear "hold still" instructions.</li>
-      <li><b>E — Evaluate the Image:</b> Systematic critique of diagnostic criteria and ALARA review (covered in Lab 14).</li>
-    </ul>
-    <div class="formula-box">
-      <b>Exposure Maintenance / Inverse Square Law:</b> <i>mAs</i><sub>2</sub> = <i>mAs</i><sub>1</sub> &times; (<i>SID</i><sub>2</sub> &frasl; <i>SID</i><sub>1</sub>)<sup>2</sup>.<br>
-      <b>Receptor Exposure Index &amp; Deviation Index (DI):</b> <i>EI</i> &prop; <i>mAs</i> &times; (<i>kVp</i> &frasl; 70)<sup>2.2</sup> &times; (100 &frasl; <i>SID</i>)<sup>2</sup> &times; <i>GridFactor</i>. <i>DI</i> = 10 &middot; log<sub>10</sub>(<i>EI</i> &frasl; <i>EI</i><sub>T</sub>). Target range: &minus;1.0 to +1.0 DI.<br>
-      <b>Geometric &amp; Total Unsharpness:</b> <i>U<sub>g</sub></i> = <i>FSS</i> &times; <sup><i>OID</i></sup>&frasl;<sub><i>SOD</i></sub>; <i>U<sub>total</sub></i> = &radic;(<i>U<sub>g</sub></i><sup>2</sup> + <i>U<sub>motion</sub></i><sup>2</sup>) in mm.<br>
-      <b>Collimation Scatter Fraction (<i>S/P</i>):</b> <i>S/P</i> &prop; <sup>Field Area (cm<sup>2</sup>)</sup>&frasl;<sub>432</sub> &times; (<i>kVp</i> &frasl; 70)<sup>0.8</sup>. Tight collimation drastically enhances subject contrast.<br>
-      <b>IMAGE Composite Readiness:</b> <i>Score</i> = 0.20&middot;<i>S</i><sub>I</sub> + 0.25&middot;<i>S</i><sub>M</sub> + 0.25&middot;<i>S</i><sub>A</sub> + 0.30&middot;<i>S</i><sub>G</sub> with critical gating (missing marker &le;55%, metal artifact &le;45%, unverified ID &le;45%, clipped anatomy &le;48%).
-    </div>
-    <p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically accurate for learning clinical radiograph acquisition and the IMAGE method. They are not calibrated equipment exposure charts.</p></div></section>
+  <!-- Two-Tab Navigation Bar -->
+  <div class="lab-tab-nav" role="tablist">
+    <button type="button" class="tab-btn active" id="tab-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro" data-tab="tab-pane-intro" onclick="switchTab('tab-pane-intro')">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities [10 Pts]
+    </button>
+    <button type="button" class="tab-btn" id="tab-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment" data-tab="tab-pane-experiment" onclick="switchTab('tab-pane-experiment')">
+      <i class="fa-solid fa-flask"></i> Tab 2: Virtual Physics Experiment &amp; Analysis [10 Pts]
+    </button>
+  </div>
 
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict which IMAGE recording stage is most compromised by uncollimated beams or patient rotation.</div><div class="procedure-step">Record an optimal baseline AP-knee setup.</div><div class="procedure-step">Introduce an anatomy positioning error (rotation or artifact) and record a second run.</div><div class="procedure-step">Change beam guidance (wide collimation or missing marker) or technique (kVp/mAs) for a third run.</div><div class="procedure-step">Use the 4-stage readiness meters and metrics to evaluate root causes.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    
-    <div class="card">
-      <div class="sim-workbench">
-        <!-- LEFT COLUMN: Canvas + Presets + Metrics -->
-        <div class="sim-visual-column">
-          <div class="preset-toolbar">
-            <span class="preset-title">Presets:</span>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">Optimal AP Knee</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="1" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">Ext Rotation (+15°)</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="1" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">Metal Zipper Artifact</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="3" data-marker="0">Wide Collimation</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="1" data-centering="0" data-collimation="1" data-marker="0">Patient Motion Blur</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="2">Missing Lead Marker</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="0" data-marker="0">Clipped Anatomy</button>
-            <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="52" data-mas="2" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">Quantum Mottle</button>
-          </div>
-
-          <div class="sim-canvas-wrap">
-            <canvas id="sim-canvas" class="sim-canvas" width="1000" height="420" role="img" aria-label="Interactive visual model for The IMAGE Process, Part 1 — Recording Stages" aria-describedby="sim-caption"></canvas>
-            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Positioning console, latent radiograph preview, and stage readiness meters update in real time.</p>
-          </div>
-
-          <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
-        </div>
-
-        <!-- RIGHT COLUMN: Stage Navigation Tabs & Controls -->
-        <div class="sim-controls-column">
-          <div class="stage-tabs-nav" role="tablist" aria-label="IMAGE Recording Stages">
-            <button type="button" class="stage-tab-btn active" id="tab-btn-i" data-stage="i" role="tab" aria-selected="true" aria-controls="tab-pane-i">
-              <span class="tab-badge badge-stage-i">Stage I</span>
-              <span class="tab-name">Setup &amp; ID</span>
-              <span class="tab-score" id="tab-score-i">100%</span>
-            </button>
-            <button type="button" class="stage-tab-btn" id="tab-btn-m" data-stage="m" role="tab" aria-selected="false" aria-controls="tab-pane-m">
-              <span class="tab-badge badge-stage-m">Stage M</span>
-              <span class="tab-name">Factors (EI)</span>
-              <span class="tab-score" id="tab-score-m">100%</span>
-            </button>
-            <button type="button" class="stage-tab-btn" id="tab-btn-a" data-stage="a" role="tab" aria-selected="false" aria-controls="tab-pane-a">
-              <span class="tab-badge badge-stage-a">Stage A</span>
-              <span class="tab-name">Anatomy</span>
-              <span class="tab-score" id="tab-score-a">100%</span>
-            </button>
-            <button type="button" class="stage-tab-btn" id="tab-btn-g" data-stage="g" role="tab" aria-selected="false" aria-controls="tab-pane-g">
-              <span class="tab-badge badge-stage-g">Stage G</span>
-              <span class="tab-name">Guidance</span>
-              <span class="tab-score" id="tab-score-g">100%</span>
-            </button>
-          </div>
-
-          <div class="stage-tab-panes">
-            <!-- PANE I: Initial Setup -->
-            <div class="stage-tab-pane active" id="tab-pane-i" role="tabpanel" aria-labelledby="tab-btn-i">
-              <div class="pane-header">
-                <h4>Stage I — Initial Patient &amp; System Setup</h4>
-                <span class="pane-desc">Verify demographics, receptor match, and standard 100 cm distance.</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-sid"><span>Source-to-Image Distance (SID)</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
-                <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
-                <span class="field-hint">Standard tabletop knee distance: 100 cm (40 in)</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-grid"><span>Receptor &amp; Grid Mode</span><output id="out-grid" for="ctrl-grid">Tabletop Non-Grid DR</output></label>
-                <input type="range" id="ctrl-grid" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0 = Tabletop Non-Grid DR (&lt;10cm), 1 = Table Bucky 8:1 Grid DR (Clean Scatter, Bucky Factor 3.5x)</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-idCheck"><span>Patient ID Verification</span><output id="out-idCheck" for="ctrl-idCheck">✅ Verified (2 IDs)</output></label>
-                <input type="range" id="ctrl-idCheck" min="0" max="1" step="1" value="1" aria-describedby="sim-caption">
-                <span class="field-hint">1 = Two Identifiers (Name &amp; DOB) Checked, 0 = Incomplete ID</span>
-              </div>
-              <div class="pane-nav-footer">
-                <span></span>
-                <button type="button" class="btn btn-secondary btn-sm next-stage-btn" data-next="m">Next: Stage M (Exposure Factors) →</button>
-              </div>
-            </div>
-
-            <!-- PANE M: Exposure Factors -->
-            <div class="stage-tab-pane" id="tab-pane-m" role="tabpanel" aria-labelledby="tab-btn-m">
-              <div class="pane-header">
-                <h4>Stage M — Manual Exposure Factors</h4>
-                <span class="pane-desc">Set kVp for subject contrast, mAs for quantum noise, and focal spot size.</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-kvp"><span>Tube Potential (kVp)</span><output id="out-kvp" for="ctrl-kvp">70 kVp</output></label>
-                <input type="range" id="ctrl-kvp" min="50" max="90" step="1" value="70" aria-describedby="sim-caption">
-                <span class="field-hint">Controls beam penetration and subject contrast (optimum: 68–72 kVp)</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-mas"><span>Exposure Product (mAs)</span><output id="out-mas" for="ctrl-mas">8 mAs</output></label>
-                <input type="range" id="ctrl-mas" min="2" max="30" step="1" value="8" aria-describedby="sim-caption">
-                <span class="field-hint">Controls receptor photon fluence and quantum mottle (target: 200 EI)</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-focal"><span>Focal Spot Size (FSS)</span><output id="out-focal" for="ctrl-focal">Small (0.6 mm)</output></label>
-                <input type="range" id="ctrl-focal" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0 = Small (0.6 mm sharp trabeculae), 1 = Large (1.2 mm penumbra blur)</span>
-              </div>
-              <div class="pane-nav-footer">
-                <button type="button" class="btn btn-ghost btn-sm prev-stage-btn" data-prev="i">← Prev: Stage I</button>
-                <button type="button" class="btn btn-secondary btn-sm next-stage-btn" data-next="a">Next: Stage A (Anatomy) →</button>
-              </div>
-            </div>
-
-            <!-- PANE A: Anatomy & Prep -->
-            <div class="stage-tab-pane" id="tab-pane-a" role="tabpanel" aria-labelledby="tab-btn-a">
-              <div class="pane-header">
-                <h4>Stage A — Anatomy Positioning &amp; Preparation</h4>
-                <span class="pane-desc">Ensure True AP rotation, remove radiopaque artifacts, and immobilize.</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-rotation"><span>Part Alignment / Rotation</span><output id="out-rotation" for="ctrl-rotation">0° True AP</output></label>
-                <input type="range" id="ctrl-rotation" min="-1" max="1" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0 = True AP (Epicondyles parallel), 1 = +15° Ext Rot, -1 = -15° Int Rot</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-artifact"><span>Patient Preparation &amp; Artifacts</span><output id="out-artifact" for="ctrl-artifact">Clean / Gowned (No Artifact)</output></label>
-                <input type="range" id="ctrl-artifact" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0 = Clean Gown, 1 = Metallic Zipper / Knee Brace Over Thigh</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-motion"><span>Patient Immobilization &amp; Stability</span><output id="out-motion" for="ctrl-motion">Supported / Sandbag</output></label>
-                <input type="range" id="ctrl-motion" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0 = Sandbag Immobilized, 1 = Unassisted Tremor / Motion Blur</span>
-              </div>
-              <div class="pane-nav-footer">
-                <button type="button" class="btn btn-ghost btn-sm prev-stage-btn" data-prev="m">← Prev: Stage M</button>
-                <button type="button" class="btn btn-secondary btn-sm next-stage-btn" data-next="g">Next: Stage G (Guidance) →</button>
-              </div>
-            </div>
-
-            <!-- PANE G: Beam Guidance -->
-            <div class="stage-tab-pane" id="tab-pane-g" role="tabpanel" aria-labelledby="tab-btn-g">
-              <div class="pane-header">
-                <h4>Stage G — Guide Beam &amp; Patient</h4>
-                <span class="pane-desc">Center CR to joint space, collimate 4 sides, and position anatomical marker.</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-centering"><span>Central Ray Joint Centering</span><output id="out-centering" for="ctrl-centering">0 cm (Joint Center)</output></label>
-                <input type="range" id="ctrl-centering" min="-3" max="3" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">Center 1.25 cm distal to patellar apex (-3cm proximal to +3cm distal)</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-collimation"><span>4-Sided Beam Collimation</span><output id="out-collimation" for="ctrl-collimation">18×24 cm (Tight AP Knee)</output></label>
-                <input type="range" id="ctrl-collimation" min="0" max="3" step="1" value="1" aria-describedby="sim-caption">
-                <span class="field-hint">0 = 10×12 cm (Clipped), 1 = 18×24 cm (Optimal), 2 = 24×30 cm, 3 = 35×43 cm (Wide)</span>
-              </div>
-              <div class="control-card">
-                <label for="ctrl-marker"><span>Anatomical Lead Side Marker</span><output id="out-marker" for="ctrl-marker">Lateral R (In Beam)</output></label>
-                <input type="range" id="ctrl-marker" min="0" max="2" step="1" value="0" aria-describedby="sim-caption">
-                <span class="field-hint">0 = Correct Lateral 'R', 1 = Marker Over Joint/Bone, 2 = Missing Marker</span>
-              </div>
-              <div class="pane-nav-footer">
-                <button type="button" class="btn btn-ghost btn-sm prev-stage-btn" data-prev="a">← Prev: Stage A</button>
-                <button type="button" class="btn btn-primary btn-sm" id="btn-quick-record">Record Run Now</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="run-toolbar">
-        <button class="btn btn-primary" id="record-run">Record this run</button>
-        <button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button>
-        <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
-      </div>
-      <div class="run-table-wrap">
-        <table class="data-table run-table">
-          <thead>
-            <tr><th>Run</th><th>IMAGE Stage Settings</th><th>Key Diagnostics</th><th>Clinical Interpretation</th></tr>
-          </thead>
-          <tbody id="run-log-body">
-            <tr><td colspan="4" class="muted">No runs recorded yet.</td></tr>
-          </tbody>
-        </table>
+  <!-- =================================================================== -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 PTS)               -->
+  <!-- =================================================================== -->
+  <div class="tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-intro">
+    <div class="hero-banner">
+      <img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment">
+      <div class="hero-overlay">
+        <div class="eyebrow">Week 13 · Assessed Laboratory Assignment</div>
+        <h1>The IMAGE Process, Part 1 — Recording Stages</h1>
+        <p>Master the 4 pre-exposure recording stages (I, M, A, G) for an AP Knee examination on an interactive digital X-ray console. Directly aligned with: Image Analysis I — IMAGE Recording Stages.</p>
       </div>
     </div>
-  </section>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>IMAGE stage matching</h3><p>Match each action to its IMAGE stage.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Recording decision</h3><p>The patient reports pain and cannot fully extend the knee. What should happen before exposure?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Adapt positioning safely, support the patient, and document the limitation</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Force the standard position</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Increase mAs to compensate for pain</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Skip identification</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Record your choices at I, M, A, and G and explain one consequence of an incorrect choice. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Why should patient identification and IR selection happen before exposure-factor selection? <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. List three preparation or positioning actions that reduce repeats. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: explain how collimation can support both image quality and radiation protection. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+    <!-- Two-Phase Workflow Card -->
+    <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+      <div class="flex items-center gap-12" style="margin-bottom:10px;">
+        <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
+      </div>
+      <p>This lab is a fully <b>interactive digital simulation and assessed laboratory assignment</b> evaluated across two required phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+        <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+          <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the 4 interactive stations (Explorer with Table A, Concept Matcher, Blur Calculator, and Patient Decision Scenario), and pass the knowledge check quiz during your scheduled lab session.
+        </div>
+        <div style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+          <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Operate the 3-panel virtual X-ray positioning console on Tab 2, export your experimental runs via <em>"Download Run Data (CSV)"</em>, perform quantitative plotting in Excel, complete Table B calculations, and submit your analysis workbook for final evaluation.
+        </div>
+      </div>
+      <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+        <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+        <span style="display:block;margin-top:4px;">In the <strong>Phase 1 Submission Hub</strong> at the bottom of Tab 1, submit your in-lab activities before leaving the lab session to lock in your initial 10 points. Then navigate to Tab 2 to run your virtual experiments and submit <strong>Phase 2</strong> before the post-lab deadline.</span>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+        <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+        0–6 min console demo + IMAGE stages overview · 6–20 min Stations 1–3 in pairs (Table A explorer, concept matcher, blur calculator) · 20–26 min trauma scenario + quiz · 26–30 min Phase 1 submit.
+        Tab 2 (≈60 min): 3 anchor runs (Optimal baseline + 1 Stage-A error + 1 Stage-G error) + CSV export + 2 Excel plots + Table B. Only 3 anchor runs are required — the 4th Table-B row and extra presets are bonus/optional.
+        If short on time, cut blur-calculator extremes to preset values, not the scenario.
+      </div>
+      <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+        <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+        1) IMAGE order I→M→A→G runs before any exposure — wrong-patient / missing-ID is a sentinel gate.
+        2) Tight 18×24 cm collimation cuts scatter (S/P SIM-APPROX heuristic) and patient dose.
+        3) Small FSS + sandbag immobilization preserves trabecular detail; marker/metal score caps are teaching gates — annotate + dual sign-off and follow local policy.
+      </div>
+    </div>
+
+    <!-- Student Metadata -->
+    <div class="card card-soft">
+      <h3>Student Information</h3>
+      <div class="lab-meta-grid">
+        <div class="form-row">
+          <label class="field-label" for="meta-studentName">Full name</label>
+          <input type="text" id="meta-studentName" required placeholder="e.g. Ahmed Al-Harbi">
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="meta-studentId">Student ID</label>
+          <input type="text" id="meta-studentId" required placeholder="e.g. 43100234">
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="meta-section">Section / group</label>
+          <input type="text" id="meta-section" required placeholder="e.g. Section B">
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="meta-date">Date</label>
+          <input type="text" id="meta-date" required>
+        </div>
+      </div>
+      <p class="form-hint">Work is saved in this browser. Export a JSON backup before changing workstations.</p>
+    </div>
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list">
+          <li><span class="num">1</span>Recall all five stages of the IMAGE process (Initial setup, Manual factors, Anatomy positioning/prep, Guide beam/patient, Evaluate).</li>
+          <li><span class="num">2</span>Execute pre-exposure verification: patient identification (2 identifiers), clinical request, receptor type, and standard SID (100 cm).</li>
+          <li><span class="num">3</span>Select manual exposure factors (kVp for penetration, mAs for receptor exposure, focal spot size) appropriate to the clinical task.</li>
+          <li><span class="num">4</span>Prepare and position anatomy (True AP alignment, removal of external radiopaque artifacts, sandbag immobilization).</li>
+          <li><span class="num">5</span>Guide the beam and patient: accurate Central Ray joint centering, 4-sided beam collimation, anatomical lead side marker placement, and motion suspension.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory Primer</h2>
+          <div class="lab-section-sub">Systematic clinical radiographic acquisition and quality governance</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Theory Primer</span>
+
+        <h3>1.1 The IMAGE Systematic Clinical Method</h3>
+        <p>
+          High-quality diagnostic radiography is not accidental; it requires a disciplined, methodical sequence of pre-exposure verifications. The <b>IMAGE</b> mnemonic organizes the complete examination cycle into five standardized stages:
+        </p>
+        <ul>
+          <li><b>I — Initial Patient &amp; System Setup:</b> Verification of patient demographics, clinical requisition, receptor format, and geometric distance.</li>
+          <li><b>M — Manual Selection of Exposure Factors:</b> Determination of tube potential (kVp), tube current-time product (mAs), and focal spot size (FSS).</li>
+          <li><b>A — Anatomy Positioning &amp; Preparation:</b> Anatomical part orientation, immobilization, and elimination of external radiopaque artifacts.</li>
+          <li><b>G — Guide the Beam &amp; Patient:</b> Central ray (CR) alignment, 4-sided beam collimation, anatomical lead side marker placement, and hold-still instructions (knee examination — "hold still", not breath-hold).</li>
+          <li><b>E — Evaluate the Image:</b> Systematic critique of diagnostic criteria and ALARA review (explored in depth in Lab 14).</li>
+        </ul>
+
+        <h3>1.2 Stage I: Initial Patient &amp; System Setup</h3>
+        <p>
+          Before touching any equipment, the technologist must confirm at least <b>two unique patient identifiers</b> (Full Name and Date of Birth / Medical Record Number) against the requisition. Exposing the wrong patient is a sentinel safety event.
+        </p>
+        <p>
+          System readiness requires matching the receptor format to the anatomical thickness:
+        </p>
+        <ul>
+          <li><b>Tabletop Non-Grid Flat Panel DR:</b> Recommended for anatomical parts measuring less than $10\text{ cm}$ (such as an adult knee $\approx 8–10\text{ cm}$ or distal extremities), avoiding unnecessary grid cut-off and minimizing patient dose.</li>
+          <li><b>Table Bucky 8:1 Grid DR:</b> Required when part thickness exceeds $10\text{ cm}$ or higher kVp is utilized. An 8:1 grid cleans scatter radiation, but introduces a <b>Bucky Factor ($B \approx 3.5\times$; SIM value — typical 3–4 for an 8:1 grid at 70 kVp, range 3–6)</b> requiring $3.5\times$ higher mAs to maintain receptor exposure.</li>
+          <li><b>Source-to-Image Distance (SID):</b> Standard tabletop AP knee examinations require $SID = 100\text{ cm}$ ($40\text{ inches}$) to standardize magnification and exposure geometry.</li>
+        </ul>
+
+        <h3>1.3 Stage M: Manual Selection of Exposure Factors</h3>
+        <p>
+          While Automatic Exposure Control (AEC) is common for bucky work, manual technique selection remains essential for tabletop extremities and trauma:
+        </p>
+        <ul>
+          <li><b>Tube Potential (kVp):</b> Dictates beam penetration and subject contrast. For an adult AP knee, $68–72\text{ kVp}$ ($70\text{ kVp}$ baseline) optimizes the differential absorption between bone and soft tissue.</li>
+          <li><b>Exposure Product (mAs):</b> Dictates photon fluence and receptor exposure. At $70\text{ kVp}$ and $100\text{ cm}$ SID tabletop, $8\text{ mAs}$ delivers an optimal target Exposure Index ($EI = 200$, $DI = 0.00$; SIM CALIB).</li>
+          <li><b>Focal Spot Size (FSS):</b> Small focal spot ($0.6\text{ mm}$) is selected to minimize geometric penumbra and preserve fine trabecular bone micro-architecture.</li>
+        </ul>
+
+        <h3>1.4 Stage A: Anatomy Positioning &amp; Preparation</h3>
+        <p>
+          Proper anatomical preparation prevents avoidable repeats:
+        </p>
+        <ul>
+          <li><b>Part Alignment (True AP):</b> The patient lies supine with the leg extended. The femoral epicondyles must be placed exactly parallel to the image receptor. This rotates the patella slightly inward, opens the femorotibial joint space completely, and projects the proximal fibular head with approximately $\frac{1}{3}$ superimposition by the lateral tibial condyle.</li>
+          <li><b>Artifact Elimination:</b> The patient must be gowned. Metallic zippers, snaps, jewelry, or elastic knee braces cast dense radiopaque shadows that obscure subtle fractures.</li>
+          <li><b>Immobilization:</b> Sandbags or positioning sponges placed against the ankle and foot eliminate involuntary muscle tremors and patient motion blur.</li>
+        </ul>
+
+        <h3>1.5 Stage G: Guide the Beam &amp; Patient</h3>
+        <p>
+          Beam guidance ensures radiation safety and legal diagnostic compliance:
+        </p>
+        <ul>
+          <li><b>Central Ray Centering:</b> The CR must be directed perpendicular to the image receptor, centered exactly $1.25\text{ cm}$ ($0.5\text{ inch}$) distal to the patellar apex through the center of the joint space.</li>
+          <li><b>4-Sided Beam Collimation:</b> Collimate closely to the anatomical skin margins ($18 \times 24\text{ cm}$ field). Tight collimation reduces irradiated patient volume, cuts gonad dose, and dramatically decreases Compton scatter production, enhancing subject contrast.</li>
+          <li><b>Anatomical Lead Side Marker:</b> A radiopaque lead marker ('R' or 'L') must be placed laterally within the collimated light field without obscuring diagnostic bone margins. Missing lead side markers violate medicolegal standards.</li>
+          <li><b>Patient Instruction:</b> Instruct the patient to "hold completely still and don't move" immediately before initiating the exposure.</li>
+        </ul>
+
+        <h3>1.6 Physical Quality Metrics &amp; Critical Gating</h3>
+        <div class="formula-box">
+          <b>Geometric Unsharpness / Penumbra:</b>
+          $$U_g = FSS \times \frac{OID}{SOD} = FSS \times \frac{OID}{SID - OID}\quad(\text{mm})$$
+          <b>Total Spatial Blur:</b>
+          $$U_{\text{total}} = \sqrt{U_g^2 + U_{\text{motion}}^2}\quad(\text{mm})$$
+          <b>Collimation Scatter-to-Primary Ratio (SIM APPROX heuristic):</b>
+          $$\frac{S}{P} \propto \frac{\text{Field Area (cm}^2)}{432} \times \left(\frac{kVp}{70}\right)^{0.8}$$
+          <b>Critical Defect Gating:</b> An image with a missing lead marker is capped at $\le 55\%$; a metal artifact or unverified patient ID caps readiness at $\le 45\%$; and clipped anatomy caps readiness at $\le 48\%$. Score caps are simulator teaching-policy gates, not repeat orders — annotate the defect with dual technologist sign-off and follow local policy before any repeat.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Station 1 — IMAGE Recording Stages Explorer -->
+    <section class="lab-section" id="sec-image-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1: IMAGE Recording Stages Explorer</h2>
+          <div class="lab-section-sub">Examine procedural checkpoints and verify Table A fundamentals</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim">Station 1: Recording Stages Explorer</span>
+        <p>Explore the four pre-exposure stages of the IMAGE process below. Review each stage's critical responsibilities and complete the Table A verification check.</p>
+
+        <div class="explorer-grid">
+          <div class="explorer-card" style="border-top:4px solid #0284c7;">
+            <h4><span class="tab-badge badge-stage-i">Stage I</span> Initial Setup &amp; ID</h4>
+            <p><b>2 Patient Identifiers:</b> Name + DOB/MRN.<br><b>Receptor Mode:</b> Tabletop Non-Grid DR (&lt;10cm) vs. Bucky Grid.<br><b>Geometry:</b> Standard 100 cm SID verified.</p>
+            <span class="tag-badge">Pre-Exposure Gate</span>
+          </div>
+          <div class="explorer-card" style="border-top:4px solid #d97706;">
+            <h4><span class="tab-badge badge-stage-m">Stage M</span> Manual Exposure Factors</h4>
+            <p><b>Penetration:</b> 70 kVp baseline.<br><b>Photon Fluence:</b> 8 mAs (Target 200 EI, 0.00 DI).<br><b>Focal Spot:</b> Small (0.6 mm) for fine trabecular detail.</p>
+            <span class="tag-badge">Subject Contrast &amp; EI</span>
+          </div>
+          <div class="explorer-card" style="border-top:4px solid #7c3aed;">
+            <h4><span class="tab-badge badge-stage-a">Stage A</span> Anatomy &amp; Prep</h4>
+            <p><b>True AP:</b> Epicondyles parallel to IR.<br><b>Artifact Removal:</b> Gown patient, eliminate metallic zippers.<br><b>Immobilization:</b> Sandbag foot/ankle.</p>
+            <span class="tag-badge">Positioning &amp; Motion</span>
+          </div>
+          <div class="explorer-card" style="border-top:4px solid #16a34a;">
+            <h4><span class="tab-badge badge-stage-g">Stage G</span> Guide Beam &amp; Patient</h4>
+            <p><b>Centering:</b> 1.25 cm distal to patellar apex.<br><b>Collimation:</b> 4-sided 18×24 cm.<br><b>Marker:</b> Lead 'R' placed laterally in beam outside VOI.</p>
+            <span class="tag-badge">ALARA &amp; Orientation</span>
+          </div>
+        </div>
+
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-clipboard-check" style="color:var(--rad-teal)"></i> Table A: Core Recording Principles Verification</h4>
+        <p class="small muted">Complete Table A below. Enter the clinical rules, anatomical landmarks, and mathematical relationships.</p>
+
+        <div class="table-a-grid">
+          <div class="table-a-item">
+            <label for="w-stage-i-items">1. Stage I: Minimum Patient Identifiers Required:</label>
+            <input type="text" id="w-stage-i-items" placeholder="e.g. 2 identifiers (Full Name & DOB)">
+          </div>
+          <div class="table-a-item">
+            <label for="w-stage-m-factors">2. Stage M: Primary Factors Set for AP Knee:</label>
+            <input type="text" id="w-stage-m-factors" placeholder="e.g. 70 kVp, 8 mAs, Small FSS">
+          </div>
+          <div class="table-a-item">
+            <label for="w-stage-a-alignment">3. Stage A: Anatomical Landmark for True AP Knee:</label>
+            <input type="text" id="w-stage-a-alignment" placeholder="e.g. Femoral epicondyles parallel to IR">
+          </div>
+          <div class="table-a-item">
+            <label for="w-stage-g-cr-centering">4. Stage G: Central Ray Centering Point:</label>
+            <input type="text" id="w-stage-g-cr-centering" placeholder="e.g. 1.25 cm distal to patellar apex">
+          </div>
+          <div class="table-a-item">
+            <label for="w-marker-rule">5. Stage G: Rule for Lead Marker Placement:</label>
+            <input type="text" id="w-marker-rule" placeholder="e.g. Laterally in beam outside joint space">
+          </div>
+          <div class="table-a-item">
+            <label for="w-collimation-benefit">6. Dual Benefit of 4-Sided Collimation:</label>
+            <input type="text" id="w-collimation-benefit" placeholder="e.g. Reduces scatter & cuts patient dose">
+          </div>
+          <div class="table-a-item">
+            <label for="w-ug-formula">7. Geometric Penumbra Formula ($U_g$):</label>
+            <input type="text" id="w-ug-formula" placeholder="e.g. FSS * (OID / SOD)">
+          </div>
+          <div class="table-a-item">
+            <label for="w-critical-gating">8. Consequence of Missing Marker or Metal Artifact:</label>
+            <input type="text" id="w-critical-gating" placeholder="e.g. Critical defect, readiness capped <= 55%">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <button class="btn btn-secondary btn-sm" id="btn-check-table-a" type="button">Verify Table A Answers</button>
+          <span id="table-a-feedback" class="small" style="font-weight:700;"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Station 2 — IMAGE Process & Clinical Operations Matcher -->
+    <section class="lab-section" id="sec-matching">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2: IMAGE Process &amp; Clinical Operations Matcher</h2>
+          <div class="lab-section-sub">Link specific technologist actions to their designated IMAGE recording stage</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim">Station 2: Concept Matcher</span>
+        <p>Match each technologist pre-exposure action on the left with its designated IMAGE process stage and clinical rationale on the right.</p>
+        <div id="concept-activity" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- Section 4: Interactive Station 3 — Calibrated IMAGE Stage Readiness & Blur Calculator -->
+    <section class="lab-section" id="sec-image-calc">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3: Calibrated Blur &amp; Scatter Calculator</h2>
+          <div class="lab-section-sub">Calculate geometric penumbra, motion unsharpness, and scatter fraction</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-check">Station 3: Interactive Physics Tool</span>
+        <p>Adjust the geometric and technical variables below to calculate total image unsharpness ($U_{\text{total}}$), scatter-to-primary ratio ($S/P$), and required exposure maintenance in real time.</p>
+
+        <div class="calc-workbench">
+          <div>
+            <div class="control-card" style="margin-bottom:10px;">
+              <label for="calc-sid">
+                <span>Source-to-Image Distance (SID):</span>
+                <output id="out-calc-sid">100 cm</output>
+              </label>
+              <input type="range" id="calc-sid" min="80" max="180" step="5" value="100">
+              <span class="field-hint">Standard tabletop SID: 100 cm. Modifies SOD and geometric penumbra</span>
+            </div>
+            <div class="control-card" style="margin-bottom:10px;">
+              <label for="calc-focal">
+                <span>Focal Spot Size (FSS):</span>
+                <output id="out-calc-focal">Small (0.6 mm)</output>
+              </label>
+              <input type="range" id="calc-focal" min="0" max="1" step="1" value="0">
+              <span class="field-hint">0 = Small (0.6 mm), 1 = Large (1.2 mm)</span>
+            </div>
+            <div class="control-card" style="margin-bottom:10px;">
+              <label for="calc-collimation">
+                <span>4-Sided Collimation Field:</span>
+                <output id="out-calc-collimation">18×24 cm (Tight Knee)</output>
+              </label>
+              <input type="range" id="calc-collimation" min="0" max="3" step="1" value="1">
+              <span class="field-hint">0 = 10×12 cm, 1 = 18×24 cm, 2 = 24×30 cm, 3 = 35×43 cm</span>
+            </div>
+            <div class="control-card">
+              <label for="calc-motion">
+                <span>Patient Immobilization / Motion:</span>
+                <output id="out-calc-motion">Sandbag Supported (0 mm)</output>
+              </label>
+              <input type="range" id="calc-motion" min="0" max="1" step="1" value="0">
+              <span class="field-hint">0 = Sandbag Supported (0 mm), 1 = Tremor / Motion Blur (1.4 mm)</span>
+            </div>
+          </div>
+
+          <div class="calc-results-panel">
+            <div>
+              <h4 style="margin:0 0 10px;color:var(--rad-navy);"><i class="fa-solid fa-microscope" style="color:var(--rad-teal)"></i> Spatial Resolution &amp; Scatter Telemetry</h4>
+              <div class="calc-stat-row">
+                <span>Geometric Penumbra ($U_g$):</span>
+                <span class="calc-stat-val" id="calc-ug">0.04 mm</span>
+              </div>
+              <div class="calc-stat-row">
+                <span>Total Spatial Blur ($U_{\text{total}}$):</span>
+                <span class="calc-stat-val" id="calc-ut">0.04 mm</span>
+              </div>
+              <div class="calc-stat-row">
+                <span>Scatter-to-Primary Ratio ($S/P$):</span>
+                <span class="calc-stat-val" id="calc-sp">0.35</span>
+              </div>
+              <div class="calc-stat-row">
+                <span>Exposure Maintenance Factor:</span>
+                <span class="calc-stat-val" id="calc-emf">1.00× (8.0 mAs)</span>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:11.5px;font-weight:800;color:var(--rad-navy);margin-top:10px;">Diagnostic Resolution Quality:</div>
+              <div style="padding:10px 14px;border-radius:8px;background:#eaf8f0;color:#12633f;border:1px solid #a7f3d0;font-weight:700;font-size:12.5px;text-align:center;margin-top:6px;" id="calc-quality-badge">
+                ✓ Crisp Trabecular Detail (Penumbra &lt; 0.08 mm)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Station 4 — Clinical Patient Care Decision Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4: Clinical Patient Care Decision Scenario</h2>
+          <div class="lab-section-sub">Professional clinical decision-making during painful emergency presentations</div>
+        </div>
+      </div>
+      <article class="challenge-card">
+        <span class="badge badge-check">Station 4: Clinical Scenario</span>
+        <h3>Trauma Knee Mobility Limitation Decision</h3>
+        <p>
+          An elderly patient arrives in the radiography suite via wheelchair following a fall. The requisition calls for a standard AP Knee. The patient reports acute pain ($8/10$) and states they <b>cannot fully extend the knee to lie flat against the table</b>.
+        </p>
+        <p><b>What is the correct professional action to take before initiating exposure?</b></p>
+
+        <fieldset>
+          <legend class="sr-only">Choose the best clinical response</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Adapt positioning safely using supportive radiolucent sponges beneath the knee</b>, angle the Central Ray perpendicular to the tibia/fibula if needed, provide sandbag foot support to prevent tremor, and document the clinical limitation on the PACS requisition.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Firmly press the patient's knee down flat against the tabletop</b> to force standard anatomy positioning, prioritizing departmental protocol over patient comfort.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Double the mAs from 8 to 16 mAs</b> on the control console to electronically compensate for the patient's pain and leg flexion.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Skip patient ID verification and lead marker placement</b> to hasten the examination and reduce total exam room time.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button class="btn btn-secondary" id="check-scenario" type="button">Check Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">
+          Choose an option and verify your rationale against patient care and diagnostic standards.
+        </div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Knowledge Check Quizzes</h2>
+          <div class="lab-section-sub">4 formative assessment questions · first attempt &amp; final score recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1 Submission Hub</h2>
+          <div class="lab-section-sub">In-Lab Interactive Activities (10 Points) · Submit before leaving the lab session</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-teal);padding:24px;">
+        <!-- Injected automatically by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- CTA Transition Card -->
+    <div class="transition-card">
+      <div>
+        <h3>Ready to Operate the Virtual AP Knee Positioning Console?</h3>
+        <p>Proceed to Tab 2 to operate the 3-panel simulation console, navigate the 4 recording stages (I, M, A, G), download your CSV trial data, and complete the Post-Lab Excel Data Analysis.</p>
+      </div>
+      <button class="btn" id="btn-proceed-to-sim" type="button" onclick="switchTab('tab-pane-experiment')">
+        Proceed to Tab 2: Virtual Simulation &rarr;
+      </button>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & POST-LAB ANALYSIS (10 PTS)     -->
+  <!-- =================================================================== -->
+  <div class="tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-experiment">
+
+    <!-- Tab 2 Top Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:10px 16px;margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--rad-navy);">
+        <i class="fa-solid fa-flask" style="color:var(--rad-teal);margin-right:6px;"></i> Tab 2: Virtual Physics Experiment &amp; Excel Analysis [10 Pts]
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro" type="button" onclick="switchTab('tab-pane-intro')">
+        &larr; Return to Tab 1 (Theory &amp; In-Lab Activities)
+      </button>
+    </div>
+
+    <!-- Section 8: Protocol Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol Guide</h2>
+          <div class="lab-section-sub">Step-by-step procedure for controlled simulation trials</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="procedure-grid">
+          <div class="procedure-step">Formulate a scientific prediction ($\ge 20$ chars) on which IMAGE stage is most compromised by uncollimated beams or patient rotation.</div>
+          <div class="procedure-step">Select Preset 1 (Optimal AP Knee Baseline) and record the readiness score, penumbra, and scatter fraction.</div>
+          <div class="procedure-step">Select Preset 2 (+15° External Rotation) and Preset 3 (Metal Zipper) to evaluate Stage A positioning errors.</div>
+          <div class="procedure-step">Select Preset 4 (Wide Collimation) and Preset 6 (Missing Lead Marker) to evaluate Stage G beam guidance failures.</div>
+          <div class="procedure-step">Select Preset 5 (Motion Blur) and Preset 8 (Quantum Mottle) to analyze spatial resolution loss and photon starvation.</div>
+          <div class="procedure-step">Download run data CSV, import into Excel, construct diagnostic plots, and complete Table B calculations.</div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction (≥20 chars) &nbsp; ☐ 2. Run 1 Optimal AP Knee baseline + Record &nbsp; ☐ 3. Run 2 Stage-A error (rotation or zipper) + Record &nbsp; ☐ 4. Run 3 Stage-G error (wide collimation or missing marker) + Record — extra runs bonus/optional &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel 2 plots + Table B (4th row bonus/optional).<br>
+          <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider a notch.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Virtual Experiment Simulator Suite</h2>
+          <div class="lab-section-sub">Interactive 3-panel X-ray positioning console, latent radiograph preview &amp; IMAGE stage meters</div>
+        </div>
+      </div>
+      <div class="card">
+        
+        <!-- Presets Toolbar -->
+        <div class="preset-toolbar">
+          <span class="preset-title">Presets:</span>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">
+            1. Optimal AP Knee
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="1" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">
+            2. Ext Rotation (+15°)
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="1" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">
+            3. Metal Zipper Artifact
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="3" data-marker="0">
+            4. Wide Collimation (35×43)
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="1" data-centering="0" data-collimation="1" data-marker="0">
+            5. Motion Blur (Tremor)
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="2">
+            6. Missing Lead Marker
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="70" data-mas="8" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="0" data-marker="0">
+            7. Clipped Anatomy (10×12)
+          </button>
+          <button type="button" class="preset-btn" data-sid="100" data-grid="0" data-idcheck="1" data-kvp="52" data-mas="2" data-focal="0" data-rotation="0" data-artifact="0" data-motion="0" data-centering="0" data-collimation="1" data-marker="0">
+            8. Quantum Mottle (52/2)
+          </button>
+        </div>
+
+        <div class="sim-workbench" style="margin-top:14px;">
+          <!-- LEFT COLUMN: Canvas + Telemetry -->
+          <div class="sim-visual-column">
+            <div class="sim-canvas-wrap">
+              <canvas id="sim-canvas" class="sim-canvas" width="1000" height="420" role="img" aria-label="Interactive 3-panel X-ray console and latent radiograph" aria-describedby="sim-caption"></canvas>
+              <p class="visual-note" id="sim-caption" role="status" aria-live="polite">
+                Select clinical presets or adjust stage sliders. The positioning console, radiograph preview, and stage readiness meters update synchronously in real time.
+              </p>
+            </div>
+            <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+          </div>
+
+          <!-- RIGHT COLUMN: Stage Controls -->
+          <div class="sim-controls-column">
+            <div class="stage-tabs-nav" role="tablist" aria-label="IMAGE Recording Stages">
+              <button type="button" class="stage-tab-btn active" id="tab-btn-i" data-stage="i" role="tab" aria-selected="true" aria-controls="tab-pane-i">
+                <span class="tab-badge badge-stage-i">Stage I</span>
+                <span class="tab-name">Setup &amp; ID</span>
+                <span class="tab-score" id="tab-score-i">100%</span>
+              </button>
+              <button type="button" class="stage-tab-btn" id="tab-btn-m" data-stage="m" role="tab" aria-selected="false" aria-controls="tab-pane-m">
+                <span class="tab-badge badge-stage-m">Stage M</span>
+                <span class="tab-name">Factors (EI)</span>
+                <span class="tab-score" id="tab-score-m">100%</span>
+              </button>
+              <button type="button" class="stage-tab-btn" id="tab-btn-a" data-stage="a" role="tab" aria-selected="false" aria-controls="tab-pane-a">
+                <span class="tab-badge badge-stage-a">Stage A</span>
+                <span class="tab-name">Anatomy</span>
+                <span class="tab-score" id="tab-score-a">100%</span>
+              </button>
+              <button type="button" class="stage-tab-btn" id="tab-btn-g" data-stage="g" role="tab" aria-selected="false" aria-controls="tab-pane-g">
+                <span class="tab-badge badge-stage-g">Stage G</span>
+                <span class="tab-name">Guidance</span>
+                <span class="tab-score" id="tab-score-g">100%</span>
+              </button>
+            </div>
+
+            <div class="stage-tab-panes">
+              <!-- PANE I: Initial Setup -->
+              <div class="stage-tab-pane active" id="tab-pane-i" role="tabpanel" aria-labelledby="tab-btn-i">
+                <div class="pane-header">
+                  <h4>Stage I — Initial Patient &amp; System Setup</h4>
+                  <span class="pane-desc">Verify demographics, receptor match, and standard 100 cm distance.</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-sid"><span>Source-to-Image Distance (SID)</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
+                  <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
+                  <span class="field-hint">Standard tabletop knee distance: 100 cm (40 in)</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-grid"><span>Receptor &amp; Grid Mode</span><output id="out-grid" for="ctrl-grid">Tabletop Non-Grid DR</output></label>
+                  <input type="range" id="ctrl-grid" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = Tabletop Non-Grid DR (&lt;10cm), 1 = Table Bucky 8:1 Grid DR (Bucky Factor 3.5×)</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-idCheck"><span>Patient ID Verification</span><output id="out-idCheck" for="ctrl-idCheck">✅ Verified (2 IDs)</output></label>
+                  <input type="range" id="ctrl-idCheck" min="0" max="1" step="1" value="1" aria-describedby="sim-caption">
+                  <span class="field-hint">1 = Two Identifiers (Name &amp; DOB) Checked, 0 = Incomplete ID (Sentinel Gate)</span>
+                </div>
+                <div class="pane-nav-footer">
+                  <span></span>
+                  <button type="button" class="btn btn-secondary btn-sm next-stage-btn" data-next="m">Next: Stage M (Exposure Factors) &rarr;</button>
+                </div>
+              </div>
+
+              <!-- PANE M: Exposure Factors -->
+              <div class="stage-tab-pane" id="tab-pane-m" role="tabpanel" aria-labelledby="tab-btn-m">
+                <div class="pane-header">
+                  <h4>Stage M — Manual Exposure Factors</h4>
+                  <span class="pane-desc">Set kVp for subject contrast, mAs for quantum noise, and focal spot size.</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-kvp"><span>Tube Potential (kVp)</span><output id="out-kvp" for="ctrl-kvp">70 kVp</output></label>
+                  <input type="range" id="ctrl-kvp" min="50" max="90" step="1" value="70" aria-describedby="sim-caption">
+                  <span class="field-hint">Controls beam penetration and subject contrast (optimum: 68–72 kVp)</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-mas"><span>Exposure Product (mAs)</span><output id="out-mas" for="ctrl-mas">8 mAs</output></label>
+                  <input type="range" id="ctrl-mas" min="2" max="30" step="1" value="8" aria-describedby="sim-caption">
+                  <span class="field-hint">Controls receptor photon fluence and quantum mottle (target: 200 EI)</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-focal"><span>Focal Spot Size (FSS)</span><output id="out-focal" for="ctrl-focal">Small (0.6 mm)</output></label>
+                  <input type="range" id="ctrl-focal" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = Small (0.6 mm sharp trabeculae), 1 = Large (1.2 mm penumbra blur)</span>
+                </div>
+                <div class="pane-nav-footer">
+                  <button type="button" class="btn btn-ghost btn-sm prev-stage-btn" data-prev="i">&larr; Prev: Stage I</button>
+                  <button type="button" class="btn btn-secondary btn-sm next-stage-btn" data-next="a">Next: Stage A (Anatomy) &rarr;</button>
+                </div>
+              </div>
+
+              <!-- PANE A: Anatomy & Prep -->
+              <div class="stage-tab-pane" id="tab-pane-a" role="tabpanel" aria-labelledby="tab-btn-a">
+                <div class="pane-header">
+                  <h4>Stage A — Anatomy Positioning &amp; Preparation</h4>
+                  <span class="pane-desc">Ensure True AP rotation, remove radiopaque artifacts, and immobilize.</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-rotation"><span>Part Alignment / Rotation</span><output id="out-rotation" for="ctrl-rotation">0° True AP</output></label>
+                  <input type="range" id="ctrl-rotation" min="-1" max="1" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = True AP (Epicondyles parallel), 1 = +15° Ext Rot, -1 = -15° Int Rot</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-artifact"><span>Patient Preparation &amp; Artifacts</span><output id="out-artifact" for="ctrl-artifact">Clean / Gowned (No Artifact)</output></label>
+                  <input type="range" id="ctrl-artifact" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = Clean Gown, 1 = Metallic Zipper / Knee Brace Over Thigh</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-motion"><span>Patient Immobilization &amp; Stability</span><output id="out-motion" for="ctrl-motion">Supported / Sandbag</output></label>
+                  <input type="range" id="ctrl-motion" min="0" max="1" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = Sandbag Immobilized, 1 = Unassisted Tremor / Motion Blur</span>
+                </div>
+                <div class="pane-nav-footer">
+                  <button type="button" class="btn btn-ghost btn-sm prev-stage-btn" data-prev="m">&larr; Prev: Stage M</button>
+                  <button type="button" class="btn btn-secondary btn-sm next-stage-btn" data-next="g">Next: Stage G (Guidance) &rarr;</button>
+                </div>
+              </div>
+
+              <!-- PANE G: Beam Guidance -->
+              <div class="stage-tab-pane" id="tab-pane-g" role="tabpanel" aria-labelledby="tab-btn-g">
+                <div class="pane-header">
+                  <h4>Stage G — Guide Beam &amp; Patient</h4>
+                  <span class="pane-desc">Center CR to joint space, collimate 4 sides, and position anatomical marker.</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-centering"><span>Central Ray Joint Centering</span><output id="out-centering" for="ctrl-centering">0 cm (Joint Center)</output></label>
+                  <input type="range" id="ctrl-centering" min="-3" max="3" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">Center 1.25 cm distal to patellar apex (-3cm proximal to +3cm distal)</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-collimation"><span>4-Sided Beam Collimation</span><output id="out-collimation" for="ctrl-collimation">18×24 cm (Tight AP Knee)</output></label>
+                  <input type="range" id="ctrl-collimation" min="0" max="3" step="1" value="1" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = 10×12 cm (Clipped), 1 = 18×24 cm (Optimal), 2 = 24×30 cm, 3 = 35×43 cm (Wide)</span>
+                </div>
+                <div class="control-card">
+                  <label for="ctrl-marker"><span>Anatomical Lead Side Marker</span><output id="out-marker" for="ctrl-marker">Lateral R (In Beam)</output></label>
+                  <input type="range" id="ctrl-marker" min="0" max="2" step="1" value="0" aria-describedby="sim-caption">
+                  <span class="field-hint">0 = Correct Lateral 'R', 1 = Marker Over Joint/Bone, 2 = Missing Marker</span>
+                </div>
+                <div class="pane-nav-footer">
+                  <button type="button" class="btn btn-ghost btn-sm prev-stage-btn" data-prev="a">&larr; Prev: Stage A</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="btn-quick-record">Record Run Now</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pre-Trial Prediction Input -->
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="w-prediction">
+            Pre-Trial Scientific Hypothesis / Prediction <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="w-prediction" rows="3" required placeholder="State which IMAGE recording stage you plan to perturb (e.g. widening collimation to 35x43 cm in Stage G or introducing +15° external rotation in Stage A) and predict the exact quantitative consequence on Stage Readiness, Scatter Fraction (S/P), and composite score..."></textarea>
+          <p class="form-hint">Minimum 20 characters required. Your prediction is locked into your experimental run log and export report.</p>
+        </div>
+
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run" type="button">Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run" type="button">Remove Last Run</button>
+          <button class="btn btn-secondary btn-sm" id="btn-download-runs-csv" type="button">
+            <i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)
+          </button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr>
+                <th>Run #</th>
+                <th>IMAGE Stage Settings ($I, M, A, G$)</th>
+                <th>Stage Readiness &amp; Diagnostics ($S_I, S_M, S_A, S_G$, Comp, $U_g, S/P, DI$)</th>
+                <th>Clinical Interpretation &amp; Defects</th>
+              </tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr>
+                <td colspan="4" class="muted">No runs recorded yet. Formulate a prediction and click "Record This Run".</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 10: Worksheet & Post-Lab Excel Analysis -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Worksheet: Post-Lab Excel Analysis &amp; Process Evidence</h2>
+          <div class="lab-section-sub">Quantitative calculations, diagnostic charting, and clinical synthesis</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet">Graded Responses</span>
+
+        <!-- Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div style="background:#f8fafc;border:1px solid #cbd5e1;border-left:4px solid var(--rad-blue);border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+          <h4 style="margin:0 0 8px;color:var(--rad-navy);"><i class="fa-solid fa-file-excel" style="color:var(--rad-blue)"></i> Post-Lab Excel Data Analysis Instructions</h4>
+          <p style="font-size:13px;line-height:1.5;color:var(--rad-text-soft);margin:0 0 10px;">
+            Export your experimental run data using <b>"Download Run Data (CSV)"</b> above and import it into Microsoft Excel. Construct the two required diagnostic plots and verify your quantitative findings:
+          </p>
+          <ul style="font-size:12.5px;line-height:1.55;color:var(--rad-navy);margin:0 0 12px;padding-left:20px;">
+            <li>
+              <b>Plot 1: Collimation Field Area vs. Scatter Fraction ($S/P$) &amp; Composite Readiness Score:</b><br>
+              Plot Collimation Field Area ($120, 432, 720, 1505\text{ cm}^2$) on the horizontal X-axis. Plot Scatter Fraction ($S/P$) on the primary Y-axis and Composite Readiness Score on the secondary Y-axis. Demonstrate that increasing beam field area from tight knee ($432\text{ cm}^2$) to wide open ($1505\text{ cm}^2$) increases scatter by over $3.5\times$, degrading image subject contrast and lowering composite score.
+            </li>
+            <li>
+              <b>Plot 2: Geometric Penumbra ($U_g$) vs. Total Unsharpness ($U_{\text{total}}$) with Motion Blur:</b><br>
+              Construct a column chart comparing Small FSS ($0.6\text{ mm}$), Large FSS ($1.2\text{ mm}$), and Patient Motion Blur ($1.4\text{ mm}$). Demonstrate mathematically that involuntary patient motion blur dominates spatial unsharpness ($U_{\text{total}} = \sqrt{U_g^2 + U_m^2}$), showing why sandbag immobilization is essential.
+            </li>
+          </ul>
+          <div style="background:#e0f2fe;border-radius:6px;padding:8px 12px;font-size:12px;color:#0369a1;">
+            <b>File Submission Requirement:</b> Save your completed Excel workbook as <code>RAD321_Lab13_YourName.xlsx</code> and attach it in the Phase 2 Submission Hub below.
+          </div>
+        </div>
+
+        <!-- Table B: Quantitative Calculations -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-table" style="color:var(--rad-teal)"></i> Table B: Quantitative IMAGE Stage Performance Calculations</h4>
+        <p class="small muted">Record the stage scores, composite readiness, geometric unsharpness ($U_g$), and scatter fraction ($S/P$) for the four configurations below:</p>
+
+        <div style="overflow-x:auto;margin:14px 0;">
+          <table class="data-table" style="font-size:12px;">
+            <thead>
+              <tr>
+                <th>Trial / Configuration</th>
+                <th>Stage I (%)</th>
+                <th>Stage M (%)</th>
+                <th>Stage A (%)</th>
+                <th>Stage G (%)</th>
+                <th>Composite Score</th>
+                <th>$U_g$ (mm)</th>
+                <th>$S/P$ Ratio</th>
+                <th>Clinical Diagnostic Assessment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. Optimal AP Knee Baseline</b></td>
+                <td><input type="text" id="tb-run1-i" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-m" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-a" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-g" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-composite" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run1-ug" style="width:65px;" placeholder="0.04"></td>
+                <td><input type="text" id="tb-run1-sp" style="width:65px;" placeholder="0.35"></td>
+                <td><input type="text" id="tb-run1-assessment" style="width:130px;" placeholder="Diagnostic Excellence"></td>
+              </tr>
+              <tr>
+                <td><b>2. Wide Collimation (35×43 cm)</b></td>
+                <td><input type="text" id="tb-run2-i" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run2-m" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run2-a" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run2-g" style="width:65px;" placeholder="74%"></td>
+                <td><input type="text" id="tb-run2-composite" style="width:65px;" placeholder="92%"></td>
+                <td><input type="text" id="tb-run2-ug" style="width:65px;" placeholder="0.04"></td>
+                <td><input type="text" id="tb-run2-sp" style="width:65px;" placeholder="1.22"></td>
+                <td><input type="text" id="tb-run2-assessment" style="width:130px;" placeholder="Elevated Scatter Fog"></td>
+              </tr>
+              <tr>
+                <td><b>3. Motion Blur &amp; Large FSS</b></td>
+                <td><input type="text" id="tb-run3-i" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run3-m" style="width:65px;" placeholder="95%"></td>
+                <td><input type="text" id="tb-run3-a" style="width:65px;" placeholder="81%"></td>
+                <td><input type="text" id="tb-run3-g" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run3-composite" style="width:65px;" placeholder="94%"></td>
+                <td><input type="text" id="tb-run3-ug" style="width:65px;" placeholder="0.08"></td>
+                <td><input type="text" id="tb-run3-sp" style="width:65px;" placeholder="0.35"></td>
+                <td><input type="text" id="tb-run3-assessment" style="width:130px;" placeholder="Motion Blur Ut=1.40mm"></td>
+              </tr>
+              <tr>
+                <td><b>4. Rotated + Zipper Artifact</b></td>
+                <td><input type="text" id="tb-run4-i" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run4-m" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run4-a" style="width:65px;" placeholder="41%"></td>
+                <td><input type="text" id="tb-run4-g" style="width:65px;" placeholder="100%"></td>
+                <td><input type="text" id="tb-run4-composite" style="width:65px;" placeholder="45%"></td>
+                <td><input type="text" id="tb-run4-ug" style="width:65px;" placeholder="0.04"></td>
+                <td><input type="text" id="tb-run4-sp" style="width:65px;" placeholder="0.35"></td>
+                <td><input type="text" id="tb-run4-assessment" style="width:130px;" placeholder="Critical Defect Repeat"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Reflection Questions -->
+        <div class="form-row" style="margin-top:18px;">
+          <label class="field-label" for="q1">
+            1. Record your choices across Stages I, M, A, and G during the simulation. Detail one specific error introduced and describe its direct clinical and diagnostic consequence on the radiograph. <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q1" rows="4" required placeholder="Describe your baseline settings and the specific error tested (e.g. +15° external rotation causing superimposition of the proximal fibula and closure of the joint space, or missing lead marker requiring repeat)..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q2">
+            2. Explain why patient identification verification and receptor/grid selection (Stage I) must strictly precede the selection of manual exposure factors (Stage M). <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q2" rows="4" required placeholder="Explain why exposing the wrong patient is an irreversible clinical error. Furthermore, explain how choosing Tabletop Non-Grid vs. Table Bucky 8:1 Grid changes the required mAs by a Bucky factor of 3.5x..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q3">
+            3. List and explain three distinct technologist preparation or positioning actions in Stages A and G that directly eliminate avoidable repeat exposures. <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q3" rows="4" required placeholder="Detail (1) removal of external clothing artifacts/zippers, (2) sandbag immobilization to stop voluntary/involuntary motion, and (3) placing the lead side marker within the collimated light field before exposure..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <label class="field-label" for="q4">
+            4. Critical Thinking: Explain mathematically and clinically how tight 4-sided collimation simultaneously supports both image quality (subject contrast) and patient radiation protection (ALARA). <span aria-hidden="true">*</span>
+          </label>
+          <textarea id="q4" rows="4" required placeholder="Discuss Compton scatter reduction (S/P ratio), beam area reduction, organ dose minimization (gonadal sparing), and how reducing scatter fog enhances subject contrast and lesion conspicuity..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Standardized Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized 20-Point Grading Rubric</h2>
+          <div class="lab-section-sub">Automated AI evaluation criteria (10 Pts In-Lab / 10 Pts Post-Lab)</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto;"></div>
+        <p class="form-hint">Self-scores assist in pre-submission verification. The official grade is generated by the departmental server's configured AI model.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2 Submission Hub</h2>
+          <div class="lab-section-sub">Post-Lab Excel Data Analysis &amp; Clinical Synthesis (10 Points) · Submit with workbook (.xlsx / .csv)</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--rad-blue);padding:24px;">
+        <!-- Injected automatically by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div>
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 13 of 15 · assessed virtual laboratory</footer>
+
+<!-- Lab Actionbar -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span>
+      <span id="autosave-dot-label">Autosave ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json" type="button">Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset" type="button">Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar" type="button">Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 13 of 15 · Assessed Virtual Laboratory Suite
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
+/**
+ * LAB 13: THE IMAGE PROCESS, PART 1 — RECORDING STAGES
+ * Authoritative Gold Standard Implementation
+ */
 const LAB = {
-  "week": 13,
-  "title": "The IMAGE Process, Part 1 — Recording Stages",
-  "lecture": "Image Analysis I — IMAGE Recording Stages",
-  "type": "image-record",
-  "subtitle": "Work through a virtual patient scenario from setup to beam guidance.",
-  "objectives": [
-    "Recall all five stages of the IMAGE process.",
-    "Perform initial patient and system setup decisions.",
-    "Select manual exposure factors appropriate to a virtual patient.",
-    "Prepare and position anatomy while considering comfort and artifacts.",
-    "Guide the beam, collimate, place markers, and give patient instructions."
+  labId: 'lab-13',
+  labTitle: "Lab 13: The IMAGE Process, Part 1 — Acquire",
+  weekNumber: 13,
+  week: 13,
+  title: "The IMAGE Process, Part 1 — Recording Stages",
+  lecture: "Image Analysis I — IMAGE Recording Stages",
+  type: "image-record",
+  subtitle: "Work through a virtual patient scenario from setup to beam guidance.",
+  sections: [
+    { id: 'sec-experiment', label: '1 · Simulation', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+    { id: 'sec-concept', label: '2 · Concept matcher', checkComplete: function (s) { return !!(s.activities['concept-matching'] && s.activities['concept-matching'].done); } },
+    { id: 'sec-scenario', label: '3 · Clinical decision', checkComplete: function (s) { return !!(s.activities['scenario-check'] && s.activities['scenario-check'].done); } },
+    { id: 'sec-quiz', label: '4 · Knowledge check', checkComplete: function (s) { return QUIZ_IDS.every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+    { id: 'sec-worksheet', label: '5 · Post-lab worksheet' }
   ],
-  "theory": "<p>The IMAGE mnemonic organizes radiographic recording and analysis: <b>I</b>nitial patient/system setup, <b>M</b>anual selection of exposure factors, <b>A</b>natomy positioning and preparation, <b>G</b>uide the beam and patient, and <b>E</b>valuate the image and recording process. Labs 13–14 divide the process into recording and evaluation.</p><p>In this lab, you will make decisions for a virtual AP knee examination. Each decision has a clinical consequence. A correct exposure factor cannot rescue poor positioning, missing anatomy, absent markers, or unnecessary collimation.</p>",
-  "controls": [
-    {"id": "sid", "label": "SID", "min": 80, "max": 180, "step": 1, "value": 100, "unit": "cm"},
-    {"id": "grid", "label": "Receptor/Grid", "min": 0, "max": 1, "step": 1, "value": 0, "unit": ""},
-    {"id": "idCheck", "label": "Patient ID", "min": 0, "max": 1, "step": 1, "value": 1, "unit": ""},
-    {"id": "kvp", "label": "kVp", "min": 50, "max": 90, "step": 1, "value": 70, "unit": "kVp"},
-    {"id": "mas", "label": "mAs", "min": 2, "max": 30, "step": 1, "value": 8, "unit": "mAs"},
-    {"id": "focal", "label": "Focal Spot", "min": 0, "max": 1, "step": 1, "value": 0, "unit": ""},
-    {"id": "rotation", "label": "Knee Rotation", "min": -1, "max": 1, "step": 1, "value": 0, "unit": ""},
-    {"id": "artifact", "label": "Artifacts", "min": 0, "max": 1, "step": 1, "value": 0, "unit": ""},
-    {"id": "motion", "label": "Stability/Motion", "min": 0, "max": 1, "step": 1, "value": 0, "unit": ""},
-    {"id": "centering", "label": "CR Centering", "min": -3, "max": 3, "step": 1, "value": 0, "unit": "cm"},
-    {"id": "collimation", "label": "Collimation", "min": 0, "max": 3, "step": 1, "value": 1, "unit": ""},
-    {"id": "marker", "label": "Lead Marker", "min": 0, "max": 2, "step": 1, "value": 0, "unit": ""}
+  objectives: [
+    "Recall all five stages of the IMAGE process (Initial setup, Manual factors, Anatomy positioning/prep, Guide beam/patient, Evaluate).",
+    "Execute pre-exposure verification: patient identification (2 identifiers), clinical request, receptor type, and standard SID (100 cm).",
+    "Select manual exposure factors (kVp for penetration, mAs for receptor exposure, focal spot size) appropriate to the clinical task.",
+    "Prepare and position anatomy (True AP alignment, removal of external radiopaque artifacts, sandbag immobilization).",
+    "Guide the beam and patient: accurate Central Ray joint centering, 4-sided beam collimation, anatomical lead side marker placement, and motion suspension."
   ],
-  "stations": [
-    {"id": "workflow", "title": "Station 1 — IMAGE recording workflow", "text": "Advance through I, M, A, and G. Make one decision at each stage and record the scenario score.", "kind": "main"},
-    {"id": "mnemonic", "title": "Station 2 — IMAGE stage matching", "text": "Match each action to its IMAGE stage.", "kind": "match", "left": [["i", "Enter patient details and select IR"], ["m", "Select kVp, mAs, grid/focal spot"], ["a", "Remove jewelry and position anatomy"], ["g", "Center CR, collimate, marker"]], "right": [["initial", "Initial setup"], ["manual", "Manual exposure"], ["anatomy", "Anatomy preparation"], ["guide", "Guide beam/patient"]], "pairs": {"i": "initial", "m": "manual", "a": "anatomy", "g": "guide"}},
-    {"id": "case", "title": "Station 3 — Recording decision", "text": "The patient has a possible motion limitation. Choose the best first response before exposure.", "kind": "case"}
+  controls: [
+    { id: "sid", label: "SID", min: 80, max: 180, step: 1, value: 100, unit: "cm" },
+    { id: "grid", label: "Receptor/Grid", min: 0, max: 1, step: 1, value: 0, unit: "" },
+    { id: "idCheck", label: "Patient ID", min: 0, max: 1, step: 1, value: 1, unit: "" },
+    { id: "kvp", label: "kVp", min: 50, max: 90, step: 1, value: 70, unit: "kVp" },
+    { id: "mas", label: "mAs", min: 2, max: 30, step: 1, value: 8, unit: "mAs" },
+    { id: "focal", label: "Focal Spot", min: 0, max: 1, step: 1, value: 0, unit: "" },
+    { id: "rotation", label: "Knee Rotation", min: -1, max: 1, step: 1, value: 0, unit: "" },
+    { id: "artifact", label: "Artifacts", min: 0, max: 1, step: 1, value: 0, unit: "" },
+    { id: "motion", label: "Stability/Motion", min: 0, max: 1, step: 1, value: 0, unit: "" },
+    { id: "centering", label: "CR Centering", min: -3, max: 3, step: 1, value: 0, unit: "cm" },
+    { id: "collimation", label: "Collimation", min: 0, max: 3, step: 1, value: 1, unit: "" },
+    { id: "marker", label: "Lead Marker", min: 0, max: 2, step: 1, value: 0, unit: "" }
   ],
-  "quiz": [
-    {"prompt": "Which action belongs to the Guide stage of IMAGE?", "options": ["Entering demographics", "Selecting mAs", "Removing jewelry and positioning", "Centering the CR and placing the marker"], "correct": 3, "explain": "Guide includes CR alignment, collimation, marker placement, breathing instructions, and completing the exposure."},
-    {"prompt": "The I in IMAGE represents:", "options":["Initial patient and system setup", "Image noise", "Intensifier input", "Inverse square"], "correct": 0, "explain": "Initial setup includes identification, receptor, SID, and system preparation."},
-    {"prompt": "Marker placement and CR centering belong mainly to:", "options":["Guide the beam and patient", "Manual factors only", "Evaluate only", "Initial demographics only"], "correct": 0, "explain": "Guide includes alignment, collimation, marker, instructions, and exposure."},
-    {"prompt": "Removing jewelry belongs to:", "options": ["Anatomy positioning and preparation", "Evaluate", "Manual exposure", "Image processing"], "correct": 0, "explain": "Preparation removes external artifacts before positioning and exposure."}
+  stations: [
+    {
+      id: "workflow",
+      title: "Station 1 — IMAGE Recording Stages Explorer",
+      kind: "main"
+    },
+    {
+      id: "mnemonic",
+      title: "Station 2 — IMAGE Process & Clinical Operations Matcher",
+      kind: "match",
+      left: [
+        ["id_check", "Verify Patient Name & DOB (2 IDs)"],
+        ["factors", "Select 70 kVp, 8 mAs & Small 0.6mm FSS"],
+        ["artifacts", "Remove Metallic Zipper & Knee Brace"],
+        ["position", "Align Femoral Epicondyles Parallel to IR"],
+        ["centering", "Center CR 1.25 cm Distal to Patellar Apex"],
+        ["collimation", "Collimate to 18×24 cm & Place Lateral 'R' Marker"]
+      ],
+      right: [
+        ["i_stage", "Stage I: Eliminates wrong-patient sentinel events before touching equipment"],
+        ["m_stage", "Stage M: Optimizes subject contrast, receptor fluence, and fine trabecular detail"],
+        ["a_prep", "Stage A: Prevents radiopaque foreign-body artifacts from obscuring bone"],
+        ["a_align", "Stage A: Ensures a True AP projection with open femorotibial joint space"],
+        ["g_center", "Stage G: Directs Central Ray perpendicular through the joint space"],
+        ["g_guide", "Stage G: Cuts scatter fraction (S/P), protects gonads, and provides legal marker"]
+      ],
+      pairs: {
+        "id_check": "i_stage",
+        "factors": "m_stage",
+        "artifacts": "a_prep",
+        "position": "a_align",
+        "centering": "g_center",
+        "collimation": "g_guide"
+      }
+    },
+    {
+      id: "case",
+      title: "Station 4 — Clinical Patient Care Decision Scenario",
+      kind: "case"
+    }
   ],
-  "worksheet": [
-    {"id": "q1", "label": "1. Record your choices at I, M, A, and G and explain one consequence of an incorrect choice."},
-    {"id": "q2", "label": "2. Why should patient identification and IR selection happen before exposure-factor selection?"},
-    {"id": "q3", "label": "3. List three preparation or positioning actions that reduce repeats."},
-    {"id": "q4", "label": "4. Critical thinking: explain how collimation can support both image quality and radiation protection."}
+  quiz: [
+    {
+      prompt: "Which action belongs strictly to the Guide (G) stage of the IMAGE process?",
+      options: [
+        "Entering patient demographics and medical record number",
+        "Selecting tube current and exposure time (mAs)",
+        "Removing jewelry and positioning the limb",
+        "Centering the Central Ray, collimating the beam, and placing the lead marker"
+      ],
+      correct: 3,
+      explain: "Guide (G) includes Central Ray alignment, beam collimation, anatomical lead side marker placement, patient respiration/immobilization instructions, and initiating exposure."
+    },
+    {
+      prompt: "The letter 'I' in the IMAGE process represents:",
+      options: [
+        "Initial patient identification and system setup",
+        "Image noise and contrast calculation",
+        "Intensifier tube input phosphor",
+        "Inverse square law compensation"
+      ],
+      correct: 0,
+      explain: "Stage I (Initial Setup) includes two-identifier patient verification, requisition review, receptor format selection, and setting standard SID."
+    },
+    {
+      prompt: "Lead side marker placement and Central Ray joint centering belong to:",
+      options: [
+        "Guide the beam and patient (Stage G)",
+        "Manual factors only (Stage M)",
+        "Evaluate only (Stage E)",
+        "Initial demographics only (Stage I)"
+      ],
+      correct: 0,
+      explain: "Stage G encompasses beam alignment, joint centering, 4-sided beam collimation, and anatomical marker placement."
+    },
+    {
+      prompt: "Removing patient clothing with metallic zippers and elastic knee braces belongs to:",
+      options: [
+        "Anatomy positioning and preparation (Stage A)",
+        "Evaluate (Stage E)",
+        "Manual exposure factors (Stage M)",
+        "Digital image post-processing"
+      ],
+      correct: 0,
+      explain: "Preparation and artifact elimination are fundamental components of Stage A before anatomical part alignment and exposure."
+    }
   ],
-  "rubric": [
-    {"id": "c1", "name": "IMAGE recording concepts", "points": 4, "levels": ["Correctly explains I/M/A/G and their clinical sequence.", "Mostly correct with minor gaps.", "Stages are confused or missing."]},
-    {"id": "c2", "name": "Virtual patient workflow", "points": 5, "levels": ["Completes all recording decisions with evidence-based choices.", "Completes the workflow with limited reasoning.", "Little evidence of decision-making."]},
-    {"id": "c3", "name": "Worksheet and process evidence", "points": 5, "levels": ["Responses link decisions to repeat prevention and quality.", "Mostly correct but shallow.", "Incomplete or unsupported."]},
-    {"id": "c4", "name": "Patient-centered reasoning", "points": 3, "levels":["Balances safety, comfort, positioning, and diagnostic value.", "Plausible but brief.", "No defensible reasoning."]},
-    {"id": "c5", "name": "Completeness and professionalism", "points": 3, "levels": ["Complete, organized, and ready for submission.", "Minor omissions.", "Substantially incomplete."]}
+  worksheet: [
+    { id: "q1", label: "1. Record your choices across Stages I, M, A, and G during the simulation. Detail one specific error introduced and describe its direct clinical and diagnostic consequence." },
+    { id: "q2", label: "2. Explain why patient identification verification and receptor/grid selection (Stage I) must strictly precede the selection of manual exposure factors (Stage M)." },
+    { id: "q3", label: "3. List and explain three distinct technologist preparation or positioning actions in Stages A and G that directly eliminate avoidable repeat exposures." },
+    { id: "q4", label: "4. Critical Thinking: Explain mathematically and clinically how tight 4-sided collimation simultaneously supports both image quality and patient radiation protection (ALARA)." }
   ],
-  "procedure": [
-    "Predict which IMAGE recording stage is most affected by poor collimation.",
-    "Record a baseline AP-knee setup.",
-    "Change exposure factors and record a second run.",
-    "Change SID or collimation for a third run.",
-    "Use the readiness domains to identify the weakest stage."
+  rubric: [
+    { id: "c1", name: "IMAGE Recording Process Concepts", points: 4, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: [{ desc: "Correctly explains all 4 recording stages (I, M, A, G), clinical sequence, and gating." }, { desc: "Mostly correct with minor gaps in sequence or gating." }, { desc: "Stages are confused or sequence is misunderstood." }] },
+    { id: "c2", name: "Virtual Patient Console Execution", points: 6, part: "Part I: In-Lab Interactive Activities (10 Points)", levels: [{ desc: "Completes all recording decisions with evidence-based choices across multiple presets." }, { desc: "Completes the workflow with limited reasoning or single run." }, { desc: "Little evidence of systematic decision-making." }] },
+    { id: "c3", name: "Quantitative Calculations & Excel Plotting", points: 5, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: [{ desc: "Calculations for unsharpness and scatter fraction are fully correct; Excel plots demonstrate clear trends." }, { desc: "Mostly correct with minor arithmetic or plotting omissions." }, { desc: "Calculations missing or incorrect." }] },
+    { id: "c4", name: "Patient-Centered Clinical Reasoning", points: 3, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: [{ desc: "Balances patient safety, comfort, positioning adaptation, and diagnostic value under ALARA." }, { desc: "Plausible reasoning but brief." }, { desc: "No defensible clinical or safety reasoning." }] },
+    { id: "c5", name: "Completeness & Professional Reporting", points: 2, part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)", levels: [{ desc: "Complete, organized, and professionally prepared for submission with Excel file attached." }, { desc: "Minor omissions or unformatted attachments." }, { desc: "Substantially incomplete." }] }
   ],
-  "scenario": {
-    "prompt": "The patient reports pain and cannot fully extend the knee. What should happen before exposure?",
-    "options": [
-      "Adapt positioning safely, support the patient, and document the limitation",
+  procedure: [
+    "Formulate a scientific prediction (>= 20 chars) on which IMAGE recording stage is most compromised by uncollimated beams or patient rotation.",
+    "Record a baseline AP-knee setup (Preset 1: Optimal AP Knee).",
+    "Introduce an anatomy positioning error (Preset 2: Rotation or Preset 3: Zipper Artifact) and record a second run.",
+    "Change beam guidance (Preset 4: Wide Collimation or Preset 6: Missing Marker) for a third run.",
+    "Use the 4-stage readiness meters and metrics to evaluate root causes.",
+    "Download run data CSV, import into Excel, construct diagnostic plots, and complete Table B."
+  ],
+  scenario: {
+    prompt: "The patient reports pain and cannot fully extend the knee. What should happen before exposure?",
+    options: [
+      "Adapt positioning safely using supportive sponges, support the patient, and document the limitation",
       "Force the standard position",
       "Increase mAs to compensate for pain",
       "Skip identification"
     ],
-    "correct": 0,
-    "explain": "Patient-centered adaptation and documentation preserve safety and reduce motion/repeats."
+    correct: 0,
+    explain: "Patient-centered adaptation and documentation preserve safety, alleviate distress, and eliminate patient motion repeats."
   },
-  "minimumRuns": 3
+  minimumRuns: 3
 };
 
 const QUIZ_IDS = ["q13-1", "q13-2", "q13-3", "q13-4"];
 const CONCEPT = LAB.stations[1];
 let currentResult = null;
 
+// ==========================================
+// TWO-TAB SWITCHER & HASH ROUTING
+// ==========================================
+function switchTab(tabId) {
+  const introBtn = document.getElementById('tab-btn-intro') || document.getElementById('tab-intro');
+  const expBtn = document.getElementById('tab-btn-experiment') || document.getElementById('tab-experiment');
+  const introPane = document.getElementById('tab-pane-intro');
+  const expPane = document.getElementById('tab-pane-experiment');
+
+  if (tabId === 'tab-pane-experiment' || tabId === 'experiment') {
+    if (introBtn) { introBtn.classList.remove('active'); introBtn.setAttribute('aria-selected', 'false'); }
+    if (expBtn) { expBtn.classList.add('active'); expBtn.setAttribute('aria-selected', 'true'); }
+
+    if (introPane) introPane.classList.remove('active');
+    if (expPane) expPane.classList.add('active');
+
+    window.location.hash = '#tab-experiment';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof renderSimulation === 'function') setTimeout(renderSimulation, 50);
+  } else {
+    if (expBtn) { expBtn.classList.remove('active'); expBtn.setAttribute('aria-selected', 'false'); }
+    if (introBtn) { introBtn.classList.add('active'); introBtn.setAttribute('aria-selected', 'true'); }
+
+    if (expPane) expPane.classList.remove('active');
+    if (introPane) introPane.classList.add('active');
+
+    window.location.hash = '#tab-intro';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// Stage sub-tabs within Tab 2 simulation console
+function switchStageTab(stageKey) {
+  document.querySelectorAll('.stage-tab-btn').forEach(function (btn) {
+    const isActive = btn.dataset.stage === stageKey;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+  document.querySelectorAll('.stage-tab-pane').forEach(function (pane) {
+    pane.classList.toggle('active', pane.id === 'tab-pane-' + stageKey);
+  });
+}
+
+// ==========================================
+// FALLBACK MATH RENDERING ENGINE
+// ==========================================
+function renderAllMath() {
+  if (typeof renderMathInElement === 'function') {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (e) {
+      console.warn('KaTeX auto-render failed, using fallback:', e);
+    }
+  }
+  var targets = document.querySelectorAll('.math-tex, .math-display');
+  targets.forEach(function (el) {
+    if (!el.innerHTML || el.innerHTML.indexOf('$') === -1) return;
+    el.innerHTML = el.innerHTML
+      .replace(/\$\$([^$]+)\$\$/g, '<span style="display:block;text-align:center;">$1</span>')
+      .replace(/\$([^$]+)\$/g, '<span>$1</span>');
+  });
+}
+
+// ==========================================
+// SIMULATION CONTROLS & LOGIC
+// ==========================================
 function controlValues() {
   const values = {};
   LAB.controls.forEach(function (control) {
@@ -397,16 +1841,31 @@ function settingSummary(values) {
   ].join(' | ');
 }
 
+function updateStagePillScores(result) {
+  if (!result || !result.metrics) return;
+  const mI = result.metrics.find(m => m.label.includes('Stage I'));
+  const mM = result.metrics.find(m => m.label.includes('Stage M'));
+  const mA = result.metrics.find(m => m.label.includes('Stage A'));
+  const mG = result.metrics.find(m => m.label.includes('Stage G'));
+
+  const sI = mI ? parseInt(mI.value, 10) : 100;
+  const sM = mM ? parseInt(mM.value, 10) : 100;
+  const sA = mA ? parseInt(mA.value, 10) : 100;
+  const sG = mG ? parseInt(mG.value, 10) : 100;
+
+  const bI = document.getElementById('tab-score-i');
+  if (bI) { bI.textContent = sI + '%'; bI.style.color = sI >= 80 ? '#4ade80' : '#f87171'; }
+  const bM = document.getElementById('tab-score-m');
+  if (bM) { bM.textContent = sM + '%'; bM.style.color = sM >= 80 ? '#4ade80' : '#f87171'; }
+  const bA = document.getElementById('tab-score-a');
+  if (bA) { bA.textContent = sA + '%'; bA.style.color = sA >= 80 ? '#4ade80' : '#f87171'; }
+  const bG = document.getElementById('tab-score-g');
+  if (bG) { bG.textContent = sG + '%'; bG.style.color = sG >= 80 ? '#4ade80' : '#f87171'; }
+}
+
 function renderMetrics(result) {
   const container = document.getElementById('sim-metrics');
   RadLab.renderMetrics(container, result);
-}
-  const badgeM = document.getElementById('tab-score-m');
-  if (badgeM) { badgeM.textContent = scoreM + '%'; badgeM.style.color = scoreM >= 80 ? '#4ade80' : '#f87171'; }
-  const badgeA = document.getElementById('tab-score-a');
-  if (badgeA) { badgeA.textContent = scoreA + '%'; badgeA.style.color = Number(scoreA) >= 80 ? '#4ade80' : '#f87171'; }
-  const badgeG = document.getElementById('tab-score-g');
-  if (badgeG) { badgeG.textContent = scoreG + '%'; badgeG.style.color = Number(scoreG) >= 80 ? '#4ade80' : '#f87171'; }
 }
 
 function renderSimulation() {
@@ -418,6 +1877,7 @@ function renderSimulation() {
   currentResult = RadModels.compute(LAB.type, values);
   RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
   renderMetrics(currentResult);
+  updateStagePillScores(currentResult);
   document.getElementById('sim-caption').textContent = currentResult.observation;
 }
 
@@ -434,13 +1894,15 @@ function renderRunLog() {
     const cell = row.insertCell();
     cell.colSpan = 4;
     cell.className = 'muted';
-    cell.textContent = 'No runs recorded yet.';
+    cell.textContent = 'No runs recorded yet. Select presets or navigate stages and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value; }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 5).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
@@ -448,10 +1910,11 @@ function renderRunLog() {
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
   if (prediction.length < 20) {
-    RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error');
-    document.getElementById('w-prediction').focus();
+    RadLab.toast('Please formulate a scientific prediction of at least 20 characters before recording.', 'error');
+    if (predEl) predEl.focus();
     return;
   }
   const values = controlValues();
@@ -461,181 +1924,286 @@ function recordRun() {
     RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error');
     return;
   }
-  const run = {
+  activity.runs.push({
     signature: signature,
     settings: settingSummary(values),
-    values: values,
     metrics: currentResult.metrics,
-    observation: currentResult.observation,
-    modelScore: Number(currentResult.score.toFixed(1))
-  };
-  activity.runs.push(run);
+    score: currentResult.score,
+    observation: currentResult.observation
+  });
   activity.done = activity.runs.length >= LAB.minimumRuns;
-  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
-  activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest readiness ' + run.modelScore + '/100.';
+  activity.score = Math.min(LAB.minimumRuns, activity.runs.length);
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
   RadLab.save();
   renderRunLog();
-  RadLab.progress.update();
-  RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  RadLab.toast('Run #' + activity.runs.length + ' recorded successfully!', 'success');
 }
 
-function removeLastRun() {
+function removeRun() {
   const activity = experimentActivity();
   if (!activity.runs.length) {
-    RadLab.toast('There is no recorded run to remove.');
+    RadLab.toast('No runs to remove.', 'error');
     return;
   }
   activity.runs.pop();
   activity.done = activity.runs.length >= LAB.minimumRuns;
-  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
-  activity.detail = activity.runs.length + ' unique runs recorded.';
+  activity.score = Math.min(LAB.minimumRuns, activity.runs.length);
   RadLab.state.activities['experiment-log'] = activity;
   RadLab.save();
   renderRunLog();
-  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
 }
 
-function switchStageTab(stageId) {
-  document.querySelectorAll('.stage-tab-btn').forEach(btn => {
-    const isActive = btn.dataset.stage === stageId;
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  });
-  document.querySelectorAll('.stage-tab-pane').forEach(pane => {
-    pane.classList.toggle('active', pane.id === 'tab-pane-' + stageId);
-  });
-}
-
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'IMAGE Action', rightTitle: 'Stage Match' });
-}
-
-function checkScenario() {
-  const selected = document.querySelector('input[name="scenario-choice"]:checked');
-  const feedback = document.getElementById('scenario-feedback');
-  if (!selected) {
-    feedback.className = 'feedback-box incorrect';
-    feedback.textContent = 'Select a response before checking.';
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) {
+    RadLab.toast('No experimental runs recorded to export.', 'error');
     return;
   }
-  const choice = Number(selected.value);
-  const correct = choice === LAB.scenario.correct;
-  const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
-  feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save();
-  RadLab.progress.update();
+  let csv = 'Run,IMAGE Stage Settings,Stage I (%),Stage M (%),Stage A (%),Stage G (%),Composite Score,Penumbra Ug (mm),Scatter S/P,Deviation Index (DI),Observation\n';
+  activity.runs.forEach(function (run, idx) {
+    const sI = (run.metrics.find(m => m.label.includes('Stage I')) || {}).value || '';
+    const sM = (run.metrics.find(m => m.label.includes('Stage M')) || {}).value || '';
+    const sA = (run.metrics.find(m => m.label.includes('Stage A')) || {}).value || '';
+    const sG = (run.metrics.find(m => m.label.includes('Stage G')) || {}).value || '';
+    const comp = run.score != null ? run.score + '%' : '';
+    const ug = (run.metrics.find(m => m.label.includes('Penumbra')) || {}).value || '';
+    const sp = (run.metrics.find(m => m.label.includes('Scatter')) || {}).value || '';
+    const di = (run.metrics.find(m => m.label.includes('Deviation')) || {}).value || '';
+    const safeSettings = '"' + run.settings.replace(/"/g, '""') + '"';
+    const safeObs = '"' + run.observation.replace(/"/g, '""') + '"';
+    csv += `${idx + 1},${safeSettings},"${sI}","${sM}","${sA}","${sG}","${comp}","${ug}","${sp}","${di}",${safeObs}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab13_Runs_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Experimental runs exported as CSV!', 'success');
 }
 
+// ==========================================
+// STATION 1: TABLE A VERIFICATION
+// ==========================================
+function verifyTableA() {
+  const itemsI = (document.getElementById('w-stage-i-items').value || '').toLowerCase();
+  const factorsM = (document.getElementById('w-stage-m-factors').value || '').toLowerCase();
+  const alignA = (document.getElementById('w-stage-a-alignment').value || '').toLowerCase();
+  const centerG = (document.getElementById('w-stage-g-cr-centering').value || '').toLowerCase();
+  const markerRule = (document.getElementById('w-marker-rule').value || '').toLowerCase();
+  const collBenefit = (document.getElementById('w-collimation-benefit').value || '').toLowerCase();
+  const formUg = (document.getElementById('w-ug-formula').value || '').toLowerCase().replace(/\s+/g, '');
+  const gating = (document.getElementById('w-critical-gating').value || '').toLowerCase();
+
+  let correctCount = 0;
+  if (itemsI.includes('2') || itemsI.includes('name') || itemsI.includes('dob')) correctCount++;
+  if (factorsM.includes('kvp') && factorsM.includes('mas')) correctCount++;
+  if (alignA.includes('epicondyle') || alignA.includes('parallel')) correctCount++;
+  if (centerG.includes('patell') || centerG.includes('1.25') || centerG.includes('joint')) correctCount++;
+  if (markerRule.includes('lateral') || markerRule.includes('beam') || markerRule.includes('outside')) correctCount++;
+  if (collBenefit.includes('scatter') || collBenefit.includes('dose') || collBenefit.includes('contrast')) correctCount++;
+  if (formUg.includes('fss*(oid/sod)') || formUg.includes('fss*oid/sod') || formUg.includes('oid/sod')) correctCount++;
+  if (gating.includes('repeat') || gating.includes('defect') || gating.includes('55') || gating.includes('45')) correctCount++;
+
+  const feedback = document.getElementById('table-a-feedback');
+  if (correctCount >= 6) {
+    feedback.textContent = `✓ ${correctCount}/8 correct! Excellent mastery of Table A principles.`;
+    feedback.style.color = '#12633f';
+    RadLab.toast('Table A verified successfully!', 'success');
+  } else {
+    feedback.textContent = `⚠️ ${correctCount}/8 correct. Review Table A landmarks and formulas.`;
+    feedback.style.color = '#9d342d';
+    RadLab.toast('Check Table A responses.', 'warning');
+  }
+}
+
+// ==========================================
+// STATION 3: INTERACTIVE BLUR CALCULATOR
+// ==========================================
+function updateBlurCalc() {
+  const sid = Number(document.getElementById('calc-sid').value) || 100;
+  const focal = Number(document.getElementById('calc-focal').value) || 0;
+  const col = Number(document.getElementById('calc-collimation').value) || 1;
+  const motion = Number(document.getElementById('calc-motion').value) || 0;
+
+  document.getElementById('out-calc-sid').textContent = sid + ' cm';
+  document.getElementById('out-calc-focal').textContent = focal === 0 ? 'Small (0.6 mm)' : 'Large (1.2 mm)';
+  document.getElementById('out-calc-collimation').textContent = ['10×12 cm', '18×24 cm (Tight)', '24×30 cm', '35×43 cm (Wide)'][col];
+  document.getElementById('out-calc-motion').textContent = motion === 0 ? 'Sandbag Supported (0 mm)' : 'Tremor / Motion Blur (1.4 mm)';
+
+  const oid = 6; // cm
+  const sod = Math.max(10, sid - oid);
+  const fss = focal === 0 ? 0.6 : 1.2;
+  const ug = fss * (oid / sod);
+  const um = motion === 1 ? 1.4 : 0.0;
+  const ut = Math.sqrt(ug * ug + um * um);
+
+  const fieldAreas = [120, 432, 720, 1505];
+  const area = fieldAreas[col] || 432;
+  const sp = 0.35 * (area / 432);
+  const emf = Math.pow(sid / 100, 2);
+
+  document.getElementById('calc-ug').textContent = ug.toFixed(2) + ' mm';
+  document.getElementById('calc-ut').textContent = ut.toFixed(2) + ' mm';
+  document.getElementById('calc-sp').textContent = sp.toFixed(2);
+  document.getElementById('calc-emf').textContent = `${emf.toFixed(2)}× (${(8.0 * emf).toFixed(1)} mAs)`;
+
+  const badge = document.getElementById('calc-quality-badge');
+  if (ut > 1.0) {
+    badge.textContent = '❌ Non-Diagnostic Motion Blur (Ut > 1.0 mm)';
+    badge.style.background = '#fff0ee';
+    badge.style.color = '#9d342d';
+    badge.style.borderColor = '#fecaca';
+  } else if (ug > 0.06) {
+    badge.textContent = '⚠️ Marginal Trabecular Penumbra (Large FSS)';
+    badge.style.background = '#fef3c7';
+    badge.style.color = '#92400e';
+    badge.style.borderColor = '#fde68a';
+  } else {
+    badge.textContent = '✓ Crisp Trabecular Detail (Penumbra < 0.06 mm)';
+    badge.style.background = '#eaf8f0';
+    badge.style.color = '#12633f';
+    badge.style.borderColor = '#a7f3d0';
+  }
+}
+
+// ==========================================
+// STATION 4: CLINICAL SCENARIO CHECK
+// ==========================================
+function checkScenario() {
+  const chosen = document.querySelector('input[name="scenario-choice"]:checked');
+  const fb = document.getElementById('scenario-feedback');
+  if (!chosen) {
+    fb.className = 'feedback-box incorrect';
+    fb.textContent = 'Please select an option before checking.';
+    return;
+  }
+  const isCorrect = Number(chosen.value) === LAB.scenario.correct;
+  fb.className = 'feedback-box ' + (isCorrect ? 'correct' : 'incorrect');
+  fb.textContent = (isCorrect ? '✓ Correct: ' : '✗ Incorrect: ') + LAB.scenario.explain;
+  RadLab.state.activities['scenario-check'] = {
+    done: true,
+    score: isCorrect ? 1 : 0,
+    maxScore: 1,
+    choice: Number(chosen.value)
+  };
+  RadLab.save();
+  RadLab.toast(isCorrect ? 'Clinical decision verified!' : 'Review clinical reasoning.', isCorrect ? 'success' : 'error');
+}
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
 document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({
-    labId: 'lab-13',
-    labTitle: "Lab 13 — The IMAGE Process, Part 1 — Recording Stages",
-    weekNumber: 13,
-    rubric: {
-      title: "Lab 13 Grading Rubric (20 points)",
-      criteria: [
-        {"id":"c1","name":"IMAGE recording concepts","points":4},
-        {"id":"c2","name":"Virtual patient workflow","points":5},
-        {"id":"c3","name":"Worksheet and process evidence","points":5},
-        {"id":"c4","name":"Patient-centered reasoning","points":3},
-        {"id":"c5","name":"Completeness and professionalism","points":3}
-      ]
-    },
-    sections: [
-      {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-      {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-      {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-      {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-      {id:'sec-worksheet',label:'5 · Worksheet'}
-    ]
-  });
+  RadLab.init(LAB);
 
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {
-    id:'lab13-rubric',
-    title:"Lab 13 Grading Rubric (20 points)",
-    criteria:[
-      {"id":"c1","name":"IMAGE recording concepts","points":4,"levels":[{"desc":"Correctly explains I/M/A/G and their clinical sequence."},{"desc":"Mostly correct with minor gaps."},{"desc":"Stages are confused or missing."}]},
-      {"id":"c2","name":"Virtual patient workflow","points":5,"levels":[{"desc":"Completes all recording decisions with evidence-based choices."},{"desc":"Completes the workflow with limited reasoning."},{"desc":"Little evidence of decision-making."}]},
-      {"id":"c3","name":"Worksheet and process evidence","points":5,"levels":[{"desc":"Responses link decisions to repeat prevention and quality."},{"desc":"Mostly correct but shallow."},{"desc":"Incomplete or unsupported."}]},
-      {"id":"c4","name":"Patient-centered reasoning","points":3,"levels":[{"desc":"Balances safety, comfort, positioning, and diagnostic value."},{"desc":"Plausible but brief."},{"desc":"No defensible reasoning."}]},
-      {"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}
-    ]
-  });
+  // Tab switcher click handlers
+  const btnIntro = document.getElementById('tab-btn-intro') || document.getElementById('tab-intro');
+  const btnExp = document.getElementById('tab-btn-experiment') || document.getElementById('tab-experiment');
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  const btnBack = document.getElementById('btn-back-to-intro');
 
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+  if (btnIntro) btnIntro.addEventListener('click', function () { switchTab('tab-pane-intro'); });
+  if (btnExp) btnExp.addEventListener('click', function () { switchTab('tab-pane-experiment'); });
+  if (btnProceed) btnProceed.addEventListener('click', function () { switchTab('tab-pane-experiment'); });
+  if (btnBack) btnBack.addEventListener('click', function () { switchTab('tab-pane-intro'); });
+
+  // Handle URL hash on initial load
+  if (window.location.hash === '#tab-experiment' || window.location.hash === '#sec-experiment') {
+    switchTab('tab-pane-experiment');
   }
 
-  LAB.controls.forEach(function (control) {
-    const el = document.getElementById('ctrl-' + control.id);
-    if (el) el.addEventListener('input', renderSimulation);
-  });
-
-  // Stage Tab Navigation
-  document.querySelectorAll('.stage-tab-btn').forEach(btn => {
+  // Stage sub-tabs within Tab 2 simulation console
+  document.querySelectorAll('.stage-tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       switchStageTab(btn.dataset.stage);
     });
   });
-
-  document.querySelectorAll('.next-stage-btn').forEach(btn => {
+  document.querySelectorAll('.next-stage-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       switchStageTab(btn.dataset.next);
     });
   });
-
-  document.querySelectorAll('.prev-stage-btn').forEach(btn => {
+  document.querySelectorAll('.prev-stage-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       switchStageTab(btn.dataset.prev);
     });
   });
 
-  document.getElementById('record-run').addEventListener('click', recordRun);
+  // Quick record button in Stage G pane
   const btnQuick = document.getElementById('btn-quick-record');
   if (btnQuick) btnQuick.addEventListener('click', recordRun);
-  document.getElementById('remove-run').addEventListener('click', removeLastRun);
-  document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
+  // Station 1 Table A check
+  const btnTableA = document.getElementById('btn-check-table-a');
+  if (btnTableA) btnTableA.addEventListener('click', verifyTableA);
+
+  // Station 2 Matching Pairs
+  const conceptWrap = document.getElementById('concept-activity');
+  if (conceptWrap) {
+    RadLab.matchPairs(conceptWrap, CONCEPT, function (score, max) {
+      RadLab.state.activities['concept-matching'] = { done: score === max, score: score, maxScore: max };
+      RadLab.save();
+    });
+  }
+
+  // Station 3 Blur Calculator listeners
+  ['calc-sid', 'calc-focal', 'calc-collimation', 'calc-motion'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateBlurCalc);
+  });
+  updateBlurCalc();
+
+  // Station 4 Scenario
+  const btnScenario = document.getElementById('check-scenario');
+  if (btnScenario) btnScenario.addEventListener('click', checkScenario);
+
+  // Station 5 Knowledge Check Quizzes
+  const quizWrap = document.getElementById('quiz-wrap');
+  if (quizWrap) RadLab.buildQuiz(quizWrap, LAB.quiz, QUIZ_IDS);
+
+  // Tab 2 Simulation controls
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // Clinical presets buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const d = btn.dataset;
-      if (d.sid !== undefined) document.getElementById('ctrl-sid').value = d.sid;
-      if (d.grid !== undefined) document.getElementById('ctrl-grid').value = d.grid;
-      if (d.idcheck !== undefined) document.getElementById('ctrl-idCheck').value = d.idcheck;
-      if (d.kvp !== undefined) document.getElementById('ctrl-kvp').value = d.kvp;
-      if (d.mas !== undefined) document.getElementById('ctrl-mas').value = d.mas;
-      if (d.focal !== undefined) document.getElementById('ctrl-focal').value = d.focal;
-      if (d.rotation !== undefined) document.getElementById('ctrl-rotation').value = d.rotation;
-      if (d.artifact !== undefined) document.getElementById('ctrl-artifact').value = d.artifact;
-      if (d.motion !== undefined) document.getElementById('ctrl-motion').value = d.motion;
-      if (d.centering !== undefined) document.getElementById('ctrl-centering').value = d.centering;
-      if (d.collimation !== undefined) document.getElementById('ctrl-collimation').value = d.collimation;
-      if (d.marker !== undefined) document.getElementById('ctrl-marker').value = d.marker;
+      LAB.controls.forEach(function (control) {
+        if (btn.dataset[control.id.toLowerCase()] !== undefined) {
+          const el = document.getElementById('ctrl-' + control.id);
+          if (el) el.value = btn.dataset[control.id.toLowerCase()];
+        }
+      });
       renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+      RadLab.toast(`Loaded Preset: ${btn.textContent.trim()}`, 'info');
     });
   });
 
-  const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) {
-    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
-    if (radio) radio.checked = true;
-  }
+  // Run Logging buttons
+  const btnRec = document.getElementById('record-run');
+  if (btnRec) btnRec.addEventListener('click', recordRun);
+  const btnRem = document.getElementById('remove-run');
+  if (btnRem) btnRem.addEventListener('click', removeRun);
+  const btnCsv = document.getElementById('btn-download-runs-csv');
+  if (btnCsv) btnCsv.addEventListener('click', downloadRunsCSV);
 
+  // Math scratchpad in worksheet
+  const mathHelperWrap = document.getElementById('math-helper-container');
+  if (mathHelperWrap) RadLab.buildMathHelper(mathHelperWrap);
+
+  // Initial simulation render and run log
   renderSimulation();
   renderRunLog();
-  RadLab.progress.update();
+
+  // Fallback math render
+  setTimeout(renderAllMath, 150);
 });
 </script>
 </body>

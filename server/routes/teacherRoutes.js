@@ -215,7 +215,8 @@ router.get('/submissions', (req, res) => {
 
     let query = `
       SELECT s.id, s.user_id, s.lab_id, s.week_number, s.status, s.progress_percent, s.total_score,
-             s.quiz_score, s.quiz_total, s.ai_score, s.submitted_at, s.ai_graded_at, s.teacher_graded_at,
+             s.quiz_score, s.quiz_total, s.ai_score, s.in_lab_submitted_at, s.excel_submitted_at, s.excel_file_id,
+             s.submitted_at, s.ai_graded_at, s.teacher_graded_at,
              u.name as student_name, u.student_id, u.gender, u.email, sec.name as section_name, sec.id as section_id,
              (SELECT COUNT(*) FROM submission_attachments WHERE submission_id = s.id) as attachment_count
       FROM lab_submissions s

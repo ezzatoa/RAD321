@@ -3,132 +3,1476 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab 8: Scatter, Collimation &amp; Grids Lab — RAD 321</title>
+  <title>Lab 8: Scatter Control, Collimation &amp; Grids Lab — RAD 321</title>
   <link rel="stylesheet" href="../../shared/lab-styles.css">
+
+  <!-- KaTeX for Infallible Offline & Online Mathematical Typography -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
   <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}
-  .experiment-layout{display:flex;flex-direction:column;gap:18px}
-  .sim-canvas-wrap{position:relative;width:100%}
-  .sim-canvas{display:block;width:100%;height:auto;aspect-ratio:1000/420;background:#071a2b;border-radius:14px;border:1px solid #28546a;box-shadow:0 4px 18px rgba(0,0,0,.25)}
-  .preset-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--rad-bg-soft);padding:11px 15px;border-radius:10px;border:1px solid var(--rad-border)}
-  .preset-toolbar .preset-title{font-size:12px;font-weight:800;color:var(--rad-blue);text-transform:uppercase;letter-spacing:.6px;margin-right:2px}
-  .preset-btn{background:#fff;border:1px solid var(--rad-border);border-radius:8px;padding:6px 13px;font-size:12.5px;font-weight:700;color:var(--rad-navy);cursor:pointer;transition:all .15s ease}
-  .preset-btn:hover{border-color:var(--rad-teal);background:#eef9f8;color:var(--rad-teal);transform:translateY(-1px)}
-  .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-  .control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:12px}
-  .control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:800;color:var(--rad-blue)}
-  .control-card output{color:var(--rad-teal);white-space:nowrap;font-weight:800;font-size:13px}
-  .control-card input{width:100%;margin-top:8px}
-  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:2px}
-  .metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:13px}
-  .metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--rad-text-faint)}
-  .metric strong{display:block;color:var(--rad-teal);font-size:20px;line-height:1.2;margin:4px 0}
-  .metric small{display:block;color:var(--rad-text-soft);line-height:1.35;font-size:12px}
-  .procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.control-grid,.metric-grid{grid-template-columns:repeat(2,1fr)}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
+    /* Two-Tab Structural Styling */
+    .lab-tabs-header {
+      display: flex;
+      gap: 12px;
+      margin: 18px 0 24px 0;
+      border-bottom: 2px solid var(--rad-border);
+      padding-bottom: 0;
+    }
+    .lab-tab-btn {
+      background: #e2e8f0;
+      border: 1px solid var(--rad-border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 13px 26px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      position: relative;
+      bottom: -2px;
+    }
+    .lab-tab-btn:hover {
+      background: #f1f5f9;
+      color: var(--rad-teal);
+    }
+    .lab-tab-btn.active {
+      background: #ffffff;
+      border-color: var(--rad-teal);
+      border-top: 3px solid var(--rad-teal);
+      color: var(--rad-navy);
+      box-shadow: 0 -3px 12px rgba(0,0,0,0.06);
+    }
+    .lab-tab-pane {
+      display: none;
+      animation: tabFadeIn 0.25s ease-in-out;
+    }
+    .lab-tab-pane.active {
+      display: block;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero & Layout Elements */
+    .hero-banner {
+      position: relative;
+      border-radius: var(--rad-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--rad-shadow-lg);
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7,26,43,0.96), rgba(7,26,43,0.72) 65%, rgba(7,26,43,0.2));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 42px;
+      color: #fff;
+      max-width: 780px;
+    }
+    .hero-overlay .eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7fe0d6;
+      font-weight: 800;
+    }
+    .hero-overlay h1 {
+      font-size: 30px;
+      margin: 6px 0;
+      line-height: 1.2;
+    }
+    .hero-overlay p {
+      font-size: 14.5px;
+      opacity: 0.94;
+      margin: 0;
+    }
+
+    .lab-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    /* Infallible Formula & Theory Containers */
+    .formula-callout {
+      background: #f0fdfa;
+      border-left: 4px solid var(--rad-teal);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 14px 0;
+      color: #134e4a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .formula-callout strong {
+      color: #042f2e;
+    }
+    .math-display {
+      font-family: "KaTeX_Math", "Cambria Math", "Times New Roman", serif;
+      font-size: 1.08em;
+      padding: 4px 0;
+      overflow-x: auto;
+    }
+
+    /* Interactive Station 1 Explorer Grid */
+    .scatter-station-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+    .scatter-card {
+      background: #ffffff;
+      border: 1px solid var(--rad-border);
+      border-top: 4px solid var(--rad-teal);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .scatter-card h4 {
+      margin: 0 0 8px 0;
+      color: var(--rad-navy);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scatter-card p {
+      font-size: 13px;
+      color: var(--rad-text-soft);
+      line-height: 1.5;
+      margin: 0 0 10px 0;
+    }
+    .scatter-card .scatter-stat {
+      background: var(--rad-bg-soft);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+    }
+
+    /* Station 3: Grid Ratio Tool */
+    .grid-analyzer {
+      background: #ffffff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 18px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .grid-strip-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 0 6px 0;
+      scrollbar-width: thin;
+    }
+    .grid-cell {
+      flex: 1;
+      min-width: 95px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+    .grid-cell:hover, .grid-cell.active {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      box-shadow: 0 2px 8px rgba(20,184,166,0.2);
+    }
+    .grid-status-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .grid-status-low {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .grid-status-std {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .grid-status-high {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Simulation Layout */
+    .experiment-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+      gap: 20px;
+    }
+    .sim-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3/1.25;
+      background: #071a2b;
+      border-radius: 12px;
+      border: 1px solid #28546a;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .control-card {
+      background: var(--rad-bg-soft);
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .control-card label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rad-blue);
+    }
+    .control-card output {
+      color: var(--rad-teal);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .control-card input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+    .metric .metric-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: var(--rad-text-faint);
+    }
+    .metric strong {
+      display: block;
+      color: var(--rad-teal);
+      font-size: 18px;
+      line-height: 1.2;
+      margin: 3px 0;
+    }
+    .metric small {
+      display: block;
+      color: var(--rad-text-soft);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .preset-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .preset-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rad-navy);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .preset-btn:hover {
+      background: #e2e8f0;
+      border-color: var(--rad-teal);
+      color: var(--rad-teal);
+    }
+
+    .procedure-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      counter-reset: procedure;
+    }
+    .procedure-step {
+      background: #fff;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .procedure-step:before {
+      counter-increment: procedure;
+      content: counter(procedure);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--rad-teal);
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .run-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .run-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rad-blue);
+      margin-left: auto;
+    }
+    .run-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--rad-border);
+      border-radius: 10px;
+    }
+    .run-table {
+      margin: 0;
+      min-width: 760px;
+    }
+
+    /* Clinical Scenarios & Matching */
+    .scenario-options {
+      display: grid;
+      gap: 9px;
+      margin: 14px 0;
+    }
+    .scenario-option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--rad-border);
+      border-radius: 9px;
+      padding: 12px;
+      cursor: pointer;
+      background: #fff;
+      transition: all 0.15s ease;
+    }
+    .scenario-option:hover {
+      background: var(--rad-bg-soft);
+    }
+    .scenario-option:has(input:checked) {
+      border-color: var(--rad-teal);
+      background: #eef9f8;
+      box-shadow: 0 0 0 1px var(--rad-teal);
+    }
+    .feedback-box {
+      min-height: 44px;
+      border-radius: 9px;
+      padding: 12px 16px;
+      background: var(--rad-bg-soft);
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .feedback-box.correct {
+      background: #eaf8f0;
+      color: #12633f;
+      border: 1px solid #bbf7d0;
+    }
+    .feedback-box.incorrect {
+      background: #fff0ee;
+      color: #9d342d;
+      border: 1px solid #fecaca;
+    }
+
+    /* Transition CTA Card */
+    .cta-card {
+      background: linear-gradient(135deg, #071a2b 0%, #0d3654 100%);
+      color: #ffffff;
+      border-radius: var(--rad-radius);
+      padding: 28px 32px;
+      margin: 32px 0 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      box-shadow: var(--rad-shadow-lg);
+      border: 1px solid #28546a;
+    }
+    .cta-card h3 {
+      margin: 0 0 8px 0;
+      color: #7fe0d6;
+      font-size: 20px;
+    }
+    .cta-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #dceaf2;
+    }
+    .cta-card .btn {
+      white-space: nowrap;
+      padding: 12px 24px;
+      font-size: 14px;
+    }
+
+    /* Post-Lab Excel Guide Box */
+    .excel-guide-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 5px solid #16a34a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+    .excel-guide-box h4 {
+      margin: 0 0 8px 0;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+    }
+
+    /* Table Fill-in Forms */
+    .checklist-fill-table input[type="text"] {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 12.5px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .checklist-fill-table input[type="text"]:focus {
+      background: #ffffff;
+      border-color: var(--rad-teal);
+      outline: none;
+    }
+
+    @media (max-width: 980px) {
+      .experiment-layout { grid-template-columns: 1fr; }
+      .procedure-grid { grid-template-columns: repeat(2, 1fr); }
+      .lab-meta-grid { grid-template-columns: 1fr 1fr; }
+      .cta-card { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .hero-overlay { padding: 0 20px; }
+      .hero-overlay h1 { font-size: 24px; }
+      .control-grid, .metric-grid, .procedure-grid, .lab-meta-grid { grid-template-columns: 1fr; }
+      .lab-tabs-header { flex-direction: column; gap: 6px; }
+      .lab-tab-btn { border-radius: 8px; border-bottom: 1px solid var(--rad-border); }
+    }
   </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 8 — Scatter, Collimation &amp; Grids Lab</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 8 of 15</span></div></div>
-</header>
-<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
-<main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 8 · Assessed laboratory assignment</div><h1>Scatter, Collimation &amp; Grids Lab</h1><p>See how field size, collimation, and grid ratio change scatter and contrast. Directly aligned with: Scatter Radiation &amp; Control.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
-
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Explain how Compton scatter is produced and why it reduces image contrast.</li><li><span class="num">2</span>Predict how field size and patient thickness affect scatter fraction.</li><li><span class="num">3</span>Compare collimation and grid use as scatter-control strategies.</li><li><span class="num">4</span>Calculate grid ratio and a simplified Bucky factor.</li><li><span class="num">5</span>Balance contrast improvement against dose and positioning complexity.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>Scatter radiation is produced mainly by Compton interactions and travels in directions that do not represent the original beam path. It adds unwanted exposure to the receptor and reduces radiographic contrast. Larger fields and thicker parts generally create more scatter.</p><div class="formula-box"><b>Grid ratio:</b> h/D, where h is lead-strip height and D is the interspace width. <b>Bucky factor:</b> incident exposure / transmitted primary exposure.</div><p>Collimation is often the first control: it limits the irradiated volume and reduces patient dose. A grid can improve contrast by absorbing scatter, but it requires careful centering, alignment, and exposure compensation.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
-
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Predict how field size affects scatter-to-primary ratio.</div><div class="procedure-step">Record a tightly collimated baseline.</div><div class="procedure-step">Increase only field size and record a second run.</div><div class="procedure-step">Keep the larger field and add a grid for a third run.</div><div class="procedure-step">Compare residual scatter, contrast improvement, and Bucky factor.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card">
-      <div class="experiment-layout">
-        <div class="preset-toolbar">
-          <span class="preset-title">Clinical Presets:</span>
-          <button type="button" class="preset-btn" data-field="10" data-thickness="14" data-grid="0" data-kvp="70">Tight Collimation (10 cm, No Grid)</button>
-          <button type="button" class="preset-btn" data-field="35" data-thickness="18" data-grid="0" data-kvp="80">Wide Field (35 cm, No Grid — High Scatter)</button>
-          <button type="button" class="preset-btn" data-field="35" data-thickness="28" data-grid="12" data-kvp="85">Thick Abdomen (28 cm, 12:1 Grid)</button>
-          <button type="button" class="preset-btn" data-field="40" data-thickness="22" data-grid="8" data-kvp="110">Chest (110 kVp, 8:1 Grid)</button>
-          <button type="button" class="preset-btn" data-field="12" data-thickness="6" data-grid="0" data-kvp="55">Extremity (6 cm, No Grid)</button>
-        </div>
-        <div class="sim-canvas-wrap">
-          <canvas id="sim-canvas" class="sim-canvas" width="1000" height="420" role="img" aria-label="Interactive visual model for Scatter, Collimation &amp; Grids Lab" aria-describedby="sim-caption"></canvas>
-          <p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results and simulated radiographic contrast update in real time.</p>
-        </div>
-        <div class="control-grid">
-          <div class="control-card">
-            <label for="ctrl-field"><span>Field size</span><output id="out-field" for="ctrl-field">20 cm</output></label>
-            <input type="range" id="ctrl-field" min="5" max="40" step="1" value="20" aria-describedby="sim-caption">
-          </div>
-          <div class="control-card">
-            <label for="ctrl-thickness"><span>Part thickness</span><output id="out-thickness" for="ctrl-thickness">18 cm</output></label>
-            <input type="range" id="ctrl-thickness" min="5" max="35" step="1" value="18" aria-describedby="sim-caption">
-          </div>
-          <div class="control-card">
-            <label for="ctrl-grid"><span>Grid ratio</span><output id="out-grid" for="ctrl-grid">8 :1</output></label>
-            <input type="range" id="ctrl-grid" min="0" max="16" step="1" value="8" aria-describedby="sim-caption">
-          </div>
-          <div class="control-card">
-            <label for="ctrl-kVp"><span>kVp</span><output id="out-kVp" for="ctrl-kVp">80 kVp</output></label>
-            <input type="range" id="ctrl-kVp" min="50" max="110" step="1" value="80" aria-describedby="sim-caption">
-          </div>
-        </div>
-        <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 8 — Scatter, Collimation &amp; Grids Lab</div>
       </div>
-      <div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div>
-      <div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div>
     </div>
-  </section>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill">Virtual Experiment · Offline Ready</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 8 of 15</span></div>
+  </div>
+</header>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Match the scatter control</h3><p>Match each control to its main benefit or trade-off.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Grid decision</h3><p>Before adding a grid for a thick abdomen, what should the radiographer do first?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Collimate to the required anatomy and verify positioning</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Open the field fully</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Increase OID without considering magnification</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Repeat with more mAs automatically</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Compare scatter fraction before and after tightening collimation. <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Calculate the grid ratio for h = 2.4 mm and D = 0.3 mm. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain why a grid can improve contrast but also increase patient exposure. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: propose a scatter-control sequence for a portable thick-part exam. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
+<nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
+
+<main class="lab-container" id="main-content">
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Radiography Room with Collimator Light Field and Anti-Scatter Grid Bucky">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 8 · Assessed Laboratory Assignment</div>
+      <h1>Scatter, Collimation &amp; Grids Lab</h1>
+      <p>Investigate Compton scatter generation, pre-patient beam collimation, anti-scatter grid cleanup ($r = h/D$), Contrast Improvement Factor ($K$), and Bucky factor patient dose trade-offs.</p>
+    </div>
+  </div>
+
+  <!-- Two-Phase Assignment Workflow Explanatory Card -->
+  <div class="card" style="border-left:4px solid var(--rad-teal);margin-bottom:20px;">
+    <div class="flex items-center gap-12" style="margin-bottom:10px;">
+      <i class="fa-solid fa-flask" style="color:var(--rad-teal); font-size:20px;"></i>
+      <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">About This Virtual Lab &amp; Two-Phase Assignment Workflow</h3>
+    </div>
+    <p>This lab is a fully <b>interactive digital simulation and assessed laboratory assignment</b> evaluated across two required phases by the departmental Gemini Flash AI model against the standardized 20-point rubric:</p>
+    <div class="why-sim-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-desktop" style="color:var(--rad-teal);margin-right:6px;"></i><b>Phase 1: In-Lab Interactive Activities (10 Pts):</b> Complete the background theory, 4 interactive stations (Scatter Modalities Explorer, Control Matcher, Grid Ratio &amp; Bucky Factor Tool, Bedside Abdominal Scenario), 4 knowledge check MCQs, and submit via the Phase 1 Submission Hub before leaving class.
+      </div>
+      <div class="why-sim-card" style="background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:12px;">
+        <i class="fa-solid fa-file-excel" style="color:var(--rad-blue);margin-right:6px;"></i><b>Phase 2: Post-Lab Excel Data Analysis (10 Pts):</b> Execute the 2D scatter radiation simulation, record trial runs across clinical presets, export run data via <em>"Download Run Data (CSV)"</em>, perform quantitative calculations and plotting in Excel, and submit your analysis workbook (.xlsx / .csv) for final evaluation.
+      </div>
+    </div>
+    <div style="margin-top:14px;background:#eef8f7;border:1px solid #c2e5e1;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:1.5;">
+      <strong style="color:var(--rad-navy);"><i class="fa-solid fa-list-check" style="color:var(--rad-teal)"></i> Two-Phase Submission Guidance:</strong>
+      <span style="display:block;margin-top:4px;">In <b>Tab 1</b>, complete the in-lab stations and submit <b>Phase 1 (In-Lab Activities)</b> to lock in your initial 10 points. Then navigate to <b>Tab 2</b> to conduct the physics experiments, record telemetry, construct your post-lab Excel curves, and submit <b>Phase 2 (Excel Data Analysis)</b> before the post-lab deadline.</span>
+    </div>
+  </div>
+
+  <!-- Student Metadata Card -->
+  <div class="card card-soft">
+    <h3>Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row"><label class="field-label" for="meta-studentName">Full Name</label><input type="text" id="meta-studentName" required placeholder="Ahmed Al-Harbi"></div>
+      <div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required placeholder="441012345"></div>
+      <div class="form-row"><label class="field-label" for="meta-section">Section / Group</label><input type="text" id="meta-section" required placeholder="Section A1"></div>
+      <div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div>
+    </div>
+    <p class="form-hint">Work is automatically saved in your browser localStorage. Use the bottom action bar to export a JSON backup before changing devices.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION HEADER ===================== -->
+  <div class="lab-tabs-header" role="tablist">
+    <button class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro">
+      <i class="fa-solid fa-book-open"></i> Tab 1: Lab Introduction &amp; In-Lab Activities [10 Pts]
+    </button>
+    <button class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment">
+      <i class="fa-solid fa-microscope"></i> Tab 2: Virtual Physics Experiment &amp; Analysis [10 Pts]
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- TAB 1: LAB INTRODUCTION & IN-LAB ACTIVITIES (10 POINTS)                   -->
+  <!-- ========================================================================= -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- Section 0: Learning Objectives -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div>
+          <h2>Learning Objectives</h2>
+          <div class="lab-section-sub">Compton physics, scatter reduction, and grid radiation protection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective">CLO Alignment: K1, K3, S1–S3, V2–V3</span>
+        <ul class="objectives-list">
+          <li><span class="num">1</span><b>Explain Compton Scattering Mechanics:</b> Understand how incoherent Compton photon-electron collisions produce omnidirectional scatter radiation that degrades subject contrast.</li>
+          <li><span class="num">2</span><b>Analyze Scatter Production Factors:</b> Quantify how x-ray field size (A), patient body thickness (x), and beam kVp determine the Scatter-to-Primary Ratio (SPR).</li>
+          <li><span class="num">3</span><b>Differentiate Pre- vs Post-Patient Controls:</b> Compare pre-patient beam collimation (source reduction &amp; patient dose savings) against post-patient anti-scatter grids (scatter cleanup &amp; dose penalty).</li>
+          <li><span class="num">4</span><b>Calculate Grid Parameters &amp; Dose Compensation:</b> Compute grid ratio (r = h/D), Contrast Improvement Factor (K), and Bucky factor (BF) exposure compensation.</li>
+          <li><span class="num">5</span><b>Apply ALARA Principles to Grid Selection:</b> Optimize diagnostic image quality while preventing unnecessary patient radiation exposure and grid cutoff errors.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+      <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+      0–8 min demo scatter fog + collimation idea · 8–22 min Stations 1–3 in pairs (Modalities, Matcher, Grid tool) · 22–30 min abdomen scenario + Phase 1 submit.
+      Tell students: Tab 2 (≈60 min) is 3 runs + 2 Excel plots (Field vs SPR, Grid ratio vs K/BF). If short on time, cut Station 2 matching to 4 pairs, not the scenario.
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+      <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+      1) Collimate first — less volume = less scatter + less dose. 2) Grids clean scatter but cost dose (Bucky factor ≈2–6×; 8:1 ≈4×, 12:1 ≈5×).
+      3) High-ratio grids need strict leveling/centering — off-level / off-center = cutoff repeat.
+    </div>
+
+    <!-- Section 1: Background Theory Primer -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div>
+          <h2>Background Theory &amp; Mathematical Principles</h2>
+          <div class="lab-section-sub">Compton scattering kinematics, collimation volume physics &amp; grid optics</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-theory">Physics Primer</span>
+
+        <h3>1. Compton Scattering &amp; Radiographic Fog</h3>
+        <p>
+          In diagnostic x-ray energy ranges ($50–125\text{ kVp}$), the predominant photon-matter interaction in soft tissue is <b>Compton scattering</b>. An incident x-ray photon collides with an outer-shell atomic electron, ejecting a recoil electron and deflecting the scattered photon with reduced energy $E'$ at a random angle $\theta$:
+        </p>
+        <div class="formula-callout">
+          <strong>Compton Photon Energy Relationship:</strong>
+          <div class="math-display">
+            $$E' = \frac{E}{1 + \left(\frac{E}{m_e c^2}\right)(1 - \cos\theta)}$$
+          </div>
+          <span class="small">Because scattered photons travel in random directions unrelated to the original focal spot trajectory, those reaching the image receptor deposit a uniform, non-informative layer of radiation known as <b>scatter fog</b>. Scatter fog degrades radiographic subject contrast, reduces Signal-to-Noise Ratio ($SNR$), and obscures subtle pathological microstructures.</span>
+        </div>
+
+        <h3>2. Determinants of Scatter Production</h3>
+        <p>
+          The quantity of scatter radiation produced during an examination is governed by three primary physical variables:
+        </p>
+        <ul style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;">
+          <li><b>1. Irradiated Tissue Volume ($V = A \times x$):</b> The total volume of tissue exposed to the primary beam is the product of field area ($A$, determined by collimation) and anatomical thickness ($x$). Larger volumes present more target atoms for Compton interactions.</li>
+          <li><b>2. Patient Part Thickness ($x$):</b> Parts greater than $10–12\text{ cm}$ produce substantial scatter, often resulting in more scattered photons reaching the detector than primary image-forming photons ($SPR > 1.0$).</li>
+          <li><b>3. Beam Tube Potential ($kVp$):</b> Increasing kVp shifts the relative proportion of interactions away from photoelectric absorption toward forward-directed Compton scattering.</li>
+        </ul>
+        <div class="formula-callout">
+          <strong>Scatter-to-Primary Ratio ($SPR$):</strong>
+          <div class="math-display">
+            $$SPR = \frac{I_{\text{scatter}}}{I_{\text{primary}}}$$
+          </div>
+          <span class="small">In an uncollimated thick abdomen radiograph, $SPR$ can exceed $5:1$ to $10:1$, meaning over $80–90\%$ of the photons exposing the detector are non-diagnostic scatter!</span>
+        </div>
+
+        <h3>3. Pre-Patient Scatter Control: Beam Collimation</h3>
+        <p>
+          <b>Collimation</b> is the primary method of scatter control because it acts <em>before</em> radiation strikes the patient:
+        </p>
+        <ul style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;">
+          <li><b>Reduces Scatter Production at the Source:</b> Restricting the lead shutter blades reduces the irradiated field area $A$, directly decreasing the volume of tissue irradiated.</li>
+          <li><b>Direct Patient Dose Reduction (ALARA):</b> Radiation dose is strictly confined to the required clinical region of interest, sparing adjacent radiosensitive organs.</li>
+          <li><b>Contrast Improvement:</b> By suppressing scatter fog production, subject contrast is substantially improved without requiring any increase in tube potential.</li>
+        </ul>
+
+        <h3>4. Post-Patient Scatter Cleanup: Anti-Scatter Grids</h3>
+        <p>
+          First conceptualized by Dr. Gustav Bucky (1913) and equipped with an oscillating mechanism by Dr. Hollis Potter (1920), the <b>anti-scatter grid</b> consists of alternating thin radiopaque lead strips and radiolucent interspace material (aluminum or carbon fiber):
+        </p>
+        <div class="formula-callout">
+          <strong>Anti-Scatter Grid Parameters:</strong>
+          <div class="math-display">
+            $$\text{Grid Ratio } (r) = \frac{h}{D} \qquad \text{Grid Frequency } (f) = \frac{1}{t + D} \; [\text{lines/cm}]$$
+          </div>
+          <span class="small">Where $h$ is lead strip height, $D$ is interspace width, and $t$ is lead strip thickness (grid frequency f in lines/cm). High grid ratios ($12:1, 16:1$) have narrow acceptance angles, trapping oblique scatter while allowing parallel primary rays to pass through.</span>
+        </div>
+
+        <h3>5. Contrast Improvement Factor &amp; Bucky Factor Dose Penalty</h3>
+        <p>
+          While grids clean up scatter, their lead strips also absorb a portion of the useful primary beam. This requires a proportional increase in patient exposure (mAs) to maintain receptor detector fluence:
+        </p>
+        <div class="formula-callout">
+          <strong>Bucky Factor ($BF$) &amp; Contrast Improvement Factor ($K$):</strong>
+          <div class="math-display">
+            $$BF = \frac{\text{mAs with grid}}{\text{mAs without grid}} \qquad K = \frac{\text{Contrast with grid}}{\text{Contrast without grid}} = \frac{1 + SPR_{\text{before}}}{1 + SPR_{\text{after}}}$$
+          </div>
+          <span class="small">Standard Bucky Factors at $70–90\text{ kVp}$: No Grid ($BF = 1$), $5:1$ ($BF \approx 2$), $6:1$ ($BF \approx 3$), $8:1$ ($BF \approx 4$), $12:1$ ($BF \approx 5$), $16:1$ ($BF \approx 6$). A $16:1$ grid dramatically enhances contrast ($K \approx 2.5\times$), but increases patient radiation dose by a factor of 6!</span>
+        </div>
+
+        <h3>6. Grid Cutoff Artifacts</h3>
+        <p>
+          <b>Grid cutoff</b> is the undesirable absorption of primary image-forming photons by the grid's lead strips due to improper alignment:
+        </p>
+        <ul style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;">
+          <li><b>Off-Level Grid:</b> Tube or grid is tilted across the lead strips $\implies$ uniform underexposure across the entire radiograph.</li>
+          <li><b>Off-Center Grid:</b> Central ray is displaced laterally from the focal axis $\implies$ uniform reduction in exposure across the detector (focused grids).</li>
+          <li><b>Off-Focus Grid:</b> SID is outside the specified focal range radius $\implies$ severe peripheral cutoff with normal exposure in the center.</li>
+          <li><b>Upside-Down Focused Grid:</b> Grid is placed facing backward $\implies$ extreme peripheral cutoff with only a narrow diagnostic strip in the center.</li>
+        </ul>
+
+        <p class="model-note"><b>Physical Model Boundary:</b> Mathematical calculations model primary transmission and Compton scatter cleanup under standard diagnostic geometry. Grid line visibility and Potter-Bucky reciprocating motion are educational approximations.</p>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Station 1 — Scatter Control Modalities Explorer -->
+    <section class="lab-section" id="sec-scatter-explorer">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div>
+          <h2>Interactive Station 1: Scatter Control Modalities Explorer</h2>
+          <div class="lab-section-sub">Inspect pre-patient collimation, anti-scatter grids, air gap, and cutoff artifacts</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-layer-group"></i> Station 1: Modalities</span>
+        <p>Click and examine the 4 primary clinical methods of managing scatter radiation. Use the data to complete Table A.</p>
+
+        <div class="scatter-station-grid">
+          <div class="scatter-card">
+            <div>
+              <h4><i class="fa-solid fa-maximize" style="color:var(--rad-teal)"></i> 1. Variable Beam Collimation</h4>
+              <p>Adjustable lead shutters mounted beneath the tube port. Collimating to the anatomical region of interest reduces the irradiated tissue volume ($V = A \cdot x$), eliminating scatter production at its source and directly reducing patient dose.</p>
+            </div>
+            <div class="scatter-stat">First Line of Defense | Reduces Dose &amp; Scatter Production</div>
+          </div>
+
+          <div class="scatter-card">
+            <div>
+              <h4><i class="fa-solid fa-table-cells" style="color:var(--rad-blue)"></i> 2. Anti-Scatter Grids ($r = h/D$)</h4>
+              <p>Placed between patient and detector for body parts $> 10–12\text{ cm}$ and $> 70\text{ kVp}$. Traps oblique scattered photons in lead strips while transmitting primary rays. Standard ratios: $8:1$ (mobile/table) and $12:1$ (upright chest/Bucky).</p>
+            </div>
+            <div class="scatter-stat">Cleans Up Scatter | Requires $BF = 3–5\times$ mAs Compensation</div>
+          </div>
+
+          <div class="scatter-card">
+            <div>
+              <h4><i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--rad-amber)"></i> 3. Air-Gap Technique</h4>
+              <p>Utilizes an intentional $10–15\text{ cm}$ OID air gap. Oblique scattered photons diverge widely and miss the image receptor naturally, providing scatter cleanup equivalent to a $6:1–8:1$ grid without lead strip absorption (requires extended SID to mitigate magnification).</p>
+            </div>
+            <div class="scatter-stat">Grid Alternative | Natural Scatter Divergence (Increases OID)</div>
+          </div>
+
+          <div class="scatter-card">
+            <div>
+              <h4><i class="fa-solid fa-triangle-exclamation" style="color:var(--rad-red)"></i> 4. Grid Cutoff Artifacts</h4>
+              <p>Occurs when lead strips inadvertently absorb primary rays due to off-level angulation, off-center positioning, improper focal distance, or an upside-down focused grid. Results in severe underexposure and non-diagnostic repeat examinations.</p>
+            </div>
+            <div class="scatter-stat">Technical Error | Upside-Down Grid: Severe Peripheral Cutoff</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top:24px;color:var(--rad-navy);"><i class="fa-solid fa-table-list"></i> Table A: Scatter Control Parameters Verification Check</h4>
+        <p class="small muted">Synthesize the physical principles and clinical trade-offs of scatter control:</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:14px;">
+          <thead>
+            <tr><th style="width:28%">Control Strategy</th><th>Mechanism of Action</th><th>Patient Radiation Dose Impact (ALARA)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Tight Collimation:</b></td>
+              <td><input type="text" id="w-collimation-mech" placeholder="e.g., Reduces irradiated tissue volume (V = A * x) and scatter at source"></td>
+              <td><input type="text" id="w-collimation-alara" placeholder="e.g., Directly reduces total patient dose (integral dose savings)"></td>
+            </tr>
+            <tr>
+              <td><b>Anti-Scatter Grid ($12:1$):</b></td>
+              <td><input type="text" id="w-grid-mech" placeholder="e.g., Lead strips absorb oblique scattered photons post-patient"></td>
+              <td><input type="text" id="w-grid-dose" placeholder="e.g., Increases patient dose by ~5x (Bucky Factor BF = 5)"></td>
+            </tr>
+            <tr>
+              <td><b>Air-Gap Technique ($OID=15\text{ cm}$):</b></td>
+              <td><input type="text" id="w-airgap-mech" placeholder="e.g., Scatter diverges widely across space and misses the receptor"></td>
+              <td><input type="text" id="w-airgap-dose" placeholder="e.g., No grid absorption; similar to non-grid dose but magnifies part"></td>
+            </tr>
+            <tr>
+              <td><b>Grid Ratio Formula:</b></td>
+              <td><input type="text" id="w-grid-ratio-def" placeholder="e.g., r = h / D (lead strip height divided by interspace width)"></td>
+              <td><input type="text" id="w-bucky-factor-def" placeholder="e.g., BF = mAs_with / mAs_without (required exposure compensation)"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Station 2 — Scatter Control Matching Challenge -->
+    <section class="lab-section" id="sec-scatter-match">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div>
+          <h2>Interactive Station 2: Scatter Control Matching Challenge</h2>
+          <div class="lab-section-sub">Pair scatter management techniques with their exact physical and clinical outcomes</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-link"></i> Station 2: Matching</span>
+        <p>Drag or click to match each scatter concept on the left with its correct physical mechanism or clinical rule on the right:</p>
+        <div id="scatter-match-container" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- Section 4: Interactive Station 3 — Grid Ratio & Bucky Factor Calculator -->
+    <section class="lab-section" id="sec-grid-calc-tool">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div>
+          <h2>Interactive Station 3: Grid Ratio &amp; Bucky Factor Tool</h2>
+          <div class="lab-section-sub">Inspect grid ratios ($5:1$ to $16:1$), scatter absorption %, and mAs compensation</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-calculator"></i> Station 3: Grid Parameters</span>
+        <p>
+          Select a standard anti-scatter grid ratio below to examine the physical lead strip dimensions, scatter cleanup efficiency, Contrast Improvement Factor ($K$), and Bucky factor patient dose penalty:
+        </p>
+
+        <div class="grid-analyzer">
+          <div class="grid-strip-container" id="grid-strip-container">
+            <!-- Dynamically populated via initGridCalcTool() -->
+          </div>
+
+          <div id="grid-detail-card" style="margin-top:16px;background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:8px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <h4 style="margin:0;color:var(--rad-navy);"><i class="fa-solid fa-shield-halved"></i> Selected Grid: <span id="grid-sel-title">8:1 General Diagnostic Grid</span></h4>
+              <span id="grid-sel-status" class="grid-status-badge grid-status-std">Standard Table / Bucky</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:13px;">
+              <div><b>Lead Strip Height ($h$):</b> <span id="grid-sel-h" style="color:var(--rad-teal);font-weight:700;">2.4 mm</span> (at $D=0.3\text{ mm}$)</div>
+              <div><b>Scatter Cleanup Efficiency:</b> <span id="grid-sel-cleanup" style="color:var(--rad-blue);font-weight:700;">~85% of scatter absorbed</span></div>
+              <div><b>Bucky Factor ($BF$):</b> <span id="grid-sel-bf" style="color:var(--rad-amber);font-weight:700;">4.0× (mAs multiplier)</span></div>
+              <div><b>Contrast Improvement ($K$):</b> <span id="grid-sel-k" style="color:var(--rad-navy);font-weight:700;">~2.0× contrast gain</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Station 4 — Clinical Abdominal Radiography Scenario -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div>
+          <h2>Interactive Station 4: Clinical Decision Scenario</h2>
+          <div class="lab-section-sub">Bariatric bedside abdomen — balancing scatter cleanup against portable alignment risks</div>
+        </div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Station 4: Clinical Scenario</span>
+        <h3>Clinical Case: Bariatric Bedside Abdominal Scatter Control</h3>
+        <p>
+          A radiographer is dispatched to the intensive care unit (ICU) to perform a portable supine AP abdomen examination on a bariatric patient ($28\text{ cm}$ abdominal thickness) to evaluate suspected bowel obstruction. The radiographer notes that previous films exhibited severe scatter fog. A portable $12:1$ focused grid is available, but the mattress is soft and uneven.
+        </p>
+        <p><b>Clinical Directive:</b> What is the most defensible, ALARA-compliant sequence of technical adjustments to maximize radiographic contrast while preventing grid cutoff and unnecessary patient exposure?</p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Select the optimal clinical imaging protocol</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <div>
+                <strong>A. First tightly collimate to the anatomical boundaries of the abdomen, select an 8:1 or 6:1 wide-latitude grid (or a flat-panel virtual grid algorithm) to reduce cutoff risk on the uneven bed, and apply a 4x mAs compensation.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Tight collimation reduces scatter production at the source; an 8:1 grid provides substantial cleanup while offering greater positioning latitude against off-level cutoff on soft ICU mattresses compared to an unforgiving 12:1 or 16:1 grid.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <div>
+                <strong>B. Open the collimator fully to the 43x43 cm detector limits and use a 16:1 focused grid with no exposure compensation.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">Opening the collimator generates massive scatter burden, and a 16:1 grid without mAs compensation will result in severe underexposure and inevitable off-level cutoff.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <div>
+                <strong>C. Increase kVp to 125 kVp and omit the grid completely to keep patient dose as low as possible.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">125 kVp on a 28 cm ungrid abdomen generates an overwhelming scatter-to-primary ratio (SPR > 8), washing out all soft-tissue bowel contrast into non-diagnostic gray fog.</span>
+              </div>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <div>
+                <strong>D. Use a 15 cm air-gap technique with a standard 100 cm SID.</strong>
+                <span class="small muted" style="display:block;margin-top:4px;">A 15 cm air gap at only 100 cm SID produces extreme magnification distortion ($M = 1.18\times$) and severe focal spot penumbra blur on thick abdomen anatomy.</span>
+              </div>
+            </label>
+          </div>
+        </fieldset>
+
+        <button class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Evaluate Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:14px;">
+          Select a response and click "Evaluate Clinical Decision" to receive immediate specialist feedback.
+        </div>
+      </article>
+    </section>
+
+    <!-- Section 6: Knowledge Check Quizzes -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div>
+          <h2>Formative Knowledge Check</h2>
+          <div class="lab-section-sub">4 core concept questions · First attempt and final scores recorded</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="quiz-wrap"></div>
+      </div>
+    </section>
+
+    <!-- Section 7: Phase 1 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div>
+          <h2>Phase 1: In-Lab Submission Hub (10 Points)</h2>
+          <div class="lab-section-sub">Lock in your in-lab grade before leaving the laboratory session</div>
+        </div>
+      </div>
+      <!-- Injected by RadLab._wireSplitSubmitHub('phase1') -->
+    </section>
+
+    <!-- Transition CTA Card to Tab 2 -->
+    <div class="cta-card">
+      <div>
+        <h3><i class="fa-solid fa-circle-arrow-right"></i> Ready for Virtual Physics Experimentation?</h3>
+        <p>
+          You have mastered Compton scatter physics, collimator tissue volume optics, and anti-scatter grid mathematics. Proceed to <b>Tab 2</b> to test collimation and grid ratios on the physical scatter radiation simulator!
+        </p>
+      </div>
+      <button class="btn btn-primary" id="btn-proceed-to-sim">
+        Proceed to Virtual Experimentation <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+      </button>
+    </div>
+
+  </div><!-- /tab-pane-intro -->
+
+
+  <!-- ========================================================================= -->
+  <!-- TAB 2: VIRTUAL PHYSICS EXPERIMENT & ANALYSIS (10 POINTS)                  -->
+  <!-- ========================================================================= -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;background:var(--rad-bg-soft);padding:10px 16px;border-radius:8px;border:1px solid var(--rad-border);">
+      <div style="font-size:13.5px;color:var(--rad-navy);font-weight:600;">
+        <i class="fa-solid fa-flask" style="color:var(--rad-teal);margin-right:6px;"></i> Part II: Virtual Scatter Radiation Chamber, Telemetry Logging &amp; Excel Analysis
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-back-to-intro">
+        <i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i> Return to Tab 1 (Theory &amp; Stations)
+      </button>
+    </div>
+
+    <!-- Section 8: Protocol & Step-by-Step Procedure Guide -->
+    <section class="lab-section" id="sec-exp-guide">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div>
+          <h2>Experimental Protocol &amp; Scientific Method</h2>
+          <div class="lab-section-sub">Controlled-variable investigation of field size, patient thickness, and grid ratio</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-clipboard-list"></i> Controlled Protocol</span>
+        <h3>Standardized Experimental Aims:</h3>
+        <ol style="font-size:13.5px;color:var(--rad-navy);line-height:1.6;margin-bottom:16px;">
+          <li><b>Aim 1 (Field Size &amp; Collimation):</b> Keep thickness ($18\text{ cm}$), grid ($0:1$), and kVp ($80\text{ kVp}$) constant. Expand field size from $10\text{ cm} \to 20\text{ cm} \to 35\text{ cm}$. Observe the quadratic rise in incident SPR as irradiated tissue volume expands.</li>
+          <li><b>Aim 2 (Part Thickness Burden):</b> Keep field size ($20\text{ cm}$) and non-grid constant. Vary patient thickness from $8\text{ cm} \to 18\text{ cm} \to 28\text{ cm}$. Observe the severe accumulation of Compton scatter in thick parts.</li>
+          <li><b>Aim 3 (Grid Ratio Cleanup):</b> Set a high scatter condition ($35\text{ cm}$ field, $28\text{ cm}$ thickness). Increment grid ratio from $0:1 \to 6:1 \to 8:1 \to 12:1 \to 16:1$. Observe the sharp reduction in residual SPR and contrast improvement factor ($K$), noting the escalating Bucky factor ($BF$).</li>
+          <li><b>Aim 4 (ALARA Optimization):</b> Compare tightening collimation vs adding a high-ratio grid to achieve diagnostic contrast with minimal patient dose.</li>
+        </ol>
+
+        <h4>Procedure Workflow:</h4>
+        <div class="procedure-grid">
+          <div class="procedure-step">Formulate and write your scientific hypothesis in the Prediction field before recording trials.</div>
+          <div class="procedure-step">Load Preset 1 (Tight Collimation Baseline) and click "Record This Run".</div>
+          <div class="procedure-step">Load Preset 2 (Wide Field Uncollimated) and record Run 2; compare incident scatter burden.</div>
+          <div class="procedure-step">Load Preset 3 (Thick Abdomen Optimized with 12:1 Grid) and record Run 3; analyze CIF and BF.</div>
+          <div class="procedure-step">Load Preset 4 (High-kVp Chest with 8:1 Grid) and record Run 4; observe residual SPR.</div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+          <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+          ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Tight collimation + Record &nbsp; ☐ 3. Run 2 Wide field + Record &nbsp; ☐ 4. Run 3 Thick abdomen 12:1 grid + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel Plots 1–2 + Table B (Run 4 chest = bonus/optional).<br>
+          <b>Stuck?</b> Record blocked → write the prediction first. Duplicate-run warning → change ONE slider a notch.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Virtual Experiment Simulator Suite -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div>
+          <h2>Interactive Physics Simulation Suite</h2>
+          <div class="lab-section-sub">Physical Compton scatter radiation chamber &amp; radiograph contrast dashboard</div>
+        </div>
+      </div>
+      <div class="card">
+        <!-- 5 Clinical Presets -->
+        <div style="margin-bottom:12px;">
+          <span style="font-size:12px;font-weight:800;color:var(--rad-navy);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">
+            <i class="fa-solid fa-sliders" style="color:var(--rad-teal)"></i> Clinical Operating Presets:
+          </span>
+          <div class="preset-toolbar">
+            <button type="button" class="preset-btn" data-field="10" data-thickness="14" data-grid="0" data-kvp="70">
+              <i class="fa-solid fa-compress"></i> 1. Tight Collimation ($10\text{ cm}$, No Grid, $70\text{ kVp}$)
+            </button>
+            <button type="button" class="preset-btn" data-field="35" data-thickness="18" data-grid="0" data-kvp="80">
+              <i class="fa-solid fa-expand"></i> 2. Wide Field Uncollimated ($35\text{ cm}$, No Grid — High Scatter)
+            </button>
+            <button type="button" class="preset-btn" data-field="35" data-thickness="28" data-grid="12" data-kvp="85">
+              <i class="fa-solid fa-shield-halved"></i> 3. Thick Abdomen ($28\text{ cm}$, $12:1$ Grid, $85\text{ kVp}$)
+            </button>
+            <button type="button" class="preset-btn" data-field="40" data-thickness="22" data-grid="8" data-kvp="110">
+              <i class="fa-solid fa-lungs"></i> 4. Chest Protocol ($40\text{ cm}$, $8:1$ Grid, $110\text{ kVp}$)
+            </button>
+            <button type="button" class="preset-btn" data-field="12" data-thickness="6" data-grid="0" data-kvp="55">
+              <i class="fa-solid fa-hand"></i> 5. Pediatric Extremity ($12\text{ cm}$, $6\text{ cm}$, No Grid, $55\text{ kVp}$)
+            </button>
+          </div>
+        </div>
+
+        <!-- Scientific Prediction Box -->
+        <div class="form-row" style="margin-bottom:18px;">
+          <label class="field-label" for="w-prediction">
+            Scientific Hypothesis &amp; Pre-Trial Prediction <span aria-hidden="true" style="color:var(--rad-red)">*</span>
+          </label>
+          <textarea id="w-prediction" rows="2" required placeholder="State your hypothesis: predict how doubling field size affects incident scatter ratio compared to doubling patient thickness, and explain why adding a grid increases Bucky factor dose..."></textarea>
+          <p class="form-hint">Mandatory: Minimum 20 characters. Validated before recording runs; included in your submission.</p>
+        </div>
+
+        <!-- Canvas and Controls Grid -->
+        <div class="experiment-layout">
+          <div>
+            <canvas id="sim-canvas" class="sim-canvas" width="1000" height="420" role="img" aria-label="Interactive visual model for Scatter, Collimation & Grids Lab" aria-describedby="sim-caption"></canvas>
+            <p class="visual-note" id="sim-caption" role="status" aria-live="polite">
+              Left: X-ray tube, collimator shutters, patient Compton scatter chamber, anti-scatter grid, and image receptor. Right: simulated radiograph and contrast profile.
+            </p>
+          </div>
+
+          <div>
+            <div class="control-grid">
+              <div class="control-card">
+                <label for="ctrl-field"><span>Field Size (Collimation)</span><output id="out-field" for="ctrl-field">20 cm</output></label>
+                <input type="range" id="ctrl-field" min="5" max="40" step="1" value="20" aria-describedby="sim-caption">
+                <span class="small muted">Range: 5 cm (spot) to 40 cm (open field)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-thickness"><span>Part Thickness</span><output id="out-thickness" for="ctrl-thickness">18 cm</output></label>
+                <input type="range" id="ctrl-thickness" min="5" max="35" step="1" value="18" aria-describedby="sim-caption">
+                <span class="small muted">Range: 5 cm (pediatric/hand) to 35 cm (bariatric)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-grid"><span>Grid Ratio ($r = h/D$)</span><output id="out-grid" for="ctrl-grid">8 :1</output></label>
+                <input type="range" id="ctrl-grid" min="0" max="16" step="1" value="8" aria-describedby="sim-caption">
+                <span class="small muted">0:1 (No grid) to 16:1 (High ratio)</span>
+              </div>
+              <div class="control-card">
+                <label for="ctrl-kVp"><span>Tube Potential ($kVp$)</span><output id="out-kVp" for="ctrl-kVp">80 kVp</output></label>
+                <input type="range" id="ctrl-kVp" min="50" max="110" step="1" value="80" aria-describedby="sim-caption">
+                <span class="small muted">Range: 50 kVp to 110 kVp</span>
+              </div>
+            </div>
+
+            <!-- Live Telemetry Metrics Grid -->
+            <div class="metric-grid" id="sim-metrics" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Run Logging Toolbar & Table -->
+        <div class="run-toolbar">
+          <button class="btn btn-primary" id="record-run"><i class="fa-solid fa-camera"></i> Record This Run</button>
+          <button class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash-can"></i> Remove Last Run</button>
+          <button class="btn btn-secondary btn-sm" id="btn-download-runs-csv"><i class="fa-solid fa-file-csv"></i> Download Run Data (CSV)</button>
+          <span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span>
+        </div>
+
+        <div class="run-table-wrap">
+          <table class="data-table run-table">
+            <thead>
+              <tr><th>Run #</th><th>Settings (Field, Thickness, Grid, kVp)</th><th>Key Results (Incident SPR, Residual SPR, CIF, Bucky)</th><th>Radiological Interpretation</th></tr>
+            </thead>
+            <tbody id="run-log-body">
+              <tr><td colspan="4" class="muted">No runs recorded yet. Load a preset or adjust sliders and click "Record This Run".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 10: Post-Lab Data Analysis & Worksheet -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">10</div>
+        <div>
+          <h2>Required Data Analysis &amp; Post-Lab Reflection</h2>
+          <div class="lab-section-sub">Quantitative scatter calculations, Excel plotting guide, and clinical reflection</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and execute the following analysis in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Field Size vs. Incident Scatter-to-Primary Ratio (Field vs SPR):</b> Plot Field Size ($5\text{ cm}$ to $40\text{ cm}$) on the X-axis against Incident SPR on the Y-axis for constant thickness ($18\text{ cm}$) and energy ($80\text{ kVp}$). Fit a power/polynomial trendline demonstrating the rapid expansion of scatter as irradiated tissue volume grows.</li>
+            <li><b>Plot 2 — Grid Ratio vs. Contrast Improvement Factor &amp; Bucky Factor ($r$ vs $K$ &amp; $BF$):</b> Plot Grid Ratio ($0:1$ to $16:1$) on the X-axis against Contrast Improvement Factor ($K$) on the primary Y-axis, and Bucky Factor ($BF$) on the secondary Y-axis. Analyze the law of diminishing returns in contrast gain vs the steep patient dose multiplier.</li>
+            <li><b>Calculated Spreadsheet Columns:</b> Add a calculated column computing the theoretical Bucky Factor exposure compensation ($mAs_{\text{compensated}} = mAs_{\text{baseline}} \times BF$) and verify that it matches your exported telemetry.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and attach it in <b>Section 12 (Phase 2 Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact scatter and grid parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <thead>
+            <tr><th style="width:32%">Scatter / Grid Parameter</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Clinical Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Grid Ratio Calculation:</b> Lead strip height $h = 2.4\text{ mm}$, interspace width $D = 0.3\text{ mm}$</td>
+              <td><input type="text" id="w-calc-gr-sub" placeholder="e.g., r = h / D = 2.4 mm / 0.3 mm"></td>
+              <td><input type="text" id="w-calc-gr-out" placeholder="e.g., 8:1 Grid Ratio (Standard Table Bucky)"></td>
+            </tr>
+            <tr>
+              <td><b>Collimation Scatter Reduction:</b> Field size reduced from $35\text{ cm} \to 15\text{ cm}$ ($18\text{ cm}$ thick)</td>
+              <td><input type="text" id="w-calc-coll-sub" placeholder="e.g., Area ratio = (15^2) / (35^2) = 225 / 1225"></td>
+              <td><input type="text" id="w-calc-coll-out" placeholder="e.g., ~81.6% reduction in irradiated volume and scatter"></td>
+            </tr>
+            <tr>
+              <td><b>Bucky Factor Exposure Compensation:</b> Baseline non-grid exposure $12\text{ mAs}$ $\to$ adding $12:1$ grid ($BF = 5.0$)</td>
+              <td><input type="text" id="w-calc-bf-sub" placeholder="e.g., mAs_new = mAs_orig * BF = 12 mAs * 5.0"></td>
+              <td><input type="text" id="w-calc-bf-out" placeholder="e.g., 60 mAs required (5x patient dose increase)"></td>
+            </tr>
+            <tr>
+              <td><b>Contrast Improvement Factor ($K$):</b> Incident $SPR = 1.8$, Residual $SPR = 0.25$</td>
+              <td><input type="text" id="w-calc-cif-sub" placeholder="e.g., K = (1 + SPR_before) / (1 + SPR_after) = 2.8 / 1.25"></td>
+              <td><input type="text" id="w-calc-cif-out" placeholder="e.g., K = 2.24x contrast improvement"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-pen-fancy"></i> C. Written Analysis &amp; Clinical Synthesis</h4>
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q1">1. Compare scatter fraction and image contrast before and after tightening collimation from $35\text{ cm}$ to $10\text{ cm}$. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="State your exact run numbers, parameters, incident SPR reduction, and explain how reducing irradiated tissue volume (V = A * x) restores subject contrast without dose penalty..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q2">2. Calculate the grid ratio for lead strips of height $h = 2.4\text{ mm}$ and interspace width $D = 0.3\text{ mm}$. Explain how grid ratio influences scatter cleanup and positioning latitude. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="Show the formula r = h/D, compute 8:1, and explain how higher grid ratios clean up more scatter but narrow the acceptance angle, increasing cutoff risk..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q3">3. Explain why an anti-scatter grid improves radiographic contrast but simultaneously increases patient radiation exposure. Define the Bucky factor in your response. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Explain lead strip absorption of both scatter and primary photons, define Bucky Factor (BF = incident/transmitted = mAs multiplier), and discuss ALARA radiation protection considerations..."></textarea>
+        </div>
+
+        <div class="form-row" style="margin-top:16px">
+          <label class="field-label" for="q4">4. Critical thinking: Propose an optimal scatter-control protocol for a bedside portable thick-part examination where grid cutoff is a high risk. <span aria-hidden="true" style="color:var(--rad-red)">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Detail the step-by-step strategy: tight anatomical collimation first, selection of lower ratio grid (6:1 or 8:1) for wider alignment latitude or digital virtual grid software, careful leveling, and accurate mAs compensation..."></textarea>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 11: Grading Rubric -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">11</div>
+        <div>
+          <h2>Standardized Grading Rubric (20 Points)</h2>
+          <div class="lab-section-sub">Departmental Gemini Flash model automated rubric evaluation</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rubric-container" style="overflow-x:auto"></div>
+        <p class="form-hint" style="margin-top:12px;">Self-scores provide formative feedback. The departmental Gemini Flash grading engine evaluates your final submission against this exact rubric.</p>
+      </div>
+    </section>
+
+    <!-- Section 12: Phase 2 Submission Hub -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num">12</div>
+        <div>
+          <h2>Phase 2: Post-Lab Excel Submission Hub (10 Points)</h2>
+          <div class="lab-section-sub">Upload your Excel workbook (.xlsx / .csv) and submit your final post-lab analysis</div>
+        </div>
+      </div>
+      <!-- Injected by RadLab._wireSplitSubmitHub('phase2') -->
+    </section>
+
+  </div><!-- /tab-pane-experiment -->
+
 </main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 8 of 15 · assessed virtual laboratory</footer>
+
+<!-- Bottom Action Bar for JSON Backup & Reset -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator">
+      <span class="dot"></span><span id="autosave-dot-label">Autosave Ready</span>
+    </div>
+    <div class="flex gap-8" style="flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        <i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none">
+      </label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 8 of 15 · Assessed Virtual Laboratory Suite · Aligned with Saudi SCHS Radiologic Technologist Licensing Competencies
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
-<script>
-const LAB = {"week":8,"title":"Scatter, Collimation & Grids Lab","lecture":"Scatter Radiation & Control","type":"scatter","subtitle":"See how field size, collimation, and grid ratio change scatter and contrast.","objectives":["Explain how Compton scatter is produced and why it reduces image contrast.","Predict how field size and patient thickness affect scatter fraction.","Compare collimation and grid use as scatter-control strategies.","Calculate grid ratio and a simplified Bucky factor.","Balance contrast improvement against dose and positioning complexity."],"theory":"<p>Scatter radiation is produced mainly by Compton interactions and travels in directions that do not represent the original beam path. It adds unwanted exposure to the receptor and reduces radiographic contrast. Larger fields and thicker parts generally create more scatter.</p><div class=\"formula-box\"><b>Grid ratio:</b> h/D, where h is lead-strip height and D is the interspace width. <b>Bucky factor:</b> incident exposure / transmitted primary exposure.</div><p>Collimation is often the first control: it limits the irradiated volume and reduces patient dose. A grid can improve contrast by absorbing scatter, but it requires careful centering, alignment, and exposure compensation.</p>","controls":[{"id":"field","label":"Field size","min":5,"max":40,"step":1,"value":20,"unit":"cm"},{"id":"thickness","label":"Part thickness","min":5,"max":35,"step":1,"value":18,"unit":"cm"},{"id":"grid","label":"Grid ratio","min":0,"max":16,"step":1,"value":8,"unit":":1"},{"id":"kVp","label":"kVp","min":50,"max":110,"step":1,"value":80,"unit":"kVp"}],"stations":[{"id":"scatter","title":"Station 1 — Field-size and scatter fraction","text":"Change field size and part thickness. Compare scatter fraction, contrast index, and the visual scatter cloud.","kind":"main"},{"id":"control","title":"Station 2 — Match the scatter control","text":"Match each control to its main benefit or trade-off.","kind":"match","left":[["coll","Tight collimation"],["grid","Grid"],["air","Air-gap technique"]],"right":[["dose","Reduces irradiated volume and dose"],["align","Improves contrast but needs alignment/exposure"],["mag","Reduces scatter reaching IR with magnification trade-off"]],"pairs":{"coll":"dose","grid":"align","air":"mag"}},{"id":"case","title":"Station 3 — Grid decision","text":"A thick abdomen is imaged on a table. Choose the most defensible first action before adding a grid.","kind":"case"}],"quiz":[{"prompt":"Which action reduces scatter production at its source most directly?","options":["Increase field size","Tighten collimation to the anatomy of interest","Increase OID only","Increase mAs without changing the field"],"correct":1,"explain":"Collimation reduces the volume of tissue irradiated, reducing scatter production and patient dose."},{"prompt":"The main interaction producing diagnostic-energy scatter is:","options":["Compton interaction","Pair production","Thermionic emission","Photostimulation"],"correct":0,"explain":"Compton interactions produce scattered photons that degrade contrast."},{"prompt":"Grid ratio equals:","options":["Interspace width / strip height","Strip height / interspace width","SID / SOD","Field / thickness"],"correct":1,"explain":"Grid ratio is lead-strip height divided by interspace width."},{"prompt":"A higher Bucky factor indicates:","options":["Less exposure compensation","More exposure compensation is required","No scatter absorption","Lower OID"],"correct":1,"explain":"The grid removes primary photons as well as scatter, requiring exposure compensation."}],"worksheet":[{"id":"q1","label":"1. Compare scatter fraction before and after tightening collimation."},{"id":"q2","label":"2. Calculate the grid ratio for h = 2.4 mm and D = 0.3 mm."},{"id":"q3","label":"3. Explain why a grid can improve contrast but also increase patient exposure."},{"id":"q4","label":"4. Critical thinking: propose a scatter-control sequence for a portable thick-part exam."}],"rubric":[{"id":"c1","name":"Scatter and control concepts","points":4,"levels":["Correctly explains production, contrast loss, collimation, and grids.","Mostly accurate with minor gaps.","Major misconception."]},{"id":"c2","name":"Scatter simulation","points":5,"levels":["Explores field, thickness, and grid effects with clear comparisons.","Explores some controls with limited interpretation.","Little meaningful investigation."]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":["Grid/Bucky calculations and interpretations are correct.","Mostly correct with shallow explanation.","Missing or incorrect calculations."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Balances contrast, dose, and alignment in a defensible plan.","Plausible but brief.","No defensible plan."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Predict how field size affects scatter-to-primary ratio.","Record a tightly collimated baseline.","Increase only field size and record a second run.","Keep the larger field and add a grid for a third run.","Compare residual scatter, contrast improvement, and Bucky factor."],"scenario":{"prompt":"Before adding a grid for a thick abdomen, what should the radiographer do first?","options":["Collimate to the required anatomy and verify positioning","Open the field fully","Increase OID without considering magnification","Repeat with more mAs automatically"],"correct":0,"explain":"Collimation reduces scatter production and patient dose; grid use is considered after field optimization."},"minimumRuns":3};
-const QUIZ_IDS = ["q8-1","q8-2","q8-3","q8-4"];
-const CONCEPT = LAB.stations[1];
-let currentResult = null;
-let currentViewMode = '3d-shadow';
 
+<script>
+/* =========================================================================
+   LAB CONFIGURATION & RUBRIC DATA
+   ========================================================================= */
+const LAB = {
+  week: 8,
+  title: "Lab 8: Scatter Control, Collimation & Grids Lab",
+  lecture: "Scatter Radiation & Control",
+  type: "scatter",
+  subtitle: "See how field size, collimation, and grid ratio change scatter and contrast.",
+  minimumRuns: 3,
+  controls: [
+    { id: "field", label: "Field size", min: 5, max: 40, step: 1, value: 20, unit: "cm" },
+    { id: "thickness", label: "Part thickness", min: 5, max: 35, step: 1, value: 18, unit: "cm" },
+    { id: "grid", label: "Grid ratio", min: 0, max: 16, step: 1, value: 8, unit: ":1" },
+    { id: "kVp", label: "kVp", min: 50, max: 110, step: 1, value: 80, unit: "kVp" }
+  ],
+  quiz: [
+    {
+      prompt: "Which action reduces scatter production at its source most directly?",
+      options: [
+        "Increase field size",
+        "Tighten collimation to the anatomy of interest",
+        "Increase OID only",
+        "Increase mAs without changing the field"
+      ],
+      correct: 1,
+      explain: "Collimation reduces the volume of tissue irradiated (V = A * x), preventing scatter production at its physical source while directly saving patient dose."
+    },
+    {
+      prompt: "The predominant photon interaction producing diagnostic-energy scatter is:",
+      options: [
+        "Compton scattering interaction",
+        "Pair production",
+        "Thermionic emission",
+        "Photostimulated luminescence"
+      ],
+      correct: 0,
+      explain: "Compton scattering occurs when incident x-ray photons collide with outer-shell atomic electrons, ejecting recoil electrons and deflecting scattered photons that create non-diagnostic background fog."
+    },
+    {
+      prompt: "Grid ratio (r) is mathematically defined as:",
+      options: [
+        "Interspace width / lead strip height (D / h)",
+        "Lead strip height / interspace width (h / D)",
+        "Source-to-image distance / source-to-object distance (SID / SOD)",
+        "Field size / patient part thickness"
+      ],
+      correct: 1,
+      explain: "Grid ratio is the height of the lead strips divided by the width of the radiolucent interspace material (r = h / D)."
+    },
+    {
+      prompt: "A higher Bucky factor (BF) indicates that:",
+      options: [
+        "Less exposure compensation is required",
+        "More exposure compensation (mAs multiplier) is required",
+        "Zero scatter radiation is absorbed",
+        "Object-to-image distance is reduced"
+      ],
+      correct: 1,
+      explain: "Because high-ratio grids absorb primary photons as well as scatter, a higher Bucky factor requires greater mAs exposure compensation, increasing patient radiation dose."
+    }
+  ],
+  scenario: {
+    prompt: "Before adding a grid for a thick abdomen, what should the radiographer do first?",
+    options: [
+      "Collimate tightly to the required anatomy and verify patient positioning",
+      "Open the collimation field fully",
+      "Increase OID without considering magnification distortion",
+      "Repeat the exposure with more mAs automatically"
+    ],
+    correct: 0,
+    explain: "Tight collimation is the primary defense: it reduces the irradiated tissue volume, lowering scatter production at its source and reducing patient dose. Grid use is selected after optimizing collimation."
+  },
+  worksheet: [
+    { id: "q1", label: "1. Compare scatter fraction before and after tightening collimation." },
+    { id: "q2", label: "2. Calculate the grid ratio for h = 2.4 mm and D = 0.3 mm." },
+    { id: "q3", label: "3. Explain why a grid can improve contrast but also increase patient exposure." },
+    { id: "q4", label: "4. Critical thinking: propose a scatter-control sequence for a portable thick-part exam." }
+  ],
+  rubric: [
+    {
+      id: "c1",
+      name: "Scatter Physics & Control Concepts",
+      points: 4,
+      part: "Part I: In-Lab Interactive Activities (10 Points)",
+      levels: [
+        { desc: "Accurately explains Compton scatter production, contrast degradation, pre-patient collimation, and post-patient grid optics." },
+        { desc: "Mostly accurate with minor gaps in formulas (r = h/D, BF) or physical explanations." },
+        { desc: "Major conceptual errors or confusion between collimation and grids." }
+      ]
+    },
+    {
+      id: "c2",
+      name: "Simulation Execution & Experimental Evidence",
+      points: 6,
+      part: "Part I: In-Lab Interactive Activities (10 Points)",
+      levels: [
+        { desc: "Records 3+ systematic experimental runs across clinical presets, analyzes incident vs residual SPR, and interprets CIF and BF." },
+        { desc: "Records runs with limited parameter variation or brief observations." },
+        { desc: "Insufficient runs recorded or failure to isolate controlled variables." }
+      ]
+    },
+    {
+      id: "c3",
+      name: "Quantitative Calculations & Excel Plotting",
+      points: 5,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Accurately completes Table B calculations, provides required Excel plots (Field vs SPR and Grid Ratio vs CIF/BF), and validates trends." },
+        { desc: "Calculations mostly correct with minor arithmetic errors or incomplete plot formatting." },
+        { desc: "Calculations missing, incorrect formulas used, or Excel analysis omitted." }
+      ]
+    },
+    {
+      id: "c4",
+      name: "Clinical Reasoning & ALARA Synthesis",
+      points: 3,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Balances image contrast against patient radiation dose, thoroughly evaluates ICU portable abdomen, and addresses grid cutoff risks." },
+        { desc: "Plausible clinical reasoning but lacks quantitative depth or ALARA considerations." },
+        { desc: "Superficial or incorrect clinical reasoning." }
+      ]
+    },
+    {
+      id: "c5",
+      name: "Completeness, Organization & Professional Reporting",
+      points: 2,
+      part: "Part II: Post-Lab Excel Data Analysis & Clinical Synthesis (10 Points)",
+      levels: [
+        { desc: "Report is exceptionally organized, clear notation, thorough worksheet responses, and properly attached Excel file." },
+        { desc: "Minor formatting omissions or brief worksheet sections." },
+        { desc: "Substantially incomplete report or missing file attachments." }
+      ]
+    }
+  ]
+};
+
+const QUIZ_IDS = ["q8-1", "q8-2", "q8-3", "q8-4"];
+let currentResult = null;
+
+/* =========================================================================
+   TWO-TAB SWITCHER LOGIC
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
+
+  if (tabId === 'experiment') {
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    paneIntro.classList.remove('active');
+    paneExp.classList.add('active');
+    window.location.hash = '#tab-experiment';
+
+    // Refresh simulation on tab display
+    setTimeout(function () {
+      renderSimulation();
+    }, 50);
+
+    if (targetSectionId) {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  } else {
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    paneExp.classList.remove('active');
+    paneIntro.classList.add('active');
+    window.location.hash = '#tab-intro';
+
+    if (targetSectionId) {
+      const el = document.getElementById(targetSectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+}
+
+/* =========================================================================
+   SIMULATION CONTROLS & COMPUTATIONS
+   ========================================================================= */
 function controlValues() {
   const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    values[control.id] = el ? Number(el.value) : control.value;
+  });
   return values;
 }
 
 function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
-}
-
-function renderMetrics(result) {
-  const container = document.getElementById('sim-metrics');
-  RadLab.renderMetrics(container, result);
+  return LAB.controls.map(function (control) {
+    return control.label + ': ' + values[control.id] + ' ' + control.unit;
+  }).join('; ');
 }
 
 function renderSimulation() {
   const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
+
+  LAB.controls.forEach(function (control) {
+    const out = document.getElementById('out-' + control.id);
+    if (out) {
+      if (control.id === 'grid') {
+        out.textContent = values[control.id] === 0 ? 'No Grid (0:1)' : values[control.id] + ':1';
+      } else {
+        out.textContent = values[control.id] + ' ' + control.unit;
+      }
+    }
+  });
+
   currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
-  renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
+  const canvas = document.getElementById('sim-canvas');
+  if (canvas) {
+    RadModels.draw(LAB.type, canvas.getContext('2d'), values, currentResult, LAB.title);
+  }
+
+  const metricContainer = document.getElementById('sim-metrics');
+  if (metricContainer) {
+    RadLab.renderMetrics(metricContainer, currentResult);
+  }
+
+  const caption = document.getElementById('sim-caption');
+  if (caption) {
+    caption.textContent = currentResult.observation;
+  }
 }
 
+/* =========================================================================
+   RUN LOGGING & CSV EXPORT
+   ========================================================================= */
 function experimentActivity() {
   return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
 }
@@ -136,100 +1480,514 @@ function experimentActivity() {
 function renderRunLog() {
   const activity = experimentActivity();
   const body = document.getElementById('run-log-body');
+  if (!body) return;
   body.innerHTML = '';
+
   if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+    const row = body.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 4;
+    cell.className = 'muted';
+    cell.textContent = 'No runs recorded yet. Load a preset or adjust sliders and click "Record This Run".';
   } else {
     activity.runs.forEach(function (run, index) {
       const row = body.insertRow();
       row.insertCell().textContent = String(index + 1);
       row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) {
+        return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : '');
+      }).join(' | ');
       row.insertCell().textContent = run.observation;
     });
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+
+  const statusEl = document.getElementById('run-status');
+  if (statusEl) {
+    statusEl.textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+  }
 }
 
 function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
+  const predEl = document.getElementById('w-prediction');
+  const prediction = predEl ? predEl.value.trim() : '';
+  if (!prediction || prediction.length < 20) {
+    RadLab.toast('Please write a scientific prediction (minimum 20 characters) before recording this trial.', 'error');
+    if (predEl) predEl.focus();
+    return;
+  }
+
   const values = controlValues();
   const signature = JSON.stringify(values);
   const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
+
+  if (activity.runs.some(function (run) { return run.signature === signature; })) {
+    RadLab.toast('That exact setting is already recorded. Change one parameter to record a new run.', 'error');
+    return;
+  }
+
+  const run = {
+    signature: signature,
+    settings: settingSummary(values),
+    values: values,
+    metrics: currentResult.metrics,
+    observation: currentResult.observation,
+    modelScore: Number(currentResult.score.toFixed(1))
+  };
+
   activity.runs.push(run);
   activity.done = activity.runs.length >= LAB.minimumRuns;
-  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
-  activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns) * 2; // Up to 6 points
+  activity.maxScore = 6;
+  activity.detail = activity.runs.length + ' unique experimental runs recorded across scatter & grid configurations.';
+
   RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+  if (RadLab.sound && RadLab.sound.playExposure) RadLab.sound.playExposure();
+
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Run ' + activity.runs.length + ' recorded successfully!', 'success');
 }
 
 function removeLastRun() {
   const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
+  if (!activity.runs.length) {
+    RadLab.toast('There are no recorded runs to remove.', 'info');
+    return;
+  }
+  activity.runs.pop();
+  activity.done = activity.runs.length >= LAB.minimumRuns;
+  activity.score = Math.min(activity.runs.length, LAB.minimumRuns) * 2;
+  activity.detail = activity.runs.length + ' unique experimental runs recorded.';
+
+  RadLab.state.activities['experiment-log'] = activity;
+  RadLab.save();
+  renderRunLog();
+  RadLab.progress.update();
+  RadLab.toast('Last run removed.', 'info');
 }
 
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
+function downloadRunsCSV() {
+  const activity = experimentActivity();
+  if (!activity.runs.length) {
+    RadLab.toast('No runs recorded yet. Record at least 1 trial to download CSV.', 'error');
+    return;
+  }
+
+  let csv = 'Run Number,Field Size (cm),Thickness (cm),Grid Ratio,kVp,Incident SPR,Residual SPR,CIF (k),Bucky Factor,Observation\n';
+  activity.runs.forEach(function (run, index) {
+    const v = run.values;
+    const mInc = run.metrics.find(function (m) { return m.label.includes('Incident'); });
+    const mRes = run.metrics.find(function (m) { return m.label.includes('Residual'); });
+    const mCif = run.metrics.find(function (m) { return m.label.includes('improvement') || m.label.includes('CIF'); });
+    const mBf = run.metrics.find(function (m) { return m.label.includes('Bucky'); });
+
+    const incVal = mInc ? mInc.value : '';
+    const resVal = mRes ? mRes.value : '';
+    const cifVal = mCif ? mCif.value : '';
+    const bfVal = mBf ? mBf.value : '';
+
+    const obsClean = '"' + (run.observation || '').replace(/"/g, '""') + '"';
+    csv += `${index + 1},${v.field},${v.thickness},${v.grid},${v.kVp},${incVal},${resVal},${cifVal},${bfVal},${obsClean}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RAD321_Lab08_Scatter_Collimation_Runs_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  RadLab.toast('Exported runs CSV for Excel analysis!', 'success');
 }
 
+/* =========================================================================
+   STATION 3: GRID RATIO & BUCKY FACTOR ANALYZER TOOL
+   ========================================================================= */
+const GRID_DATA = [
+  { ratio: 0, title: "No Grid (Direct Exposure)", h: 0.0, d: 0.0, cleanup: "0% (All scatter exposes detector)", bf: 1.0, k: 1.0, status: "low", desc: "No lead absorption. Zero scatter cleanup. Baseline patient radiation exposure." },
+  { ratio: 5, title: "5:1 Portable Grid", h: 1.5, d: 0.3, cleanup: "~75% scatter absorbed", bf: 2.0, k: 1.5, status: "low", desc: "Low ratio for mobile exams. High alignment latitude with moderate scatter cleanup." },
+  { ratio: 6, title: "6:1 Mobile Grid", h: 1.8, d: 0.3, cleanup: "~80% scatter absorbed", bf: 3.0, k: 1.7, status: "std", desc: "General mobile radiography standard. Good contrast gain with manageable positioning tolerance." },
+  { ratio: 8, title: "8:1 General Diagnostic Grid", h: 2.4, d: 0.3, cleanup: "~85% scatter absorbed", bf: 4.0, k: 2.0, status: "std", desc: "Standard table Bucky grid. Balances high contrast cleanup with 4x mAs dose penalty." },
+  { ratio: 12, title: "12:1 High-kVp Bucky Grid", h: 3.6, d: 0.3, cleanup: "~90% scatter absorbed", bf: 5.0, k: 2.3, status: "high", desc: "Upright chest Bucky and abdominal suite. High cleanup for energy > 90 kVp; requires 5x dose." },
+  { ratio: 16, title: "16:1 Ultra-High Contrast Grid", h: 4.8, d: 0.3, cleanup: "~95% scatter absorbed", bf: 6.0, k: 2.6, status: "high", desc: "Maximum scatter absorption; highly unforgiving positioning tolerance and 6x dose penalty." }
+];
+
+function initGridCalcTool() {
+  const container = document.getElementById('grid-strip-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  GRID_DATA.forEach(function (item, idx) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell' + (item.ratio === 8 ? ' active' : '');
+    cell.dataset.index = idx;
+
+    cell.innerHTML = `
+      <div style="font-weight:800;font-size:13px;color:var(--rad-navy);">${item.ratio === 0 ? 'No Grid' : item.ratio + ':1'}</div>
+      <div style="font-size:11px;color:var(--rad-text-soft);">BF = ${item.bf.toFixed(1)}×</div>
+      <div style="font-size:11px;font-weight:700;color:var(--rad-teal);margin-top:2px;">K = ${item.k.toFixed(1)}×</div>
+    `;
+
+    const badge = document.createElement('span');
+    badge.className = 'grid-status-badge ' + (item.status === 'low' ? 'grid-status-low' : item.status === 'std' ? 'grid-status-std' : 'grid-status-high');
+    badge.textContent = item.ratio === 0 ? 'Direct' : item.status === 'high' ? 'High Dose' : 'Standard';
+    cell.appendChild(badge);
+
+    cell.addEventListener('click', function () {
+      document.querySelectorAll('.grid-cell').forEach(function (c) { c.classList.remove('active'); });
+      cell.classList.add('active');
+      selectGridGroup(idx);
+    });
+
+    container.appendChild(cell);
+  });
+
+  selectGridGroup(3); // Default to 8:1
+}
+
+function selectGridGroup(idx) {
+  const item = GRID_DATA[idx];
+  if (!item) return;
+
+  const titleEl = document.getElementById('grid-sel-title');
+  const hEl = document.getElementById('grid-sel-h');
+  const cleanupEl = document.getElementById('grid-sel-cleanup');
+  const bfEl = document.getElementById('grid-sel-bf');
+  const kEl = document.getElementById('grid-sel-k');
+  const statusEl = document.getElementById('grid-sel-status');
+
+  if (titleEl) titleEl.textContent = item.title;
+  if (hEl) hEl.textContent = item.ratio === 0 ? 'N/A (No lead strips)' : item.h.toFixed(1) + ' mm (at D = ' + item.d.toFixed(1) + ' mm)';
+  if (cleanupEl) cleanupEl.textContent = item.cleanup;
+  if (bfEl) bfEl.textContent = item.bf.toFixed(1) + '× (mAs exposure multiplier)';
+  if (kEl) kEl.textContent = item.k.toFixed(1) + '× contrast improvement factor';
+
+  if (statusEl) {
+    statusEl.className = 'grid-status-badge ' + (item.status === 'low' ? 'grid-status-low' : item.status === 'std' ? 'grid-status-std' : 'grid-status-high');
+    statusEl.textContent = item.ratio === 0 ? 'Direct Exposure' : item.status === 'high' ? 'High Ratio (Strict Alignment)' : 'Standard Diagnostic Bucky';
+  }
+
+  // Update simulator slider in Tab 2 to match
+  const gridSlider = document.getElementById('ctrl-grid');
+  if (gridSlider) {
+    gridSlider.value = item.ratio;
+    const outGrid = document.getElementById('out-grid');
+    if (outGrid) outGrid.textContent = item.ratio === 0 ? 'No Grid (0:1)' : item.ratio + ':1';
+    if (currentResult) renderSimulation();
+  }
+}
+
+/* =========================================================================
+   CLINICAL SCENARIO EVALUATION
+   ========================================================================= */
 function checkScenario() {
   const selected = document.querySelector('input[name="scenario-choice"]:checked');
   const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
+  if (!selected) {
+    feedback.className = 'feedback-box incorrect';
+    feedback.textContent = 'Please select a clinical response option before checking.';
+    return;
+  }
+
+  const choice = Number(selected.value);
+  const correct = choice === 0;
+
   const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
+  RadLab.state.activities['clinical-scenario'] = {
+    done: correct,
+    score: correct ? 1 : 0,
+    maxScore: 1,
+    attempts: previous.attempts + 1,
+    selected: choice,
+    detail: choice === 0 ? "Correctly collimated first, selected forgiving 8:1 grid for soft mattress, and applied 4x mAs compensation." : "Reconsidered scatter control protocol."
+  };
+
   feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+  if (correct) {
+    feedback.innerHTML = '<strong><i class="fa-solid fa-circle-check"></i> Outstanding Clinical & ALARA Decision!</strong> Option A represents best-practice radiology technology. Tightly collimating to the abdomen reduces irradiated tissue volume ($V = A \\times x$), curbing scatter production at its source and directly lowering patient radiation dose. Selecting an $8:1$ grid (over a sensitive $12:1$ or $16:1$ grid) provides robust scatter cleanup ($~85\\%$) while offering wider alignment latitude against off-level grid cutoff on soft ICU mattresses. Applying the $4\\times$ Bucky factor maintains diagnostic detector fluence.';
+  } else {
+    feedback.innerHTML = '<strong><i class="fa-solid fa-circle-xmark"></i> Suboptimal Scatter Strategy:</strong> Option ' + String.fromCharCode(65 + choice) + ' violates core physics principles. Opening collimation floods the detector with scatter fog; omitting mAs compensation causes quantum mottle; and high kVp without a grid ruins abdominal soft-tissue contrast. Re-evaluate Option A!';
+  }
+
+  RadLab.save();
+  RadLab.progress.update();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-08', labTitle: "Lab 8 — Scatter, Collimation & Grids Lab", weekNumber: 8, rubric: { title: "Lab 8 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Scatter and control concepts","points":4},{"id":"c2","name":"Scatter simulation","points":5},{"id":"c3","name":"Calculations and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab8-rubric',title:"Lab 8 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Scatter and control concepts","points":4,"levels":[{"desc":"Correctly explains production, contrast loss, collimation, and grids."},{"desc":"Mostly accurate with minor gaps."},{"desc":"Major misconception."}]},{"id":"c2","name":"Scatter simulation","points":5,"levels":[{"desc":"Explores field, thickness, and grid effects with clear comparisons."},{"desc":"Explores some controls with limited interpretation."},{"desc":"Little meaningful investigation."}]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":[{"desc":"Grid/Bucky calculations and interpretations are correct."},{"desc":"Mostly correct with shallow explanation."},{"desc":"Missing or incorrect calculations."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Balances contrast, dose, and alignment in a defensible plan."},{"desc":"Plausible but brief."},{"desc":"No defensible plan."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
+/* =========================================================================
+   INFALLIBLE MATHEMATICAL TYPOGRAPHY HELPER
+   ========================================================================= */
+function formatMathTex(expr) {
+  let s = expr;
+  s = s.replace(/\$/g, '');
+  s = s.replace(/\\approx/g, '≈');
+  s = s.replace(/\\times/g, '×');
+  s = s.replace(/\\cdot/g, '·');
+  s = s.replace(/\\le/g, '≤');
+  s = s.replace(/\\ge/g, '≥');
+  s = s.replace(/\\Delta/g, 'Δ');
+  s = s.replace(/\\theta/g, 'θ');
+  s = s.replace(/\\mu/g, 'μ');
+  s = s.replace(/\\parallel/g, '∥');
+  s = s.replace(/\\perp/g, '⊥');
+  s = s.replace(/\\ne/g, '≠');
+  s = s.replace(/\\arctan/g, 'arctan');
+  s = s.replace(/\\cos/g, 'cos');
+  s = s.replace(/\\sin/g, 'sin');
+  s = s.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+  s = s.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)');
+  s = s.replace(/\\text\{([^}]+)\}/g, '$1');
+  s = s.replace(/\\quad/g, ' ');
+  s = s.replace(/\\,/g, ' ');
+  s = s.replace(/\\([a-zA-Z]+)/g, '$1');
+  s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>');
+  s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>');
+  s = s.replace(/_([a-zA-Z0-9])/g, '<sub>$1</sub>');
+  s = s.replace(/\^([a-zA-Z0-9])/g, '<sup>$1</sup>');
+  return s;
+}
+
+function renderAllMath() {
+  if (typeof renderMathInElement === 'function') {
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (e) {
+      console.warn('KaTeX auto-render failed; applying semantic HTML fallback.', e);
+    }
   }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
+
+  document.querySelectorAll('.math-tex, .math-display').forEach(function (el) {
+    const raw = el.textContent || '';
+    el.innerHTML = formatMathTex(raw);
+  });
+}
+
+/* =========================================================================
+   INITIALIZATION ON DOM LOAD
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. Initialize RadLab Platform Core
+  RadLab.init({
+    labId: 'lab-08',
+    labTitle: LAB.title,
+    weekNumber: LAB.week,
+    rubric: {
+      title: "Lab 8 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    },
+    sections: [
+      {
+        id: 'sec-scatter-explorer',
+        label: '1 · Scatter & Stations',
+        checkComplete: function (s) {
+          const act = s.activities['scatter-match'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-scenario',
+        label: '2 · Clinical Decision',
+        checkComplete: function (s) {
+          const act = s.activities['clinical-scenario'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-quiz',
+        label: '3 · Knowledge Check',
+        checkComplete: function (s) {
+          return QUIZ_IDS.every(function (id) {
+            return !!(s.quiz[id] && s.quiz[id].correct);
+          });
+        }
+      },
+      {
+        id: 'sec-experiment',
+        label: '4 · Simulation Suite',
+        checkComplete: function (s) {
+          const act = s.activities['experiment-log'];
+          return !!(act && act.done);
+        }
+      },
+      {
+        id: 'sec-worksheet',
+        label: '5 · Post-Lab Excel Analysis',
+        checkComplete: function (s) {
+          return !!(s.fields && s.fields['q1'] && s.fields['q1'].length > 20);
+        }
+      }
+    ]
+  });
+
+  // 2. Register Interactive Worksheet & Table Fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment hypothesis' });
+  RadLab.registerField('w-collimation-mech', { sectionId: 'sec-scatter-explorer', label: 'Table A: Collimation mechanism' });
+  RadLab.registerField('w-collimation-alara', { sectionId: 'sec-scatter-explorer', label: 'Table A: Collimation ALARA impact' });
+  RadLab.registerField('w-grid-mech', { sectionId: 'sec-scatter-explorer', label: 'Table A: Grid mechanism' });
+  RadLab.registerField('w-grid-dose', { sectionId: 'sec-scatter-explorer', label: 'Table A: Grid dose impact' });
+  RadLab.registerField('w-airgap-mech', { sectionId: 'sec-scatter-explorer', label: 'Table A: Air-gap mechanism' });
+  RadLab.registerField('w-airgap-dose', { sectionId: 'sec-scatter-explorer', label: 'Table A: Air-gap dose impact' });
+  RadLab.registerField('w-grid-ratio-def', { sectionId: 'sec-scatter-explorer', label: 'Table A: Grid ratio formula' });
+  RadLab.registerField('w-bucky-factor-def', { sectionId: 'sec-scatter-explorer', label: 'Table A: Bucky factor definition' });
+
+  RadLab.registerField('w-calc-gr-sub', { sectionId: 'sec-worksheet', label: 'Table B: Grid ratio substitution' });
+  RadLab.registerField('w-calc-gr-out', { sectionId: 'sec-worksheet', label: 'Table B: Grid ratio result' });
+  RadLab.registerField('w-calc-coll-sub', { sectionId: 'sec-worksheet', label: 'Table B: Collimation substitution' });
+  RadLab.registerField('w-calc-coll-out', { sectionId: 'sec-worksheet', label: 'Table B: Collimation result' });
+  RadLab.registerField('w-calc-bf-sub', { sectionId: 'sec-worksheet', label: 'Table B: Bucky factor substitution' });
+  RadLab.registerField('w-calc-bf-out', { sectionId: 'sec-worksheet', label: 'Table B: Bucky factor result' });
+  RadLab.registerField('w-calc-cif-sub', { sectionId: 'sec-worksheet', label: 'Table B: CIF substitution' });
+  RadLab.registerField('w-calc-cif-out', { sectionId: 'sec-worksheet', label: 'Table B: CIF result' });
+
+  LAB.worksheet.forEach(function (field) {
+    RadLab.registerField(field.id, { sectionId: 'sec-worksheet', label: field.label });
+  });
+
+  // 3. Build Formative Knowledge Check MCQs
+  const quizWrap = document.getElementById('quiz-wrap');
+  if (quizWrap) {
+    LAB.quiz.forEach(function (question, index) {
+      RadLab.mcq(quizWrap, {
+        id: QUIZ_IDS[index],
+        prompt: question.prompt,
+        options: question.options,
+        correctIndex: question.correct,
+        explain: question.explain,
+        allowRetry: true
+      });
+    });
+  }
+
+  // 4. Build Standardized 20-Point Grading Rubric
+  const rubricContainer = document.getElementById('rubric-container');
+  if (rubricContainer) {
+    RadLab.buildRubric(rubricContainer, {
+      id: 'lab8-rubric',
+      title: "Lab 8 Grading Rubric (20 points)",
+      criteria: LAB.rubric
+    });
+  }
+
+  // 5. Station 2: Scatter Control Matching Challenge
+  const matchLeft = [
+    { id: "coll", label: "Tight Beam Collimation" },
+    { id: "grid", label: "High-Ratio Anti-Scatter Grid (12:1)" },
+    { id: "airgap", label: "Air-Gap Technique (15 cm OID)" },
+    { id: "offlevel", label: "Off-Level Grid Cutoff" },
+    { id: "upsidedown", label: "Upside-Down Focused Grid" },
+    { id: "bf", label: "Bucky Factor Multiplier" }
+  ];
+  const matchRight = [
+    { id: "f_coll", label: "Reduces irradiated tissue volume (V = A * x) and scatter at source" },
+    { id: "f_grid", label: "Maximum scatter absorption for thick parts; requires ~5x mAs dose" },
+    { id: "f_airgap", label: "Natural scatter divergence bypasses detector; magnifies anatomy" },
+    { id: "f_offlevel", label: "Uniform underexposure and loss of optical density across entire film" },
+    { id: "f_upsidedown", label: "Severe peripheral cutoff with adequate exposure only in central strip" },
+    { id: "f_bf", label: "Quantifies required mAs increase to maintain receptor signal (mAs * BF)" }
+  ];
+  const matchPairs = {
+    "coll": "f_coll",
+    "grid": "f_grid",
+    "airgap": "f_airgap",
+    "offlevel": "f_offlevel",
+    "upsidedown": "f_upsidedown",
+    "bf": "f_bf"
+  };
+  RadLab.matchPairs(document.getElementById('scatter-match-container'), {
+    id: 'scatter-match',
+    left: matchLeft,
+    right: matchRight,
+    pairs: matchPairs,
+    leftTitle: 'Scatter Control Technique / Error',
+    rightTitle: 'Physical Mechanism & Clinical Outcome'
+  });
+
+  // 6. Station 3: Grid Ratio Tool
+  initGridCalcTool();
+
+  // 7. Math Helper in Worksheet
+  if (LAB.worksheet && LAB.worksheet.length) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, 'w-calc-gr-sub');
+  }
+
+  // 8. Event Listeners for Simulation Sliders
+  LAB.controls.forEach(function (control) {
+    const el = document.getElementById('ctrl-' + control.id);
+    if (el) el.addEventListener('input', renderSimulation);
+  });
+
+  // 9. Event Listeners for Simulation & Run Logging Buttons
   document.getElementById('record-run').addEventListener('click', recordRun);
   document.getElementById('remove-run').addEventListener('click', removeLastRun);
+  document.getElementById('btn-download-runs-csv').addEventListener('click', downloadRunsCSV);
   document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
+  // 10. Tab Switcher Navigation Buttons
+  const tabBtnIntro = document.getElementById('tab-btn-intro');
+  const tabBtnExp = document.getElementById('tab-btn-experiment');
+  if (tabBtnIntro) tabBtnIntro.addEventListener('click', function () { switchTab('intro'); });
+  if (tabBtnExp) tabBtnExp.addEventListener('click', function () { switchTab('experiment'); });
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', function () {
+      switchTab('experiment', 'sec-exp-guide');
+    });
+  }
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) {
+    btnBack.addEventListener('click', function () {
+      switchTab('intro');
+    });
+  }
+
+  // 11. Clinical Operating Preset Buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const field = btn.dataset.field, thickness = btn.dataset.thickness, grid = btn.dataset.grid, kvp = btn.dataset.kvp;
-      if (document.getElementById('ctrl-field') && field !== undefined) document.getElementById('ctrl-field').value = field;
-      if (document.getElementById('ctrl-thickness') && thickness !== undefined) document.getElementById('ctrl-thickness').value = thickness;
-      if (document.getElementById('ctrl-grid') && grid !== undefined) document.getElementById('ctrl-grid').value = grid;
-      if (document.getElementById('ctrl-kVp') && kvp !== undefined) document.getElementById('ctrl-kVp').value = kvp;
+      const field = btn.dataset.field;
+      const thickness = btn.dataset.thickness;
+      const grid = btn.dataset.grid;
+      const kvp = btn.dataset.kvp;
+
+      if (field !== undefined && document.getElementById('ctrl-field')) document.getElementById('ctrl-field').value = field;
+      if (thickness !== undefined && document.getElementById('ctrl-thickness')) document.getElementById('ctrl-thickness').value = thickness;
+      if (grid !== undefined && document.getElementById('ctrl-grid')) document.getElementById('ctrl-grid').value = grid;
+      if (kvp !== undefined && document.getElementById('ctrl-kVp')) document.getElementById('ctrl-kVp').value = kvp;
+
       renderSimulation();
-      RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
+      RadLab.toast('Loaded preset: ' + btn.textContent.trim(), 'info');
     });
   });
 
+  // 12. Restore Saved Scenario Choice
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  // 13. URL Hash Handling for Direct Tab Navigation
+  if (window.location.hash === '#tab-experiment') {
+    switchTab('experiment');
+  }
+
+  // 14. Render KaTeX & Semantic Math Fallback
+  renderAllMath();
+
+  // 15. Initial Simulation & Run Log Render
+  renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
 });
 </script>
 </body>

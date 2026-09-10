@@ -1,213 +1,1443 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab 2: Image Formation Simulator — RAD 321</title>
-  <link rel="stylesheet" href="../../shared/lab-styles.css">
-  <style>
-  .hero-banner{position:relative;border-radius:var(--rad-radius);overflow:hidden;margin-bottom:24px;box-shadow:var(--rad-shadow-lg)}
-  .hero-banner img{width:100%;height:260px;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,26,43,.96),rgba(7,26,43,.64) 62%,rgba(7,26,43,.12));display:flex;flex-direction:column;justify-content:center;padding:0 42px;color:#fff;max-width:730px}.hero-overlay .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0d6;font-weight:800}.hero-overlay h1{font-size:31px;margin:8px 0;line-height:1.2}.hero-overlay p{font-size:15px;opacity:.94;margin:0}.lab-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.assessment-note{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border-left:4px solid var(--rad-amber);background:#fff9ed}.assessment-note .note-mark{font-size:24px}.experiment-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:20px}.sim-canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;background:#071a2b;border-radius:14px;border:1px solid #28546a}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-card{background:var(--rad-bg-soft);border:1px solid var(--rad-border);border-radius:10px;padding:11px}.control-card label{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--rad-blue)}.control-card output{color:var(--rad-teal);white-space:nowrap}.control-card input{width:100%;margin-top:8px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:11px}.metric .metric-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px;color:var(--rad-text-faint)}.metric strong{display:block;color:var(--rad-teal);font-size:19px;line-height:1.2;margin:3px 0}.metric small{display:block;color:var(--rad-text-soft);line-height:1.3}.procedure-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:procedure}.procedure-step{background:#fff;border:1px solid var(--rad-border);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}.procedure-step:before{counter-increment:procedure;content:counter(procedure);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--rad-teal);color:#fff;font-weight:800;margin-bottom:8px}.run-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}.run-status{font-size:13px;font-weight:700;color:var(--rad-blue)}.run-table-wrap{overflow:auto;border:1px solid var(--rad-border);border-radius:10px}.run-table{margin:0;min-width:760px}.run-table td,.run-table th{font-size:12px}.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.challenge-card{background:#fff;border:1px solid var(--rad-border);border-radius:14px;padding:18px}.challenge-card h3{margin-top:0}.scenario-options{display:grid;gap:8px;margin:12px 0}.scenario-option{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rad-border);border-radius:9px;padding:10px;cursor:pointer}.scenario-option:has(input:checked){border-color:var(--rad-teal);background:#eef9f8}.feedback-box{min-height:44px;border-radius:9px;padding:10px 12px;background:var(--rad-bg-soft);font-size:13px}.feedback-box.correct{background:#eaf8f0;color:#12633f}.feedback-box.incorrect{background:#fff0ee;color:#9d342d}.model-note{font-size:12px;color:var(--rad-text-faint);margin:8px 0 0}.submission-check{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.submission-check div{background:var(--rad-bg-soft);border-radius:10px;padding:12px;font-size:13px}.formula-box{background:#eef8f7;border-left:4px solid var(--rad-teal);padding:12px 15px;border-radius:8px;margin:14px 0;color:#164b53}.rubric-table{min-width:800px}
-  @media(max-width:980px){.experiment-layout{grid-template-columns:1fr}.procedure-grid{grid-template-columns:repeat(2,1fr)}.challenge-grid{grid-template-columns:1fr}.lab-meta-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.hero-overlay{padding:0 22px}.hero-overlay h1{font-size:25px}.control-grid,.metric-grid,.procedure-grid,.submission-check,.lab-meta-grid{grid-template-columns:1fr}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 2: Inverse-Square Law, Distance Protection &amp; Image Formation Simulator — RAD 321</title>
+<link rel="stylesheet" href="../../shared/lab-styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- KaTeX for crisp, mathematically accurate equation rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+<style>
+  /* Hero banner */
+  .hero-banner { position: relative; border-radius: var(--rad-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--rad-shadow-lg); }
+  .hero-banner img { width: 100%; height: 260px; object-fit: cover; }
+  .hero-banner .hero-overlay {
+    position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7,26,43,0.96) 0%, rgba(7,26,43,0.64) 62%, rgba(7,26,43,0.12) 100%);
+    display: flex; flex-direction: column; justify-content: center; padding: 0 42px; color: #fff; max-width: 740px;
+  }
+  .hero-overlay .eyebrow { font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: #7fe0d6; font-weight: 800; }
+  .hero-overlay h1 { font-size: 29px; margin: 8px 0 10px; line-height: 1.22; }
+  .hero-overlay p { font-size: 14.5px; opacity: 0.94; margin: 0; line-height: 1.5; }
+
+  /* Two-Tab Navigation System */
+  .lab-tabs-nav {
+    display: flex;
+    gap: 12px;
+    background: var(--rad-bg-soft, #f1f5f9);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--rad-border, #cbd5e1);
+    margin: 20px 0 24px 0;
+    box-shadow: var(--rad-shadow-sm);
+  }
+  .lab-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 20px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--rad-text-muted, #475569);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lab-tab-btn:hover {
+    color: var(--rad-navy, #0b2545);
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .lab-tab-btn.active {
+    background: #ffffff;
+    color: var(--rad-navy, #0b2545);
+    box-shadow: 0 4px 12px rgba(11, 37, 69, 0.1);
+    border-bottom: 3px solid var(--rad-teal, #0e7c86);
+  }
+  .lab-tab-btn .tab-badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    background: rgba(14, 124, 134, 0.12);
+    color: var(--rad-teal, #0e7c86);
+    font-weight: 700;
+  }
+  .lab-tab-btn.active .tab-badge {
+    background: var(--rad-teal, #0e7c86);
+    color: #ffffff;
+  }
+  .lab-tab-pane {
+    display: none;
+    animation: fadeInPane 0.25s ease-in-out;
+  }
+  .lab-tab-pane.active {
+    display: block;
+  }
+  @keyframes fadeInPane {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mathematical Equation Typography & Styling */
+  .formula-box {
+    margin: 16px 0;
+    background: #f0fdfa;
+    border-left: 4px solid var(--rad-teal);
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    box-shadow: var(--rad-shadow-sm);
+  }
+  .formula-title {
+    font-weight: 700;
+    color: var(--rad-navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .math-display {
+    display: block;
+    text-align: center;
+    margin: 12px 0;
+    font-size: 18px;
+    color: var(--rad-navy);
+  }
+  .math-fallback-display {
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+    font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+    color: var(--rad-navy);
+    font-weight: 600;
+  }
+  .math-fallback-inline {
+    font-family: "Cambria Math", "STIXGeneral", "Times New Roman", Georgia, serif;
+    font-style: normal;
+    letter-spacing: 0.3px;
+    padding: 0 2px;
+    font-weight: 600;
+  }
+
+  /* Station diagrams, scale cards, and figures */
+  .station-diagram-figure { text-align: center; }
+  .station-diagram-figure figcaption { font-size: 12.5px; color: var(--rad-text-faint); margin-top: 8px; }
+  .checklist-fill-table input[type=text] { font-size: 13px; padding: 7px 9px; width: 100%; box-sizing: border-box; }
+  .lab-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 880px) { .lab-meta-grid { grid-template-columns: 1fr 1fr; } }
+  .why-sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 880px) { .why-sim-grid { grid-template-columns: 1fr; } }
+  .why-sim-card { background: var(--rad-bg-soft); border-radius: var(--rad-radius-sm); padding: 16px; border: 1px solid var(--rad-border); }
+  .why-sim-card .fa { color: var(--rad-teal); margin-right: 8px; }
+
+  /* Distance Scale Grid (Station 1) */
+  .distance-scale-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .distance-card {
+    background: #ffffff;
+    border: 1px solid var(--rad-border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: var(--rad-shadow-sm);
+    border-top: 3px solid var(--rad-teal);
+  }
+  .distance-card.card-highlight {
+    border-top-color: #ef4444;
+    background: #fff5f5;
+  }
+  .distance-card .dist-val { font-size: 18px; font-weight: 800; color: var(--rad-navy); margin-bottom: 2px; }
+  .distance-card .dist-factor { font-size: 15px; font-weight: 700; color: var(--rad-teal); }
+  .distance-card .dist-pct { font-size: 12px; color: var(--rad-text-muted); margin-top: 2px; }
+
+  /* Simulation Layout & Controls */
+  .sim-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .sim-canvas-wrap {
+    position: relative; width: 100%; border-radius: var(--rad-radius-sm); overflow: hidden;
+    background: #071a2b; border: 1px solid #28546a; box-shadow: var(--rad-shadow-sm);
+  }
+  .sim-canvas-wrap canvas { display: block; width: 100%; height: auto; aspect-ratio: 3/1; }
+  .sim-presets-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+  .control-card { background: var(--rad-bg-soft); border: 1px solid var(--rad-border); border-radius: var(--rad-radius-sm); padding: 12px 14px; }
+  .control-card label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--rad-navy); margin-bottom: 6px; }
+  .control-card input[type=range] { width: 100%; cursor: pointer; }
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
+  
+  /* Clinical Scenario Options */
+  .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+  .scenario-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--rad-border); border-radius: 8px; background: #fff; cursor: pointer; transition: background 0.15s ease; }
+  .scenario-option:hover { background: var(--rad-bg-soft); }
+  .scenario-option input[type=radio] { margin-top: 3px; cursor: pointer; }
+
+  /* Protocol Step Cards */
+  .protocol-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .protocol-step-card { background: #ffffff; border: 1px solid var(--rad-border); border-radius: 8px; padding: 14px 16px; box-shadow: var(--rad-shadow-sm); border-top: 3px solid var(--rad-teal); }
+  .protocol-step-card .step-num { font-weight: 800; color: var(--rad-teal); font-size: 13px; text-transform: uppercase; margin-bottom: 4px; }
+  .protocol-step-card h4 { margin: 0 0 6px 0; color: var(--rad-navy); font-size: 14px; }
+  .protocol-step-card p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--rad-text-soft); }
+
+  /* Excel Instructions Guide Box */
+  .excel-guide-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  .excel-guide-box h4 { margin: 0 0 8px 0; color: #166534; display: flex; align-items: center; gap: 8px; }
+
+  .rubric-table { min-width: 760px; }
+</style>
 </head>
 <body>
+
 <a class="skip-link" href="#main-content">Skip to lab content</a>
+
+<!-- ===================== TOP BAR ===================== -->
 <header class="lab-topbar">
-  <div class="lab-topbar-inner"><div class="lab-brand"><div class="lab-brand-badge">R321</div><div class="lab-brand-text"><div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div><div class="lab-title">Lab 2 — Image Formation Simulator</div></div></div><div class="lab-topbar-actions"><button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button><button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button><span class="mode-pill">Virtual experiment · Offline</span><a href="../../index.html" class="btn btn-ghost btn-sm">← All Labs</a></div></div>
-  <div class="lab-progress-wrap"><div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div><div class="lab-progress-label"><span id="lab-progress-label-text">0 / 5 assessed sections complete</span><span>Week 2 of 15</span></div></div>
+  <div class="lab-topbar-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-badge">R321</div>
+      <div class="lab-brand-text">
+        <div class="lab-course">RAD 321 · Image Recording &amp; Analysis</div>
+        <div class="lab-title">Lab 2 — Inverse-Square Law, Distance Protection &amp; Image Formation Simulator</div>
+      </div>
+    </div>
+    <div class="lab-topbar-actions">
+      <button class="topbar-pill-btn theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle theme">🌙 Reading Room</button>
+      <button class="topbar-pill-btn sound-toggle-btn" id="sound-toggle-btn" type="button" aria-label="Toggle sound">🔊 Audio On</button>
+      <span class="mode-pill"><i class="fa-solid fa-desktop"></i> Virtual Lab · Two-Tab Layout</span>
+      <a href="../../index.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left"></i> All Labs</a>
+    </div>
+  </div>
+  <div class="lab-progress-wrap">
+    <div class="lab-progress-track"><div class="lab-progress-fill" id="lab-progress-fill"></div></div>
+    <div class="lab-progress-label"><span id="lab-progress-label-text">0 / 7 sections complete (0%)</span><span>Week 2 of 15</span></div>
+  </div>
 </header>
+
+<!-- ===================== STICKY SECTION NAV ===================== -->
 <nav class="lab-nav" id="lab-nav" aria-label="Lab sections"></nav>
-<main class="lab-container" id="main-content">
-  <div class="hero-banner"><img src="../../shared/assets/img/hero-banner.jpg" alt="Illustrated radiography imaging environment"><div class="hero-overlay"><div class="eyebrow">Week 2 · Assessed laboratory assignment</div><h1>Image Formation Simulator</h1><p>Trace how technical factors become a captured image. Directly aligned with: RT’s Role &amp; Image Intensity Formation.</p></div></div>
-  <div class="card assessment-note"><div class="note-mark" aria-hidden="true">◆</div><div><h3 style="margin:0 0 6px;color:var(--rad-navy)">Assessment evidence required</h3><p style="margin:0">Record at least 3 unique experimental runs, complete the concept and clinical challenges, answer all knowledge-check questions correctly, and submit the worksheet. The simulation uses educational relative values—not patient dose or equipment calibration.</p></div></div>
-  <div class="card card-soft"><h3>Student information</h3><div class="lab-meta-grid"><div class="form-row"><label class="field-label" for="meta-studentName">Full name</label><input type="text" id="meta-studentName" required></div><div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" required></div><div class="form-row"><label class="field-label" for="meta-section">Section / group</label><input type="text" id="meta-section" required></div><div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date" required></div></div><p class="form-hint">Work is saved in this browser. Export a JSON backup before changing devices.</p></div>
 
-  <section class="lab-section" id="sec-objectives"><div class="lab-section-head"><div class="lab-section-num">0</div><div><h2>Learning objectives</h2><div class="lab-section-sub">Knowledge, quantitative interpretation, and clinical reasoning</div></div></div><div class="card"><span class="badge badge-objective">CLO alignment: K1, K3, S1–S3, V2–V3</span><ul class="objectives-list"><li><span class="num">1</span>Explain how kVp and mAs alter the primary beam and receptor exposure.</li><li><span class="num">2</span>Use SID, SOD, and OID to calculate magnification and predict geometric change.</li><li><span class="num">3</span>Apply the inverse-square law to compare beam intensity at different distances.</li><li><span class="num">4</span>Explain how patient attenuation changes the remnant beam and visible image intensity.</li><li><span class="num">5</span>Record a reproducible virtual exposure and interpret its results.</li></ul></div></section>
-  <section class="lab-section" id="sec-theory"><div class="lab-section-head"><div class="lab-section-num">1</div><div><h2>Background and model assumptions</h2><div class="lab-section-sub">Read before changing the controls</div></div></div><div class="card"><span class="badge badge-theory">Theory primer</span><p>A radiographic exposure is a chain: the tube produces the primary beam, the patient attenuates it, the remnant beam reaches the receptor, and the receptor converts that signal into an image. In this lab, the detector response is simplified to make cause-and-effect visible.</p><div class="formula-box"><b>Inverse-square law:</b> I₂ = I₁ × (d₁ / d₂)² &nbsp; · &nbsp; <b>Magnification:</b> M = SID / SOD &nbsp; · &nbsp; <b>OID:</b> SID − SOD</div><p>Increasing kVp increases beam energy and penetration; increasing mAs increases photon quantity. Increasing OID increases magnification and unsharpness, while a longer SID generally reduces magnification when SOD is held constant.</p><p class="model-note"><b>Model boundary:</b> Results are directionally and mathematically useful for learning. They are not calibrated exposure charts, dosimetry, or manufacturer specifications.</p></div></section>
+<div class="lab-container" id="main-content" role="main">
 
-  <section class="lab-section" id="sec-experiment"><div class="lab-section-head"><div class="lab-section-num">2</div><div><h2>Guided virtual experiment</h2><div class="lab-section-sub">Prediction → controlled change → recorded evidence → interpretation</div></div></div>
-    <div class="card"><h3>Procedure</h3><div class="procedure-grid"><div class="procedure-step">Write a prediction about increasing SID while all other controls remain fixed.</div><div class="procedure-step">Record a baseline run.</div><div class="procedure-step">Change only SID and record a second run.</div><div class="procedure-step">Return SID to baseline, change only OID, and record a third run.</div><div class="procedure-step">Use the run log to compare intensity and magnification.</div></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="w-prediction">Prediction before changing the controls <span aria-hidden="true">*</span></label><textarea id="w-prediction" rows="3" required placeholder="State the variable you will change and the direction you expect the outcome to move..."></textarea><p class="form-hint">Minimum 20 characters. Your prediction appears in the exported report.</p></div></div>
-    <div class="card"><div class="experiment-layout"><div><canvas id="sim-canvas" class="sim-canvas" width="900" height="300" role="img" aria-label="Interactive visual model for Image Formation Simulator" aria-describedby="sim-caption"></canvas><p class="visual-note" id="sim-caption" role="status" aria-live="polite">Move one control at a time. Numerical results are also listed beside the visual.</p></div><div><div class="control-grid">
-    <div class="control-card">
-      <label for="ctrl-kvp"><span>kVp</span><output id="out-kvp" for="ctrl-kvp">75 kVp</output></label>
-      <input type="range" id="ctrl-kvp" min="50" max="110" step="1" value="75" aria-describedby="sim-caption">
+  <!-- ===================== WELCOME / LAB HERO BANNER ===================== -->
+  <div class="hero-banner">
+    <img src="../../shared/assets/img/hero-banner.jpg" alt="Diagnostic radiography room showing X-ray tube and SID scale">
+    <div class="hero-overlay">
+      <div class="eyebrow">Week 2 · Laboratory Session</div>
+      <h1>Inverse-Square Law, Distance Protection &amp; Image Formation Simulator</h1>
+      <p>An interactive, simulation-based exploration of beam divergence, the Inverse-Square Law, Direct Square Law technique compensation, geometric magnification optics, and occupational distance protection under ALARA.</p>
     </div>
-    <div class="control-card">
-      <label for="ctrl-mas"><span>mAs</span><output id="out-mas" for="ctrl-mas">10 mAs</output></label>
-      <input type="range" id="ctrl-mas" min="2" max="40" step="1" value="10" aria-describedby="sim-caption">
-    </div>
-    <div class="control-card">
-      <label for="ctrl-sid"><span>SID</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
-      <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100" aria-describedby="sim-caption">
-    </div>
-    <div class="control-card">
-      <label for="ctrl-oid"><span>OID</span><output id="out-oid" for="ctrl-oid">5 cm</output></label>
-      <input type="range" id="ctrl-oid" min="0" max="20" step="1" value="5" aria-describedby="sim-caption">
-    </div></div><div class="metric-grid" id="sim-metrics" aria-live="polite"></div></div></div><div class="run-toolbar"><button class="btn btn-primary" id="record-run">Record this run</button><button class="btn btn-secondary btn-sm" id="remove-run">Remove last run</button><span class="run-status" id="run-status" role="status" aria-live="polite">0 / 3 unique runs recorded</span></div><div class="run-table-wrap"><table class="data-table run-table"><thead><tr><th>Run</th><th>Settings</th><th>Key results</th><th>Interpretation</th></tr></thead><tbody id="run-log-body"><tr><td colspan="4" class="muted">No runs recorded yet.</td></tr></tbody></table></div></div>
-  </section>
+  </div>
 
-  <section class="lab-section" id="sec-concept"><div class="lab-section-head"><div class="lab-section-num">3</div><div><h2>Concept application</h2><div class="lab-section-sub">Complete the activity correctly; retry is allowed</div></div></div><article class="challenge-card"><span class="badge badge-sim">Concept challenge</span><h3>Order the intensity chain</h3><p>Place the four image-formation stages in causal order, then explain which stage is changed by patient thickness.</p><div id="concept-activity"></div></article></section>
-  <section class="lab-section" id="sec-scenario"><div class="lab-section-head"><div class="lab-section-num">4</div><div><h2>Clinical decision</h2><div class="lab-section-sub">Choose the best response and use feedback to revise</div></div></div><article class="challenge-card"><span class="badge badge-check">Clinical decision</span><h3>Clinical setup decision</h3><p>A portable AP chest image is enlarged because the detector could not be placed close to the patient. Which adjustment best limits magnification if clinically practical?</p><fieldset><legend class="sr-only">Choose the best clinical response</legend><div class="scenario-options"><label class="scenario-option"><input type="radio" name="scenario-choice" value="0"><span>Increase SID while keeping the detector as close as possible</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="1"><span>Decrease SID and increase OID</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="2"><span>Increase mAs only</span></label><label class="scenario-option"><input type="radio" name="scenario-choice" value="3"><span>Increase focal-spot size</span></label></div></fieldset><button class="btn btn-secondary" id="check-scenario">Check decision</button><div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:10px">Choose an option and justify it using the case evidence.</div></article></section>
-  <section class="lab-section" id="sec-quiz"><div class="lab-section-head"><div class="lab-section-num">5</div><div><h2>Knowledge check</h2><div class="lab-section-sub">4 questions · first attempt and final result are recorded</div></div></div><div class="card"><div id="quiz-wrap"></div></div></section>
-  <section class="lab-section" id="sec-worksheet"><div class="lab-section-head"><div class="lab-section-num">6</div><div><h2>Worksheet — evidence and analysis</h2><div class="lab-section-sub">Refer to run numbers and calculated results</div></div></div><div class="card"><span class="badge badge-worksheet">Graded responses</span><div id="math-helper-container" style="margin-bottom:14px"></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q1">1. Compare two exposure runs using kVp and mAs. What changed in the primary beam and why? <span aria-hidden="true">*</span></label><textarea id="q1" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q2">2. Show one inverse-square calculation using values from your run. <span aria-hidden="true">*</span></label><textarea id="q2" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q3">3. Explain how OID affected magnification and recorded detail. <span aria-hidden="true">*</span></label><textarea id="q3" rows="4" required></textarea></div><div class="form-row" style="margin-top:16px"><label class="field-label" for="q4">4. Critical thinking: identify one patient-dependent and one radiographer-controllable cause of a weak remnant beam. <span aria-hidden="true">*</span></label><textarea id="q4" rows="4" required></textarea></div></div></section>
-  <section class="lab-section" id="sec-rubric"><div class="lab-section-head"><div class="lab-section-num">7</div><div><h2>Grading rubric</h2><div class="lab-section-sub">20 points · student self-assessment; instructor assigns the official grade</div></div></div><div class="card"><div id="rubric-container" style="overflow-x:auto"></div><p class="form-hint">Self-scores help you check completeness. They are not the instructor’s official grade.</p></div></section>
-  <section class="lab-section" id="sec-submit"><div class="lab-section-head"><div class="lab-section-num">8</div><div><h2>Submission</h2><div class="lab-section-sub">Responses, experiment runs, assessment results, and rubric in one report</div></div></div><div class="card text-center" style="padding:32px"><h3>Generate the assignment report</h3><div class="submission-check"><div><b>3 unique runs</b><br><span class="muted">settings and outcomes</span></div><div><b>Assessment evidence</b><br><span class="muted">concept, scenario, quiz</span></div><div><b>Written analysis</b><br><span class="muted">worksheet and rubric</span></div></div><button class="btn btn-primary" id="btn-export-report-inline">Generate submission report</button></div></section>
-</main>
-<div class="lab-actionbar"><div class="lab-actionbar-inner"><div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div><div class="flex gap-8" style="flex-wrap:wrap"><button class="btn btn-secondary btn-sm" id="btn-export-json">Export JSON backup</button><label class="btn btn-secondary btn-sm" style="cursor:pointer">Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none"></label><button class="btn btn-amber btn-sm" id="btn-reset">Reset lab</button><button class="btn btn-primary btn-sm" id="btn-export-report-bar">Generate report</button></div></div></div>
-<footer class="lab-footer">RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>Lab 2 of 15 · assessed virtual laboratory</footer>
+  <!-- Student info -->
+  <div class="card card-soft" style="margin-bottom:20px;">
+    <h3><i class="fa-solid fa-id-card"></i> Student Information</h3>
+    <div class="lab-meta-grid">
+      <div class="form-row"><label class="field-label" for="meta-studentName">Full Name</label><input type="text" id="meta-studentName" placeholder="e.g., Sara Al-Ahmadi"></div>
+      <div class="form-row"><label class="field-label" for="meta-studentId">Student ID</label><input type="text" id="meta-studentId" placeholder="e.g., 442xxxxxx"></div>
+      <div class="form-row"><label class="field-label" for="meta-section">Section / Group</label><input type="text" id="meta-section" placeholder="e.g., Male Section A"></div>
+      <div class="form-row"><label class="field-label" for="meta-date">Date</label><input type="text" id="meta-date"></div>
+    </div>
+    <p class="form-hint"><i class="fa-solid fa-floppy-disk"></i> Your progress auto-saves continuously. Switch tabs below at any time without losing answers or recorded trial data.</p>
+  </div>
+
+  <!-- ===================== TWO-TAB NAVIGATION BAR ===================== -->
+  <div class="lab-tabs-nav" role="tablist" aria-label="Laboratory Workspaces">
+    <button type="button" class="lab-tab-btn active" id="tab-btn-intro" role="tab" aria-selected="true" aria-controls="tab-pane-intro">
+      <i class="fa-solid fa-book-open"></i>
+      <span>Tab 1: Introduction &amp; Interactive Foundations</span>
+      <span class="tab-badge">Instructor Guided</span>
+    </button>
+    <button type="button" class="lab-tab-btn" id="tab-btn-experiment" role="tab" aria-selected="false" aria-controls="tab-pane-experiment">
+      <i class="fa-solid fa-flask"></i>
+      <span>Tab 2: Virtual Physics Experiment &amp; Data Analysis</span>
+      <span class="tab-badge">Simulation &amp; Workbook</span>
+    </button>
+  </div>
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 1: INTRODUCTION & FOUNDATIONS ############# -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane active" id="tab-pane-intro" role="tabpanel" aria-labelledby="tab-btn-intro">
+
+    <!-- About Tab 1 Card -->
+    <div class="card" style="border-left:4px solid var(--rad-teal);">
+      <div class="flex items-center gap-12" style="margin-bottom:10px;">
+        <i class="fa-solid fa-chalkboard-user" style="color:var(--rad-teal); font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Tab 1 Overview: Theory, Distance Physics &amp; Interactive Foundations</h3>
+      </div>
+      <p>This workspace contains the <b>instructional core</b> used by the instructor to teach the physical and geometric principles of X-ray beam propagation, the Inverse-Square Law, the Direct Square Law technique compensation formula, geometric optics, and distance-based radiation protection. Complete the foundational theory, interact with the four dedicated stations, solve the authentic ICU portable clinical scenario, and test your mastery.</p>
+      <div class="why-sim-grid" style="margin-top:12px;">
+        <div class="why-sim-card"><i class="fa-solid fa-circle-check"></i><b>Interactive Stations (1–4):</b> Hands-on distance-exposure calculator, causal 4-stage sequencing, geometric optics matching, and clinical ICU setup decision.</div>
+        <div class="why-sim-card"><i class="fa-solid fa-shield-halved"></i><b>ALARA &amp; Distance Protection:</b> Quantify how distance is the single most potent and cost-free protective tool for staff during mobile bedside, trauma, and fluoroscopic procedures.</div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.6;color:#78350f;">
+        <b><i class="fa-solid fa-stopwatch"></i> Teacher guide — 90-min plan (Tab 1 ≈ 30 min):</b>
+        0–8 min inverse-square demo (1 m → 2 m = ¼ intensity) · 8–22 min Stations 1–3 in pairs · 22–30 min ICU scenario + Phase 1 submit.
+        Tab 2 (≈60 min): minimum 3 runs — baseline, SID shift, OID shift; the 4th compensated run is optional extension. If short on time, do Table A row 1 together as a class.
+      </div>
+      <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:13px;line-height:1.6;color:#065f46;">
+        <b><i class="fa-solid fa-star"></i> 3 takeaways to land:</b>
+        1) Double distance → ¼ intensity. 2) New mAs = old mAs × (new ÷ old)². 3) Big OID = big magnification + blur — keep anatomy close to the receptor.
+      </div>
+    </div>
+
+    <!-- ===================== LEARNING OBJECTIVES ===================== -->
+    <section class="lab-section" id="sec-objectives">
+      <div class="lab-section-head">
+        <div class="lab-section-num">0</div>
+        <div><h2>Learning Objectives</h2><div class="lab-section-sub">Course Learning Outcomes (CLOs K1, S1) &amp; Laboratory Competencies</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-objective"><i class="fa-solid fa-bullseye"></i> CLOs K1, S1</span>
+        <ul class="objectives-list" style="margin-top:14px;">
+          <li><span class="num">1</span><b>Explain the geometric basis of the Inverse-Square Law:</b> Describe how 3D beam divergence from a point focal spot spreads radiation fluence across an expanding spherical wave-front, yielding (I ∝ 1/d²).</li>
+          <li><span class="num">2</span><b>Apply the Direct Square Law for radiographic compensation:</b> Calculate the adjusted exposure technique (new mAs = old mAs × (new SID ÷ old SID)²) required to maintain constant receptor exposure when SID is modified.</li>
+          <li><span class="num">3</span><b>Derive and calculate the Magnification Factor (MF):</b> Apply the geometric relationships SOD = SID − OID and MF = SID ÷ SOD to determine anatomical image enlargement and percentage magnification.</li>
+          <li><span class="num">4</span><b>Differentiate patient attenuation from geometric factors:</b> Contrast how tissue thickness/density attenuates the beam with how SID and OID govern projected shadow dimensions and focal spot blur.</li>
+          <li><span class="num">5</span><b>Synthesize distance protection principles under occupational ALARA:</b> Quantify how doubling or tripling operator distance from scatter sources (patients) reduces occupational dose by 75% to 89% under the 3 Cardinal Rules.</li>
+          <li><span class="num">6</span><b>Formulate clinical solutions for mobile/trauma imaging:</b> Solve authentic clinical scenarios where unavoidable OID requires SID adjustments to prevent diagnostic misinterpretation of organ enlargement.</li>
+          <li><span class="num">7</span><b>Conduct reproducible virtual experiments and report findings:</b> Record controlled simulation runs, perform curve-fitting in Excel, and complete a two-phase lab report.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== BACKGROUND THEORY ===================== -->
+    <section class="lab-section" id="sec-theory">
+      <div class="lab-section-head">
+        <div class="lab-section-num">1</div>
+        <div><h2>Background: The Physics of Distance, Intensity &amp; Geometry</h2><div class="lab-section-sub">Physical foundation of beam divergence, technique compensation, and magnification optics</div></div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-theory"><i class="fa-solid fa-book-open"></i> Theory Primer</span>
+        
+        <h3>1.1 The Inverse-Square Law: Physical &amp; Geometric Origin</h3>
+        <p>X-rays are emitted isotropically from the tube focal spot and travel in straight divergent lines through space. Because the beam emerges from an effective point source, the area over which the photons spread increases as the square of the distance from the source (<span class="math-tex">$Area \propto d^2$</span>). Because the total number of photons emitted during an exposure is fixed by mAs, the <b>photon fluence</b> (photons per unit area, or radiation intensity <span class="math-tex">$I$</span>) decreases in inverse proportion to the square of the distance:</p>
+
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-square-root-variable"></i> Inverse-Square Law Equation:</div>
+          <div class="math-display">$$\frac{I_1}{I_2} = \left(\frac{d_2}{d_1}\right)^2 \iff I_2 = I_1 \times \left(\frac{d_1}{d_2}\right)^2$$</div>
+          <div style="font-size:13px;color:var(--rad-text-soft);">
+            Where <span class="math-tex">$I_1$</span> is the original intensity at distance <span class="math-tex">$d_1$</span>, and <span class="math-tex">$I_2$</span> is the new intensity at distance <span class="math-tex">$d_2$</span>.<br>
+            <b>Clinical Consequence:</b> If distance from the source doubles (<span class="math-tex">$d_2 = 2 \cdot d_1$</span>), beam intensity drops to <b>one-quarter (25%)</b> of its original value. If distance triples, intensity drops to <b>one-ninth (~11.1%)</b>.
+          </div>
+        </div>
+
+        <h3>1.2 The Direct Square Law: Radiographic Technique Compensation</h3>
+        <p>While the Inverse-Square Law describes what happens to radiation intensity when distance changes with no intervention, the radiographer must maintain a consistent, diagnostic detector exposure (and avoid quantum mottle) when clinical circumstances require changing the Source-to-Image Distance (SID). To keep the photon fluence reaching the image receptor constant, exposure quantity (mAs) must be adjusted in direct proportion to the square of the distance:</p>
+
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-sliders"></i> Direct Square Law (Exposure Maintenance Formula):</div>
+          <div class="math-display">$$\frac{\text{mAs}_1}{\text{mAs}_2} = \left(\frac{d_1}{d_2}\right)^2 \iff \text{mAs}_2 = \text{mAs}_1 \times \left(\frac{d_2}{d_1}\right)^2$$</div>
+          <div style="font-size:13px;color:var(--rad-text-soft);">
+            <b>Diagnostic Example:</b> A pelvis radiograph is calibrated at 10 mAs at 100 cm SID. If the SID must be increased to 140 cm, the required compensated mAs is:<br>
+            <div class="math-display">$$\text{mAs}_2 = 10 \times \left(\frac{140}{100}\right)^2 = 10 \times (1.4)^2 = 10 \times 1.96 \approx 19.6 \approx 20\text{ mAs}$$</div>
+            <span class="text-danger" style="font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> Clinical Rule of Thumb:</i> Increasing SID from 100 cm to 140 cm requires approximately doubling the mAs; increasing SID from 100 cm to 180 cm (~72 inches) requires multiplying mAs by approximately 3.24×!</span>
+          </div>
+        </div>
+
+        <h3>1.3 Geometric Optics: SID, SOD, OID &amp; Magnification</h3>
+        <p>Every radiographic exposure involves three fundamental geometric distances:</p>
+        <ul>
+          <li><b>Source-to-Image Distance (SID):</b> The total distance from the X-ray tube focal spot to the active surface of the image receptor.</li>
+          <li><b>Source-to-Object Distance (SOD):</b> The distance from the focal spot to the anatomical structure of interest within the patient:
+            <div class="math-display">$$\text{SOD} = \text{SID} - \text{OID}$$</div>
+          </li>
+          <li><b>Object-to-Image Distance (OID):</b> The distance from the anatomical structure to the image receptor surface.</li>
+        </ul>
+        <p>Because the X-ray beam diverges, any object positioned between the focal spot and receptor will project a shadow larger than its physical anatomical size. The degree of enlargement is defined by the <b>Magnification Factor (MF)</b>:</p>
+
+        <div class="formula-box">
+          <div class="formula-title"><i class="fa-solid fa-magnifying-glass"></i> Magnification Factor &amp; Image Size Equations:</div>
+          <div class="math-display">$$MF = \frac{\text{SID}}{\text{SOD}} = \frac{\text{SID}}{\text{SID} - \text{OID}}$$</div>
+          <div class="math-display">$$\text{Image Size} = \text{Object Size} \times MF \quad \text{and} \quad \% \text{ Enlargement} = (MF - 1) \times 100\%$$</div>
+          <div style="font-size:13px;color:var(--rad-text-soft);">
+            <b>Geometric Blur (Penumbra):</b> In addition to size enlargement, an elevated OID causes the finite focal spot size (FSS) to project an unsharp boundary called geometric blur or penumbra: <span class="math-tex">$FGB = FSS \times OID / SOD$</span>. To maximize spatial resolution and minimize distortion, the radiographer must always strive for the <b>shortest practical OID</b> and the <b>longest practical SID</b>.
+          </div>
+        </div>
+
+        <h3>1.4 Distance as Radiation Protection: Occupational ALARA</h3>
+        <p>The three cardinal principles of radiation protection are <b>Time, Distance, and Shielding</b>. Among these, <b>distance is the most practical immediate tool</b> for staff during mobile and bedside work (shielding is still required where provided):</p>
+        <ul>
+          <li>During diagnostic radiography, the patient acts as an extended source of Compton scattered radiation. Scatter intensity at 1 meter from the patient is approximately <b>0.1% (1/1000th)</b> of the incident primary beam intensity <b>for a typical field size at ~70 kVp (field- and kVp-dependent — see Bushong)</b>.</li>
+          <li>Applying the Inverse-Square Law to scatter: doubling your distance from the patient (e.g. stepping from 1 meter to 2 meters) reduces your scatter exposure by <b>75%</b> (down to one-quarter). Stepping back to 3 meters reduces your exposure by nearly <b>89%</b> (down to one-ninth).</li>
+          <li>In mobile (portable) radiography and C-arm fluoroscopy, where structural lead barriers are absent, maximizing distance from the patient and tube is paramount to maintaining occupational doses ALARA (As Low As Reasonably Achievable).</li>
+        </ul>
+
+        <h3>1.5 The Four Sequential Stages of Radiographic Image Formation</h3>
+        <ol>
+          <li><b>Primary Beam Propagation:</b> X-ray photons travel from the tube focal spot through filtration and collimator shutters. Intensity decreases strictly with distance squared (<span class="math-tex">$I \propto 1/d^2$</span>).</li>
+          <li><b>Patient Interaction:</b> The divergent beam enters the patient's body and is differentially attenuated via photoelectric absorption and Compton scattering, yielding remnant exit intensities.</li>
+          <li><b>Image Capture:</b> The remnant beam strikes the image receptor (DR flat panel, CR PSP, or screen-film), generating an electronic charge or latent image pattern.</li>
+          <li><b>Image Processing &amp; Display:</b> Computerized ADC digitization, histogram analysis, Look-Up Table (LUT) mapping, and workstation monitor visualization.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 1: DISTANCE EXPLORER ===================== -->
+    <section class="lab-section" id="sec-station1">
+      <div class="lab-section-head">
+        <div class="lab-section-num">2</div>
+        <div><h2>Station 1 — Interactive Inverse-Square &amp; Distance Protection Explorer</h2><div class="lab-section-sub">Quantify beam divergence, fluence reduction, and occupational scatter protection</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-ruler-combined"></i> Interactive Distance Explorer</span>
+        <p style="margin-top:12px;">Review the geometric radiation intensity and occupational scatter dose table below. Observe how rapid photon divergence spares radiation dose as distance increases:</p>
+
+        <div class="distance-scale-grid">
+          <div class="distance-card card-highlight">
+            <div class="dist-val">1.0 Meter</div>
+            <div class="dist-factor">100.0%</div>
+            <div class="dist-pct">Baseline Fluence (1.00×)</div>
+          </div>
+          <div class="distance-card">
+            <div class="dist-val">1.4 Meters</div>
+            <div class="dist-factor">51.0%</div>
+            <div class="dist-pct">~1/2 Intensity (0.51×)</div>
+          </div>
+          <div class="distance-card">
+            <div class="dist-val">2.0 Meters</div>
+            <div class="dist-factor">25.0%</div>
+            <div class="dist-pct">1/4 Intensity (0.25×)</div>
+          </div>
+          <div class="distance-card">
+            <div class="dist-val">3.0 Meters</div>
+            <div class="dist-factor">11.1%</div>
+            <div class="dist-pct">1/9 Intensity (0.11×)</div>
+          </div>
+          <div class="distance-card">
+            <div class="dist-val">4.0 Meters</div>
+            <div class="dist-factor">6.25%</div>
+            <div class="dist-pct">1/16 Intensity (0.06×)</div>
+          </div>
+        </div>
+
+        <div class="info-note" style="margin:14px 0;"><i class="fa-solid fa-lightbulb"></i> <b>Occupational Protection Takeaway:</b> Stepping back from 1 m to 2 m during portable radiography provides a <b>75% exposure reduction</b> without requiring heavy lead aprons. Stepping back to 3 m yields an <b>88.9% dose reduction</b>!</div>
+
+        <hr class="divider">
+        <div id="quiz-station1"></div>
+
+        <!-- Station 1 Synthesis: Distance Calculations Table A -->
+        <h4 style="margin-top:20px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> Synthesis Check: Distance &amp; Technique Calculations (Worksheet Table A)</h4>
+        <p class="small muted">Calculate the intensity drop and the compensated technique for the two clinical distance changes below (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:8px;">
+          <tr><th style="width:30%">Clinical Distance Scenario</th><th>Mathematical Formula &amp; Step-by-Step Calculation</th><th>Result &amp; Interpretation</th></tr>
+          <tr>
+            <td><b>1. Inverse-Square Fluence:</b> Intensity change when SID extends from 100 cm (100 mR) to 140 cm</td>
+            <td><input type="text" id="w-calc-invsq" placeholder="e.g., I2 = 100 * (100/140)^2 = 100 * (0.714)^2 = 51.02 mR"></td>
+            <td><input type="text" id="w-calc-invsq-res" placeholder="e.g., 51.02 mR (48.98% drop in receptor intensity)"></td>
+          </tr>
+          <tr>
+            <td><b>2. Direct Square Law:</b> Technique compensation when SID extends from 100 cm (10 mAs) to 140 cm</td>
+            <td><input type="text" id="w-calc-dsl" placeholder="e.g., mAs2 = 10 * (140/100)^2 = 10 * 1.96 = 19.6 mAs"></td>
+            <td><input type="text" id="w-calc-dsl-res" placeholder="e.g., ~20 mAs required to prevent quantum mottle"></td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 2: DRAG ORDER 4 STAGES ===================== -->
+    <section class="lab-section" id="sec-stages">
+      <div class="lab-section-head">
+        <div class="lab-section-num">3</div>
+        <div><h2>Station 2 — Order the Image Formation Stages</h2><div class="lab-section-sub">Reinforce the causal sequence of radiographic intensity formation</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-arrow-down-1-9"></i> Interactive Sequencing Station</span>
+        <p style="margin-top:12px;">The four stages of image intensity formation below are shuffled. Drag them into the correct causal order — from primary beam emergence to the final displayed radiograph — then click <b>Check Order</b>.</p>
+        <div id="stages-drag-container"></div>
+        <hr class="divider">
+        <div id="quiz-stages"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 3: GEOMETRIC OPTICS MATCH ===================== -->
+    <section class="lab-section" id="sec-geometry">
+      <div class="lab-section-head">
+        <div class="lab-section-num">4</div>
+        <div><h2>Station 3 — Geometric Optics &amp; Alignment Matcher</h2><div class="lab-section-sub">Master the physical definitions of SID, SOD, OID, Magnification Factor, and Penumbra</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-shapes"></i> Interactive Geometric Matching</span>
+        <p style="margin-top:12px;">Click a geometric term on the left, then click its corresponding physical or diagnostic definition on the right.</p>
+        <div id="geometry-match-container"></div>
+        <hr class="divider">
+        <div id="quiz-geometry"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATION 4: CLINICAL SCENARIO ===================== -->
+    <section class="lab-section" id="sec-scenario">
+      <div class="lab-section-head">
+        <div class="lab-section-num">5</div>
+        <div><h2>Station 4 — Clinical Decision Scenario: Bedside ICU Geometry</h2><div class="lab-section-sub">Apply geometric principles and ALARA to resolve unavoidable OID in portable imaging</div></div>
+      </div>
+      <article class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-user-doctor"></i> Authentic Clinical Case</span>
+        <h3 style="margin-top:12px;color:var(--rad-navy);">ICU Portable AP Chest: Managing Unavoidable OID &amp; Magnification</h3>
+        <p>A portable AP chest radiograph is performed on a critically ill intensive care patient who is immobilized in traction with multiple monitoring cables and a thoracic drainage system. Because of the patient's positioning constraints, the digital detector flat panel cannot be slid immediately behind the patient's posterior chest, resulting in an <b>unavoidable 15 cm OID</b>. The initial scout image demonstrates an enlarged cardiac shadow (+18% magnification) and slight edge penumbra.</p>
+        <p>The attending intensivist is concerned about cardiomegaly versus pericardial effusion. Which technical setup adjustment best limits geometric cardiac magnification while adhering strictly to radiation protection standards?</p>
+
+        <fieldset style="border:none;padding:0;margin:0;">
+          <legend class="sr-only">Select the optimal clinical geometric correction</legend>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="0">
+              <span><b>Increase SID from 100 cm to 140 cm (or maximum feasible room distance)</b> while keeping the detector as close to the patient as practically possible, compensating mAs via the Direct Square Law to restore receptor exposure. A longer SID increases SOD and brings the magnification factor <span class="math-tex">$MF = SID / SOD$</span> closer to 1.0, minimizing false cardiomegaly.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="1">
+              <span><b>Decrease SID to 80 cm and deliberately increase OID to 20 cm</b> to utilize the air-gap technique for scatter cleanup without compensating exposure factors.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="2">
+              <span><b>Increase tube potential (kVp) by 15% and switch to a large focal spot</b> without changing SID or OID to penetrate the enlarged cardiac silhouette.</span>
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="scenario-choice" value="3">
+              <span><b>Apply extreme digital edge enhancement and zoom filtering</b> on the PACS workstation console to digitally shrink the displayed heart size without altering geometric factors.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="button" class="btn btn-secondary" id="check-scenario"><i class="fa-solid fa-stethoscope"></i> Check Clinical Decision</button>
+        <div class="feedback-box" id="scenario-feedback" role="status" aria-live="polite" style="margin-top:12px;">Select an option above and check your clinical decision.</div>
+      </article>
+    </section>
+
+    <!-- ===================== KNOWLEDGE CHECK ===================== -->
+    <section class="lab-section" id="sec-quiz">
+      <div class="lab-section-head">
+        <div class="lab-section-num">6</div>
+        <div><h2>Knowledge Check Mastery Quizzes</h2><div class="lab-section-sub">Formative assessment of inverse-square law, magnification factor, and beam physics</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-check"><i class="fa-solid fa-circle-check"></i> Formative Mastery Assessment</span>
+        <div id="quiz-final" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 1 SUBMISSION HUB (IN-LAB ACTIVITIES) ===================== -->
+    <section class="lab-section" id="sec-submit-phase1">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-paper-plane"></i></div>
+        <div><h2>Phase 1 Submission — In-Lab Interactive Activities</h2><div class="lab-section-sub">Submit and lock in your in-lab activities score (10 points) before leaving the laboratory session</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+    <!-- ===================== CTA TRANSITION TO TAB 2 ===================== -->
+    <div class="card" style="background:linear-gradient(135deg, #071a2b 0%, #134e6f 100%);color:#fff;border-radius:12px;padding:26px;margin-top:24px;box-shadow:var(--rad-shadow-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div style="max-width:620px;">
+          <span style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7fe0d6;font-weight:700;">Foundations Complete · Ready for Experimentation</span>
+          <h3 style="color:#ffffff;margin:8px 0 10px;font-size:22px;">Proceed to Tab 2: Virtual Physics Experiment</h3>
+          <p style="margin:0;font-size:14px;opacity:0.92;line-height:1.5;">Now that you have completed the conceptual primer and interactive stations, enter the dedicated digital physics laboratory to conduct your controlled distance and magnification trials, export your dataset, and complete your data analysis.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-teal" id="btn-proceed-to-sim" style="padding:14px 28px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.25);">
+            <i class="fa-solid fa-flask"></i> Proceed to Tab 2: Virtual Experiment &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#tab-pane-intro -->
+
+
+  <!-- #################################################################### -->
+  <!-- #################### TAB 2: VIRTUAL SIMULATION & WORKBOOK ########## -->
+  <!-- #################################################################### -->
+  <div class="lab-tab-pane" id="tab-pane-experiment" role="tabpanel" aria-labelledby="tab-btn-experiment">
+
+    <!-- Tab 2 Quick Navigation Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:12.5px;"><i class="fa-solid fa-microscope"></i> Tab 2: Virtual Laboratory &amp; Analysis Workspace</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-intro" style="font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Return to Tab 1 (Theory &amp; Foundations)</button>
+    </div>
+
+    <!-- ===================== EXPERIMENT PROTOCOL & OBJECTIVES ===================== -->
+    <section class="card" id="sec-exp-guide" style="border-left:4px solid var(--rad-teal);margin-bottom:24px;">
+      <div class="flex items-center gap-12" style="margin-bottom:8px;">
+        <i class="fa-solid fa-list-check" style="color:var(--rad-teal);font-size:22px;"></i>
+        <h3 class="mt-0 mb-0" style="color:var(--rad-teal);">Virtual Physics Experiment: Protocol, Objectives &amp; Step-by-Step Procedure</h3>
+      </div>
+      <p style="margin:6px 0 14px 0;font-size:14px;line-height:1.5;">Welcome to the dedicated Image Formation simulation suite. Follow the standardized procedure below to record at least <b>3 unique controlled runs</b> for your post-lab Excel workbook.</p>
+
+      <div style="background:#f8fafc;border:1px solid var(--rad-border);border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+        <h4 style="margin:0 0 8px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-bullseye" style="color:var(--rad-teal);"></i> Specific Experimental Objectives:</h4>
+        <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;color:var(--rad-navy);">
+          <li><b>Inverse-Square Fluence Drop:</b> Quantify how extending SID from 100 cm to 140 cm and 180 cm reduces photon fluence reaching the detector under the inverse-square law.</li>
+          <li><b>Direct Square Law Technique Compensation:</b> Calculate and verify the mAs multiplier required to maintain constant receptor exposure when SID is increased.</li>
+          <li><b>Geometric Magnification &amp; Caliper Sizing:</b> Measure how varying OID (0 to 20 cm) and SID changes projected shadow dimensions and calipers (<span class="math-tex">$MF = SID / SOD$</span>).</li>
+          <li><b>Differential Attenuation &amp; Remnant Beam:</b> Observe how kVp penetration alters photon transmission through the patient tissue phantom and dense bone core.</li>
+        </ol>
+      </div>
+
+      <h4 style="margin:0 0 10px 0;color:var(--rad-navy);font-size:14.5px;"><i class="fa-solid fa-clipboard-list" style="color:var(--rad-teal);"></i> Step-by-Step Laboratory Procedure:</h4>
+      <div class="protocol-steps-grid">
+        <div class="protocol-step-card">
+          <div class="step-num">Step 1 · Scientific Hypothesis</div>
+          <h4>Formulate Prediction</h4>
+          <p>Before modifying controls, write a hypothesis in the <b>Pre-Trial Scientific Prediction</b> field predicting how altering SID or OID will impact beam intensity and magnification.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 2 · Baseline Trial (Run 1)</div>
+          <h4>Standard Diagnostic Baseline</h4>
+          <p>Click preset <b>Standard Baseline (100 cm SID, 5 cm OID)</b>. Observe the focal spot, beam divergence, tissue shadow, and detector caliper reading. Record Run 1.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 3 · Distance Shift (Run 2)</div>
+          <h4>Inverse-Square Intensity Drop</h4>
+          <p>Increase SID to 140 cm or click <b>Extended SID Chest (180 cm)</b>. Observe the severe drop in receptor intensity and detector signal. Record Run 2.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 4 · Magnification Trial (Run 3)</div>
+          <h4>Elevated OID &amp; Shadow Expansion</h4>
+          <p>Click preset <b>High OID Magnification (15 cm OID)</b> with SID at 100 cm. Observe the expanded cast shadow calipers on the detector and increased penumbra. Record Run 3.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 5 · Technique Compensation</div>
+          <h4>Direct Square Law Trial (Run 4 — optional)</h4>
+          <p>Click preset <b>mAs Compensated (140 cm, 20 mAs)</b>. Notice how doubling mAs restores target detector signal (~12 a.u.) despite the 140 cm distance. Record Run 4 <b>only if time allows — 3 runs already meet the requirement</b>.</p>
+        </div>
+        <div class="protocol-step-card">
+          <div class="step-num">Step 6 · Export Dataset</div>
+          <h4>Download Run Data (CSV)</h4>
+          <p>Click <b>Download Run Data (CSV)</b> in the toolbar to export your trial dataset for your post-lab Excel curve-fitting and analysis requirements.</p>
+        </div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;line-height:1.7;color:#78350f;">
+        <b><i class="fa-solid fa-list-check"></i> Student checklist — Tab 2 (≈60 min, do in order):</b><br>
+        ☐ 1. Write 1-sentence prediction &nbsp; ☐ 2. Run 1 Baseline + Record &nbsp; ☐ 3. Run 2 SID 140/180 + Record &nbsp; ☐ 4. Run 3 High-OID + Record &nbsp; ☐ 5. CSV export &nbsp; ☐ 6. Excel inverse-square plot + Table B.<br>
+        <b>Stuck?</b> Record blocked → write the prediction first. Change ONE thing per run (SID <i>or</i> OID, never both). Run 4 is bonus, not required.
+      </div>
+    </section>
+
+    <!-- ===================== VIRTUAL EXPERIMENT SIMULATOR SUITE ===================== -->
+    <section class="lab-section" id="sec-experiment">
+      <div class="lab-section-head">
+        <div class="lab-section-num">7</div>
+        <div><h2>Virtual Simulation Suite — Image Formation &amp; Beam Geometry</h2><div class="lab-section-sub">Simulate beam divergence, inverse-square intensity, geometric magnification, and remnant beam capture</div></div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-sim"><i class="fa-solid fa-flask"></i> Interactive Digital Simulator</span>
+        <p style="margin-top:10px;font-size:13.5px;">Adjust physical and geometric parameters below to observe real-time beam divergence, tissue attenuation, projected calipers, and receptor signal. <b>Record at least 3 unique runs</b> with scientific predictions.</p>
+
+        <!-- Presets bar -->
+        <div class="sim-presets-bar">
+          <span class="small muted" style="font-weight:700;margin-right:6px;"><i class="fa-solid fa-sliders"></i> Clinical Presets:</span>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="75" data-mas="10" data-sid="100" data-oid="5">Standard Baseline (100 cm SID, 5 cm OID)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="110" data-mas="5" data-sid="180" data-oid="5">Extended SID Chest (180 cm SID)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="75" data-mas="10" data-sid="100" data-oid="15">High OID Magnification (15 cm OID)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="70" data-mas="10" data-sid="80" data-oid="2">Short SID / Intensity Surge (80 cm)</button>
+          <button type="button" class="btn btn-ghost btn-sm preset-btn" data-kvp="75" data-mas="20" data-sid="140" data-oid="5">mAs Compensated (140 cm, 20 mAs)</button>
+        </div>
+
+        <!-- Simulation Layout -->
+        <div class="sim-layout">
+          <!-- Interactive Canvas -->
+          <div class="sim-canvas-wrap">
+            <canvas id="sim-canvas" width="900" height="300" aria-label="Interactive digital simulation of X-ray beam divergence, patient attenuation, and image formation"></canvas>
+          </div>
+
+          <!-- Controls Grid -->
+          <div class="control-grid">
+            <div class="control-card">
+              <label for="ctrl-kvp"><span>Tube Accelerating Potential (kVp)</span><output id="out-kvp" for="ctrl-kvp">75 kVp</output></label>
+              <input type="range" id="ctrl-kvp" min="50" max="110" step="1" value="75">
+              <span class="small muted">Governs maximum photon energy, beam penetration &amp; remnant scatter</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-mas"><span>Tube Current-Exposure Time (mAs)</span><output id="out-mas" for="ctrl-mas">10 mAs</output></label>
+              <input type="range" id="ctrl-mas" min="2" max="40" step="1" value="10">
+              <span class="small muted">Directly controls primary photon quantity (fluence)</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-sid"><span>Source-to-Image Distance (SID)</span><output id="out-sid" for="ctrl-sid">100 cm</output></label>
+              <input type="range" id="ctrl-sid" min="80" max="180" step="1" value="100">
+              <span class="small muted">Governs beam divergence, inverse-square intensity &amp; field coverage</span>
+            </div>
+
+            <div class="control-card">
+              <label for="ctrl-oid"><span>Object-to-Image Distance (OID)</span><output id="out-oid" for="ctrl-oid">5 cm</output></label>
+              <input type="range" id="ctrl-oid" min="0" max="20" step="1" value="5">
+              <span class="small muted">Air gap between anatomy and detector; governs magnification &amp; blur</span>
+            </div>
+          </div>
+
+          <!-- Real-time metrics grid -->
+          <div class="metric-grid" id="sim-metrics" aria-live="polite" style="margin-top:14px;"></div>
+
+          <!-- Live Observation Caption -->
+          <div class="feedback-box" id="sim-caption" style="margin-top:10px;background:#f8fafc;border-left:4px solid var(--rad-teal);color:var(--rad-navy);font-size:13px;line-height:1.5;"></div>
+
+          <!-- Scientific Prediction & Run Logging Toolbar -->
+          <div class="card card-soft" style="margin-top:16px;border:1px solid var(--rad-border);">
+            <div class="form-row" style="margin-bottom:12px;">
+              <label class="field-label" for="w-prediction">Pre-Trial Scientific Prediction <span aria-hidden="true">*</span></label>
+              <input type="text" id="w-prediction" placeholder="e.g., Increasing SID from 100 cm to 140 cm will reduce beam intensity by ~50%, requiring doubled mAs under the Direct Square Law..." style="width:100%;">
+              <span class="small muted">Required before logging each trial. Formulate a hypothesis regarding the physical variable you are about to adjust.</span>
+            </div>
+
+            <div class="run-toolbar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" id="record-run"><i class="fa-solid fa-circle-dot"></i> Record This Run</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="remove-run"><i class="fa-solid fa-trash"></i> Remove Last Run</button>
+              <span class="run-status" id="run-status" role="status" aria-live="polite" style="font-weight:700;color:var(--rad-navy);font-size:13px;">0 / 3 unique runs recorded</span>
+            </div>
+
+            <div class="run-table-wrap" style="margin-top:14px;overflow-x:auto;">
+              <table class="data-table run-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px;">Run</th>
+                    <th>Settings &amp; Technique</th>
+                    <th>Physical Conversion Metrics</th>
+                    <th>Clinical Model Interpretation</th>
+                  </tr>
+                </thead>
+                <tbody id="run-log-body">
+                  <tr><td colspan="4" class="muted">No runs recorded yet. Adjust controls above and click "Record This Run".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POST-LAB DATA ANALYSIS & WORKSHEET ===================== -->
+    <section class="lab-section" id="sec-worksheet">
+      <div class="lab-section-head">
+        <div class="lab-section-num">8</div>
+        <div><h2>Required Data Analysis &amp; Post-Lab Reflection</h2><div class="lab-section-sub">Quantitative geometric calculations, Excel curve plotting instructions, and clinical reflection</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-worksheet"><i class="fa-solid fa-chart-line"></i> Post-Lab Quantitative Analysis</span>
+
+        <!-- Interactive Math Scratchpad -->
+        <div id="math-helper-container" style="margin-bottom:18px;"></div>
+
+        <!-- Excel Data Analysis Instructions Guide Box -->
+        <div class="excel-guide-box">
+          <h4><i class="fa-solid fa-file-excel"></i> Required Post-Lab Excel Data Analysis (Phase 2):</h4>
+          <p style="margin:0 0 10px 0;font-size:13.5px;line-height:1.5;color:#166534;">
+            To fulfill the 10-point Phase 2 submission requirement, export your experimental runs using <b>"Download Run Data (CSV)"</b> and perform the following analytical steps in Microsoft Excel or Google Sheets:
+          </p>
+          <ol style="margin:0;padding-left:22px;font-size:13px;line-height:1.6;color:#14532d;">
+            <li><b>Plot 1 — Inverse-Square Law Curve (SID vs Distance Intensity %):</b> Plot Source-to-Image Distance (SID, cm) on the X-axis against Distance Intensity (%) on the Y-axis. Fit a power regression trendline (<span class="math-tex">$y = a \cdot x^{-2}$</span>) and display the <span class="math-tex">$R^2$</span> equation demonstrating the inverse-square relationship.</li>
+            <li><b>Plot 2 — Geometric Magnification Curve (OID vs Magnification Factor MF):</b> At a constant 100 cm SID, plot Object-to-Image Distance (OID, cm) on the X-axis against Magnification Factor (<span class="math-tex">MF</span>) on the Y-axis. Add a trendline showing the non-linear upward curve as OID increases toward the focal spot.</li>
+            <li><b>Direct Square Law Column:</b> In your spreadsheet, add a calculated column computing the theoretical compensated mAs (<span class="math-tex">$\text{mAs}_2$</span>) required to match the 10 mAs baseline across each of your recorded distances.</li>
+            <li><b>Save and Upload:</b> Save your completed spreadsheet as an <code>.xlsx</code> or <code>.csv</code> file and upload it in <b>Section 10 (Submission Hub)</b> below.</li>
+          </ol>
+        </div>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-calculator"></i> B. Quantitative Verification Calculations</h4>
+        <p class="small muted">Calculate the exact physical parameters below using values from your simulation runs (auto-saved to your worksheet):</p>
+        <table class="data-table checklist-fill-table" style="margin-bottom:20px;">
+          <tr><th style="width:30%">Physical Law / Parameter</th><th>Formula &amp; Substituted Values</th><th>Calculated Result &amp; Unit</th></tr>
+          <tr>
+            <td><b>Inverse-Square Intensity:</b> Fluence at 140 cm from 100 cm baseline (<span class="math-tex">$I_1 = 100\%$</span>)</td>
+            <td><input type="text" id="w-calc-invsq-check" placeholder="e.g., I2 = 100 * (100 / 140)^2 = 100 * (0.714)^2"></td>
+            <td><input type="text" id="w-calc-invsq-out" placeholder="e.g., 51.02% of baseline intensity"></td>
+          </tr>
+          <tr>
+            <td><b>Direct Square Law:</b> Compensated mAs at 140 cm from 10 mAs baseline</td>
+            <td><input type="text" id="w-calc-dsl-check" placeholder="e.g., mAs2 = 10 * (140 / 100)^2 = 10 * (1.4)^2"></td>
+            <td><input type="text" id="w-calc-dsl-out" placeholder="e.g., 19.6 mAs (~20 mAs)"></td>
+          </tr>
+          <tr>
+            <td><b>Magnification Factor (MF):</b> 100 cm SID with 15 cm OID</td>
+            <td><input type="text" id="w-calc-mag" placeholder="e.g., SOD = 100 - 15 = 85 cm; MF = 100 / 85"></td>
+            <td><input type="text" id="w-calc-mag-out" placeholder="e.g., 1.176× (+17.6% enlargement)"></td>
+          </tr>
+        </table>
+
+        <h4 style="margin-top:22px;color:var(--rad-navy);"><i class="fa-solid fa-comment-dots"></i> C. Post-Lab Reflection &amp; Clinical Analysis Questions</h4>
+
+        <div class="form-row">
+          <label class="field-label" for="q1">1. Compare two exposure runs using kVp and mAs. What changed in the primary beam photon fluence and penetration, and why? Cite specific numerical values from your runs. <span aria-hidden="true">*</span></label>
+          <textarea id="q1" rows="4" required placeholder="Compare your baseline run with a modified kVp or mAs trial, citing exact numbers and explaining beam physics..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q2">2. Show one complete inverse-square calculation and one direct-square law mAs compensation calculation using values from your simulation runs. <span aria-hidden="true">*</span></label>
+          <textarea id="q2" rows="4" required placeholder="State your initial distance/intensity, new distance, and show step-by-step substitution for both formulas..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q3">3. Explain how OID affected magnification factor (MF), projected shadow dimensions, and recorded edge sharpness (penumbra). Cite specific run evidence. <span aria-hidden="true">*</span></label>
+          <textarea id="q3" rows="4" required placeholder="Discuss SOD reduction, caliper measurements from the canvas, and the focal spot blur formula FGB = FSS * OID / SOD..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="field-label" for="q4">4. Critical thinking: Identify one patient-dependent factor and one radiographer-controllable factor that cause a weak remnant beam (photon starvation). How does the radiographer correct this under ALARA without excessive patient dose? <span aria-hidden="true">*</span></label>
+          <textarea id="q4" rows="4" required placeholder="Contrast tissue thickness/pathology with SID/mAs selection, and explain the optimal corrective trade-off..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RUBRIC ===================== -->
+    <section class="lab-section" id="sec-rubric">
+      <div class="lab-section-head">
+        <div class="lab-section-num">9</div>
+        <div><h2>Standardized Grading Rubric</h2><div class="lab-section-sub">Total: 20 points — Departmental standardized evaluation criteria across Phase 1 and Phase 2</div></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-rubric"><i class="fa-solid fa-clipboard-list"></i> Standardized Department Rubric</span>
+        <div id="rubric-container" style="margin-top:14px; overflow-x:auto;"></div>
+        <p class="form-hint" style="margin-top:10px;">Students: score yourself to evaluate your readiness. Official grades and Gemini Flash AI feedback are assigned via the department portal.</p>
+      </div>
+    </section>
+
+    <!-- ===================== PHASE 2 SUBMISSION HUB (POST-LAB EXCEL ANALYSIS) ===================== -->
+    <section class="lab-section" id="sec-submit-phase2">
+      <div class="lab-section-head">
+        <div class="lab-section-num"><i class="fa-solid fa-file-excel"></i></div>
+        <div><h2>Phase 2 Submission — Post-Lab Excel Data Analysis</h2><div class="lab-section-sub">Upload your completed Excel analysis workbook and submit your post-lab reflection (10 points)</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--rad-shadow-sm);">
+        <!-- Injected and wired by RadLab._wireSplitSubmitHub -->
+      </div>
+    </section>
+
+  </div><!-- /#tab-pane-experiment -->
+
+</div><!-- /.lab-container -->
+
+<!-- ===================== STICKY ACTION BAR ===================== -->
+<div class="lab-actionbar">
+  <div class="lab-actionbar-inner">
+    <div class="autosave-indicator"><span class="dot"></span><span id="autosave-dot-label">Autosave ready</span></div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" id="btn-export-json"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Import JSON<input type="file" id="input-import-json" accept="application/json" style="display:none;"></label>
+      <button class="btn btn-amber btn-sm" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset Lab</button>
+      <button class="btn btn-primary btn-sm" id="btn-export-report-bar"><i class="fa-solid fa-file-pdf"></i> Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<footer class="lab-footer">
+  RAD 321 — Image Recording &amp; Analysis · Diagnostic Radiology Technology Program · Taibah University<br>
+  Lab 2 of 15 · Interactive Simulation Lab Platform
+</footer>
+
 <script src="../../shared/lab-common.js"></script>
 <script src="../../shared/lab-models.js"></script>
 <script>
-const LAB = {"week":2,"title":"Image Formation Simulator","lecture":"RT’s Role & Image Intensity Formation","type":"formation","subtitle":"Trace how technical factors become a captured image.","objectives":["Explain how kVp and mAs alter the primary beam and receptor exposure.","Use SID, SOD, and OID to calculate magnification and predict geometric change.","Apply the inverse-square law to compare beam intensity at different distances.","Explain how patient attenuation changes the remnant beam and visible image intensity.","Record a reproducible virtual exposure and interpret its results."],"theory":"<p>A radiographic exposure is a chain: the tube produces the primary beam, the patient attenuates it, the remnant beam reaches the receptor, and the receptor converts that signal into an image. In this lab, the detector response is simplified to make cause-and-effect visible.</p><div class=\"formula-box\"><b>Inverse-square law:</b> I₂ = I₁ × (d₁ / d₂)² &nbsp; · &nbsp; <b>Magnification:</b> M = SID / SOD &nbsp; · &nbsp; <b>OID:</b> SID − SOD</div><p>Increasing kVp increases beam energy and penetration; increasing mAs increases photon quantity. Increasing OID increases magnification and unsharpness, while a longer SID generally reduces magnification when SOD is held constant.</p>","controls":[{"id":"kvp","label":"kVp","min":50,"max":110,"step":1,"value":75,"unit":"kVp"},{"id":"mas","label":"mAs","min":2,"max":40,"step":1,"value":10,"unit":"mAs"},{"id":"sid","label":"SID","min":80,"max":180,"step":1,"value":100,"unit":"cm"},{"id":"oid","label":"OID","min":0,"max":20,"step":1,"value":5,"unit":"cm"}],"stations":[{"id":"geometry","title":"Station 1 — Geometry investigation","text":"Change SID and OID twice. Record how SOD, magnification, and the detector image change. Choose a setup that minimizes magnification while keeping the anatomy on the detector.","kind":"main"},{"id":"stages","title":"Station 2 — Order the intensity chain","text":"Place the four image-formation stages in causal order, then explain which stage is changed by patient thickness.","kind":"order","items":[["beam","Primary beam propagation"],["patient","Patient interaction / attenuation"],["capture","Image capture at the receptor"],["process","Image processing / display"]],"correct":["beam","patient","capture","process"]},{"id":"case","title":"Station 3 — Clinical setup decision","text":"A portable chest image is too magnified because the detector is far from the patient. Select the most direct correction.","kind":"case"}],"quiz":[{"prompt":"Which change most directly reduces magnification when the patient position is unchanged?","options":["Increase OID","Decrease SID","Increase SID","Increase mAs"],"correct":2,"explain":"With the object position unchanged, increasing SID increases SOD and reduces M = SID/SOD toward 1."},{"prompt":"If SID doubles with no exposure compensation, receptor intensity becomes approximately:","options":["Four times greater","Twice as great","One half","One quarter"],"correct":3,"explain":"The inverse-square law gives (d1/d2)²; doubling distance reduces intensity to one quarter."},{"prompt":"Which expression calculates magnification?","options":["SOD/SID","SID/SOD","OID/SID","mAs/kVp"],"correct":1,"explain":"Magnification factor equals SID divided by SOD."},{"prompt":"Increasing mAs primarily changes:","options":["Photon quantity","Photon energy only","OID","Focal-spot geometry"],"correct":0,"explain":"mAs primarily controls photon quantity; kVp strongly affects energy and penetration."}],"worksheet":[{"id":"q1","label":"1. Compare two exposure runs using kVp and mAs. What changed in the primary beam and why?"},{"id":"q2","label":"2. Show one inverse-square calculation using values from your run."},{"id":"q3","label":"3. Explain how OID affected magnification and recorded detail."},{"id":"q4","label":"4. Critical thinking: identify one patient-dependent and one radiographer-controllable cause of a weak remnant beam."}],"rubric":[{"id":"c1","name":"Conceptual understanding","points":4,"levels":["Accurate explanation of beam, attenuation, capture, and geometry.","Mostly correct with a minor gap.","Major misconception or missing explanation."]},{"id":"c2","name":"Simulation execution and results","points":5,"levels":["Runs and interprets multiple parameter changes with correct trends.","Runs the simulator with limited interpretation.","Little evidence of meaningful investigation."]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":["Calculations are shown, correct, and clearly interpreted.","Mostly correct calculations or incomplete interpretation.","Calculations missing or substantially incorrect."]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":["Links geometry and exposure choices to patient/image consequences.","Reasoning is plausible but brief.","Reasoning is unsupported or absent."]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":["Complete, organized, and ready for submission.","Minor omissions.","Substantially incomplete."]}],"procedure":["Write a prediction about increasing SID while all other controls remain fixed.","Record a baseline run.","Change only SID and record a second run.","Return SID to baseline, change only OID, and record a third run.","Use the run log to compare intensity and magnification."],"scenario":{"prompt":"A portable AP chest image is enlarged because the detector could not be placed close to the patient. Which adjustment best limits magnification if clinically practical?","options":["Increase SID while keeping the detector as close as possible","Decrease SID and increase OID","Increase mAs only","Increase focal-spot size"],"correct":0,"explain":"A longer SID and the smallest practical OID reduce magnification. mAs may compensate intensity but does not correct geometry."},"minimumRuns":3};
-const QUIZ_IDS = ["q2-1","q2-2","q2-3","q2-4"];
-const CONCEPT = LAB.stations[1];
-let currentResult = null;
-let currentViewMode = '3d-shadow';
+/* =========================================================================
+   Tab Switching & Infallible LaTeX Mathematical Rendering
+   ========================================================================= */
+function switchTab(tabId, targetSectionId) {
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  const paneIntro = document.getElementById('tab-pane-intro');
+  const paneExp = document.getElementById('tab-pane-experiment');
 
-function controlValues() {
-  const values = {};
-  LAB.controls.forEach(function (control) { values[control.id] = Number(document.getElementById('ctrl-' + control.id).value); });
-  return values;
-}
+  if (!btnIntro || !btnExp || !paneIntro || !paneExp) return;
 
-function settingSummary(values) {
-  return LAB.controls.map(function (control) { return control.label + ': ' + values[control.id] + ' ' + control.unit; }).join('; ');
-}
-
-function renderMetrics(result) {
-  const container = document.getElementById('sim-metrics');
-  RadLab.renderMetrics(container, result);
-}
-
-function renderSimulation() {
-  const values = controlValues();
-  values.viewMode = currentViewMode;
-  LAB.controls.forEach(function (control) { document.getElementById('out-' + control.id).textContent = values[control.id] + ' ' + control.unit; });
-  currentResult = RadModels.compute(LAB.type, values);
-  RadModels.draw(LAB.type, document.getElementById('sim-canvas').getContext('2d'), values, currentResult, LAB.title);
-  renderMetrics(currentResult);
-  document.getElementById('sim-caption').textContent = currentResult.observation;
-}
-
-function experimentActivity() {
-  return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: LAB.minimumRuns };
-}
-
-function renderRunLog() {
-  const activity = experimentActivity();
-  const body = document.getElementById('run-log-body');
-  body.innerHTML = '';
-  if (!activity.runs.length) {
-    const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 4; cell.className = 'muted'; cell.textContent = 'No runs recorded yet.';
+  if (tabId === 'intro') {
+    btnIntro.classList.add('active');
+    btnIntro.setAttribute('aria-selected', 'true');
+    btnExp.classList.remove('active');
+    btnExp.setAttribute('aria-selected', 'false');
+    paneIntro.classList.add('active');
+    paneExp.classList.remove('active');
   } else {
-    activity.runs.forEach(function (run, index) {
-      const row = body.insertRow();
-      row.insertCell().textContent = String(index + 1);
-      row.insertCell().textContent = run.settings;
-      row.insertCell().textContent = run.metrics.slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
-      row.insertCell().textContent = run.observation;
-    });
+    btnExp.classList.add('active');
+    btnExp.setAttribute('aria-selected', 'true');
+    btnIntro.classList.remove('active');
+    btnIntro.setAttribute('aria-selected', 'false');
+    paneExp.classList.add('active');
+    paneIntro.classList.remove('active');
+
+    // Force re-render of simulation canvas so pixel dimensions and 2D context are crisp
+    if (typeof renderSimulation === 'function') {
+      setTimeout(renderSimulation, 40);
+    }
   }
-  document.getElementById('run-status').textContent = activity.runs.length + ' / ' + LAB.minimumRuns + ' unique runs recorded';
+
+  // Trigger math formatting on tab switch
+  renderAllMath();
+
+  if (targetSectionId) {
+    const targetEl = document.getElementById(targetSectionId);
+    if (targetEl) {
+      setTimeout(() => {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
+  }
 }
 
-function recordRun() {
-  const prediction = document.getElementById('w-prediction').value.trim();
-  if (prediction.length < 20) { RadLab.toast('Write a specific prediction of at least 20 characters before recording.', 'error'); document.getElementById('w-prediction').focus(); return; }
-  const values = controlValues();
-  const signature = JSON.stringify(values);
-  const activity = experimentActivity();
-  if (activity.runs.some(function (run) { return run.signature === signature; })) { RadLab.toast('That setting is already recorded. Change one variable and try again.', 'error'); return; }
-  const run = { signature: signature, settings: settingSummary(values), values: values, metrics: currentResult.metrics, observation: currentResult.observation, modelScore: Number(currentResult.score.toFixed(1)) };
-  activity.runs.push(run);
-  activity.done = activity.runs.length >= LAB.minimumRuns;
-  activity.score = Math.min(activity.runs.length, LAB.minimumRuns);
-  activity.maxScore = LAB.minimumRuns;
-  activity.detail = activity.runs.length + ' unique runs recorded; latest model index ' + run.modelScore + '/100.';
-  RadLab.state.activities['experiment-log'] = activity;
-  RadLab.sound.playExposure();
-  RadLab.save(); renderRunLog(); RadLab.progress.update(); RadLab.toast('Run ' + activity.runs.length + ' recorded.', 'success');
+/* Infallible LaTeX Math Renderer (KaTeX with semantic HTML fallback) */
+function renderAllMath() {
+  if (window.renderMathInElement && typeof window.renderMathInElement === 'function') {
+    try {
+      window.renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true }
+        ],
+        throwOnError: false
+      });
+      return;
+    } catch (err) {
+      console.warn('KaTeX auto-render failed; executing semantic fallback:', err);
+    }
+  }
+
+  // Robust semantic HTML fallback for offline or restricted environments
+  const targets = document.querySelectorAll('.math-tex, .math-display, .formula-box, .objectives-list li, .card p, .card li, table td, table th, figcaption, .control-card span');
+  targets.forEach(function (el) {
+    if (!el.innerHTML.includes('$')) return;
+
+    // Display formulas $$ ... $$
+    el.innerHTML = el.innerHTML.replace(/\$\$([^$]+)\$\$/g, function (match, tex) {
+      return '<div class="math-fallback-display">' + formatMathTex(tex) + '</div>';
+    });
+
+    // Inline formulas $ ... $
+    el.innerHTML = el.innerHTML.replace(/\$([^$]+)\$/g, function (match, tex) {
+      return '<span class="math-fallback-inline">' + formatMathTex(tex) + '</span>';
+    });
+  });
 }
 
-function removeLastRun() {
-  const activity = experimentActivity();
-  if (!activity.runs.length) { RadLab.toast('There is no recorded run to remove.'); return; }
-  activity.runs.pop(); activity.done = activity.runs.length >= LAB.minimumRuns; activity.score = Math.min(activity.runs.length, LAB.minimumRuns); activity.detail = activity.runs.length + ' unique runs recorded.';
-  RadLab.state.activities['experiment-log'] = activity; RadLab.save(); renderRunLog(); RadLab.progress.update();
-}
-
-function setupConcept() {
-  const container = document.getElementById('concept-activity');
-  if (CONCEPT.kind === 'order') RadLab.dragOrder(container, { id: CONCEPT.id, items: CONCEPT.items.map(function (x) { return {id:x[0],label:x[1]}; }), correctOrder: CONCEPT.correct });
-  if (CONCEPT.kind === 'match') RadLab.matchPairs(container, { id: CONCEPT.id, left: CONCEPT.left.map(function (x) { return {id:x[0],label:x[1]}; }), right: CONCEPT.right.map(function (x) { return {id:x[0],label:x[1]}; }), pairs: CONCEPT.pairs, leftTitle: 'Evidence or concept', rightTitle: 'Best match' });
-}
-
-function checkScenario() {
-  const selected = document.querySelector('input[name="scenario-choice"]:checked');
-  const feedback = document.getElementById('scenario-feedback');
-  if (!selected) { feedback.className = 'feedback-box incorrect'; feedback.textContent = 'Select a response before checking.'; return; }
-  const choice = Number(selected.value); const correct = choice === LAB.scenario.correct;
-  const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
-  RadLab.state.activities['clinical-scenario'] = { done: correct, score: correct ? 1 : 0, maxScore: 1, attempts: previous.attempts + 1, selected: choice, detail: LAB.scenario.options[choice] };
-  feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
-  feedback.textContent = (correct ? 'Correct. ' : 'Reconsider. ') + LAB.scenario.explain;
-  RadLab.save(); RadLab.progress.update();
+function formatMathTex(tex) {
+  let s = tex.trim();
+  s = s.replace(/\\approx/g, '&asymp;');
+  s = s.replace(/\\times/g, '&times;');
+  s = s.replace(/\\cdot/g, '&sdot;');
+  s = s.replace(/\\propto/g, '&prop;');
+  s = s.replace(/\\iff/g, '&hArr;');
+  s = s.replace(/\\quad/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+  s = s.replace(/\\text\{mAs\}_?1/g, 'mAs<sub>1</sub>');
+  s = s.replace(/\\text\{mAs\}_?2/g, 'mAs<sub>2</sub>');
+  s = s.replace(/\\text\{mAs\}/g, 'mAs');
+  s = s.replace(/\\text\{SID\}/g, 'SID');
+  s = s.replace(/\\text\{SOD\}/g, 'SOD');
+  s = s.replace(/\\text\{OID\}/g, 'OID');
+  s = s.replace(/\\text\{MF\}/g, '<i>MF</i>');
+  s = s.replace(/\\text\{Image Size\}/g, 'Image Size');
+  s = s.replace(/\\text\{Object Size\}/g, 'Object Size');
+  s = s.replace(/\\text\{Enlargement\}/g, 'Enlargement');
+  s = s.replace(/\\text\{([^\}]+)\}/g, '$1');
+  s = s.replace(/I_?1/g, '<i>I</i><sub>1</sub>');
+  s = s.replace(/I_?2/g, '<i>I</i><sub>2</sub>');
+  s = s.replace(/d_?1/g, '<i>d</i><sub>1</sub>');
+  s = s.replace(/d_?2/g, '<i>d</i><sub>2</sub>');
+  s = s.replace(/\^2/g, '<sup>2</sup>');
+  s = s.replace(/\^3/g, '<sup>3</sup>');
+  s = s.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)');
+  s = s.replace(/\\left\(/g, '(');
+  s = s.replace(/\\right\)/g, ')');
+  s = s.replace(/\\%/g, '%');
+  s = s.replace(/\bkVp\b/g, 'kVp');
+  return s;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  RadLab.init({ labId: 'lab-02', labTitle: "Lab 2 — Image Formation Simulator", weekNumber: 2, rubric: { title: "Lab 2 Grading Rubric (20 points)", criteria: [{"id":"c1","name":"Conceptual understanding","points":4},{"id":"c2","name":"Simulation execution and results","points":5},{"id":"c3","name":"Calculations and worksheet","points":5},{"id":"c4","name":"Clinical reasoning","points":3},{"id":"c5","name":"Completeness and professionalism","points":3}] }, sections: [
-    {id:'sec-experiment',label:'1 · Experiment',checkComplete:function(s){return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done);}},
-    {id:'sec-concept',label:'2 · Concept',checkComplete:function(s){return !!(s.activities[CONCEPT.id] && s.activities[CONCEPT.id].done);}},
-    {id:'sec-scenario',label:'3 · Clinical decision',checkComplete:function(s){return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done);}},
-    {id:'sec-quiz',label:'4 · Knowledge check',checkComplete:function(s){return QUIZ_IDS.every(function(id){return !!(s.quiz[id] && s.quiz[id].correct);});}},
-    {id:'sec-worksheet',label:'5 · Worksheet'}
-  ]});
-  RadLab.registerField('w-prediction', {sectionId:'sec-experiment',label:'Pre-experiment prediction'});
-  LAB.worksheet.forEach(function (field) { RadLab.registerField(field.id, {sectionId:'sec-worksheet',label:field.label}); });
-  LAB.quiz.forEach(function (question, index) { RadLab.mcq(document.getElementById('quiz-wrap'), {id:QUIZ_IDS[index],prompt:question.prompt,options:question.options,correctIndex:question.correct,explain:question.explain,allowRetry:true}); });
-  RadLab.buildRubric(document.getElementById('rubric-container'), {id:'lab2-rubric',title:"Lab 2 Grading Rubric (20 points)",criteria:[{"id":"c1","name":"Conceptual understanding","points":4,"levels":[{"desc":"Accurate explanation of beam, attenuation, capture, and geometry."},{"desc":"Mostly correct with a minor gap."},{"desc":"Major misconception or missing explanation."}]},{"id":"c2","name":"Simulation execution and results","points":5,"levels":[{"desc":"Runs and interprets multiple parameter changes with correct trends."},{"desc":"Runs the simulator with limited interpretation."},{"desc":"Little evidence of meaningful investigation."}]},{"id":"c3","name":"Calculations and worksheet","points":5,"levels":[{"desc":"Calculations are shown, correct, and clearly interpreted."},{"desc":"Mostly correct calculations or incomplete interpretation."},{"desc":"Calculations missing or substantially incorrect."}]},{"id":"c4","name":"Clinical reasoning","points":3,"levels":[{"desc":"Links geometry and exposure choices to patient/image consequences."},{"desc":"Reasoning is plausible but brief."},{"desc":"Reasoning is unsupported or absent."}]},{"id":"c5","name":"Completeness and professionalism","points":3,"levels":[{"desc":"Complete, organized, and ready for submission."},{"desc":"Minor omissions."},{"desc":"Substantially incomplete."}]}]});
-  setupConcept();
-  if (LAB.worksheet && LAB.worksheet.length) {
-    RadLab.mathHelper(document.getElementById('math-helper-container'), LAB.type, LAB.worksheet[0].id);
-  }
-  LAB.controls.forEach(function (control) { document.getElementById('ctrl-' + control.id).addEventListener('input', renderSimulation); });
-  document.getElementById('record-run').addEventListener('click', recordRun);
-  document.getElementById('remove-run').addEventListener('click', removeLastRun);
-  document.getElementById('check-scenario').addEventListener('click', checkScenario);
 
-  const btn3d = document.getElementById('btn-view-3d');
-  const btnClassic = document.getElementById('btn-view-classic');
-  if (btn3d && btnClassic) {
-    btn3d.addEventListener('click', function () {
-      currentViewMode = '3d-shadow';
-      btn3d.className = 'btn btn-secondary btn-sm';
-      btnClassic.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
-    });
-    btnClassic.addEventListener('click', function () {
-      currentViewMode = 'classic';
-      btnClassic.className = 'btn btn-secondary btn-sm';
-      btn3d.className = 'btn btn-ghost btn-sm';
-      renderSimulation();
+  // Wire Tab Buttons
+  const btnIntro = document.getElementById('tab-btn-intro');
+  const btnExp = document.getElementById('tab-btn-experiment');
+  if (btnIntro) btnIntro.addEventListener('click', () => switchTab('intro'));
+  if (btnExp) btnExp.addEventListener('click', () => switchTab('experiment'));
+
+  const btnProceed = document.getElementById('btn-proceed-to-sim');
+  if (btnProceed) btnProceed.addEventListener('click', () => switchTab('experiment', 'sec-exp-guide'));
+
+  const btnBack = document.getElementById('btn-back-to-intro');
+  if (btnBack) btnBack.addEventListener('click', () => switchTab('intro', 'sec-objectives'));
+
+  // Wire Sticky Nav to Auto-Switch Tabs
+  const navEl = document.getElementById('lab-nav');
+  if (navEl) {
+    navEl.addEventListener('click', function (e) {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href || !href.startsWith('#')) return;
+      const targetId = href.substring(1);
+      const targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+
+      const paneIntro = document.getElementById('tab-pane-intro');
+      const paneExp = document.getElementById('tab-pane-experiment');
+
+      if (paneIntro && paneIntro.contains(targetEl)) {
+        switchTab('intro', targetId);
+        e.preventDefault();
+      } else if (paneExp && paneExp.contains(targetEl)) {
+        switchTab('experiment', targetId);
+        e.preventDefault();
+      }
     });
   }
+
+  /* ---------------- Virtual Experiment: Image Formation Simulator ---------------- */
+  let currentResult = null;
+
+  function controlValues() {
+    return {
+      kvp: Number(document.getElementById('ctrl-kvp').value),
+      mas: Number(document.getElementById('ctrl-mas').value),
+      sid: Number(document.getElementById('ctrl-sid').value),
+      oid: Number(document.getElementById('ctrl-oid').value)
+    };
+  }
+
+  function settingSummary(v) {
+    return `kVp: ${v.kvp} kVp; mAs: ${v.mas} mAs; SID: ${v.sid} cm; OID: ${v.oid} cm`;
+  }
+
+  window.renderSimulation = function renderSimulation() {
+    const v = controlValues();
+    document.getElementById('out-kvp').textContent = v.kvp + ' kVp';
+    document.getElementById('out-mas').textContent = v.mas + ' mAs';
+    document.getElementById('out-sid').textContent = v.sid + ' cm';
+    document.getElementById('out-oid').textContent = v.oid + ' cm';
+
+    currentResult = RadModels.compute('formation', v);
+    const canvas = document.getElementById('sim-canvas');
+    if (canvas && canvas.getContext) {
+      RadModels.draw('formation', canvas.getContext('2d'), v, currentResult, 'Image Formation Simulator');
+    }
+    const metricsContainer = document.getElementById('sim-metrics');
+    if (metricsContainer) {
+      RadLab.renderMetrics(metricsContainer, currentResult);
+    }
+    const captionEl = document.getElementById('sim-caption');
+    if (captionEl) {
+      captionEl.textContent = currentResult.observation;
+    }
+  };
+
+  function experimentActivity() {
+    return RadLab.state.activities['experiment-log'] || { done: false, runs: [], score: 0, maxScore: 3 };
+  }
+
+  function renderRunLog() {
+    const activity = experimentActivity();
+    const body = document.getElementById('run-log-body');
+    if (!body) return;
+    body.innerHTML = '';
+    if (!activity.runs.length) {
+      const row = body.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 4;
+      cell.className = 'muted';
+      cell.textContent = 'No runs recorded yet. Adjust controls above and click "Record This Run".';
+    } else {
+      activity.runs.forEach(function (run, index) {
+        const row = body.insertRow();
+        row.insertCell().textContent = String(index + 1);
+        row.insertCell().textContent = run.settings;
+        row.insertCell().textContent = (run.metrics || []).slice(0, 4).map(function (m) { return m.label + ': ' + m.value + (m.unit ? ' ' + m.unit : ''); }).join(' | ');
+        row.insertCell().textContent = run.observation;
+      });
+    }
+    const statusEl = document.getElementById('run-status');
+    if (statusEl) statusEl.textContent = `${activity.runs.length} / 3 unique runs recorded`;
+  }
+
+  function recordRun() {
+    const predEl = document.getElementById('w-prediction');
+    const prediction = predEl ? predEl.value.trim() : '';
+    if (!prediction) {
+      RadLab.toast('Please enter a brief scientific prediction before recording this trial.', 'error');
+      if (predEl) predEl.focus();
+      return;
+    }
+    const values = controlValues();
+    const signature = JSON.stringify(values);
+    const activity = experimentActivity();
+    if (activity.runs.some(function (r) { return r.signature === signature; })) {
+      RadLab.toast('That exact setting has already been recorded. Adjust a variable and record again.', 'error');
+      return;
+    }
+    const run = {
+      signature: signature,
+      settings: settingSummary(values),
+      values: values,
+      metrics: currentResult.metrics,
+      observation: currentResult.observation,
+      modelScore: Number(currentResult.score.toFixed(1))
+    };
+    activity.runs.push(run);
+    activity.done = activity.runs.length >= 3;
+    activity.score = Math.min(activity.runs.length, 3);
+    activity.maxScore = 3;
+    activity.detail = `${activity.runs.length} unique runs recorded; latest model index ${run.modelScore}/100.`;
+    RadLab.state.activities['experiment-log'] = activity;
+    if (RadLab.sound && typeof RadLab.sound.playExposure === 'function') RadLab.sound.playExposure();
+    RadLab.save();
+    renderRunLog();
+    RadLab.progress.update();
+    RadLab.toast(`Run ${activity.runs.length} recorded successfully.`, 'success');
+  }
+
+  function removeLastRun() {
+    const activity = experimentActivity();
+    if (!activity.runs.length) {
+      RadLab.toast('There are no recorded runs to remove.');
+      return;
+    }
+    activity.runs.pop();
+    activity.done = activity.runs.length >= 3;
+    activity.score = Math.min(activity.runs.length, 3);
+    activity.detail = `${activity.runs.length} unique runs recorded.`;
+    RadLab.state.activities['experiment-log'] = activity;
+    RadLab.save();
+    renderRunLog();
+    RadLab.progress.update();
+  }
+
+  // Wire simulation controls
+  ['ctrl-kvp', 'ctrl-mas', 'ctrl-sid', 'ctrl-oid'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', window.renderSimulation);
+  });
+
+  const btnRecord = document.getElementById('record-run');
+  if (btnRecord) btnRecord.addEventListener('click', recordRun);
+
+  const btnRemove = document.getElementById('remove-run');
+  if (btnRemove) btnRemove.addEventListener('click', removeLastRun);
+
+  // Preset buttons
   document.querySelectorAll('.preset-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const part = btn.dataset.part, offset = btn.dataset.offset, oid = btn.dataset.oid, sid = btn.dataset.sid;
-      if (document.getElementById('ctrl-part') && part !== undefined) document.getElementById('ctrl-part').value = part;
-      if (document.getElementById('ctrl-offset') && offset !== undefined) document.getElementById('ctrl-offset').value = offset;
-      if (document.getElementById('ctrl-oid') && oid !== undefined) document.getElementById('ctrl-oid').value = oid;
-      if (document.getElementById('ctrl-sid') && sid !== undefined) document.getElementById('ctrl-sid').value = sid;
-      renderSimulation();
+      if (btn.dataset.kvp != null) document.getElementById('ctrl-kvp').value = btn.dataset.kvp;
+      if (btn.dataset.mas != null) document.getElementById('ctrl-mas').value = btn.dataset.mas;
+      if (btn.dataset.sid != null) document.getElementById('ctrl-sid').value = btn.dataset.sid;
+      if (btn.dataset.oid != null) document.getElementById('ctrl-oid').value = btn.dataset.oid;
+      window.renderSimulation();
       RadLab.toast('Preset loaded: ' + btn.textContent.trim(), 'info');
     });
   });
 
+  /* ---------------- Station 1: Distance Explorer Quick MCQ ---------------- */
+  RadLab.mcq(document.getElementById('quiz-station1'), {
+    id: 'q-station1-distance',
+    prompt: 'If a radiographer steps back from 1 meter to 3 meters away from a patient during a mobile radiography exposure, by what percentage is the radiographer\'s scatter dose reduced?',
+    options: [
+      '33.3% reduction',
+      '66.7% reduction',
+      '88.9% reduction (down to 11.1% of original dose)',
+      'No reduction occurs without a lead apron'
+    ],
+    correctIndex: 2,
+    explain: 'By the inverse-square law, intensity at 3 meters is (1/3)² = 1/9 ≈ 11.1% of the 1-meter intensity, which represents an 88.9% reduction in scatter radiation exposure.'
+  });
+
+  /* ---------------- Station 2: Drag-order 4 stages ---------------- */
+  RadLab.dragOrder(document.getElementById('stages-drag-container'), {
+    id: 'station-stages-order',
+    items: [
+      { id: 'beam', label: '1. Primary Beam Propagation — X-rays travel divergently from the tube focal spot toward the patient (I ∝ 1/d²)' },
+      { id: 'patient', label: '2. Patient Interaction — beam undergoes differential attenuation (photoelectric absorption & Compton scatter)' },
+      { id: 'capture', label: '3. Image Capture — remnant photons strike the detector (DR, CR, or Film) to create a latent signal' },
+      { id: 'process', label: '4. Image Processing & Display — captured digital signal is converted by computer ADC and LUT for clinical critique' }
+    ],
+    correctOrder: ['beam', 'patient', 'capture', 'process']
+  });
+
+  RadLab.mcq(document.getElementById('quiz-stages'), {
+    id: 'q-stages-geometry',
+    prompt: 'Which stage of the radiographic imaging chain is most directly altered when a radiographer extends the Source-to-Image Distance (SID)?',
+    options: [
+      'Patient Interaction attenuation only',
+      'Primary Beam Propagation and the photon fluence arriving at the receptor plane',
+      'The chemical developing speed of silver halide crystals',
+      'The effective atomic number (Z) of cortical bone'
+    ],
+    correctIndex: 1,
+    explain: 'Changing SID directly alters the geometric divergence in Stage 1 (Primary Beam Propagation) and governs the incident photon fluence reaching the detector in Stage 3.'
+  });
+
+  /* ---------------- Station 3: Geometric Optics Match ---------------- */
+  RadLab.matchPairs(document.getElementById('geometry-match-container'), {
+    id: 'station-geometry-match',
+    leftTitle: 'Geometric Parameter',
+    rightTitle: 'Physical / Diagnostic Definition',
+    left: [
+      { id: 'm1', label: 'Source-to-Image Distance (SID)' },
+      { id: 'm2', label: 'Source-to-Object Distance (SOD)' },
+      { id: 'm3', label: 'Object-to-Image Distance (OID)' },
+      { id: 'm4', label: 'Magnification Factor (MF)' },
+      { id: 'm5', label: 'Geometric Focal Spot Blur' }
+    ],
+    right: [
+      { id: 'd1', label: 'Total distance from the focal track to the image receptor plane' },
+      { id: 'd2', label: 'Distance from focal spot to anatomical structure of interest (SID − OID)' },
+      { id: 'd3', label: 'Air gap distance between patient anatomical structure and detector' },
+      { id: 'd4', label: 'Ratio of SID to SOD governing anatomical projection size (SID / SOD)' },
+      { id: 'd5', label: 'Penumbra unsharpness caused by finite focal spot size (FSS × OID / SOD)' }
+    ],
+    pairs: { m1: 'd1', m2: 'd2', m3: 'd3', m4: 'd4', m5: 'd5' }
+  });
+
+  RadLab.mcq(document.getElementById('quiz-geometry'), {
+    id: 'q-geometry-alara',
+    prompt: 'To minimize geometric magnification and focal spot blur in a clinical radiograph, which setup combination should the radiographer strive to achieve?',
+    options: [
+      'Maximum practical SID with minimum possible OID',
+      'Minimum SID with maximum possible OID',
+      'Equal SID and OID distances',
+      'Large focal spot size with elevated OID'
+    ],
+    correctIndex: 0,
+    explain: 'Magnification factor MF = SID / SOD. Keeping OID as small as possible maximizes SOD and minimizes MF. Using a longer practical SID further drives MF toward 1.0 and sharpens image borders.'
+  });
+
+  /* ---------------- Station 4: Clinical Decision Scenario Check ---------------- */
+  const SCENARIO = {
+    correct: 0,
+    explain: 'Increasing SID from 100 cm to 140 cm brings the magnification factor MF = SID / SOD closer to 1.0 (from 1.18× down to 1.12×), reducing false cardiac enlargement. To avoid quantum mottle from the inverse-square fluence drop, the radiographer applies the Direct Square Law to compensate mAs (multiplying mAs by ~1.96×). This maintains diagnostic image quality without violating ALARA.'
+  };
+
+  function checkScenario() {
+    const selected = document.querySelector('input[name="scenario-choice"]:checked');
+    const feedback = document.getElementById('scenario-feedback');
+    if (!selected) {
+      feedback.className = 'feedback-box incorrect';
+      feedback.textContent = 'Select an option above before checking.';
+      return;
+    }
+    const choice = Number(selected.value);
+    const correct = choice === SCENARIO.correct;
+    const previous = RadLab.state.activities['clinical-scenario'] || { attempts: 0 };
+    RadLab.state.activities['clinical-scenario'] = {
+      done: correct,
+      score: correct ? 1 : 0,
+      maxScore: 1,
+      attempts: (previous.attempts || 0) + 1,
+      selected: choice,
+      detail: document.querySelectorAll('.scenario-option span')[choice].textContent.trim()
+    };
+    feedback.className = 'feedback-box ' + (correct ? 'correct' : 'incorrect');
+    feedback.textContent = (correct ? 'Correct! ' : 'Reconsider. ') + SCENARIO.explain;
+    RadLab.save();
+    RadLab.progress.update();
+  }
+
+  const btnCheckScenario = document.getElementById('check-scenario');
+  if (btnCheckScenario) btnCheckScenario.addEventListener('click', checkScenario);
+
+  /* ---------------- Knowledge check mastery quizzes (q2-1 to q2-4) ---------------- */
+  const finalQuizEl = document.getElementById('quiz-final');
+  RadLab.mcq(finalQuizEl, {
+    id: 'q2-1',
+    prompt: 'Which change most directly reduces magnification when the patient position is unchanged?',
+    options: [
+      'Increase OID',
+      'Decrease SID',
+      'Increase SID',
+      'Increase mAs'
+    ],
+    correctIndex: 2,
+    explain: 'With the object position unchanged, increasing SID increases SOD and reduces M = SID/SOD toward 1.0.'
+  });
+
+  RadLab.mcq(finalQuizEl, {
+    id: 'q2-2',
+    prompt: 'If SID doubles with no exposure compensation, receptor intensity becomes approximately:',
+    options: [
+      'Four times greater',
+      'Twice as great',
+      'One half',
+      'One quarter (25%)'
+    ],
+    correctIndex: 3,
+    explain: 'The inverse-square law gives (d1/d2)²; doubling distance reduces radiation intensity to one-quarter.'
+  });
+
+  RadLab.mcq(finalQuizEl, {
+    id: 'q2-3',
+    prompt: 'Which expression calculates the radiographic magnification factor (MF)?',
+    options: [
+      'SOD / SID',
+      'SID / SOD',
+      'OID / SID',
+      'mAs / kVp'
+    ],
+    correctIndex: 1,
+    explain: 'Magnification factor equals Source-to-Image Distance (SID) divided by Source-to-Object Distance (SOD).'
+  });
+
+  RadLab.mcq(finalQuizEl, {
+    id: 'q2-4',
+    prompt: 'Increasing mAs primarily changes:',
+    options: [
+      'Photon quantity (beam fluence)',
+      'Photon energy only',
+      'OID geometry',
+      'Focal-spot penumbra'
+    ],
+    correctIndex: 0,
+    explain: 'mAs primarily controls photon quantity (total photon fluence); kVp strongly affects maximum and average photon energy and beam penetration.'
+  });
+
+  /* ---------------- Rubric ---------------- */
+  RadLab.buildRubric(document.getElementById('rubric-container'), {
+    id: 'lab2-rubric',
+    title: 'Lab 2 Standardized Rubric (20 points)',
+    criteria: [
+      {
+        id: 'c1',
+        name: 'Pre-Lab Concepts & Knowledge Check',
+        points: 4,
+        part: 'Part I: In-Lab Interactive Activities (10 Points)',
+        levels: [
+          { desc: 'Accurately explains inverse-square law, magnification factor, and distance radiation protection; achieves mastery on all quizzes (4 pts)' },
+          { desc: 'Mostly accurate explanation with minor omissions (2.5–3 pts)' },
+          { desc: 'Significant misconceptions in geometric optics or distance protection (0–2 pts)' }
+        ]
+      },
+      {
+        id: 'c2',
+        name: 'Simulation Execution & Interactive Stations',
+        points: 6,
+        part: 'Part I: In-Lab Interactive Activities (10 Points)',
+        levels: [
+          { desc: 'Logs at least 3 unique controlled simulation runs; completes all 4 stations and clinical scenario (6 pts)' },
+          { desc: 'Logs 1–2 runs or leaves 1 station incomplete (4–5 pts)' },
+          { desc: 'No controlled runs logged or minimal station interaction (0–3.5 pts)' }
+        ]
+      },
+      {
+        id: 'c3',
+        name: 'Post-Lab Analysis Workbook & Worksheet Calculations',
+        points: 5,
+        part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)',
+        levels: [
+          { desc: 'Thorough, accurate inverse-square and direct-square law calculations with rigorous Excel curve-fitting (4.5–5 pts)' },
+          { desc: 'Calculations mostly correct with minor rounding or formula gaps (3–4 pts)' },
+          { desc: 'Incomplete or missing calculations / workbook (0–2.5 pts)' }
+        ]
+      },
+      {
+        id: 'c4',
+        name: 'Clinical Reasoning & ALARA Synthesis',
+        points: 3,
+        part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)',
+        levels: [
+          { desc: 'Links distance, technique compensation, and magnification to patient/staff radiation safety under ALARA (3 pts)' },
+          { desc: 'Identifies clinical trade-offs with brief rationale (2 pts)' },
+          { desc: 'Fails to link physical causes to clinical radiation safety (0–1.5 pts)' }
+        ]
+      },
+      {
+        id: 'c5',
+        name: 'Completeness, Organization & Professional Reporting',
+        points: 2,
+        part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)',
+        levels: [
+          { desc: 'Complete, highly organized, professional submission format (2 pts)' },
+          { desc: 'Minor formatting omissions (1–1.5 pts)' },
+          { desc: 'Substantially incomplete report (0–0.5 pt)' }
+        ]
+      }
+    ]
+  });
+
+  /* ---------------- Init Engine ---------------- */
+  RadLab.init({
+    labId: 'lab-02',
+    labTitle: "Lab 2 — Inverse-Square Law, Distance Protection & Image Formation Simulator",
+    weekNumber: 2,
+    rubric: {
+      title: 'Lab 2 Standardized Rubric (20 points)',
+      criteria: [
+        { id: 'c1', name: 'Pre-Lab Concepts & Knowledge Check', points: 4, part: 'Part I: In-Lab Interactive Activities (10 Points)' },
+        { id: 'c2', name: 'Simulation Execution & Interactive Stations', points: 6, part: 'Part I: In-Lab Interactive Activities (10 Points)' },
+        { id: 'c3', name: 'Post-Lab Analysis Workbook & Worksheet Calculations', points: 5, part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)' },
+        { id: 'c4', name: 'Clinical Reasoning & ALARA Synthesis', points: 3, part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)' },
+        { id: 'c5', name: 'Completeness, Organization & Professional Reporting', points: 2, part: 'Part II: Post-Lab Clinical Analysis Workbook (10 Points)' }
+      ]
+    },
+    sections: [
+      { id: 'sec-station1', label: '1 · Distance Explorer', tab: 'intro', checkComplete: function (s) { return !!(s.quiz['q-station1-distance'] && s.quiz['q-station1-distance'].correct); } },
+      { id: 'sec-stages', label: '2 · Formation Stages', tab: 'intro', checkComplete: function (s) { return !!(s.activities['station-stages-order'] && s.activities['station-stages-order'].done); } },
+      { id: 'sec-geometry', label: '3 · Geometric Optics', tab: 'intro', checkComplete: function (s) { return !!(s.activities['station-geometry-match'] && s.activities['station-geometry-match'].done); } },
+      { id: 'sec-scenario', label: '4 · Clinical Scenario', tab: 'intro', checkComplete: function (s) { return !!(s.activities['clinical-scenario'] && s.activities['clinical-scenario'].done); } },
+      { id: 'sec-quiz', label: '5 · Knowledge Check', tab: 'intro', checkComplete: function (s) { return ['q2-1', 'q2-2', 'q2-3', 'q2-4'].every(function (id) { return !!(s.quiz[id] && s.quiz[id].correct); }); } },
+      { id: 'sec-experiment', label: '6 · Virtual Simulator', tab: 'experiment', checkComplete: function (s) { return !!(s.activities['experiment-log'] && s.activities['experiment-log'].done); } },
+      { id: 'sec-worksheet', label: '7 · Analysis & Worksheet', tab: 'experiment' }
+    ]
+  });
+
+  // Register worksheet fields
+  RadLab.registerField('w-prediction', { sectionId: 'sec-experiment', label: 'Pre-experiment scientific prediction' });
+  RadLab.registerField('w-calc-invsq', { sectionId: 'sec-worksheet', label: 'Inverse-square calculation' });
+  RadLab.registerField('w-calc-invsq-res', { sectionId: 'sec-worksheet', label: 'Inverse-square result' });
+  RadLab.registerField('w-calc-dsl', { sectionId: 'sec-worksheet', label: 'Direct square law calculation' });
+  RadLab.registerField('w-calc-dsl-res', { sectionId: 'sec-worksheet', label: 'Direct square law result' });
+  RadLab.registerField('w-calc-invsq-check', { sectionId: 'sec-worksheet', label: 'Verification inverse-square substitution' });
+  RadLab.registerField('w-calc-invsq-out', { sectionId: 'sec-worksheet', label: 'Verification inverse-square output' });
+  RadLab.registerField('w-calc-dsl-check', { sectionId: 'sec-worksheet', label: 'Verification direct square law substitution' });
+  RadLab.registerField('w-calc-dsl-out', { sectionId: 'sec-worksheet', label: 'Verification direct square law output' });
+  RadLab.registerField('w-calc-mag', { sectionId: 'sec-worksheet', label: 'Verification magnification substitution' });
+  RadLab.registerField('w-calc-mag-out', { sectionId: 'sec-worksheet', label: 'Verification magnification output' });
+  RadLab.registerField('q1', { sectionId: 'sec-worksheet', label: '1. Compare kVp and mAs primary beam effect' });
+  RadLab.registerField('q2', { sectionId: 'sec-worksheet', label: '2. Show inverse-square and direct square calculations' });
+  RadLab.registerField('q3', { sectionId: 'sec-worksheet', label: '3. Explain OID effect on magnification and penumbra' });
+  RadLab.registerField('q4', { sectionId: 'sec-worksheet', label: '4. Critical thinking: patient vs radiographer causes of weak beam' });
+
+  // Interactive Math Scratchpad
+  if (document.getElementById('math-helper-container')) {
+    RadLab.mathHelper(document.getElementById('math-helper-container'), 'formation', 'q2');
+  }
+
+  // Restore saved scenario state
   const savedScenario = RadLab.state.activities['clinical-scenario'];
-  if (savedScenario && savedScenario.selected !== undefined) { const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]'); if (radio) radio.checked = true; }
-  renderSimulation(); renderRunLog(); RadLab.progress.update();
+  if (savedScenario && savedScenario.selected !== undefined) {
+    const radio = document.querySelector('input[name="scenario-choice"][value="' + savedScenario.selected + '"]');
+    if (radio) {
+      radio.checked = true;
+      const feedback = document.getElementById('scenario-feedback');
+      if (feedback) {
+        feedback.className = 'feedback-box ' + (savedScenario.done ? 'correct' : 'incorrect');
+        feedback.textContent = (savedScenario.done ? 'Correct! ' : 'Reconsider. ') + SCENARIO.explain;
+      }
+    }
+  }
+
+  // Initial rendering
+  window.renderSimulation();
+  renderRunLog();
+  RadLab.progress.update();
+  renderAllMath();
+});
+
+// Render math after external resources load
+window.addEventListener('load', function () {
+  renderAllMath();
 });
 </script>
 </body>
