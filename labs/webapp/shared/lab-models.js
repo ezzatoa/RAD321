@@ -60,6 +60,40 @@
     return px;
   }
 
+  // Single-line ellipsis: trim with '…' until the text fits maxWidth.
+  function fitEllipsis(ctx, text, maxWidth) {
+    text = String(text);
+    try {
+      if (ctx.measureText(text).width <= maxWidth) return text;
+      let t = text;
+      while (t.length > 1 && ctx.measureText(t + '…').width > maxWidth) t = t.slice(0, -1);
+      return t + '…';
+    } catch (e) { return text; }
+  }
+
+  // Greedy word-wrap to maxWidth, at most maxLines (last line gets '…' on overflow).
+  function wrapLines(ctx, text, maxWidth, maxLines) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = '';
+    let overflow = false;
+    for (const word of words) {
+      const trial = line ? line + ' ' + word : word;
+      if (ctx.measureText(trial).width <= maxWidth) { line = trial; continue; }
+      lines.push(line);
+      if (lines.length >= maxLines) { overflow = true; line = ''; break; }
+      line = word;
+    }
+    if (line && lines.length < maxLines) lines.push(line);
+    else if (line && lines.length >= maxLines) overflow = true;
+    if (overflow && lines.length) {
+      let last = lines[lines.length - 1];
+      while (last.length > 1 && ctx.measureText(last + '…').width > maxWidth) last = last.slice(0, -1);
+      lines[lines.length - 1] = last + '…';
+    }
+    return lines;
+  }
+
   function computeFormation(v) {
     const sod = Math.max(1, v.sid - v.oid);
     const magnification = v.sid / sod;
@@ -5674,10 +5708,15 @@
       // PACS Monitor Header Bar
       ctx.fillStyle = '#0a1d2e';
       ctx.fillRect(monX, monY, monW, 28);
-      ctx.fillStyle = '#38bdf8'; ctx.font = '800 12px monospace';
-      ctx.fillText('RAD321 PACS WORKSTATION · VIEWPORT 1', monX + 12, monY + 19);
       ctx.fillStyle = '#94a3b8'; ctx.font = '700 11px monospace';
-      ctx.fillText(art.modality.toUpperCase() + ' · LOSSLESS DICOM', monX + monW - 195, monY + 19);
+      const pacsRight = art.modality.toUpperCase() + ' · LOSSLESS DICOM';
+      ctx.textAlign = 'right';
+      ctx.fillText(pacsRight, monX + monW - 12, monY + 19);
+      const pacsRightW = ctx.measureText(pacsRight).width;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#38bdf8';
+      setFittedFont(ctx, 'RAD321 PACS · VIEWPORT 1', monW - pacsRightW - 48, 12, '800', 'monospace');
+      ctx.fillText('RAD321 PACS · VIEWPORT 1', monX + 12, monY + 19);
 
       // Radiograph Viewport Area
       const radX = monX + 6, radY = monY + 30, radW = monW - 12, radH = monH - 36;
@@ -5843,7 +5882,7 @@
         ctx.strokeRect(radX + 10, radY + 48, radW - 20, 26);
         ctx.fillStyle = isDanger ? '#fca5a5' : '#fef08a';
         ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-        setFittedFont(ctx, text, radW - 36, 12.5, '900', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
+        setFittedFont(ctx, text, radW - 76, 12.5, '900', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
         ctx.fillText(text, radX + 18, radY + 65);
       }
 
@@ -6127,9 +6166,9 @@
         ctx.lineWidth = isRootOrigin ? 1.8 : 1.2;
         ctx.strokeRect(pX + 10, sY, pW - 20, 41);
 
-        // Stage Title
+        // Stage Title (kept clear of the ROOT ORIGIN badge and the score bar)
         ctx.fillStyle = isRootOrigin ? '#fca5a5' : '#f8fafc';
-        ctx.font = '800 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        setFittedFont(ctx, stageFullNames[sIdx], isRootOrigin ? 226 : 306, 13, '800', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
         ctx.fillText(stageFullNames[sIdx], pX + 16, sY + 16);
 
         // Origin Badge
@@ -6140,10 +6179,10 @@
           ctx.fillText('ROOT ORIGIN', pX + 258, sY + 16);
         }
 
-        // Explanation snippet
+        // Explanation snippet (word-aware, never cut mid-word or into the score bar)
         ctx.fillStyle = isRootOrigin ? '#f87171' : '#cbd5e1'; ctx.font = '600 11.5px -apple-system, sans-serif';
         const explText = isRootOrigin ? art.decision : (key === 'E' ? 'Quality gate standard' : 'Process parameters verified');
-        ctx.fillText(explText.slice(0, 52), pX + 16, sY + 33);
+        ctx.fillText(fitEllipsis(ctx, explText, 306), pX + 16, sY + 33);
 
         // Score bar on right
         const barX = pX + pW - 152, barY = sY + 10, barW = 80, barH = 10;
@@ -6175,10 +6214,10 @@
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Disposition Header
+      // Disposition Header (kept clear of the QUALITY pill)
       ctx.fillStyle = isQuarantine ? '#e9d5ff' : isRepeat ? '#fca5a5' : isPostProcess ? '#fde68a' : '#86efac';
       ctx.font = '900 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      ctx.fillText(raw.disposition.slice(0, 56), pX + 18, vY + 22);
+      ctx.fillText(fitEllipsis(ctx, raw.disposition, vW - 128 - 26), pX + 18, vY + 22);
 
       // Score Pill
       ctx.fillStyle = '#ffffff'; ctx.font = '900 13.5px monospace';
@@ -6186,7 +6225,7 @@
 
       // Primary Finding
       ctx.fillStyle = '#f8fafc'; ctx.font = '700 12.5px -apple-system, sans-serif';
-      ctx.fillText(`Finding: ${raw.decision}`, pX + 18, vY + 44);
+      ctx.fillText(fitEllipsis(ctx, `Finding: ${raw.decision}`, vW - 28), pX + 18, vY + 44);
 
       // Action Directive
       ctx.fillStyle = '#94a3b8'; ctx.font = '800 12px -apple-system, sans-serif';
@@ -6194,28 +6233,21 @@
       ctx.fillStyle = isQuarantine ? '#f3e8ff' : isRepeat ? '#fecaca' : isPostProcess ? '#fef08a' : '#bbf7d0';
       ctx.font = '700 12px -apple-system, sans-serif';
 
-      // Multi-line wrap for corrective action
-      const actionWords = raw.correctiveAction.split(' ');
-      let line1 = '', line2 = '';
-      actionWords.forEach(word => {
-        if ((line1 + ' ' + word).length < 52 && !line2) {
-          line1 += (line1 ? ' ' : '') + word;
-        } else {
-          line2 += (line2 ? ' ' : '') + word;
-        }
-      });
-      ctx.fillText(line1, pX + 18, vY + 80);
-      if (line2) ctx.fillText(line2, pX + 18, vY + 96);
+      // Multi-line wrap for corrective action (measured, max 2 lines + ellipsis)
+      ctx.font = '700 12px -apple-system, sans-serif';
+      const actionLines = wrapLines(ctx, raw.correctiveAction, vW - 28, 2);
+      ctx.fillText(actionLines[0] || '', pX + 18, vY + 80);
+      if (actionLines[1]) ctx.fillText(actionLines[1], pX + 18, vY + 96);
 
-      // Prevention directive
+      // Prevention directive (label + fitted single line)
       ctx.fillStyle = '#94a3b8'; ctx.font = '800 11.5px -apple-system, sans-serif';
       ctx.fillText('Prevention Protocol:', pX + 18, vY + 114);
       ctx.fillStyle = '#cbd5e1'; ctx.font = '600 11.5px -apple-system, sans-serif';
-      ctx.fillText(art.prevention.slice(0, 56), pX + 145, vY + 114);
+      ctx.fillText(fitEllipsis(ctx, art.prevention, vW - 160 - 8), pX + 160, vY + 114);
 
       // Bottom ALARA note
       ctx.fillStyle = '#94a3b8'; ctx.font = '700 11px -apple-system, sans-serif';
-      ctx.fillText('ALARA Directive: Re-exposure is strictly prohibited if diagnostic VOI is recoverable.', pX + 18, vY + 130);
+      ctx.fillText('ALARA: re-expose only if the VOI is unrecoverable.', pX + 18, vY + 130);
     }
 
     // Score meter badge
