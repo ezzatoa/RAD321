@@ -14,7 +14,7 @@ async function seed() {
     { key: 'smtp_user', value: 'ezzatoa@gmail.com', description: 'SMTP username or authentication email' },
     { key: 'smtp_pass', value: process.env.GMAIL_APP_PASSWORD || '', description: 'SMTP password or Gmail App Password' },
     { key: 'smtp_from', value: 'RAD 321 Admin <ezzatoa@gmail.com>', description: 'Default sender address for emails' },
-    { key: 'app_url', value: 'http://localhost:8080', description: 'Base URL for one-time activation links' },
+    { key: 'app_url', value: process.env.APP_BASE_URL || 'http://localhost:3000', description: 'Base URL for one-time activation links' },
     { key: 'allow_self_registration', value: 'true', description: 'Allow new students to register online' },
     { key: 'require_admin_approval', value: 'true', description: 'Require admin approval before token generation' }
   ];

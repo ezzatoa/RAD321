@@ -26,7 +26,7 @@ async function runTests() {
 
   // Test 2: Admin Approval & Token Generation
   console.log('▶ Test 2: Admin Approval & Token Generation...');
-  const approval = await authService.approveStudent(registered.id, 1, 'http://localhost:8080');
+  const approval = await authService.approveStudent(registered.id, 1, 'http://localhost:3000');
   assert.strictEqual(approval.user.status, 'active', 'Approved user should be active');
   assert.ok(approval.activationToken, 'Approval must produce an activation token');
   assert.ok(approval.activationLink.includes(approval.activationToken), 'Activation link must contain token');
@@ -34,7 +34,7 @@ async function runTests() {
 
   // Test 3: Email Service & Outbox Logging
   console.log('▶ Test 3: Email Service & Outbox Logging...');
-  const emailRes = await emailService.sendActivationEmail(approval.user, approval.activationToken);
+  const emailRes = await emailService.sendActivationEmail(approval.user, approval.activationToken, 'http://localhost:3000');
   assert.ok(emailRes.activationLink, 'Email dispatch returns activation link');
   const outboxEntry = db.prepare('SELECT * FROM outbox_emails WHERE to_email = ? ORDER BY id DESC').get(regEmail);
   assert.ok(outboxEntry, 'Email was logged to outbox table for local VPS audit');

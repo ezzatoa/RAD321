@@ -67,7 +67,7 @@ router.post('/approve-student/:id', async (req, res) => {
     const host = req.headers['x-forwarded-host'] || req.get('host');
     const requestUrl = host ? `${proto}://${host}` : null;
 
-    let appUrl = process.env.APP_URL;
+    let appUrl = process.env.APP_URL || process.env.APP_BASE_URL;
     if (!appUrl || appUrl.includes('localhost')) {
       if (requestUrl && !requestUrl.includes('localhost')) {
         appUrl = requestUrl;

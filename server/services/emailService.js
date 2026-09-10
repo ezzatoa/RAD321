@@ -8,7 +8,9 @@ const emailService = {
     const host = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_host'").get()?.value || process.env.SMTP_HOST || 'smtp.gmail.com';
     const port = parseInt(db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_port'").get()?.value || process.env.SMTP_PORT || '465', 10);
     const user = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_user'").get()?.value || process.env.SMTP_USER || 'ezzatoa@gmail.com';
-    const pass = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_pass'").get()?.value || process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
+    const rawPass = db.prepare("SELECT value FROM system_settings WHERE key = 'smtp_pass'").get()?.value || process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
+    // Gmail displays app passwords with spaces; SMTP auth requires them stripped.
+    const pass = rawPass ? String(rawPass).replace(/\s+/g, '') : rawPass;
 
     if (!host || !user || !pass) {
       return null; // SMTP not configured; fallback to internal outbox logging
@@ -37,7 +39,7 @@ const emailService = {
   // Send activation email with one-time token link
   async sendActivationEmail(user, token, appUrl = null) {
     const db = getDatabase();
-    const resolvedUrl = appUrl || db.prepare("SELECT value FROM system_settings WHERE key = 'app_url'").get()?.value || 'http://localhost:8080';
+    const resolvedUrl = appUrl || process.env.APP_BASE_URL || db.prepare("SELECT value FROM system_settings WHERE key = 'app_url'").get()?.value || 'http://localhost:3000';
     const activationLink = `${resolvedUrl.replace(/\/$/, '')}/activate/${token}`;
     const subject = 'RAD 321 — Account Registration Approved & Password Setup';
     const htmlBody = `
